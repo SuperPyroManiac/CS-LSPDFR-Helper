@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <RootNamespace>ULSS_Helper</RootNamespace>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>default</LangVersion>
+        <OutputType>Exe</OutputType>
+        <Company>SuperPyroManiac ULSS</Company>
+    </PropertyGroup>
+
+
+
+
+    <ItemGroup>
+      <PackageReference Include="Dapper" Version="2.1.11" />
+      <PackageReference Include="DSharpPlus" Version="5.0.0-nightly-01829" />
+      <PackageReference Include="DSharpPlus.CommandsNext" Version="5.0.0-nightly-01829" />
+      <PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-01829" />
+      <PackageReference Include="DSharpPlus.Lavalink" Version="5.0.0-nightly-01829" />
+      <PackageReference Include="DSharpPlus.Rest" Version="5.0.0-nightly-01829" />
+      <PackageReference Include="DSharpPlus.SlashCommands" Version="5.0.0-nightly-01829" />
+      <PackageReference Include="DSharpPlus.VoiceNext" Version="5.0.0-nightly-01829" />
+      <PackageReference Include="DSharpPlus.VoiceNext.Natives" Version="1.0.0" />
+      <PackageReference Include="MySql.Data" Version="8.1.0" />
+
+
+
+
+
+
+
+
+
+
+
+
+    </ItemGroup>
+
+
+
+
+
+
+
+
+
+
+
+</Project>
