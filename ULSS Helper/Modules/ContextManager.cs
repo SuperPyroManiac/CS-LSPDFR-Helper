@@ -13,6 +13,7 @@ internal class ContextManager : ApplicationCommandModule
     [ContextMenu(ApplicationCommandType.MessageContextMenu, "Analyze Log")]
     public static async Task OnMenuSelect(ContextMenuContext e)
     {
+        // ULSS role id for "CSI Technician (Tech Support)": 517568233360982017
         if (e.Member.Roles.All(role => role.Id != 517568233360982017))
         {
             var emb = new DiscordInteractionResponseBuilder();
@@ -27,14 +28,34 @@ internal class ContextManager : ApplicationCommandModule
             switch (e.TargetMessage.Attachments.Count)
             {
                 case 0:
-                case > 1:
                     var emb = new DiscordInteractionResponseBuilder();
                     emb.IsEphemeral = true;
-                    emb.AddEmbed(MessageManager.Error("There can only be 1 attachment; named RagePluginHook.log!"));
+                    emb.AddEmbed(MessageManager.Error("No attachment found. There needs to be a file named RagePluginHook.log attached to the message!"));
                     await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb);
                     return;
+                case 1:
+                    _file = e.TargetMessage.Attachments[0]?.Url;
+                    break;
+                case > 1:
+                    foreach(DiscordAttachment attachment in e.TargetMessage.Attachments)
+                    {
+                        if (attachment.Url.Contains("RagePluginHook.log"))
+                        {
+                            _file = attachment.Url;
+                            break;
+                        }
+
+                    }
+                    if (_file == null)
+                    {
+                        var emb2 = new DiscordInteractionResponseBuilder();
+                        emb2.IsEphemeral = true;
+                        emb2.AddEmbed(MessageManager.Error("There is no file named RagePluginHook.log!"));
+                        await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb2);
+                        return;
+                    }
+                    break;
             }
-            _file = e.TargetMessage.Attachments[0]?.Url;
             if (_file == null)
             {
                 var emb = new DiscordInteractionResponseBuilder();
@@ -43,14 +64,7 @@ internal class ContextManager : ApplicationCommandModule
                 await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb);
                 return;
             }
-            if (!_file.Contains("RagePluginHook.log"))
-            {
-                var emb = new DiscordInteractionResponseBuilder();
-                emb.IsEphemeral = true;
-                emb.AddEmbed(MessageManager.Error("This file is not named RagePluginHook.log!"));
-                await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb);
-                return;
-            }
+
             await e.DeferAsync(true);
 
             //========================================================================================================
@@ -91,11 +105,13 @@ internal class ContextManager : ApplicationCommandModule
             if (Settings.LSPDFRVer == log.LSPDFRVersion) LSPDFRver = "\u2713";
             if (Settings.RPHVer == log.RPHVersion) RPHver = "\u2713";
 
+            const string tsGearsIconUrl = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless";
+
             var message = new DiscordEmbedBuilder();
             message.Description = "# **Quick Log Information**";
             message.Color = DiscordColor.Gold;
             message.Author = new DiscordEmbedBuilder.EmbedAuthor() { Name = e.TargetMessage.Author.Username, IconUrl = e.TargetMessage.Author.AvatarUrl};
-            message.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless" };
+            message.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = tsGearsIconUrl };
             message.Footer = new DiscordEmbedBuilder.EmbedFooter()
              {
                  Text = $"GTA: {GTAver} - RPH: {RPHver} - LSPDFR: {LSPDFRver}"
@@ -106,10 +122,10 @@ internal class ContextManager : ApplicationCommandModule
                 message.AddField(":warning:     **Message Too Big**", "\r\nToo many plugins to display in a single message.", true);
                 if (missing.Length > 0) message.AddField(":bangbang:  **Plugins not recognized:**", missing, false);
                 var message2 = new DiscordEmbedBuilder { Title = ":orange_circle:     **Outdated Plugins**", Description = "\r\n- " + outdated, Color = DiscordColor.Gold };
-                message2.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless" };
+                message2.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = tsGearsIconUrl };
                 var message3 = new DiscordEmbedBuilder { Title = ":red_circle:     **Broken Plugins**", Description = "\r\n- " + broken, Color = DiscordColor.Gold };
-                message3.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless" };
-                
+                message3.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = tsGearsIconUrl };
+
                 var overflow = new DiscordWebhookBuilder();
                 overflow.AddEmbed(message);
                 if (outdated.Length != 0) overflow.AddEmbed(message2);
