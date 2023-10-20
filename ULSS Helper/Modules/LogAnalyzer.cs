@@ -6,7 +6,8 @@ public class LogAnalyzer
 {
     internal static AnalyzedLog Run()
     {
-        var data = DatabaseManager.LoadPlugins();
+        var pluginData = DatabaseManager.LoadPlugins();
+        var errorData = DatabaseManager.LoadErrors();
         var log = new AnalyzedLog();
         var reader = new StreamReader(Settings.RphLogPath);
         string? line;
@@ -19,7 +20,7 @@ public class LogAnalyzer
 
         while ((line = reader.ReadLine()) != null)
         {
-            foreach (var plugin in data)
+            foreach (var plugin in pluginData)
             {
                 try
                 {
@@ -89,7 +90,10 @@ public class LogAnalyzer
                     temp.State = "MISSING";
                     log.Missing.Add(temp);
                 }
-                
+            }
+
+            foreach (var error in errorData)
+            {
                 
             }
             
@@ -133,7 +137,7 @@ public class AnalyzedLog
     public List<Plugin?> Library { get; set; }
     public List<Plugin?> Missing { get; set; }
     
-    public List<Plugin> MISSINGPlugins { get; set; }
+    public List<Error> Errors { get; set; }
 
     public string GTAVersion { get; set; }
     public string RPHVersion { get; set; }
