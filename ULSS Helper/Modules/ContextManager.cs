@@ -195,7 +195,7 @@ internal class ContextManager : ApplicationCommandModule
             
             if (outdated.Length >= 1024 || broken.Length >= 1024 || current.Length >= 1024)
             {
-                message.AddField(":warning:     **Message Too Big**", "\r\nToo many plugins to display in a single message.", true);
+                message.AddField(":warning:     **Message Too Big**", "\r\nToo many plugins to display in a single message.\r\nFor error checking please first fix plugin issues.", true);
                 if (missing.Length > 0) message.AddField(":bangbang:  **Plugins not recognized:**", missing, false);
                 var message2 = new DiscordEmbedBuilder { Title = ":green_circle:     **Current:**", Description = "\r\n- " + current, Color = DiscordColor.Gold };
                 message2.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless" };

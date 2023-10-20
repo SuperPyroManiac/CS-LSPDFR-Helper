@@ -107,17 +107,20 @@ public class LogAnalyzer
             if (match3.Success) log.LSPDFRVersion = match3.Groups[1].Value;
         }
 
-        // foreach (var error in errorData)
-        // {
-        //     Console.WriteLine(error.ID);
-        //     var errregex = new Regex(error.Regex);
-        //     var errmatch = errregex.Match(wholeLog);
-        //     if (errmatch.Success)
-        //     {
-        //         if (log.Errors.All(x => x.ID != error.ID)) log.Errors.Add(error);
-        //     }
-        // }
-        //TODO: broked at 17
+        foreach (var error in errorData)
+        {
+            var errregex = new Regex(error.Regex);
+            var errmatch = errregex.Match(wholeLog);
+            if (errmatch.Success)
+            {
+                
+                for (var i = 0; i <= 10; i++)
+                {
+                    error.Solution = error.Solution.Replace("{" + i + "}", errmatch.Groups[i].Value);
+                }
+                if (log.Errors.All(x => x.ID != error.ID)) log.Errors.Add(error);
+            }
+        }
 
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("Log Processed...");
