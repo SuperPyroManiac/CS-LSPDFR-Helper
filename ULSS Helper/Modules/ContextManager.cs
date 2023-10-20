@@ -228,7 +228,7 @@ internal class ContextManager : ApplicationCommandModule
                 if (missing.Length > 0) message.AddField(":bangbang:  **Plugins not recognized:**", missing, false);
             
                 if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0) message.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
-                if (LSPDFRver == "X") message.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **You should manually check the log!**");
+                if (LSPDFRver == "X") message.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **Possible issues:**");
                 if (current.Length == 0 && outdated.Length == 0 && broken.Length == 0 && LSPDFRver != "X") message.AddField(":green_circle:     **No installed plugins!**", "- Can't have plugin issues if you don't got any!");
 
                 foreach (var error in log.Errors)

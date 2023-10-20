@@ -9,16 +9,32 @@ internal class DatabaseManager
 {
     internal static List<Plugin> LoadPlugins()
     {
-        using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
-        var output = cnn.Query<Plugin>("select * from Plugin", new DynamicParameters());
-        return output.ToList();
+        try
+        {
+            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            var output = cnn.Query<Plugin>("select * from Plugin", new DynamicParameters());
+            return output.ToList();
+        }
+        catch (SQLiteException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
     
     internal static List<Error> LoadErrors()
     {
-        using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
-        var output = cnn.Query<Error>("select * from Error", new DynamicParameters());
-        return output.ToList();
+        try
+        {
+            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            var output = cnn.Query<Error>("select * from Error", new DynamicParameters());
+            return output.ToList();
+        }
+        catch (SQLiteException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     internal static void AddPlugin(Plugin plugin)

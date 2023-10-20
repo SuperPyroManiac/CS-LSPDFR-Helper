@@ -9,6 +9,7 @@ public class LogAnalyzer
         var pluginData = DatabaseManager.LoadPlugins();
         var errorData = DatabaseManager.LoadErrors();
         var log = new AnalyzedLog();
+        var wholeLog = File.ReadAllText(Settings.RphLogPath);
         var reader = new StreamReader(Settings.RphLogPath);
         string? line;
 
@@ -92,16 +93,6 @@ public class LogAnalyzer
                     log.Missing.Add(temp);
                 }
             }
-
-            foreach (var error in errorData)
-            {
-                var regex = new Regex(error.Regex);
-                var match = regex.Match(line);
-                if (match.Success)
-                {
-                    if (log.Errors.All(x => x != error) && log.Errors.All(x => x.Solution != error.Solution)) log.Errors.Add(error);
-                }
-            }
             
             var rphver = new Regex(@".+ Version: RAGE Plugin Hook v(\d+\.\d+\.\d+\.\d+) for Grand Theft Auto V");
             Match match1 = rphver.Match(line);
@@ -115,6 +106,18 @@ public class LogAnalyzer
             Match match3 = lspdfrver.Match(line);
             if (match3.Success) log.LSPDFRVersion = match3.Groups[1].Value;
         }
+
+        // foreach (var error in errorData)
+        // {
+        //     Console.WriteLine(error.ID);
+        //     var errregex = new Regex(error.Regex);
+        //     var errmatch = errregex.Match(wholeLog);
+        //     if (errmatch.Success)
+        //     {
+        //         if (log.Errors.All(x => x.ID != error.ID)) log.Errors.Add(error);
+        //     }
+        // }
+        //TODO: broked at 17
 
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("Log Processed...");
