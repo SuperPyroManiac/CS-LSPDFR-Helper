@@ -16,14 +16,12 @@ internal class ContextManager : ApplicationCommandModule
     private static string library;
     private static AnalyzedLog log;
     private static string? _file;
-
     private const string TsRoleGearsIconUrl = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless";
     
     [ContextMenu(ApplicationCommandType.MessageContextMenu, "Analyze Log")]
     public static async Task OnMenuSelect(ContextMenuContext e)
     {
-        // ULSS role id for "CSI Technician (Tech Support)": 517568233360982017
-        if (e.Member.Roles.All(role => role.Id != 517568233360982017))
+        if (e.Member.Roles.All(role => role.Id != 517568233360982017))//TODO: Proper permissions setup
         {
             var emb = new DiscordInteractionResponseBuilder();
             emb.IsEphemeral = true;
@@ -31,7 +29,6 @@ internal class ContextManager : ApplicationCommandModule
             await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb);
             return;
         }
-
         try
         {
             switch (e.TargetMessage.Attachments.Count)
@@ -39,7 +36,7 @@ internal class ContextManager : ApplicationCommandModule
                 case 0:
                     var emb = new DiscordInteractionResponseBuilder();
                     emb.IsEphemeral = true;
-                    emb.AddEmbed(MessageManager.Error("No attachment found. There needs to be a file named RagePluginHook.log attached to the message!"));
+                    emb.AddEmbed(MessageManager.Error("No attachment found. There needs to be a file named `RagePluginHook.log` attached to the message!"));
                     await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb);
                     return;
                 case 1:
@@ -59,7 +56,7 @@ internal class ContextManager : ApplicationCommandModule
                     {
                         var emb2 = new DiscordInteractionResponseBuilder();
                         emb2.IsEphemeral = true;
-                        emb2.AddEmbed(MessageManager.Error("There is no file named RagePluginHook.log!"));
+                        emb2.AddEmbed(MessageManager.Error("There is no file named `RagePluginHook.log!`"));
                         await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb2);
                         return;
                     }
@@ -69,7 +66,15 @@ internal class ContextManager : ApplicationCommandModule
             {
                 var emb = new DiscordInteractionResponseBuilder();
                 emb.IsEphemeral = true;
-                emb.AddEmbed(MessageManager.Error("Failed to load RagePluginHook.log!"));
+                emb.AddEmbed(MessageManager.Error("Failed to load `RagePluginHook.log`!"));
+                await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb);
+                return;
+            }
+            if (!_file.Contains("RagePluginHook"))
+            {
+                var emb = new DiscordInteractionResponseBuilder();
+                emb.IsEphemeral = true;
+                emb.AddEmbed(MessageManager.Error("This file is not named `RagePluginHook.log`!"));
                 await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb);
                 return;
             }
