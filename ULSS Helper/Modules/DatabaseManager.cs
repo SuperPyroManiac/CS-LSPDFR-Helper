@@ -1,8 +1,7 @@
 ﻿using System.Data;
+using System.Data.SQLite;
 using System.Net;
 using Dapper;
-using Google.Protobuf;
-using MySql.Data.MySqlClient;
 
 namespace ULSS_Helper.Modules;
 
@@ -10,7 +9,7 @@ internal class DatabaseManager
 {
     internal static List<Plugin> LoadPlugins()
     {
-        using IDbConnection cnn = new MySqlConnection(Settings.DbLocation);
+        using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
         var output = cnn.Query<Plugin>("select * from Plugin", new DynamicParameters());
         return output.ToList();
     }
@@ -19,10 +18,10 @@ internal class DatabaseManager
     {
         try
         {
-            using IDbConnection cnn = new MySqlConnection(Settings.DbLocation);
+            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
             cnn.Execute("insert into Plugin (Name, DName, Version, EAVersion, ID, State, Link) VALUES (@Name, @DName, @Version, @EAVersion, @ID, @State, @Link)", plugin);
         }
-        catch (MySqlException e)
+        catch (SQLiteException e)
         {
             Console.WriteLine(e);
             throw;
@@ -33,10 +32,10 @@ internal class DatabaseManager
     {
         try
         {
-            using IDbConnection cnn = new MySqlConnection(Settings.DbLocation);
+            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
             cnn.Execute($"UPDATE Plugin SET (Name, DName, Version, EAVersion, ID, State, Link) = (@Name, @DName, @Version, @EAVersion, @ID, @State, @Link) WHERE Name = (@Name)", plugin);
         }
-        catch (MySqlException e)
+        catch (SQLiteException e)
         {
             Console.WriteLine(e);
             throw;
@@ -47,10 +46,10 @@ internal class DatabaseManager
     {
         try
         {
-            using IDbConnection cnn = new MySqlConnection(Settings.DbLocation);
+            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
             cnn.Execute("insert into Error (Regex, Solution, Level) VALUES (@Regex, @Solution, @Level)", error);
         }
-        catch (MySqlException e)
+        catch (SQLiteException e)
         {
             Console.WriteLine(e);
             throw;
@@ -61,10 +60,10 @@ internal class DatabaseManager
     {
         try
         {
-            using IDbConnection cnn = new MySqlConnection(Settings.DbLocation);
+            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
             cnn.Execute($"delete from Plugin where Name = (@Name)", plugin);
         }
-        catch (MySqlException e)
+        catch (SQLiteException e)
         {
             Console.WriteLine(e);
             throw;
@@ -106,10 +105,10 @@ internal class DatabaseManager
                         Console.WriteLine($"Updating Plugin {plugin.Name} from {plugin.Version} to {onlineVersion}");
                         nm++;
                         
-                        using IDbConnection cnn = new MySqlConnection(Settings.DbLocation);
+                        using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
                         cnn.Execute($"UPDATE Plugin SET Version = '{onlineVersion}' WHERE Name = '{plugin.Name}';");
                     }
-                    catch (MySqlException e)
+                    catch (SQLiteException e)
                     {
                         Console.WriteLine(e);
                         throw;

@@ -77,37 +77,26 @@ internal class ContextManager : ApplicationCommandModule
             var brokenList = log.Broken.Select(i => i?.DName).ToList();
             var missingList = log.Missing.Select(i => i?.Name).ToList();
             var libraryList = log.Library.Select(i => i?.DName).ToList();
+            brokenList.AddRange(libraryList);
             var current = string.Join("\r\n- ", curentList);
             var outdated = string.Join("\r\n- ", linkedOutdated);
             var broken = string.Join("\r\n- ", brokenList);
             var missing = string.Join(", ", missingList);
             var library = string.Join(", ", libraryList);
-            var GTAver = "";
-            var LSPDFRver = "";
-            var RPHver = "";
+            var GTAver = "X";
+            var LSPDFRver = "X";
+            var RPHver = "X";
 
-            if (Settings.GTAVer == log.GTAVersion)
-            {
-                GTAver = "\u2713";
-            }
-            else GTAver = "X";
-            if (Settings.LSPDFRVer == log.LSPDFRVersion)
-            {
-                LSPDFRver = "\u2713";
-            }
-            else LSPDFRver = "X";
-            if (Settings.RPHVer == log.RPHVersion)
-            {
-                RPHver = "\u2713";
-            }
-            else GTAver = "X";
+            if (Settings.GTAVer == log.GTAVersion) GTAver = "\u2713";
+            if (Settings.LSPDFRVer == log.LSPDFRVersion) LSPDFRver = "\u2713";
+            if (Settings.RPHVer == log.RPHVersion) RPHver = "\u2713";
 
             var message = new DiscordEmbedBuilder();
             message.Description = "# **Quick Log Information**";
             message.Color = DiscordColor.Gold;
             message.Author = new DiscordEmbedBuilder.EmbedAuthor() { Name = e.TargetMessage.Author.Username, IconUrl = e.TargetMessage.Author.AvatarUrl};
             message.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless" };
-             message.Footer = new DiscordEmbedBuilder.EmbedFooter()
+            message.Footer = new DiscordEmbedBuilder.EmbedFooter()
              {
                  Text = $"GTA: {GTAver} - RPH: {RPHver} - LSPDFR: {LSPDFRver}"
              };
