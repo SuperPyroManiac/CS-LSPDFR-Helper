@@ -8,6 +8,13 @@ namespace ULSS_Helper.Modules;
 
 internal class ContextManager : ApplicationCommandModule
 {
+    private static string current;
+    private static List<string?> currentList;
+    private static string outdated;
+    private static string broken;
+    private static string missing;
+    private static string library;
+    private static AnalyzedLog log;
     private static string? _file;
     
     [ContextMenu(ApplicationCommandType.MessageContextMenu, "Analyze Log")]
@@ -58,7 +65,7 @@ internal class ContextManager : ApplicationCommandModule
             using var client = new WebClient();
             client.DownloadFile(_file,
                 Path.Combine(Directory.GetCurrentDirectory(), "RPHLogs", Settings.LogNamer())); //Download the file
-            var log = LogAnalyzer.Run(); //Process the log
+            log = LogAnalyzer.Run(); //Process the log
             
             var linkedOutdated = new List<string>();
             foreach (var i in log.Outdated)
@@ -73,16 +80,16 @@ internal class ContextManager : ApplicationCommandModule
                 }
             }
 
-            var curentList = log.Current.Select(i => i?.DName).ToList();
+            currentList = log.Current.Select(i => i?.DName).ToList();
             var brokenList = log.Broken.Select(i => i?.DName).ToList();
             var missingList = log.Missing.Select(i => i?.Name).ToList();
             var libraryList = log.Library.Select(i => i?.DName).ToList();
             brokenList.AddRange(libraryList);
-            var current = string.Join("\r\n- ", curentList);
-            var outdated = string.Join("\r\n- ", linkedOutdated);
-            var broken = string.Join("\r\n- ", brokenList);
-            var missing = string.Join(", ", missingList);
-            var library = string.Join(", ", libraryList);
+            current = string.Join("\r\n- ", currentList);
+            outdated = string.Join("\r\n- ", linkedOutdated);
+            broken = string.Join("\r\n- ", brokenList);
+            missing = string.Join(", ", missingList);
+            library = string.Join(", ", libraryList);
             var GTAver = "X";
             var LSPDFRver = "X";
             var RPHver = "X";
@@ -105,9 +112,9 @@ internal class ContextManager : ApplicationCommandModule
             {
                 message.AddField(":warning:     **Message Too Big**", "\r\nToo many plugins to display in a single message.", true);
                 if (missing.Length > 0) message.AddField(":bangbang:  **Plugins not recognized:**", missing, false);
-                var message2 = new DiscordEmbedBuilder { Title = ":orange_circle:     **Outdated Plugins**", Description = "\r\n- " + outdated, Color = DiscordColor.Gold };
+                var message2 = new DiscordEmbedBuilder { Title = ":orange_circle:     **Update:**", Description = "\r\n- " + outdated, Color = DiscordColor.Gold };
                 message2.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless" };
-                var message3 = new DiscordEmbedBuilder { Title = ":red_circle:     **Broken Plugins**", Description = "\r\n- " + broken, Color = DiscordColor.Gold };
+                var message3 = new DiscordEmbedBuilder { Title = ":red_circle:     **Remove:**", Description = "\r\n- " + broken, Color = DiscordColor.Gold };
                 message3.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless" };
                 
                 var overflow = new DiscordWebhookBuilder();
@@ -116,7 +123,7 @@ internal class ContextManager : ApplicationCommandModule
                 if (broken.Length != 0) overflow.AddEmbed(message3);
                 overflow.AddComponents(new DiscordComponent[]
                 {
-                    new DiscordButtonComponent(ButtonStyle.Primary, "info", "More Info (WIP)", true,
+                    new DiscordButtonComponent(ButtonStyle.Primary, "info", "More Info", false,
                         new DiscordComponentEmoji(723417756938010646)),
                     new DiscordButtonComponent(ButtonStyle.Danger, "send", "Send To User", false,
                         new DiscordComponentEmoji("📨"))
@@ -133,15 +140,13 @@ internal class ContextManager : ApplicationCommandModule
                 if (missing.Length > 0) message.AddField(":bangbang:  **Plugins not recognized:**", missing, false);
             
                 if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0) message.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
-                
                 if (log.LSPDFRVersion == null) message.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **You should manually check the log!**");
-                
                 if (current.Length == 0 && outdated.Length == 0 && broken.Length == 0 && log.LSPDFRVersion != null) message.AddField(":green_circle:     **No installed plugins!**", "- Can't have plugin issues if you don't got any!");
 
                 
                 await e.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(message).AddComponents(new DiscordComponent[]
                 {
-                    new DiscordButtonComponent(ButtonStyle.Primary, "info", "More Info (WIP)", true, new DiscordComponentEmoji(723417756938010646)),
+                    new DiscordButtonComponent(ButtonStyle.Primary, "info", "More Info (WIP)", false, new DiscordComponentEmoji(723417756938010646)),
                     new DiscordButtonComponent(ButtonStyle.Danger, "send", "Send To User", false, new DiscordComponentEmoji("📨"))
                 }));
             }
@@ -160,10 +165,77 @@ internal class ContextManager : ApplicationCommandModule
             await e.Interaction.DeferAsync();
             await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().AddEmbeds(e.Message.Embeds));
         }
+        
+        if (e.Id == "send2")
+        {
+            await e.Interaction.DeferAsync();
+            await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().AddEmbeds(e.Message.Embeds));
+        }
 
         if (e.Id == "info")
         {
+            await e.Interaction.DeferAsync(true);
             
+            var GTAver = "X";
+            var LSPDFRver = "X";
+            var RPHver = "X";
+
+            if (Settings.GTAVer == log.GTAVersion) GTAver = "\u2713";
+            if (Settings.LSPDFRVer == log.LSPDFRVersion) LSPDFRver = "\u2713";
+            if (Settings.RPHVer == log.RPHVersion) RPHver = "\u2713";
+
+            var message = new DiscordEmbedBuilder();
+            message.Description = "# **Detailed Log Information**";
+            message.Color = DiscordColor.Gold;
+            message.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless" };
+            message.Footer = new DiscordEmbedBuilder.EmbedFooter()
+             {
+                 Text = $"GTA: {GTAver} - RPH: {RPHver} - LSPDFR: {LSPDFRver}"
+             };
+            
+            if (outdated.Length >= 1024 || broken.Length >= 1024 || current.Length >= 1024)
+            {
+                message.AddField(":warning:     **Message Too Big**", "\r\nToo many plugins to display in a single message.", true);
+                if (missing.Length > 0) message.AddField(":bangbang:  **Plugins not recognized:**", missing, false);
+                var message2 = new DiscordEmbedBuilder { Title = ":green_circle:     **Current:**", Description = "\r\n- " + current, Color = DiscordColor.Gold };
+                message2.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless" };
+                var message3 = new DiscordEmbedBuilder { Title = ":orange_circle:     **Update:**", Description = "\r\n- " + outdated, Color = DiscordColor.Gold };
+                message3.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless" };
+                var message4 = new DiscordEmbedBuilder { Title = ":red_circle:     **Remove:**", Description = "\r\n- " + broken, Color = DiscordColor.Gold };
+                message4.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless" };
+                
+                var overflow = new DiscordWebhookBuilder();
+                overflow.AddEmbed(message);
+                if (current.Length != 0) overflow.AddEmbed(message2);
+                if (outdated.Length != 0) overflow.AddEmbed(message3);
+                if (broken.Length != 0) overflow.AddEmbed(message4);
+                overflow.AddComponents(new DiscordComponent[]
+                {
+                    new DiscordButtonComponent(ButtonStyle.Danger, "send2", "Send To User", false,
+                        new DiscordComponentEmoji("📨"))
+                });
+                await e.Interaction.EditOriginalResponseAsync(overflow);
+            }
+            else
+            {
+                if (current.Length != 0 && outdated.Length == 0 && broken.Length != 0) outdated = "**None**";
+                if (current.Length != 0 && outdated.Length != 0 && broken.Length == 0) broken = "**None**";
+                if (current.Length == 0 && outdated.Length != 0 || broken.Length != 0) current = "**None**";
+
+                if (outdated.Length > 0) message.AddField(":orange_circle:     **Update:**", "\r\n- " + outdated, true);
+                if (broken.Length > 0) message.AddField(":red_circle:     **Remove:**", "\r\n- " + broken, true);
+                if (current.Length > 0) message.AddField(":green_circle:     **Current:**", "\r\n" + string.Join(", ", currentList), false);
+                if (missing.Length > 0) message.AddField(":bangbang:  **Plugins not recognized:**", missing, false);
+            
+                if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0) message.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
+                if (log.LSPDFRVersion == "X") message.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **You should manually check the log!**");
+                if (current.Length == 0 && outdated.Length == 0 && broken.Length == 0 && log.LSPDFRVersion != "X") message.AddField(":green_circle:     **No installed plugins!**", "- Can't have plugin issues if you don't got any!");
+                
+                await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().AddEmbed(message).AddComponents(new DiscordComponent[]
+                {
+                    new DiscordButtonComponent(ButtonStyle.Danger, "send2", "Send To User", false, new DiscordComponentEmoji("📨"))
+                }));
+            }
         }
     }
 }

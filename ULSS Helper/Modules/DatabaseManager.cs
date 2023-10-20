@@ -13,6 +13,13 @@ internal class DatabaseManager
         var output = cnn.Query<Plugin>("select * from Plugin", new DynamicParameters());
         return output.ToList();
     }
+    
+    internal static List<Plugin> LoadErrors()
+    {
+        using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+        var output = cnn.Query<Plugin>("select * from Errors", new DynamicParameters());
+        return output.ToList();
+    }
 
     internal static void AddPlugin(Plugin plugin)
     {
