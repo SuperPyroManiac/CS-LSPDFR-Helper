@@ -13,6 +13,13 @@ internal class DatabaseManager
         var output = cnn.Query<Plugin>("select * from Plugin", new DynamicParameters());
         return output.ToList();
     }
+    
+    internal static List<Plugin> LoadErrors()
+    {
+        using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+        var output = cnn.Query<Plugin>("select * from Error", new DynamicParameters());
+        return output.ToList();
+    }
 
     internal static void AddPlugin(Plugin plugin)
     {
@@ -20,6 +27,20 @@ internal class DatabaseManager
         {
             using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
             cnn.Execute("insert into Plugin (Name, DName, Version, EAVersion, ID, State, Link) VALUES (@Name, @DName, @Version, @EAVersion, @ID, @State, @Link)", plugin);
+        }
+        catch (SQLiteException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+    
+    internal static void AddError(Error error)
+    {
+        try
+        {
+            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            cnn.Execute("insert into Error (Regex, Solution, Level) VALUES (@Regex, @Solution, @Level)", error);
         }
         catch (SQLiteException e)
         {
@@ -42,12 +63,12 @@ internal class DatabaseManager
         }
     }
     
-    internal static void AddError(Error error)
+    internal static void EditError(Error error)
     {
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
-            cnn.Execute("insert into Error (Regex, Solution, Level) VALUES (@Regex, @Solution, @Level)", error);
+            cnn.Execute($"UPDATE Error SET (Regex, Solution, Level) = (@Regex, @Solution, @Level) WHERE ID = (@ID)", error);
         }
         catch (SQLiteException e)
         {
@@ -62,6 +83,20 @@ internal class DatabaseManager
         {
             using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
             cnn.Execute($"delete from Plugin where Name = (@Name)", plugin);
+        }
+        catch (SQLiteException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+    
+    internal static void DeleteError(Error error)
+    {
+        try
+        {
+            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            cnn.Execute($"delete from Error where ID = (@ID)", error);
         }
         catch (SQLiteException e)
         {

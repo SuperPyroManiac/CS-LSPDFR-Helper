@@ -6,7 +6,8 @@ public class LogAnalyzer
 {
     internal static AnalyzedLog Run()
     {
-        var data = DatabaseManager.LoadPlugins();
+        var pluginData = DatabaseManager.LoadPlugins();
+        var errorData = DatabaseManager.LoadErrors();
         var log = new AnalyzedLog();
         var reader = new StreamReader(Settings.RphLogPath);
         string? line;
@@ -19,7 +20,7 @@ public class LogAnalyzer
 
         while ((line = reader.ReadLine()) != null)
         {
-            foreach (var plugin in data)
+            foreach (var plugin in pluginData)
             {
                 try
                 {
@@ -72,7 +73,6 @@ public class LogAnalyzer
                     throw;
                 }
             }
-            
             var allrounder = new Regex(".+LSPD First Response: (\\W*\\w*\\W*\\w*\\W*), Version=([0-9]+\\..+), Culture=\\w+, PublicKeyToken=\\w+");
             var allmatch = allrounder.Match(line);
             if (allmatch.Success)
@@ -90,6 +90,11 @@ public class LogAnalyzer
                     temp.State = "MISSING";
                     log.Missing.Add(temp);
                 }
+            }
+
+            foreach (var error in errorData)
+            {
+                
             }
             
             var rphver = new Regex(@".+ Version: RAGE Plugin Hook v(\d+\.\d+\.\d+\.\d+) for Grand Theft Auto V");
@@ -132,7 +137,7 @@ public class AnalyzedLog
     public List<Plugin?> Library { get; set; }
     public List<Plugin?> Missing { get; set; }
     
-    public List<Plugin> MISSINGPlugins { get; set; }
+    public List<Error> Errors { get; set; }
 
     public string GTAVersion { get; set; }
     public string RPHVersion { get; set; }
