@@ -1,4 +1,6 @@
-﻿using DSharpPlus;
+﻿using System.Xml;
+using System.Xml.Linq;
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
@@ -12,6 +14,7 @@ public class CommandManager : ApplicationCommandModule
 {
     private static string? _plugName;
     private static State _plugState;
+    private static Level _errLevel;
     public enum State
     {
         [ChoiceName("LSPDFR")]
@@ -42,13 +45,10 @@ public class CommandManager : ApplicationCommandModule
             return;
         }
 
-        foreach (var plugin in DatabaseManager.LoadPlugins())
+        if (DatabaseManager.LoadPlugins().Any(plugin => plugin.Name == pN))
         {
-            if (plugin.Name == pN)
-            {
-                await ctx.CreateResponseAsync(embed: MessageManager.Error("This plugin already exists in the database!\r\nConsider using /EditPlugin <Name> <State>"));
-                return;
-            }
+            await ctx.CreateResponseAsync(embed: MessageManager.Error("This plugin already exists in the database!\r\nConsider using /EditPlugin <Name> <State>"));
+            return;
         }
 
         _plugName = pN;
@@ -63,6 +63,25 @@ public class CommandManager : ApplicationCommandModule
             style: TextInputStyle.Short));
         modal.AddComponents(new TextInputComponent("ID:", "plugID", required: false, style: TextInputStyle.Short));
         modal.AddComponents(new TextInputComponent("Link", "plugLink", required: false, style: TextInputStyle.Short));
+        
+        await ctx.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
+    }
+    
+    [SlashCommand("AddError", "Adds an error to the database!")]
+    public async Task AddError(InteractionContext ctx, [Option("Level", "Warning type (WARN, SEVERE")] Level lvl)
+    {
+        if (ctx.Member.Roles.All(role => role.Id != 517568233360982017))
+        {
+            await ctx.CreateResponseAsync(embed: MessageManager.Error("You do not have permission for this!"));
+            return;
+        }
+
+        _errLevel = lvl;
+        
+        DiscordInteractionResponseBuilder modal = new();
+        modal.WithTitle($"Adding new error with ID {DatabaseManager.LoadErrors().Count + 1}").WithCustomId("add-error").AddComponents(
+            new TextInputComponent("Error Regex:", "errReg", required: true, style: TextInputStyle.Paragraph));
+        modal.AddComponents(new TextInputComponent("Error Solution:", "errSol", required: true, style: TextInputStyle.Paragraph));
         
         await ctx.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
     }
@@ -176,6 +195,30 @@ public class CommandManager : ApplicationCommandModule
                 new DiscordInteractionResponseBuilder().AddEmbed(MessageManager.Info(
                     $"**Added {_plugName}!**\r\nDName {plugDName}\r\nVersion: {plugVersion}\r\nEarly Access Version: {plugEaVersion}\r\nID: {plugId}\r\nLink: {plugLink}\r\nState: {_plugState}")));
         }
+        
+        if (e.Interaction.Data.CustomId == "add-error")
+        {
+            var err = new Error()
+            {
+                Regex = e.Values["errReg"],
+                Solution = e.Values["errSol"],
+                Level = _errLevel.ToString().ToUpper()
+            };
+            
+            if (DatabaseManager.LoadErrors().Any(error => error.Regex == err.Regex))
+            {
+                await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().AddEmbed(MessageManager.Error("This error already exists in the database!\r\nConsider using /EditError <ID>")));
+                return;
+            }
+
+            DatabaseManager.AddError(err);
+
+            await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                new DiscordInteractionResponseBuilder().AddEmbed(MessageManager.Info(
+                    $"**Added a {err.Level} error with ID {DatabaseManager.LoadErrors().Count}**\r\nRegex:\r\n```{err.Regex}```\r\nSolution:\r\n```{err.Solution}```")));
+        }
+        
         if (e.Interaction.Data.CustomId == "edit-plugin")
         {
             var plugDName = e.Values["plugDName"];
@@ -203,3 +246,34 @@ public class CommandManager : ApplicationCommandModule
         }
     }
 }
+
+// [SlashCommand("ImportXml", "Yuh Bruh")]
+// public async Task ImportXml(InteractionContext ctx)
+// {
+//     try
+//     {
+//         var xml = new XmlDocument();
+//         xml.Load(Path.Combine(Directory.GetCurrentDirectory(), "Errors.xml"));
+//
+//         XmlNodeList reg = xml.GetElementsByTagName("Regex");
+//         XmlNodeList sol = xml.GetElementsByTagName("Solution");
+//         XmlNodeList lvl = xml.GetElementsByTagName("Level");
+//
+//         for (int i = 0; i < reg.Count; i++)
+//         {
+//             var oof = new Error();
+//             oof.Regex = reg[i].InnerText;
+//             oof.Solution = sol[i].InnerText;
+//             oof.Level = lvl[i].InnerText.ToUpper();
+//             
+//             DatabaseManager.AddError(oof);
+//         }
+//         
+//         await ctx.CreateResponseAsync(embed: MessageManager.Error("duh shit has been added bruh"));
+//     }
+//     catch (Exception e)
+//     {
+//         Console.WriteLine(e);
+//         throw;
+//     }
+// }

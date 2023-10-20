@@ -105,7 +105,7 @@ internal class ContextManager : ApplicationCommandModule
             message.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless" };
             message.Footer = new DiscordEmbedBuilder.EmbedFooter()
              {
-                 Text = $"GTA: {GTAver} - RPH: {RPHver} - LSPDFR: {LSPDFRver}"
+                 Text = $"GTA: {GTAver} - RPH: {RPHver} - LSPDFR: {LSPDFRver} - Errors: {log.Errors.Count}"
              };
             
             if (outdated.Length >= 1024 || broken.Length >= 1024)
@@ -140,8 +140,8 @@ internal class ContextManager : ApplicationCommandModule
                 if (missing.Length > 0) message.AddField(":bangbang:  **Plugins not recognized:**", missing, false);
             
                 if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0) message.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
-                if (log.LSPDFRVersion == null) message.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **You should manually check the log!**");
-                if (current.Length == 0 && outdated.Length == 0 && broken.Length == 0 && log.LSPDFRVersion != null) message.AddField(":green_circle:     **No installed plugins!**", "- Can't have plugin issues if you don't got any!");
+                if (LSPDFRver == "X") message.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **You should manually check the log!**");
+                if (current.Length == 0 && outdated.Length == 0 && broken.Length == 0 && LSPDFRver != "X") message.AddField(":green_circle:     **No installed plugins!**", "- Can't have plugin issues if you don't got any!");
 
                 
                 await e.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(message).AddComponents(new DiscordComponent[]
@@ -190,7 +190,7 @@ internal class ContextManager : ApplicationCommandModule
             message.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless" };
             message.Footer = new DiscordEmbedBuilder.EmbedFooter()
              {
-                 Text = $"GTA: {GTAver} - RPH: {RPHver} - LSPDFR: {LSPDFRver}"
+                 Text = $"GTA: {GTAver} - RPH: {RPHver} - LSPDFR: {LSPDFRver} - Errors: {log.Errors.Count}"
              };
             
             if (outdated.Length >= 1024 || broken.Length >= 1024 || current.Length >= 1024)
@@ -228,8 +228,13 @@ internal class ContextManager : ApplicationCommandModule
                 if (missing.Length > 0) message.AddField(":bangbang:  **Plugins not recognized:**", missing, false);
             
                 if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0) message.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
-                if (log.LSPDFRVersion == "X") message.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **You should manually check the log!**");
-                if (current.Length == 0 && outdated.Length == 0 && broken.Length == 0 && log.LSPDFRVersion != "X") message.AddField(":green_circle:     **No installed plugins!**", "- Can't have plugin issues if you don't got any!");
+                if (LSPDFRver == "X") message.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **You should manually check the log!**");
+                if (current.Length == 0 && outdated.Length == 0 && broken.Length == 0 && LSPDFRver != "X") message.AddField(":green_circle:     **No installed plugins!**", "- Can't have plugin issues if you don't got any!");
+
+                foreach (var error in log.Errors)
+                {
+                    message.AddField($"```ID: {error.ID}``` {error.Level} Error Info", $"> {error.Solution}");
+                }
                 
                 await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().AddEmbed(message).AddComponents(new DiscordComponent[]
                 {

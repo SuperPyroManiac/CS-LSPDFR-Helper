@@ -17,6 +17,7 @@ public class LogAnalyzer
         log.Broken = new List<Plugin?>();
         log.Library = new List<Plugin?>();
         log.Missing = new List<Plugin?>();
+        log.Errors = new List<Error?>();
 
         while ((line = reader.ReadLine()) != null)
         {
@@ -94,7 +95,12 @@ public class LogAnalyzer
 
             foreach (var error in errorData)
             {
-                
+                var regex = new Regex(error.Regex);
+                var match = regex.Match(line);
+                if (match.Success)
+                {
+                    if (log.Errors.All(x => x != error) && log.Errors.All(x => x.Solution != error.Solution)) log.Errors.Add(error);
+                }
             }
             
             var rphver = new Regex(@".+ Version: RAGE Plugin Hook v(\d+\.\d+\.\d+\.\d+) for Grand Theft Auto V");
@@ -137,7 +143,7 @@ public class AnalyzedLog
     public List<Plugin?> Library { get; set; }
     public List<Plugin?> Missing { get; set; }
     
-    public List<Error> Errors { get; set; }
+    public List<Error?> Errors { get; set; }
 
     public string GTAVersion { get; set; }
     public string RPHVersion { get; set; }

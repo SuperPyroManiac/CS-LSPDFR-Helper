@@ -14,10 +14,10 @@ internal class DatabaseManager
         return output.ToList();
     }
     
-    internal static List<Plugin> LoadErrors()
+    internal static List<Error> LoadErrors()
     {
         using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
-        var output = cnn.Query<Plugin>("select * from Error", new DynamicParameters());
+        var output = cnn.Query<Error>("select * from Error", new DynamicParameters());
         return output.ToList();
     }
 
