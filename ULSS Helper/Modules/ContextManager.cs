@@ -16,6 +16,8 @@ internal class ContextManager : ApplicationCommandModule
     private static string library;
     private static AnalyzedLog log;
     private static string? _file;
+
+    private const string TsRoleGearsIconUrl = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless";
     
     [ContextMenu(ApplicationCommandType.MessageContextMenu, "Analyze Log")]
     public static async Task OnMenuSelect(ContextMenuContext e)
@@ -112,13 +114,11 @@ internal class ContextManager : ApplicationCommandModule
             if (Settings.LSPDFRVer == log.LSPDFRVersion) LSPDFRver = "\u2713";
             if (Settings.RPHVer == log.RPHVersion) RPHver = "\u2713";
 
-            const string tsGearsIconUrl = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless";
-
             var message = new DiscordEmbedBuilder();
             message.Description = "# **Quick Log Information**";
             message.Color = DiscordColor.Gold;
             message.Author = new DiscordEmbedBuilder.EmbedAuthor() { Name = e.TargetMessage.Author.Username, IconUrl = e.TargetMessage.Author.AvatarUrl};
-            message.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = tsGearsIconUrl };
+            message.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsRoleGearsIconUrl };
             message.Footer = new DiscordEmbedBuilder.EmbedFooter()
              {
                  Text = $"GTA: {GTAver} - RPH: {RPHver} - LSPDFR: {LSPDFRver}"
@@ -129,9 +129,9 @@ internal class ContextManager : ApplicationCommandModule
                 message.AddField(":warning:     **Message Too Big**", "\r\nToo many plugins to display in a single message.", true);
                 if (missing.Length > 0) message.AddField(":bangbang:  **Plugins not recognized:**", missing, false);
                 var message2 = new DiscordEmbedBuilder { Title = ":orange_circle:     **Update:**", Description = "\r\n- " + outdated, Color = DiscordColor.Gold };
-                message2.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = tsGearsIconUrl };
+                message2.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsRoleGearsIconUrl };
                 var message3 = new DiscordEmbedBuilder { Title = ":red_circle:     **Remove:**", Description = "\r\n- " + broken, Color = DiscordColor.Gold };
-                message3.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = tsGearsIconUrl };
+                message3.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsRoleGearsIconUrl };
                 
                 var overflow = new DiscordWebhookBuilder();
                 overflow.AddEmbed(message);
@@ -203,7 +203,7 @@ internal class ContextManager : ApplicationCommandModule
             var message = new DiscordEmbedBuilder();
             message.Description = "# **Detailed Log Information**";
             message.Color = DiscordColor.Gold;
-            message.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless" };
+            message.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsRoleGearsIconUrl };
             message.Footer = new DiscordEmbedBuilder.EmbedFooter()
              {
                  Text = $"GTA: {GTAver} - RPH: {RPHver} - LSPDFR: {LSPDFRver}"
@@ -214,11 +214,11 @@ internal class ContextManager : ApplicationCommandModule
                 message.AddField(":warning:     **Message Too Big**", "\r\nToo many plugins to display in a single message.", true);
                 if (missing.Length > 0) message.AddField(":bangbang:  **Plugins not recognized:**", missing, false);
                 var message2 = new DiscordEmbedBuilder { Title = ":green_circle:     **Current:**", Description = "\r\n- " + current, Color = DiscordColor.Gold };
-                message2.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless" };
+                message2.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsRoleGearsIconUrl };
                 var message3 = new DiscordEmbedBuilder { Title = ":orange_circle:     **Update:**", Description = "\r\n- " + outdated, Color = DiscordColor.Gold };
-                message3.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless" };
+                message3.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsRoleGearsIconUrl };
                 var message4 = new DiscordEmbedBuilder { Title = ":red_circle:     **Remove:**", Description = "\r\n- " + broken, Color = DiscordColor.Gold };
-                message4.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless" };
+                message4.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsRoleGearsIconUrl };
                 
                 var overflow = new DiscordWebhookBuilder();
                 overflow.AddEmbed(message);
