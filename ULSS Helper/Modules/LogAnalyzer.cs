@@ -11,7 +11,6 @@ public class LogAnalyzer
         var log = new AnalyzedLog();
         var wholeLog = File.ReadAllText(Settings.RphLogPath);
         var reader = new StreamReader(Settings.RphLogPath);
-        string? line;
 
         log.Current = new List<Plugin?>();
         log.Outdated = new List<Plugin?>();
@@ -19,9 +18,7 @@ public class LogAnalyzer
         log.Library = new List<Plugin?>();
         log.Missing = new List<Plugin?>();
         log.Errors = new List<Error?>();
-
-        while ((line = reader.ReadLine()) != null)
-        {
+        
             foreach (var plugin in pluginData)
             {
                 try
@@ -29,16 +26,16 @@ public class LogAnalyzer
                     if (plugin.State is "LSPDFR" or "EXTERNAL")
                     {
                         var regex = new Regex($".+LSPD First Response: {plugin.Name}. Version=[0-9.]+.+");
-                        var match = regex.Match(line);
+                        var match = regex.Match(wholeLog);
                         if (match.Success)
                         {
                             var version = $"{plugin.Name}, Version={plugin.Version}";
                             var eaversion = $"{plugin.Name}, Version={plugin.EAVersion}";
-                            if (plugin.Version != null && line.Contains(version))
+                            if (plugin.Version != null && wholeLog.Contains(version))
                             {
                                 if (!log.Current.Any(x => x.Name == plugin.Name)) log.Current.Add(plugin);
                             }
-                            else if (plugin.EAVersion != null && line.Contains(eaversion))
+                            else if (plugin.EAVersion != null && wholeLog.Contains(eaversion))
                             {
                                 if (!log.Current.Any(x => x.Name == plugin.Name)) log.Current.Add(plugin);
                             }
@@ -52,7 +49,7 @@ public class LogAnalyzer
                     if (plugin.State == "BROKEN")
                     {
                         var regex = new Regex($".+LSPD First Response: {plugin.Name}. Version=[0-9.]+.+");
-                        var match = regex.Match(line);
+                        var match = regex.Match(wholeLog);
                         if (match.Success)
                         {
                             if (!log.Broken.Any(x => x.Name == plugin.Name)) log.Broken.Add(plugin);
@@ -62,7 +59,7 @@ public class LogAnalyzer
                     if (plugin.State == "LIB")
                     {
                         var regex = new Regex($".+LSPD First Response: {plugin.Name}. Version=[0-9.]+.+");
-                        var match = regex.Match(line);
+                        var match = regex.Match(wholeLog);
                         if (match.Success)
                         {
                             if (!log.Library.Any(x => x.Name == plugin.Name)) log.Library.Add(plugin);
@@ -76,36 +73,36 @@ public class LogAnalyzer
                 }
             }
             var allrounder = new Regex(".+LSPD First Response: (\\W*\\w*\\W*\\w*\\W*), Version=([0-9]+\\..+), Culture=\\w+, PublicKeyToken=\\w+");
-            var allmatch = allrounder.Match(line);
+            var allmatch = allrounder.Match(wholeLog);
             if (allmatch.Success)
             {
-                line = line.Substring(line.LastIndexOf(": "));
-                line = line.Replace(": ", string.Empty);
-                line = line.Substring(0, line.IndexOf(", ") + 1);
-                line = line.Replace(",", string.Empty);
-                if (line.Length > 1 && !log.Current.Any(x => x.Name == line) &&
-                    !log.Outdated.Any(x => x.Name == line) && !log.Broken.Any(x => x.Name == line) &&
-                    !log.Library.Any(x => x.Name == line) && !log.Missing.Any(x => x.Name == line))
+                wholeLog = wholeLog.Substring(wholeLog.LastIndexOf(": "));
+                wholeLog = wholeLog.Replace(": ", string.Empty);
+                wholeLog = wholeLog.Substring(0, wholeLog.IndexOf(", ") + 1);
+                wholeLog = wholeLog.Replace(",", string.Empty);
+                if (wholeLog.Length > 1 && !log.Current.Any(x => x.Name == wholeLog) &&
+                    !log.Outdated.Any(x => x.Name == wholeLog) && !log.Broken.Any(x => x.Name == wholeLog) &&
+                    !log.Library.Any(x => x.Name == wholeLog) && !log.Missing.Any(x => x.Name == wholeLog))
                 {
                     var temp = new Plugin();
-                    temp.Name = line;
+                    temp.Name = wholeLog;
                     temp.State = "MISSING";
                     log.Missing.Add(temp);
                 }
             }
             
             var rphver = new Regex(@".+ Version: RAGE Plugin Hook v(\d+\.\d+\.\d+\.\d+) for Grand Theft Auto V");
-            Match match1 = rphver.Match(line);
+            Match match1 = rphver.Match(wholeLog);
             if (match1.Success) log.RPHVersion = match1.Groups[1].Value;
             
             var gtaver = new Regex(@".+ Product version: (\d+\.\d+\.\d+\.\d+)");
-            Match match2 = gtaver.Match(line);
+            Match match2 = gtaver.Match(wholeLog);
             if (match2.Success) log.GTAVersion = match2.Groups[1].Value;
             
             var lspdfrver = new Regex(@".+ This version: (\d+\.\d+\.\d+\.\d+), Version available on server:");
-            Match match3 = lspdfrver.Match(line);
+            Match match3 = lspdfrver.Match(wholeLog);
             if (match3.Success) log.LSPDFRVersion = match3.Groups[1].Value;
-        }
+        //}
 
         foreach (var error in errorData)
         {
