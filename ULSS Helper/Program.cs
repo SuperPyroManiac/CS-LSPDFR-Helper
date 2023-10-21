@@ -39,7 +39,7 @@ internal class Program
 
     private static async Task JarJarBinks(DiscordClient s, MessageCreateEventArgs ctx)
     {
-        if (ctx.Author.Id == 478591527321337857)
+        if (ctx.Author.Id == 478591527321337857 || ctx.Author.Id == 614191277528973428)
         {
             await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":tarabruh:"));
         }
