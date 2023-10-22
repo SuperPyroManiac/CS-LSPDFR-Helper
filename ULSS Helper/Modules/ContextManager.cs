@@ -17,6 +17,7 @@ internal class ContextManager : ApplicationCommandModule
     private static AnalyzedLog log;
     private static string? _file;
     private const string TsRoleGearsIconUrl = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless";
+    private const string PluginsNotRecognized = ":bangbang:  **Plugins not recognized:**";
     
     [ContextMenu(ApplicationCommandType.MessageContextMenu, "Analyze Log")]
     public static async Task OnMenuSelect(ContextMenuContext e)
@@ -97,7 +98,7 @@ internal class ContextManager : ApplicationCommandModule
                 }
                 else
                 {
-                    linkedOutdated.Add($"[{i}](https://www.google.com/search?q=lspdfr+{i.DName.Replace(" ", "+")})");
+                    linkedOutdated.Add($"[{i.DName}](https://www.google.com/search?q=lspdfr+{i.DName.Replace(" ", "+")})");
                 }
             }
 
@@ -132,7 +133,7 @@ internal class ContextManager : ApplicationCommandModule
             if (outdated.Length >= 1024 || broken.Length >= 1024)
             {
                 message.AddField(":warning:     **Message Too Big**", "\r\nToo many plugins to display in a single message.", true);
-                if (missing.Length > 0) message.AddField(":bangbang:  **Plugins not recognized:**", missing, false);
+                if (missing.Length > 0) message.AddField(PluginsNotRecognized, missing, false);
                 var message2 = new DiscordEmbedBuilder { Title = ":orange_circle:     **Update:**", Description = "\r\n- " + outdated, Color = DiscordColor.Gold };
                 message2.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsRoleGearsIconUrl };
                 var message3 = new DiscordEmbedBuilder { Title = ":red_circle:     **Remove:**", Description = "\r\n- " + broken, Color = DiscordColor.Gold };
@@ -158,7 +159,7 @@ internal class ContextManager : ApplicationCommandModule
 
                 if (outdated.Length > 0) message.AddField(":orange_circle:     **Update:**", "\r\n- " + outdated, true);
                 if (broken.Length > 0) message.AddField(":red_circle:     **Remove:**", "\r\n- " + broken, true);
-                if (missing.Length > 0) message.AddField(":bangbang:  **Plugins not recognized:**", missing, false);
+                if (missing.Length > 0) message.AddField(PluginsNotRecognized, missing, false);
             
                 if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0) message.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
                 if (LSPDFRver == "X") message.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **You should manually check the log!**");
@@ -178,19 +179,57 @@ internal class ContextManager : ApplicationCommandModule
             throw;
         }
     }
+
+    // Removes fields from DiscordEmbeds that should not be visible for everyone once the message is being sent to the user.
+    internal static List<DiscordEmbed> PrepareEmbedsForSendToUser(IReadOnlyList<DiscordEmbed> originalEmbeds) 
+    {
+        List<DiscordEmbed> userMessageEmbeds = new List<DiscordEmbed>();
+        foreach(DiscordEmbed originalEmbed in originalEmbeds) {
+            if (originalEmbed.Fields.Any(field => field.Name.Equals(PluginsNotRecognized)))
+            {
+                var newEmbed = new DiscordEmbedBuilder();
+                newEmbed.Color = originalEmbed.Color;
+                if (originalEmbed.Description != null)
+                    newEmbed.Description = originalEmbed.Description;
+                if (originalEmbed.Author != null)
+                    newEmbed.Author = new DiscordEmbedBuilder.EmbedAuthor() { Name = originalEmbed.Author.Name, IconUrl = originalEmbed.Author.IconUrl.ToString() };
+                if (originalEmbed.Thumbnail != null)
+                    newEmbed.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = originalEmbed.Thumbnail.Url.ToString() };
+                if (originalEmbed.Footer != null)
+                    newEmbed.Footer = new DiscordEmbedBuilder.EmbedFooter() { Text = originalEmbed.Footer.Text };
+
+                foreach (DiscordEmbedField originalField in originalEmbed.Fields) 
+                {
+                    if (!originalField.Name.Equals(PluginsNotRecognized)) 
+                    {
+                        newEmbed.AddField(originalField.Name, originalField.Value, originalField.Inline);
+                    }
+                }
+                userMessageEmbeds.Add(newEmbed);
+            } 
+            else 
+            {
+                userMessageEmbeds.Add(originalEmbed);
+            }
+            
+        }
+        return userMessageEmbeds;
+    }
     
     internal static async Task OnButtonPress(DiscordClient s, ComponentInteractionCreateEventArgs e)
     {
         if (e.Id == "send")
         {
             await e.Interaction.DeferAsync();
-            await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().AddEmbeds(e.Message.Embeds));
+            List<DiscordEmbed> userMessageEmbeds = PrepareEmbedsForSendToUser(e.Message.Embeds);
+            await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().AddEmbeds(userMessageEmbeds));
         }
         
         if (e.Id == "send2")
         {
             await e.Interaction.DeferAsync();
-            await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().AddEmbeds(e.Message.Embeds));
+            List<DiscordEmbed> userMessageEmbeds = PrepareEmbedsForSendToUser(e.Message.Embeds);
+            await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().AddEmbeds(userMessageEmbeds));
         }
 
         if (e.Id == "info")
@@ -217,7 +256,7 @@ internal class ContextManager : ApplicationCommandModule
             if (outdated.Length >= 1024 || broken.Length >= 1024 || current.Length >= 1024)
             {
                 message.AddField(":warning:     **Message Too Big**", "\r\nToo many plugins to display in a single message.\r\nFor error checking please first fix plugin issues.", true);
-                if (missing.Length > 0) message.AddField(":bangbang:  **Plugins not recognized:**", missing, false);
+                if (missing.Length > 0) message.AddField(PluginsNotRecognized, missing, false);
                 var message2 = new DiscordEmbedBuilder { Title = ":green_circle:     **Current:**", Description = "\r\n- " + current, Color = DiscordColor.Gold };
                 message2.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsRoleGearsIconUrl };
                 var message3 = new DiscordEmbedBuilder { Title = ":orange_circle:     **Update:**", Description = "\r\n- " + outdated, Color = DiscordColor.Gold };
@@ -246,7 +285,7 @@ internal class ContextManager : ApplicationCommandModule
                 if (outdated.Length > 0) message.AddField(":orange_circle:     **Update:**", "\r\n- " + outdated, true);
                 if (broken.Length > 0) message.AddField(":red_circle:     **Remove:**", "\r\n- " + broken, true);
                 //if (current.Length > 0) message.AddField(":green_circle:     **Current:**", "\r\n" + string.Join(", ", currentList), false);
-                if (missing.Length > 0) message.AddField(":bangbang:  **Plugins not recognized:**", missing, false);
+                if (missing.Length > 0) message.AddField(PluginsNotRecognized, missing, false);
             
                 if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0) message.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
                 if (LSPDFRver == "X") message.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **Possible issues:**");

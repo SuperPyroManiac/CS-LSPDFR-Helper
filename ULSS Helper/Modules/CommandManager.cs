@@ -13,6 +13,7 @@ namespace ULSS_Helper.Modules;
 public class CommandManager : ApplicationCommandModule
 {
     private static string? _plugName;
+    private static string __errID;
     private static State _plugState;
     private static Level _errLevel;
     public enum State
@@ -79,7 +80,7 @@ public class CommandManager : ApplicationCommandModule
         _errLevel = lvl;
         
         DiscordInteractionResponseBuilder modal = new();
-        modal.WithTitle($"Adding new error with ID {DatabaseManager.LoadErrors().Count + 1}").WithCustomId("add-error").AddComponents(
+        modal.WithTitle($"Adding new {lvl.ToString()} error!").WithCustomId("add-error").AddComponents(
             new TextInputComponent("Error Regex:", "errReg", required: true, style: TextInputStyle.Paragraph));
         modal.AddComponents(new TextInputComponent("Error Solution:", "errSol", required: true, style: TextInputStyle.Paragraph));
         
@@ -117,6 +118,34 @@ public class CommandManager : ApplicationCommandModule
             style: TextInputStyle.Short, value: plugin.EAVersion));
         modal.AddComponents(new TextInputComponent("ID:", "plugID", required: false, style: TextInputStyle.Short, value: plugin.ID));
         modal.AddComponents(new TextInputComponent("Link", "plugLink", required: false, style: TextInputStyle.Short, value: plugin.Link));
+        
+        await ctx.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
+    }
+    
+    [SlashCommand("EditError", "Edits an error in the database!")]
+    public async Task EditError(InteractionContext ctx, [Option("ID", "Errors ID!")] string pN, [Option("Level", "Warning type (WARN, SEVERE")] Level lvl)
+    {
+        if (ctx.Member.Roles.All(role => role.Id != 517568233360982017))
+        {
+            await ctx.CreateResponseAsync(embed: MessageManager.Error("You do not have permission for this!"));
+            return;
+        }
+
+        if (!DatabaseManager.LoadErrors().Any(x => x.ID.ToString() == pN))
+        {
+            await ctx.CreateResponseAsync(embed: MessageManager.Error($"No error found with ID: {pN}"));
+            return;
+        }
+
+        var error = DatabaseManager.LoadErrors().FirstOrDefault(x => x.ID.ToString() == pN);
+
+        __errID = pN;
+        _errLevel = lvl;
+        
+        DiscordInteractionResponseBuilder modal = new();
+        modal.WithTitle($"Editing error ID: {__errID}!").WithCustomId("edit-error").AddComponents(
+            new TextInputComponent("Error Regex:", "errReg", required: true, style: TextInputStyle.Paragraph, value: error.Regex));
+        modal.AddComponents(new TextInputComponent("Error Solution:", "errSol", required: true, style: TextInputStyle.Paragraph, value: error.Solution));
         
         await ctx.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
     }
@@ -244,36 +273,25 @@ public class CommandManager : ApplicationCommandModule
                 new DiscordInteractionResponseBuilder().AddEmbed(MessageManager.Info(
                     $"**Modified {_plugName}!**\r\nDName {plugDName}\r\nVersion: {plugVersion}\r\nEarly Access Version: {plugEaVersion}\r\nID: {plugId}\r\nLink: {plugLink}\r\nState: {_plugState}")));
         }
+        
+        if (e.Interaction.Data.CustomId == "edit-error")
+        {
+            var errReg = e.Values["errReg"];
+            var errSol = e.Values["errSol"];
+
+            var err = new Error()
+            {
+                ID = __errID,
+                Regex = errReg,
+                Solution = errSol,
+                Level = _errLevel.ToString()
+            };
+
+            DatabaseManager.EditError(err);
+
+            await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                new DiscordInteractionResponseBuilder().AddEmbed(MessageManager.Info(
+                    $"**Modified error ID: {__errID}!**\r\nRegex: {errReg}\r\nsolution: {errSol}\r\nLevel: {_errLevel.ToString()}")));
+        }
     }
 }
-
-// [SlashCommand("ImportXml", "Yuh Bruh")]
-// public async Task ImportXml(InteractionContext ctx)
-// {
-//     try
-//     {
-//         var xml = new XmlDocument();
-//         xml.Load(Path.Combine(Directory.GetCurrentDirectory(), "Errors.xml"));
-//
-//         XmlNodeList reg = xml.GetElementsByTagName("Regex");
-//         XmlNodeList sol = xml.GetElementsByTagName("Solution");
-//         XmlNodeList lvl = xml.GetElementsByTagName("Level");
-//
-//         for (int i = 0; i < reg.Count; i++)
-//         {
-//             var oof = new Error();
-//             oof.Regex = reg[i].InnerText;
-//             oof.Solution = sol[i].InnerText;
-//             oof.Level = lvl[i].InnerText.ToUpper();
-//             
-//             DatabaseManager.AddError(oof);
-//         }
-//         
-//         await ctx.CreateResponseAsync(embed: MessageManager.Error("duh shit has been added bruh"));
-//     }
-//     catch (Exception e)
-//     {
-//         Console.WriteLine(e);
-//         throw;
-//     }
-// }

@@ -26,9 +26,10 @@ public class LogAnalyzer
             {
                 try
                 {
+                    string pluginNameEscaped = Regex.Escape(plugin.Name);
                     if (plugin.State is "LSPDFR" or "EXTERNAL")
                     {
-                        var regex = new Regex($".+LSPD First Response: {plugin.Name}. Version=[0-9.]+.+");
+                        var regex = new Regex($".+LSPD First Response: {pluginNameEscaped}. Version=[0-9.]+.+");
                         var match = regex.Match(line);
                         if (match.Success)
                         {
@@ -51,7 +52,7 @@ public class LogAnalyzer
                     
                     if (plugin.State == "BROKEN")
                     {
-                        var regex = new Regex($".+LSPD First Response: {plugin.Name}. Version=[0-9.]+.+");
+                        var regex = new Regex($".+LSPD First Response: {pluginNameEscaped}. Version=[0-9.]+.+");
                         var match = regex.Match(line);
                         if (match.Success)
                         {
@@ -61,7 +62,7 @@ public class LogAnalyzer
                     
                     if (plugin.State == "LIB")
                     {
-                        var regex = new Regex($".+LSPD First Response: {plugin.Name}. Version=[0-9.]+.+");
+                        var regex = new Regex($".+LSPD First Response: {pluginNameEscaped}. Version=[0-9.]+.+");
                         var match = regex.Match(line);
                         if (match.Success)
                         {
@@ -110,15 +111,14 @@ public class LogAnalyzer
         foreach (var error in errorData)
         {
             var errregex = new Regex(error.Regex);
-            var errmatch = errregex.Match(wholeLog);
-            if (errmatch.Success)
+            var errmatch = errregex.Matches(wholeLog);
+            foreach (Match match in errmatch)
             {
-                
                 for (var i = 0; i <= 10; i++)
                 {
-                    error.Solution = error.Solution.Replace("{" + i + "}", errmatch.Groups[i].Value);
+                    error.Solution = error.Solution.Replace("{" + i + "}", match.Groups[i].Value);
                 }
-                if (log.Errors.All(x => x.ID != error.ID)) log.Errors.Add(error);
+                if (!log.Errors.Any(x => x.Solution == error.Solution)) log.Errors.Add(error);
             }
         }
 
