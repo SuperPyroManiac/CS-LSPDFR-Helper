@@ -59,7 +59,7 @@ public class Plugin
 
 public class Error
 {
-    public int ID { get; set; }
+    public string ID { get; set; }
     public string Regex { get; set; }
     public string Solution { get; set; }
     public string Level { get; set; }
