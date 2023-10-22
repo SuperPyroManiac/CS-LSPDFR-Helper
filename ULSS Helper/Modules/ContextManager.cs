@@ -192,14 +192,11 @@ internal class ContextManager : ApplicationCommandModule
                     Color = originalEmbed.Color,
                     Author = new DiscordEmbedBuilder.EmbedAuthor() { Name = originalEmbed.Author.Name, IconUrl = originalEmbed.Author.IconUrl.ToString() },
                     Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = originalEmbed.Thumbnail.Url.ToString() },
-                    Footer = new DiscordEmbedBuilder.EmbedFooter()
-                    {
-                        Text = originalEmbed.Footer.Text
-                    }
+                    Footer = new DiscordEmbedBuilder.EmbedFooter() { Text = originalEmbed.Footer.Text }
                 };
-                foreach (DiscordEmbedField field in originalEmbed.Fields) {
-                    if (!field.Name.Equals(PluginsNotRecognized)) {
-                        newEmbed.AddField(field.Name, field.Value, field.Inline);
+                foreach (DiscordEmbedField originalField in originalEmbed.Fields) {
+                    if (!originalField.Name.Equals(PluginsNotRecognized)) {
+                        newEmbed.AddField(originalField.Name, originalField.Value, originalField.Inline);
                     }
                 }
                 userMessageEmbeds.Append(newEmbed);
