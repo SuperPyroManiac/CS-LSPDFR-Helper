@@ -22,12 +22,74 @@ internal class DatabaseManager
         }
     }
     
+    internal static List<Plugin> FindPlugins(string? Name=null, string? DName=null, string? ID=null, string? State=null, bool exactMatch=true)
+    {
+        try
+        {
+            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            List<string> conditions = new List<string>();
+            string comparisonOperator = " = '";
+            string endOfComparison = "'";
+            if (!exactMatch)  
+            {
+                comparisonOperator = " like '%";
+                endOfComparison = "%'";
+            }
+
+            if (Name != null) conditions.Add("Name" + comparisonOperator + Name + endOfComparison);
+            if (DName != null) conditions.Add("DName" + comparisonOperator + DName + endOfComparison);
+            if (ID != null) conditions.Add("ID" + comparisonOperator + ID + endOfComparison);
+            if (State != null) conditions.Add("State" + comparisonOperator + State + endOfComparison);
+            
+            string conditionsString = string.Join(" and ", conditions);
+            var output = cnn.Query<Plugin>($"select * from Plugin where {conditionsString}", new DynamicParameters());
+
+            return output.ToList();
+        }
+        catch (SQLiteException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
     internal static List<Error> LoadErrors()
     {
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
             var output = cnn.Query<Error>("select * from Error", new DynamicParameters());
+            return output.ToList();
+        }
+        catch (SQLiteException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+internal static List<Error> FindErrors(int? ID, string? Regex, string? Solution, string? Level, bool exactMatch=true)
+    {
+        try
+        {
+            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            List<string> conditions = new List<string>();
+            string comparisonOperator = " = '";
+            string endOfComparison = "'";
+            if (!exactMatch)  
+            {
+                comparisonOperator = " like '%";
+                endOfComparison = "%'";
+            }
+
+            if (ID != null) conditions.Add("ID" + comparisonOperator + ID.ToString() + endOfComparison);
+            if (Regex != null) conditions.Add("Regex" + comparisonOperator + Regex + endOfComparison);
+            if (Solution != null) conditions.Add("Solution" + comparisonOperator + Solution + endOfComparison);
+            if (Level != null) conditions.Add("Level" + comparisonOperator + Level + endOfComparison);
+            
+            string conditionsString = string.Join(" and ", conditions);
+            var output = cnn.Query<Error>($"select * from Error where {conditionsString}", new DynamicParameters());
+
             return output.ToList();
         }
         catch (SQLiteException e)
