@@ -26,20 +26,19 @@ public class LogAnalyzer
             {
                 try
                 {
-                    string pluginNameEscaped = Regex.Escape(plugin.Name);
                     if (plugin.State is "LSPDFR" or "EXTERNAL")
                     {
-                        var regex = new Regex($".+LSPD First Response: {pluginNameEscaped}. Version=[0-9.]+.+");
+                        var regex = new Regex($".+LSPD First Response: {Regex.Escape(plugin.Name)}. Version=[0-9.]+.+");
                         var match = regex.Match(line);
                         if (match.Success)
                         {
                             var version = $"{plugin.Name}, Version={plugin.Version}";
                             var eaversion = $"{plugin.Name}, Version={plugin.EAVersion}";
-                            if (plugin.Version != null && line.Contains(version))
+                            if (!string.IsNullOrEmpty(plugin.Version) && line.Contains(version))
                             {
                                 if (!log.Current.Any(x => x.Name == plugin.Name)) log.Current.Add(plugin);
                             }
-                            else if (plugin.EAVersion != null && line.Contains(eaversion))
+                            else if (!string.IsNullOrEmpty(plugin.EAVersion) && line.Contains(eaversion))
                             {
                                 if (!log.Current.Any(x => x.Name == plugin.Name)) log.Current.Add(plugin);
                             }
@@ -52,7 +51,7 @@ public class LogAnalyzer
                     
                     if (plugin.State == "BROKEN")
                     {
-                        var regex = new Regex($".+LSPD First Response: {pluginNameEscaped}. Version=[0-9.]+.+");
+                        var regex = new Regex($".+LSPD First Response: {Regex.Escape(plugin.Name)}. Version=[0-9.]+.+");
                         var match = regex.Match(line);
                         if (match.Success)
                         {
@@ -62,7 +61,7 @@ public class LogAnalyzer
                     
                     if (plugin.State == "LIB")
                     {
-                        var regex = new Regex($".+LSPD First Response: {pluginNameEscaped}. Version=[0-9.]+.+");
+                        var regex = new Regex($".+LSPD First Response: {Regex.Escape(plugin.Name)}. Version=[0-9.]+.+");
                         var match = regex.Match(line);
                         if (match.Success)
                         {
