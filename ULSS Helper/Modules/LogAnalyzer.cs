@@ -26,10 +26,9 @@ public class LogAnalyzer
             {
                 try
                 {
-                    string pluginNameEscaped = Regex.Escape(plugin.Name);
                     if (plugin.State is "LSPDFR" or "EXTERNAL")
                     {
-                        var regex = new Regex($".+LSPD First Response: {pluginNameEscaped}. Version=[0-9.]+.+");
+                        var regex = new Regex($".+LSPD First Response: {Regex.Escape(plugin.Name)}. Version=[0-9.]+.+");
                         var match = regex.Match(line);
                         if (match.Success)
                         {
@@ -52,7 +51,7 @@ public class LogAnalyzer
                     
                     if (plugin.State == "BROKEN")
                     {
-                        var regex = new Regex($".+LSPD First Response: {pluginNameEscaped}. Version=[0-9.]+.+");
+                        var regex = new Regex($".+LSPD First Response: {Regex.Escape(plugin.Name)}. Version=[0-9.]+.+");
                         var match = regex.Match(line);
                         if (match.Success)
                         {
@@ -62,7 +61,7 @@ public class LogAnalyzer
                     
                     if (plugin.State == "LIB")
                     {
-                        var regex = new Regex($".+LSPD First Response: {pluginNameEscaped}. Version=[0-9.]+.+");
+                        var regex = new Regex($".+LSPD First Response: {Regex.Escape(plugin.Name)}. Version=[0-9.]+.+");
                         var match = regex.Match(line);
                         if (match.Success)
                         {
