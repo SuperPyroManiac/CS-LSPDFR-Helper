@@ -99,12 +99,16 @@ internal static List<Error> FindErrors(int? ID, string? Regex, string? Solution,
         }
     }
 
-    internal static void AddPlugin(Plugin plugin)
+    internal static long AddPlugin(Plugin plugin)
     {
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            cnn.Open();
             cnn.Execute("insert into Plugin (Name, DName, Version, EAVersion, ID, State, Link) VALUES (@Name, @DName, @Version, @EAVersion, @ID, @State, @Link)", plugin);
+            long id = ((SQLiteConnection) cnn).LastInsertRowId;
+            cnn.Close();
+            return id;
         }
         catch (SQLiteException e)
         {
@@ -113,12 +117,16 @@ internal static List<Error> FindErrors(int? ID, string? Regex, string? Solution,
         }
     }
     
-    internal static void AddError(Error error)
+    internal static long AddError(Error error)
     {
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            cnn.Open();
             cnn.Execute("insert into Error (Regex, Solution, Level) VALUES (@Regex, @Solution, @Level)", error);
+            long id = ((SQLiteConnection) cnn).LastInsertRowId;
+            cnn.Close();
+            return id;    
         }
         catch (SQLiteException e)
         {

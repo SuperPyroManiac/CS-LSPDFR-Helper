@@ -62,8 +62,8 @@ public class CommandManager : ApplicationCommandModule
             style: TextInputStyle.Short));
         modal.AddComponents(new TextInputComponent("Early Access Version:", "plugEAVersion", required: false,
             style: TextInputStyle.Short));
-        modal.AddComponents(new TextInputComponent("ID:", "plugID", required: false, style: TextInputStyle.Short));
-        modal.AddComponents(new TextInputComponent("Link", "plugLink", required: false, style: TextInputStyle.Short));
+        modal.AddComponents(new TextInputComponent("ID (on lcpdfr.com):", "plugID", required: false, style: TextInputStyle.Short));
+        modal.AddComponents(new TextInputComponent("Link:", "plugLink", required: false, style: TextInputStyle.Short));
         
         await ctx.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
     }
@@ -116,8 +116,8 @@ public class CommandManager : ApplicationCommandModule
             style: TextInputStyle.Short, value: plugin.Version));
         modal.AddComponents(new TextInputComponent("Early Access Version:", "plugEAVersion", required: false,
             style: TextInputStyle.Short, value: plugin.EAVersion));
-        modal.AddComponents(new TextInputComponent("ID:", "plugID", required: false, style: TextInputStyle.Short, value: plugin.ID));
-        modal.AddComponents(new TextInputComponent("Link", "plugLink", required: false, style: TextInputStyle.Short, value: plugin.Link));
+        modal.AddComponents(new TextInputComponent("ID (on lcpdfr.com):", "plugID", required: false, style: TextInputStyle.Short, value: plugin.ID));
+        modal.AddComponents(new TextInputComponent("Link:", "plugLink", required: false, style: TextInputStyle.Short, value: plugin.Link));
         
         await ctx.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
     }
@@ -180,6 +180,36 @@ public class CommandManager : ApplicationCommandModule
         }
     }
 
+    [SlashCommand("RemoveError", "Removes an error from the database!")]
+    public async Task RemoveError(InteractionContext ctx,
+        [Option("ID", "Must match an existing error id!")] string errId)
+    {
+        await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
+        
+        if (ctx.Member.Roles.All(role => role.Id != 517568233360982017))
+        {
+            await ctx.CreateResponseAsync(embed: MessageManager.Error("You do not have permission for this!"));
+            return;
+        }
+        
+        var isValid = false;
+        foreach (var error in DatabaseManager.LoadErrors())
+        {
+            if (error.ID == errId)
+            {
+                DatabaseManager.DeleteError(error);
+                isValid = true;
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(MessageManager.Warning($"**Removed error with id: {errId}**")));
+                return;
+            }
+        }
+        if (!isValid)
+        {
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(MessageManager.Error($"**No error found with id: {errId}!**")));
+            return;
+        }
+    }
+
     [SlashCommand("ForceUpdateCheck", "Forced the database to update!")]
     public async Task ForceUpdate(InteractionContext ctx)
     {
@@ -197,7 +227,7 @@ public class CommandManager : ApplicationCommandModule
         await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(MessageManager.Info("All plugin versions will be updated!")));
     }
     
-        public static async Task PluginModal(DiscordClient s, ModalSubmitEventArgs e)
+    public static async Task PluginModal(DiscordClient s, ModalSubmitEventArgs e)
     {
         if (e.Interaction.Data.CustomId == "add-plugin")
         {
@@ -218,11 +248,20 @@ public class CommandManager : ApplicationCommandModule
                 Link = plugLink
             };
 
-            DatabaseManager.AddPlugin(plug);
+            long dbRowId = DatabaseManager.AddPlugin(plug);
 
             await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                 new DiscordInteractionResponseBuilder().AddEmbed(MessageManager.Info(
-                    $"**Added {_plugName}!**\r\nDName {plugDName}\r\nVersion: {plugVersion}\r\nEarly Access Version: {plugEaVersion}\r\nID: {plugId}\r\nLink: {plugLink}\r\nState: {_plugState}")));
+                    $"**Added {_plugName}!**\r\n"
+                    + $"DB Row ID: {dbRowId}\r\n"
+                    + $"Display Name: {plugDName}\r\n" 
+                    + $"Version: {plugVersion}\r\n"
+                    + $"Early Access Version: {plugEaVersion}\r\n"
+                    + $"ID (on lcpdfr.com): {plugId}\r\n"
+                    + $"Link: {plugLink}\r\n"
+                    + $"State: {_plugState}"
+                ))
+            );
         }
         
         if (e.Interaction.Data.CustomId == "add-error")
@@ -241,11 +280,15 @@ public class CommandManager : ApplicationCommandModule
                 return;
             }
 
-            DatabaseManager.AddError(err);
+            long dbRowId = DatabaseManager.AddError(err);
 
             await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                 new DiscordInteractionResponseBuilder().AddEmbed(MessageManager.Info(
-                    $"**Added a {err.Level} error with ID {DatabaseManager.LoadErrors().Count}**\r\nRegex:\r\n```{err.Regex}```\r\nSolution:\r\n```{err.Solution}```")));
+                    $"**Added a {err.Level} error with ID {dbRowId}**\r\n"
+                    + $"Regex:\r\n```{err.Regex}```\r\n" 
+                    + $"Solution:\r\n```{err.Solution}```"
+                ))
+            );
         }
         
         if (e.Interaction.Data.CustomId == "edit-plugin")
@@ -271,7 +314,15 @@ public class CommandManager : ApplicationCommandModule
 
             await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                 new DiscordInteractionResponseBuilder().AddEmbed(MessageManager.Info(
-                    $"**Modified {_plugName}!**\r\nDName {plugDName}\r\nVersion: {plugVersion}\r\nEarly Access Version: {plugEaVersion}\r\nID: {plugId}\r\nLink: {plugLink}\r\nState: {_plugState}")));
+                    $"**Modified {_plugName}!**\r\n"
+                    + $"Display Name: {plugDName}\r\n"
+                    + $"Version: {plugVersion}\r\n"
+                    + $"Early Access Version: {plugEaVersion}\r\n"
+                    + $"ID (on lcpdfr.com): {plugId}\r\n"
+                    + $"Link: {plugLink}\r\n"
+                    + $"State: {_plugState}"
+                ))
+            );
         }
         
         if (e.Interaction.Data.CustomId == "edit-error")
@@ -291,7 +342,12 @@ public class CommandManager : ApplicationCommandModule
 
             await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                 new DiscordInteractionResponseBuilder().AddEmbed(MessageManager.Info(
-                    $"**Modified error ID: {__errID}!**\r\nRegex: {errReg}\r\nsolution: {errSol}\r\nLevel: {_errLevel.ToString()}")));
+                    $"**Modified error ID: {__errID}!**\r\n"
+                    + $"Regex: {errReg}\r\n"
+                    + $"Solution: {errSol}\r\n"
+                    + $"Level: {_errLevel.ToString()}"
+                ))
+            );
         }
     }
 }
