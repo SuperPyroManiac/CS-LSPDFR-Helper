@@ -35,11 +35,11 @@ public class LogAnalyzer
                         {
                             var version = $"{plugin.Name}, Version={plugin.Version}";
                             var eaversion = $"{plugin.Name}, Version={plugin.EAVersion}";
-                            if (plugin.Version != null && line.Contains(version))
+                            if (!string.IsNullOrEmpty(plugin.Version) && line.Contains(version))
                             {
                                 if (!log.Current.Any(x => x.Name == plugin.Name)) log.Current.Add(plugin);
                             }
-                            else if (plugin.EAVersion != null && line.Contains(eaversion))
+                            else if (!string.IsNullOrEmpty(plugin.EAVersion) && line.Contains(eaversion))
                             {
                                 if (!log.Current.Any(x => x.Name == plugin.Name)) log.Current.Add(plugin);
                             }
