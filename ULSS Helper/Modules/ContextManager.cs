@@ -98,7 +98,7 @@ internal class ContextManager : ApplicationCommandModule
                 }
                 else
                 {
-                    linkedOutdated.Add($"[{i}](https://www.google.com/search?q=lspdfr+{i.DName.Replace(" ", "+")})");
+                    linkedOutdated.Add($"[{i.DName}](https://www.google.com/search?q=lspdfr+{i.DName.Replace(" ", "+")})");
                 }
             }
 
@@ -181,29 +181,35 @@ internal class ContextManager : ApplicationCommandModule
     }
 
     // Removes fields from DiscordEmbeds that should not be visible for everyone once the message is being sent to the user.
-    internal static List<DiscordEmbed> PrepareEmbedsForSendToUser(IReadOnlyList<DiscordEmbed> originalEmbeds) {
-        List<DiscordEmbed> userMessageEmbeds = [];
+    internal static List<DiscordEmbed> PrepareEmbedsForSendToUser(IReadOnlyList<DiscordEmbed> originalEmbeds) 
+    {
+        List<DiscordEmbed> userMessageEmbeds = new List<DiscordEmbed>();
         foreach(DiscordEmbed originalEmbed in originalEmbeds) {
             if (originalEmbed.Fields.Any(field => field.Name.Equals(PluginsNotRecognized)))
             {
-                DiscordEmbedBuilder newEmbed = new DiscordEmbedBuilder
+                var newEmbed = new DiscordEmbedBuilder();
+                newEmbed.Color = originalEmbed.Color;
+                if (originalEmbed.Description != null)
+                    newEmbed.Description = originalEmbed.Description;
+                if (originalEmbed.Author != null)
+                    newEmbed.Author = new DiscordEmbedBuilder.EmbedAuthor() { Name = originalEmbed.Author.Name, IconUrl = originalEmbed.Author.IconUrl.ToString() };
+                if (originalEmbed.Thumbnail != null)
+                    newEmbed.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = originalEmbed.Thumbnail.Url.ToString() };
+                if (originalEmbed.Footer != null)
+                    newEmbed.Footer = new DiscordEmbedBuilder.EmbedFooter() { Text = originalEmbed.Footer.Text };
+
+                foreach (DiscordEmbedField originalField in originalEmbed.Fields) 
                 {
-                    Description = originalEmbed.Description,
-                    Color = originalEmbed.Color,
-                    Author = new DiscordEmbedBuilder.EmbedAuthor() { Name = originalEmbed.Author.Name, IconUrl = originalEmbed.Author.IconUrl.ToString() },
-                    Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = originalEmbed.Thumbnail.Url.ToString() },
-                    Footer = new DiscordEmbedBuilder.EmbedFooter() { Text = originalEmbed.Footer.Text }
-                };
-                foreach (DiscordEmbedField originalField in originalEmbed.Fields) {
-                    if (!originalField.Name.Equals(PluginsNotRecognized)) {
+                    if (!originalField.Name.Equals(PluginsNotRecognized)) 
+                    {
                         newEmbed.AddField(originalField.Name, originalField.Value, originalField.Inline);
                     }
                 }
-                userMessageEmbeds.Append(newEmbed);
+                userMessageEmbeds.Add(newEmbed);
             } 
             else 
             {
-                userMessageEmbeds.Append(originalEmbed);
+                userMessageEmbeds.Add(originalEmbed);
             }
             
         }
