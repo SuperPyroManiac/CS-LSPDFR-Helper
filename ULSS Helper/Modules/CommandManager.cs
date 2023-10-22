@@ -210,6 +210,160 @@ public class CommandManager : ApplicationCommandModule
         }
     }
 
+    [SlashCommand("FindPlugins", "Returns a list of all plugins in the database that match the search parameters!")]
+    public async Task FindPlugins(InteractionContext ctx,
+        [Option("Name", "The plugin's name.")] string? plugName=null,
+        [Option("DName", "The plugin's display name.")] string? plugDName=null,
+        [Option("ID", "The plugin's id on lcpdfr.com.")] string? plugId=null,
+        [Option("State", "The plugin's state (LSPDFR, EXTERNAL, BROKEN, LIB).")] State? plugState=null,
+        [Option("exactMatch", "Exact = true, approximate = false")] bool? exactMatch=true
+        )
+    {
+        await ctx.CreateResponseAsync(
+            InteractionResponseType.DeferredChannelMessageWithSource,
+            new DiscordInteractionResponseBuilder
+            {
+                IsEphemeral = true
+            }
+        );
+        
+        if (ctx.Member.Roles.All(role => role.Id != 517568233360982017))
+        {
+            await ctx.CreateResponseAsync(embed: MessageManager.Error("You do not have permission for this!"));
+            return;
+        }
+        
+        try 
+        {
+            List<Plugin> pluginsFound = DatabaseManager.FindPlugins(plugName, plugDName, plugId, plugState, exactMatch);
+
+            if (pluginsFound.Count > 0) 
+            {
+                int limit = 3;
+                int numberOfResults = pluginsFound.Count <= limit ? pluginsFound.Count : limit;
+                var response = new DiscordWebhookBuilder();
+                response.AddEmbed(MessageManager.Generic(
+                    $"**I found {pluginsFound.Count} plugin{(pluginsFound.Count != 1 ? "s" : "")} that match{(pluginsFound.Count == 1 ? "es" : "")} the following search parameters:**\r\n"
+                    + $"{(plugName != null ? "- Name: *"+plugName+"*\r\n" : "")}"
+                    + $"{(plugDName != null ? "- Display Name: *"+plugDName+"*\r\n" : "")}"
+                    + $"{(plugId != null ? "- ID (on lcpdfr.com): *"+plugId+"*\r\n" : "")}"
+                    + $"{(plugState != null ? "- State: *"+plugState+"*\r\n" : "")}"
+                    + $"{(exactMatch != null ? "- exactMatch: *"+exactMatch+"*\r\n" : "")}"
+                    + "\n"
+                    + $"Showing {numberOfResults} of {pluginsFound.Count} results:", DiscordColor.DarkGreen
+                ));
+                for(int i=0; i < numberOfResults; i++)
+                {
+                    Plugin plugin = pluginsFound[i];
+                    response.AddEmbed(MessageManager.Generic(
+                        $"**Plugin {plugin.Name}**\r\n"
+                        + $"Display Name: {plugin.DName}\r\n" 
+                        + $"Version: {plugin.Version}\r\n"
+                        + $"Early Access Version: {plugin.EAVersion}\r\n"
+                        + $"ID (on lcpdfr.com): {plugin.ID}\r\n"
+                        + $"Link: {plugin.Link}\r\n"
+                        + $"State: {plugin.State}",
+                        DiscordColor.Gray
+                    ));
+                }
+                await ctx.EditResponseAsync(response);
+                return;
+            }
+            else 
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(MessageManager.Warning(
+                    $"**No plugins found with the following search parameters:**\r\n"
+                    + $"{(plugName != null ? "- Name: *"+plugName+"*\r\n" : "")}"
+                    + $"{(plugDName != null ? "- Display Name: *"+plugDName+"*\r\n" : "")}"
+                    + $"{(plugId != null ? "- ID (on lcpdfr.com): *"+plugId+"*\r\n" : "")}"
+                    + $"{(plugState != null ? "- State: *"+plugState+"*\r\n" : "")}"
+                    + $"{(exactMatch != null ? "- exactMatch: *"+exactMatch+"*" : "")}"
+                )));
+                return;
+            }
+        }
+        catch (InvalidDataException e)
+        {
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(MessageManager.Error(e.Message)));
+            return;
+        }
+        
+    }
+
+    [SlashCommand("FindErrors", "Returns a list of all errors in the database that match the search parameters!")]
+    public async Task FindErrors(InteractionContext ctx,
+        [Option("ID", "The error id in the bot's database.")] string? errId=null,
+        [Option("Regex", "Regex for detecting the error.")] string? regex=null,
+        [Option("Solution", "Solution for the error.")] string? solution=null,
+        [Option("Level", $"Error level (WARN, SEVERE).")] Level? level=null,
+        [Option("exactMatch", "Exact = true, approximate = false")] bool? exactMatch=true
+        )
+    {
+        await ctx.CreateResponseAsync(
+            InteractionResponseType.DeferredChannelMessageWithSource,
+            new DiscordInteractionResponseBuilder
+            {
+                IsEphemeral = true
+            }
+        );
+        
+        if (ctx.Member.Roles.All(role => role.Id != 517568233360982017))
+        {
+            await ctx.CreateResponseAsync(embed: MessageManager.Error("You do not have permission for this!"));
+            return;
+        }
+        try 
+        {
+            List<Error> errorsFound = DatabaseManager.FindErrors(errId, regex, solution, level, exactMatch);
+            if (errorsFound.Count > 0) 
+            {
+                int limit = 3;
+                int numberOfResults = errorsFound.Count <= limit ? errorsFound.Count : limit;
+                var response = new DiscordWebhookBuilder();
+                response.AddEmbed(MessageManager.Generic(
+                    $"**I found {errorsFound.Count} error{(errorsFound.Count != 1 ? "s" : "")} that match{(errorsFound.Count == 1 ? "es" : "")} the following search parameters:**\r\n"
+                    + $"{(errId != null ? "- ID: *"+errId+"*\r\n" : "")}"
+                    + $"{(regex != null ? "- Regex:\n```"+regex+"```\r\n" : "")}"
+                    + $"{(solution != null ? "- Solution:\n```"+solution+"```\r\n" : "")}"
+                    + $"{(level != null ? "- Level: *"+level+"*\r\n" : "")}"
+                    + $"{(exactMatch != null ? "- exactMatch: *"+exactMatch+"*\r\n" : "")}"
+                    + "\n"
+                    + $"Showing {numberOfResults} of {errorsFound.Count} results:", DiscordColor.DarkGreen
+                ));
+                for(int i=0; i < numberOfResults; i++)
+                {
+                    Error error = errorsFound[i];
+                    response.AddEmbed(MessageManager.Generic(
+                        $"**Error ID {error.ID}**\r\n"
+                        + $"Regex:\n```{error.Regex ?? " "}```\r\n" 
+                        + $"Solution:\n```{error.Solution ?? " "}```\r\n"
+                        + $"Level: {error.Level}",
+                        DiscordColor.Gray
+                    ));
+                }
+                await ctx.EditResponseAsync(response);
+                return;
+            }
+            else 
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(MessageManager.Warning(
+                    $"**No errors found with the following search parameters:**\r\n"
+                    + $"{(errId != null ? "- ID: *"+errId+"*\r\n" : "")}"
+                    + $"{(regex != null ? "- Regex:\n```"+regex+"```\r\n" : "")}"
+                    + $"{(solution != null ? "- Solution:\n```"+solution+"```\r\n" : "")}"
+                    + $"{(level != null ? "- Level: *"+level+"*\r\n" : "")}"
+                    + $"{(exactMatch != null ? "- exactMatch: *"+exactMatch+"*\r\n" : "")}"
+                )));
+                return;
+            }
+        } 
+        catch (InvalidDataException e)
+        {
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(MessageManager.Error(e.Message)));
+            return;
+        }
+    }
+
     [SlashCommand("ForceUpdateCheck", "Forced the database to update!")]
     public async Task ForceUpdate(InteractionContext ctx)
     {

@@ -2,6 +2,7 @@
 using System.Data.SQLite;
 using System.Net;
 using Dapper;
+using static ULSS_Helper.Modules.CommandManager;
 
 namespace ULSS_Helper.Modules;
 
@@ -22,7 +23,7 @@ internal class DatabaseManager
         }
     }
     
-    internal static List<Plugin> FindPlugins(string? Name=null, string? DName=null, string? ID=null, string? State=null, bool exactMatch=true)
+    internal static List<Plugin> FindPlugins(string? Name=null, string? DName=null, string? ID=null, State? State=null, bool? exactMatch=true)
     {
         try
         {
@@ -30,7 +31,7 @@ internal class DatabaseManager
             List<string> conditions = new List<string>();
             string comparisonOperator = " = '";
             string endOfComparison = "'";
-            if (!exactMatch)  
+            if (!(exactMatch ?? true))  
             {
                 comparisonOperator = " like '%";
                 endOfComparison = "%'";
@@ -39,14 +40,20 @@ internal class DatabaseManager
             if (Name != null) conditions.Add("Name" + comparisonOperator + Name + endOfComparison);
             if (DName != null) conditions.Add("DName" + comparisonOperator + DName + endOfComparison);
             if (ID != null) conditions.Add("ID" + comparisonOperator + ID + endOfComparison);
-            if (State != null) conditions.Add("State" + comparisonOperator + State + endOfComparison);
-            
+            if (State != null) conditions.Add("State" + comparisonOperator + State.ToString() + endOfComparison);
+
+            if (conditions.Count == 0) throw new InvalidDataException("At least one of the input parameters has to have a non-null value!");
             string conditionsString = string.Join(" and ", conditions);
             var output = cnn.Query<Plugin>($"select * from Plugin where {conditionsString}", new DynamicParameters());
 
             return output.ToList();
         }
         catch (SQLiteException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        catch (InvalidDataException e)
         {
             Console.WriteLine(e);
             throw;
@@ -68,7 +75,7 @@ internal class DatabaseManager
         }
     }
 
-internal static List<Error> FindErrors(int? ID, string? Regex, string? Solution, string? Level, bool exactMatch=true)
+internal static List<Error> FindErrors(string? ID, string? Regex, string? Solution, Level? Level, bool? exactMatch=true)
     {
         try
         {
@@ -76,7 +83,7 @@ internal static List<Error> FindErrors(int? ID, string? Regex, string? Solution,
             List<string> conditions = new List<string>();
             string comparisonOperator = " = '";
             string endOfComparison = "'";
-            if (!exactMatch)  
+            if (!(exactMatch ?? true))  
             {
                 comparisonOperator = " like '%";
                 endOfComparison = "%'";
@@ -85,14 +92,20 @@ internal static List<Error> FindErrors(int? ID, string? Regex, string? Solution,
             if (ID != null) conditions.Add("ID" + comparisonOperator + ID.ToString() + endOfComparison);
             if (Regex != null) conditions.Add("Regex" + comparisonOperator + Regex + endOfComparison);
             if (Solution != null) conditions.Add("Solution" + comparisonOperator + Solution + endOfComparison);
-            if (Level != null) conditions.Add("Level" + comparisonOperator + Level + endOfComparison);
+            if (Level != null) conditions.Add("Level" + comparisonOperator + Level.ToString() + endOfComparison);
             
+            if (conditions.Count == 0) throw new InvalidDataException("At least one of the input parameters has to have a non-null value!");
             string conditionsString = string.Join(" and ", conditions);
             var output = cnn.Query<Error>($"select * from Error where {conditionsString}", new DynamicParameters());
 
             return output.ToList();
         }
         catch (SQLiteException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        catch (InvalidDataException e)
         {
             Console.WriteLine(e);
             throw;
