@@ -184,23 +184,31 @@ internal class ContextManager : ApplicationCommandModule
     internal static List<DiscordEmbed> PrepareEmbedsForSendToUser(IReadOnlyList<DiscordEmbed> originalEmbeds) {
         List<DiscordEmbed> userMessageEmbeds = [];
         foreach(DiscordEmbed originalEmbed in originalEmbeds) {
-            DiscordEmbedBuilder newEmbed = new DiscordEmbedBuilder
+            if (originalEmbed.Fields.Any(field => field.Name.Equals(PluginsNotRecognized)))
             {
-                Description = originalEmbed.Description,
-                Color = originalEmbed.Color,
-                Author = new DiscordEmbedBuilder.EmbedAuthor() { Name = originalEmbed.Author.Name, IconUrl = originalEmbed.Author.IconUrl.ToString() },
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = originalEmbed.Thumbnail.Url.ToString() },
-                Footer = new DiscordEmbedBuilder.EmbedFooter()
+                DiscordEmbedBuilder newEmbed = new DiscordEmbedBuilder
                 {
-                    Text = originalEmbed.Footer.Text
+                    Description = originalEmbed.Description,
+                    Color = originalEmbed.Color,
+                    Author = new DiscordEmbedBuilder.EmbedAuthor() { Name = originalEmbed.Author.Name, IconUrl = originalEmbed.Author.IconUrl.ToString() },
+                    Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = originalEmbed.Thumbnail.Url.ToString() },
+                    Footer = new DiscordEmbedBuilder.EmbedFooter()
+                    {
+                        Text = originalEmbed.Footer.Text
+                    }
+                };
+                foreach (DiscordEmbedField field in originalEmbed.Fields) {
+                    if (!field.Name.Equals(PluginsNotRecognized)) {
+                        newEmbed.AddField(field.Name, field.Value, field.Inline);
+                    }
                 }
-            };
-            foreach (DiscordEmbedField field in originalEmbed.Fields) {
-                if (!field.Name.Equals(PluginsNotRecognized)) {
-                    newEmbed.AddField(field.Name, field.Value, field.Inline);
-                }
+                userMessageEmbeds.Append(newEmbed);
+            } 
+            else 
+            {
+                userMessageEmbeds.Append(originalEmbed);
             }
-            userMessageEmbeds.Append(newEmbed);
+            
         }
         return userMessageEmbeds;
     }
