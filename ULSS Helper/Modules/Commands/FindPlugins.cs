@@ -59,7 +59,7 @@ public class FindPlugins : ApplicationCommandModule
                         + $"ID (on lcpdfr.com): {plugin.ID}\r\n"
                         + $"Link: {plugin.Link}\r\n"
                         + $"State: {plugin.State}",
-                        DiscordColor.Violet
+                        DiscordColor.DarkBlue
                     ));
                 }
                 await ctx.EditResponseAsync(response);

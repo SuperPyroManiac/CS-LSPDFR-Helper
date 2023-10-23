@@ -54,7 +54,7 @@ public class FindErrors : ApplicationCommandModule
                         + $"Regex:\n```{error.Regex ?? " "}```\r\n" 
                         + $"Solution:\n```{error.Solution ?? " "}```\r\n"
                         + $"Level: {error.Level}",
-                        DiscordColor.Violet
+                        DiscordColor.DarkBlue
                     ));
                 }
                 await ctx.EditResponseAsync(response);
