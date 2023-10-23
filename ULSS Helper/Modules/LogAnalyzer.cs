@@ -6,6 +6,9 @@ public class LogAnalyzer
 {
     internal static AnalyzedLog Run()
     {
+        var deleteLast = File.ReadAllLines(Settings.RphLogPath);
+        File.WriteAllLines(Settings.RphLogPath, deleteLast.Take(deleteLast.Length - 1).ToArray());
+        
         var pluginData = DatabaseManager.LoadPlugins();
         var errorData = DatabaseManager.LoadErrors();
         var log = new AnalyzedLog();

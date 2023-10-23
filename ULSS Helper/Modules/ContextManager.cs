@@ -22,7 +22,7 @@ internal class ContextManager : ApplicationCommandModule
     [ContextMenu(ApplicationCommandType.MessageContextMenu, "Analyze Log")]
     public static async Task OnMenuSelect(ContextMenuContext e)
     {
-        if (e.Member.Roles.All(role => role.Id != 517568233360982017))//TODO: Proper permissions setup
+        if (e.Member.Roles.All(role => role.Id != Settings.GetTSRole()))//TODO: Proper permissions setup
         {
             var emb = new DiscordInteractionResponseBuilder();
             emb.IsEphemeral = true;

@@ -11,7 +11,7 @@ public class EditPlugin : ApplicationCommandModule
         [Option("Name", "Plugins name as shown in the log!")] string pN, 
         [Option("State", "Plugin state, LSPDFR, EXTERNAL, BROKEN, LIB")] State pS)
     {
-        if (ctx.Member.Roles.All(role => role.Id != 517568233360982017))
+        if (ctx.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
         {
             await ctx.CreateResponseAsync(embed: MessageManager.Error("You do not have permission for this!"));
             return;

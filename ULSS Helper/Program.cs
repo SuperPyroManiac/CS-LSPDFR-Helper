@@ -27,9 +27,9 @@ internal class Program
         Client = new DiscordClient(discordConfig);
 
         var sCommands = Client.UseSlashCommands();
-        
-        sCommands.RegisterCommands(Assembly.GetExecutingAssembly(), 449706194140135444);
-        sCommands.RegisterCommands<ContextManager>(449706194140135444);
+
+        sCommands.RegisterCommands(Assembly.GetExecutingAssembly(), Settings.GetServerID());
+        sCommands.RegisterCommands<ContextManager>(Settings.GetServerID());
 
         Client.ModalSubmitted += ModalManager.PluginModal;
         Client.ComponentInteractionCreated += ContextManager.OnButtonPress;

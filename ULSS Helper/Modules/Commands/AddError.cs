@@ -9,7 +9,7 @@ public class AddError : ApplicationCommandModule
     [SlashCommand("AddError", "Adds an error to the database!")]
     public async Task AddErrorCmd(InteractionContext ctx, [Option("Level", "Warning type (WARN, SEVERE")] Level lvl)
     {
-        if (ctx.Member.Roles.All(role => role.Id != 517568233360982017))
+        if (ctx.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
         {
             await ctx.CreateResponseAsync(embed: MessageManager.Error("You do not have permission for this!"));
             return;

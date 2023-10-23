@@ -12,7 +12,7 @@ public class RemovePlugin : ApplicationCommandModule
     {
         await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
         
-        if (ctx.Member.Roles.All(role => role.Id != 517568233360982017))
+        if (ctx.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
         {
             await ctx.CreateResponseAsync(embed: MessageManager.Error("You do not have permission for this!"));
             return;
