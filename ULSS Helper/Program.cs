@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
@@ -41,14 +42,12 @@ internal class Program
         await Client.ConnectAsync();
         await Task.Delay(-1);
     }
-
     private static async Task MessageSent(DiscordClient s, MessageCreateEventArgs ctx)
     {
-        var member = await ctx.Guild.GetMemberAsync(ctx.Author.Id);
-        if (member.Roles.All(role => role.Id == 1165987817546059857))
+        if (ctx.Author.Id == 478591527321337857 || ctx.Author.Id == 614191277528973428)
         {
-            var rNd = new Random().Next(5);
-            if (rNd == 3) await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":tarabruh:"));
+            var rNd = new Random().Next(4);
+            if (rNd == 1) await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":tarabruh:"));
         }
     }
 }
