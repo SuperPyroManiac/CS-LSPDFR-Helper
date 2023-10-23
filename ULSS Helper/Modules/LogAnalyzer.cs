@@ -6,7 +6,6 @@ public class LogAnalyzer
 {
     internal static AnalyzedLog Run()
     {
-        var pos = 0;
         var pluginData = DatabaseManager.LoadPlugins();
         var errorData = DatabaseManager.LoadErrors();
         var log = new AnalyzedLog();
