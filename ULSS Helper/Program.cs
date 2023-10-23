@@ -1,8 +1,6 @@
 ﻿using System.Reflection;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
-using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Modules;
 
@@ -10,6 +8,10 @@ namespace ULSS_Helper;
 
 internal class Program
 {
+    public static string? PlugName;
+    public static string? ErrId;
+    public static State PlugState;
+    public static Level ErrLevel;
     internal static DiscordClient Client {get; set;}
     internal static CommandsNextExtension Commands {get; set;}
     
@@ -26,23 +28,15 @@ internal class Program
 
         var sCommands = Client.UseSlashCommands();
         
+        sCommands.RegisterCommands(Assembly.GetExecutingAssembly(), 449706194140135444);
         sCommands.RegisterCommands<ContextManager>(449706194140135444);
-        sCommands.RegisterCommands<CommandManager>(449706194140135444);
 
-        Client.MessageCreated += JarJarBinks;
-        Client.ModalSubmitted += CommandManager.PluginModal;
+        Client.ModalSubmitted += ModalManager.PluginModal;
         Client.ComponentInteractionCreated += ContextManager.OnButtonPress;
+        //TODO: Client.VoiceStateUpdated += VoiceChatManager.OnMemberJoinLeaveVC;
 
         await Client.ConnectAsync();
         await Task.Delay(-1);
-    }
-
-    private static async Task JarJarBinks(DiscordClient s, MessageCreateEventArgs ctx)
-    {
-        if (ctx.Author.Id == 478591527321337857 || ctx.Author.Id == 614191277528973428)
-        {
-            await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":tarabruh:"));
-        }
     }
 }
 
@@ -59,8 +53,42 @@ public class Plugin
 
 public class Error
 {
-    public string ID { get; set; }
+    public string? ID { get; set; }
     public string Regex { get; set; }
     public string Solution { get; set; }
     public string Level { get; set; }
+}
+
+public class AnalyzedLog
+{
+    public List<Plugin?> Current { get; set; }
+    public List<Plugin?> Outdated { get; set; }
+    public List<Plugin?> Broken { get; set; }
+    public List<Plugin?> Library { get; set; }
+    public List<Plugin?> Missing { get; set; }
+    
+    public List<Error?> Errors { get; set; }
+
+    public string GTAVersion { get; set; }
+    public string RPHVersion { get; set; }
+    public string LSPDFRVersion { get; set; }
+}
+
+public enum State
+{
+    [ChoiceName("LSPDFR")]
+    LSPDFR,
+    [ChoiceName("EXTERNAL")]
+    EXTERNAL,
+    [ChoiceName("BROKEN")]
+    BROKEN,
+    [ChoiceName("LIB")]
+    LIB
+}
+public enum Level
+{
+    [ChoiceName("WARN")]
+    WARN,
+    [ChoiceName("SEVERE")]
+    SEVERE
 }

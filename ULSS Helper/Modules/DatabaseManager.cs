@@ -22,6 +22,43 @@ internal class DatabaseManager
         }
     }
     
+    internal static List<Plugin> FindPlugins(string? Name=null, string? DName=null, string? ID=null, State? State=null, bool? exactMatch=false)
+    {
+        try
+        {
+            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            List<string> conditions = new List<string>();
+            string comparisonOperator = " = '";
+            string endOfComparison = "'";
+            if (!(exactMatch ?? true))  
+            {
+                comparisonOperator = " like '%";
+                endOfComparison = "%'";
+            }
+
+            if (Name != null) conditions.Add("Name" + comparisonOperator + Name + endOfComparison);
+            if (DName != null) conditions.Add("DName" + comparisonOperator + DName + endOfComparison);
+            if (ID != null) conditions.Add("ID" + comparisonOperator + ID + endOfComparison);
+            if (State != null) conditions.Add("State" + comparisonOperator + State.ToString() + endOfComparison);
+
+            if (conditions.Count == 0) throw new InvalidDataException("At least one of the input parameters has to have a non-null value!");
+            string conditionsString = string.Join(" and ", conditions);
+            var output = cnn.Query<Plugin>($"select * from Plugin where {conditionsString}", new DynamicParameters());
+
+            return output.ToList();
+        }
+        catch (SQLiteException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        catch (InvalidDataException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
     internal static List<Error> LoadErrors()
     {
         try
@@ -37,12 +74,53 @@ internal class DatabaseManager
         }
     }
 
-    internal static void AddPlugin(Plugin plugin)
+    internal static List<Error> FindErrors(string? ID, string? Regex, string? Solution, Level? Level, bool? exactMatch=false)
     {
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            List<string> conditions = new List<string>();
+            string comparisonOperator = " = '";
+            string endOfComparison = "'";
+            if (!(exactMatch ?? true))  
+            {
+                comparisonOperator = " like '%";
+                endOfComparison = "%'";
+            }
+
+            if (ID != null) conditions.Add("ID" + comparisonOperator + ID.ToString() + endOfComparison);
+            if (Regex != null) conditions.Add("Regex" + comparisonOperator + Regex + endOfComparison);
+            if (Solution != null) conditions.Add("Solution" + comparisonOperator + Solution + endOfComparison);
+            if (Level != null) conditions.Add("Level" + comparisonOperator + Level.ToString() + endOfComparison);
+            
+            if (conditions.Count == 0) throw new InvalidDataException("At least one of the input parameters has to have a non-null value!");
+            string conditionsString = string.Join(" and ", conditions);
+            var output = cnn.Query<Error>($"select * from Error where {conditionsString}", new DynamicParameters());
+
+            return output.ToList();
+        }
+        catch (SQLiteException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        catch (InvalidDataException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    internal static long AddPlugin(Plugin plugin)
+    {
+        try
+        {
+            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            cnn.Open();
             cnn.Execute("insert into Plugin (Name, DName, Version, EAVersion, ID, State, Link) VALUES (@Name, @DName, @Version, @EAVersion, @ID, @State, @Link)", plugin);
+            long id = ((SQLiteConnection) cnn).LastInsertRowId;
+            cnn.Close();
+            return id;
         }
         catch (SQLiteException e)
         {
@@ -51,12 +129,16 @@ internal class DatabaseManager
         }
     }
     
-    internal static void AddError(Error error)
+    internal static long AddError(Error error)
     {
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            cnn.Open();
             cnn.Execute("insert into Error (Regex, Solution, Level) VALUES (@Regex, @Solution, @Level)", error);
+            long id = ((SQLiteConnection) cnn).LastInsertRowId;
+            cnn.Close();
+            return id;    
         }
         catch (SQLiteException e)
         {
@@ -125,7 +207,6 @@ internal class DatabaseManager
     {
         var webClient = new WebClient();
         var plugins = LoadPlugins();
-        var nm = 1;
         foreach (var plugin in plugins)
         {
             Thread.Sleep(250);
@@ -154,7 +235,6 @@ internal class DatabaseManager
                     try
                     {
                         Console.WriteLine($"Updating Plugin {plugin.Name} from {plugin.Version} to {onlineVersion}");
-                        nm++;
                         
                         using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
                         cnn.Execute($"UPDATE Plugin SET Version = '{onlineVersion}' WHERE Name = '{plugin.Name}';");
