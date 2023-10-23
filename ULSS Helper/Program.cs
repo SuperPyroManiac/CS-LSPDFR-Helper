@@ -33,6 +33,7 @@ internal class Program
 
         Client.ModalSubmitted += ModalManager.PluginModal;
         Client.ComponentInteractionCreated += ContextManager.OnButtonPress;
+        //TODO: Client.VoiceStateUpdated += VoiceChatManager.OnMemberJoinLeaveVC;
 
         await Client.ConnectAsync();
         await Task.Delay(-1);
