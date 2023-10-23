@@ -12,7 +12,7 @@ public class FindErrors : ApplicationCommandModule
         [Option("Regex", "Regex for detecting the error.")] string? regex=null,
         [Option("Solution", "Solution for the error.")] string? solution=null,
         [Option("Level", $"Error level (WARN, SEVERE).")] Level? level=null,
-        [Option("exactMatch", "Exact = true, approximate = false")] bool? exactMatch=true
+        [Option("exactMatch", "Exact = true, approximate = false")] bool? exactMatch=false
         )
     {
         await ctx.CreateResponseAsync(
@@ -54,7 +54,7 @@ public class FindErrors : ApplicationCommandModule
                         + $"Regex:\n```{error.Regex ?? " "}```\r\n" 
                         + $"Solution:\n```{error.Solution ?? " "}```\r\n"
                         + $"Level: {error.Level}",
-                        DiscordColor.Gray
+                        DiscordColor.Violet
                     ));
                 }
                 await ctx.EditResponseAsync(response);

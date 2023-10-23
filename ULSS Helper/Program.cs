@@ -1,8 +1,6 @@
 ﻿using System.Reflection;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
-using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Modules;
 
@@ -31,6 +29,7 @@ internal class Program
         var sCommands = Client.UseSlashCommands();
         
         sCommands.RegisterCommands(Assembly.GetExecutingAssembly(), 449706194140135444);
+        sCommands.RegisterCommands<ContextManager>(449706194140135444);
 
         Client.ModalSubmitted += ModalManager.PluginModal;
         Client.ComponentInteractionCreated += ContextManager.OnButtonPress;

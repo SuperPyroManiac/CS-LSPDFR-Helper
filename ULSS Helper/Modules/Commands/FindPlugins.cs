@@ -6,13 +6,13 @@ namespace ULSS_Helper.Modules.Commands;
 
 public class FindPlugins : ApplicationCommandModule
 {
-        [SlashCommand("FindPlugins", "Returns a list of all plugins in the database that match the search parameters!")]
+    [SlashCommand("FindPlugins", "Returns a list of all plugins in the database that match the search parameters!")]
     public async Task FindPluginsCmd(InteractionContext ctx,
         [Option("Name", "The plugin's name.")] string? plugName=null,
         [Option("DName", "The plugin's display name.")] string? plugDName=null,
         [Option("ID", "The plugin's id on lcpdfr.com.")] string? plugId=null,
         [Option("State", "The plugin's state (LSPDFR, EXTERNAL, BROKEN, LIB).")] State? plugState=null,
-        [Option("exactMatch", "Exact = true, approximate = false")] bool? exactMatch=true
+        [Option("exactMatch", "Exact = true, approximate = false")] bool? exactMatch=false
         )
     {
         await ctx.CreateResponseAsync(
@@ -59,7 +59,7 @@ public class FindPlugins : ApplicationCommandModule
                         + $"ID (on lcpdfr.com): {plugin.ID}\r\n"
                         + $"Link: {plugin.Link}\r\n"
                         + $"State: {plugin.State}",
-                        DiscordColor.Gray
+                        DiscordColor.Violet
                     ));
                 }
                 await ctx.EditResponseAsync(response);

@@ -22,7 +22,7 @@ internal class DatabaseManager
         }
     }
     
-    internal static List<Plugin> FindPlugins(string? Name=null, string? DName=null, string? ID=null, State? State=null, bool? exactMatch=true)
+    internal static List<Plugin> FindPlugins(string? Name=null, string? DName=null, string? ID=null, State? State=null, bool? exactMatch=false)
     {
         try
         {
@@ -74,7 +74,7 @@ internal class DatabaseManager
         }
     }
 
-internal static List<Error> FindErrors(string? ID, string? Regex, string? Solution, Level? Level, bool? exactMatch=true)
+    internal static List<Error> FindErrors(string? ID, string? Regex, string? Solution, Level? Level, bool? exactMatch=false)
     {
         try
         {
@@ -207,7 +207,6 @@ internal static List<Error> FindErrors(string? ID, string? Regex, string? Soluti
     {
         var webClient = new WebClient();
         var plugins = LoadPlugins();
-        var nm = 1;
         foreach (var plugin in plugins)
         {
             Thread.Sleep(250);
@@ -236,7 +235,6 @@ internal static List<Error> FindErrors(string? ID, string? Regex, string? Soluti
                     try
                     {
                         Console.WriteLine($"Updating Plugin {plugin.Name} from {plugin.Version} to {onlineVersion}");
-                        nm++;
                         
                         using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
                         cnn.Execute($"UPDATE Plugin SET Version = '{onlineVersion}' WHERE Name = '{plugin.Name}';");
