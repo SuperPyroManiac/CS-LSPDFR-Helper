@@ -25,14 +25,12 @@ internal static class Settings
     {
         var tokenPath = Path.Combine(Directory.GetCurrentDirectory(), "SERVERID.txt");
         if (File.Exists(tokenPath)) return Convert.ToUInt64(File.ReadAllText(tokenPath));
-        Console.WriteLine("No SERVERID.txt found, using default value!");
         return 449706194140135444;
     }
     internal static ulong GetTSRole()
     {
         var tokenPath = Path.Combine(Directory.GetCurrentDirectory(), "TSROLE.txt");
         if (File.Exists(tokenPath)) return Convert.ToUInt64(File.ReadAllText(tokenPath));
-        Console.WriteLine("No TSROLE.txt found, using default value!");
         return 517568233360982017;
     }
     
