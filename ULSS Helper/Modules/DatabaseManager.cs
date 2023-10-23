@@ -2,7 +2,6 @@
 using System.Data.SQLite;
 using System.Net;
 using Dapper;
-using static ULSS_Helper.Modules.CommandManager;
 
 namespace ULSS_Helper.Modules;
 
