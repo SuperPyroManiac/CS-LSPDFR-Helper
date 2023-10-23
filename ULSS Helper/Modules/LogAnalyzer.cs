@@ -6,15 +6,12 @@ public class LogAnalyzer
 {
     internal static AnalyzedLog Run()
     {
-        var deleteLast = File.ReadAllLines(Settings.RphLogPath);
-        File.WriteAllLines(Settings.RphLogPath, deleteLast.Take(deleteLast.Length - 1).ToArray());
-        
+        var pos = 0;
         var pluginData = DatabaseManager.LoadPlugins();
         var errorData = DatabaseManager.LoadErrors();
         var log = new AnalyzedLog();
         var wholeLog = File.ReadAllText(Settings.RphLogPath);
-        var reader = new StreamReader(Settings.RphLogPath);
-        string? line;
+        var reader = File.ReadAllLines(Settings.RphLogPath);
 
         log.Current = new List<Plugin?>();
         log.Outdated = new List<Plugin?>();
@@ -23,8 +20,9 @@ public class LogAnalyzer
         log.Missing = new List<Plugin?>();
         log.Errors = new List<Error?>();
 
-        while ((line = reader.ReadLine()) != null)
+        foreach (var lineReader in reader)
         {
+            var line = lineReader;
             foreach (var plugin in pluginData)
             {
                 try
