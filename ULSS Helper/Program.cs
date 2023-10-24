@@ -1,6 +1,9 @@
 ﻿using System.Reflection;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Modules;
 
@@ -33,10 +36,19 @@ internal class Program
 
         Client.ModalSubmitted += ModalManager.PluginModal;
         Client.ComponentInteractionCreated += ContextManager.OnButtonPress;
+        Client.MessageCreated += MessageSent;
         //TODO: Client.VoiceStateUpdated += VoiceChatManager.OnMemberJoinLeaveVC;
 
         await Client.ConnectAsync();
         await Task.Delay(-1);
+    }
+    private static async Task MessageSent(DiscordClient s, MessageCreateEventArgs ctx)
+    {
+        if (ctx.Author.Id == 478591527321337857 || ctx.Author.Id == 614191277528973428)
+        {
+            var rNd = new Random().Next(4);
+            if (rNd == 1) await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":tarabruh:"));
+        }
     }
 }
 
