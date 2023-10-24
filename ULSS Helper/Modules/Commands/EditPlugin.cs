@@ -10,7 +10,8 @@ public class EditPlugin : ApplicationCommandModule
     public async Task Cmd(
         InteractionContext ctx, 
         [Option("Name", "Plugins name as shown in the log!")] string pN, 
-        [Option("New_State", "Plugin state, LSPDFR, EXTERNAL, BROKEN, LIB")] State? pS = null)
+        [Option("New_State", "Plugin state, LSPDFR, EXTERNAL, BROKEN, LIB")] State? pS=null
+    )
     {
         if (ctx.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
         {
@@ -27,17 +28,7 @@ public class EditPlugin : ApplicationCommandModule
         var plugin = DatabaseManager.LoadPlugins().FirstOrDefault(x => x.Name == pN);
 
         Program.PlugName = plugin.Name;
-        if (pS != null)
-        {
-            Program.PlugState = (State) pS;
-        }
-        else
-        {
-            if (Enum.TryParse(plugin.State, out State newState))
-            {
-                Program.PlugState = (State) newState;
-            }
-        }
+        if (pS != null) Program.PlugState = (State) pS;
         
         DiscordInteractionResponseBuilder modal = new();
         modal.WithTitle($"Editing {Program.PlugName} as {Program.PlugState.ToString()}").WithCustomId("edit-plugin").AddComponents(

@@ -28,17 +28,7 @@ public class EditError : ApplicationCommandModule
         var error = DatabaseManager.LoadErrors().FirstOrDefault(x => x.ID.ToString() == eI);
 
         Program.ErrId = eI;
-        if (lvl != null)
-        {
-            Program.ErrLevel = (Level) lvl;
-        }
-        else
-        {
-            if (Enum.TryParse(error.Level, out Level newLvl))
-            {
-                Program.ErrLevel = newLvl;
-            }
-        }
+        if (lvl != null) Program.ErrLevel = (Level) lvl;
         
         DiscordInteractionResponseBuilder modal = new();
         modal.WithTitle($"Editing error ID: {Program.ErrId}!").WithCustomId("edit-error").AddComponents(
