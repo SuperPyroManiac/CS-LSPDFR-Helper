@@ -129,9 +129,9 @@ internal class ContextManager : ApplicationCommandModule
                 Text = $"GTA: {GTAver} - RPH: {RPHver} - LSPDFR: {LSPDFRver} - Errors: {log.Errors.Count}"
             };
 
-            message.AddField("Log was uploaded by:", $"<@{e.TargetMessage.Author.Id}>", true);
-            message.AddField("User ID:", e.TargetMessage.Author.Id.ToString(), true);
-            message.AddField("Link to log message:", e.TargetMessage.JumpLink.ToString(), false);
+            message.AddField("Log uploader:", $"<@{e.TargetMessage.Author.Id}>", true); // don't change the field value here without changing the GetLogOwnerId method.
+            message.AddField("Log message:", e.TargetMessage.JumpLink.ToString(), true);
+            message.AddField("\u200B", "\u200B", true); // This invisible field (zero-width characters) is necessary in order to force the next inline field to be in a new row. 
             
             if (outdated.Length >= 1024 || broken.Length >= 1024)
             {
@@ -185,176 +185,197 @@ internal class ContextManager : ApplicationCommandModule
     
     internal static async Task OnButtonPress(DiscordClient s, ComponentInteractionCreateEventArgs e)
     {
-        List<string> fieldNamesToExclude = new List<string>{
-            "Message ID:",
-            "Link to log message:",
-            "User ID:",
-            "Log was uploaded by:",
-            PluginsNotRecognized
+        // names of embed fields that should only be shown to ULSS staff
+        List<string> tsInfoFieldNames = new List<string>{
+            "Log message:",
+            "Log uploader:",
+            "\u200B"
         };
+        if (e.Id == "send" || e.Id == "send2") await SendMessageToUser(e, tsInfoFieldNames);
+        if (e.Id == "info") await SendDetailedInfoMessage(e, tsInfoFieldNames);
+    }
+
+    internal static async Task SendMessageToUser(ComponentInteractionCreateEventArgs e, List<string> tsInfoFieldNames)
+    {
+        await e.Interaction.DeferAsync(true);
+        
         ulong? logOwnerId = null;
-
-        if (e.Id == "send" || e.Id == "send2")
+        List<DiscordEmbed> userMessageEmbeds = new List<DiscordEmbed>();
+        tsInfoFieldNames.Add(PluginsNotRecognized);
+        
+        foreach(DiscordEmbed originalEmbed in e.Message.Embeds) 
         {
-            await e.Interaction.DeferAsync(true);
-            List<DiscordEmbed> userMessageEmbeds = new List<DiscordEmbed>();
-            // Removes fields from DiscordEmbeds that should not be visible for everyone once the message is being sent to the user.
-            foreach(DiscordEmbed originalEmbed in e.Message.Embeds) 
+            // Filters fields from DiscordEmbeds that should not be visible for everyone once the message is being sent to the user.
+            if (originalEmbed.Fields != null && originalEmbed.Fields.Any(field => tsInfoFieldNames.Contains(field.Name)))
             {
-                if (originalEmbed.Fields.Any(field => fieldNamesToExclude.Contains(field.Name)))
-                {
-                    var newEmbed = new DiscordEmbedBuilder();
-                    newEmbed.Color = originalEmbed.Color;
-                    if (originalEmbed.Description != null)
-                        newEmbed.Description = originalEmbed.Description;
-                    if (originalEmbed.Author != null)
-                        newEmbed.Author = new DiscordEmbedBuilder.EmbedAuthor() { Name = originalEmbed.Author.Name, IconUrl = originalEmbed.Author.IconUrl.ToString() };
-                    if (originalEmbed.Thumbnail != null)
-                        newEmbed.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = originalEmbed.Thumbnail.Url.ToString() };
-                    if (originalEmbed.Footer != null)
-                        newEmbed.Footer = new DiscordEmbedBuilder.EmbedFooter() { Text = originalEmbed.Footer.Text };
+                var newEmbed = new DiscordEmbedBuilder();
+                newEmbed.Color = originalEmbed.Color;
+                if (originalEmbed.Description != null)
+                    newEmbed.Description = originalEmbed.Description;
+                if (originalEmbed.Author != null)
+                    newEmbed.Author = new DiscordEmbedBuilder.EmbedAuthor() 
+                    { 
+                        Name = originalEmbed.Author.Name, 
+                        IconUrl = originalEmbed.Author.IconUrl.ToString() 
+                    };
+                if (originalEmbed.Thumbnail != null)
+                    newEmbed.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = originalEmbed.Thumbnail.Url.ToString() };
+                if (originalEmbed.Footer != null)
+                    newEmbed.Footer = new DiscordEmbedBuilder.EmbedFooter() { Text = originalEmbed.Footer.Text };
 
-                    foreach (DiscordEmbedField originalField in originalEmbed.Fields) 
+                foreach (DiscordEmbedField originalField in originalEmbed.Fields) 
+                {
+                    if (!tsInfoFieldNames.Contains(originalField.Name))
                     {
-                        if (!fieldNamesToExclude.Contains(originalField.Name))  //!originalField.Name.Equals(PluginsNotRecognized)) 
-                        {
-                            newEmbed.AddField(originalField.Name, originalField.Value, originalField.Inline);
-                        }
-                        if (logOwnerId == null && originalField.Name.Equals("User ID:")) 
-                        {
-                            try
-                            {
-                                logOwnerId = ulong.Parse(originalField.Value);
-                            }
-                            catch (Exception ex)            
-                            {                
-                                if (ex is ArgumentNullException || ex is FormatException || ex is OverflowException)
-                                {
-                                    Console.WriteLine("Couldn't get logOwnerId. Field value is:", originalField.Value);
-                                    continue;
-                                }
-                                throw;
-                            }
-                        }
+                        newEmbed.AddField(originalField.Name, originalField.Value, originalField.Inline);
                     }
-                    userMessageEmbeds.Add(newEmbed);
-                } 
-                else 
-                {
-                    userMessageEmbeds.Add(originalEmbed);
+                    if (logOwnerId == null && originalField.Name.Equals("Log uploader:")) 
+                    {
+                        logOwnerId = GetLogOwnerId(originalField.Value);
+                    }
                 }
-            }
-
-
-            var newMessage = new DiscordMessageBuilder();
-            newMessage.AddEmbeds(userMessageEmbeds);
-            if (logOwnerId != null) 
+                userMessageEmbeds.Add(newEmbed);
+            } 
+            else 
             {
-                UserMention logOwner = new UserMention((ulong) logOwnerId);
-                newMessage.AddMention(logOwner);
-                newMessage.WithAllowedMention(logOwner);
-                newMessage.WithContent($"<@{logOwnerId}>");
+                userMessageEmbeds.Add(originalEmbed);
             }
-            await e.Interaction.DeleteOriginalResponseAsync();
-            await newMessage.SendAsync(e.Channel);
         }
 
-        if (e.Id == "info")
+        var newMessage = new DiscordMessageBuilder();
+        newMessage.AddEmbeds(userMessageEmbeds);
+        if (logOwnerId != null) 
         {
-            await e.Interaction.DeferAsync(true);
-            
-            var GTAver = "X";
-            var LSPDFRver = "X";
-            var RPHver = "X";
+            UserMention logOwner = new UserMention((ulong) logOwnerId);
+            newMessage.AddMention(logOwner);
+            newMessage.WithAllowedMention(logOwner);
+            newMessage.WithContent($"<@{logOwnerId}>");
+        }
+        await e.Interaction.DeleteOriginalResponseAsync();
+        await newMessage.SendAsync(e.Channel);
+    }
 
-            if (Settings.GTAVer == log.GTAVersion) GTAver = "\u2713";
-            if (Settings.LSPDFRVer == log.LSPDFRVersion) LSPDFRver = "\u2713";
-            if (Settings.RPHVer == log.RPHVersion) RPHver = "\u2713";
+    internal static async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs e, List<string> tsInfoFieldNames)
+    {
+        ulong? logOwnerId = null;
+        await e.Interaction.DeferAsync(true);
+        
+        var GTAver = "X";
+        var LSPDFRver = "X";
+        var RPHver = "X";
 
-            var message = new DiscordEmbedBuilder();
-            message.Description = "# **Detailed Log Information**";
-            message.Color = DiscordColor.Gold;
-            message.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsRoleGearsIconUrl };
-            message.Footer = new DiscordEmbedBuilder.EmbedFooter()
+        if (Settings.GTAVer == log.GTAVersion) GTAver = "\u2713";
+        if (Settings.LSPDFRVer == log.LSPDFRVersion) LSPDFRver = "\u2713";
+        if (Settings.RPHVer == log.RPHVersion) RPHver = "\u2713";
+
+        var message = new DiscordEmbedBuilder();
+        message.Description = "# **Detailed Log Information**";
+        message.Color = DiscordColor.Gold;
+        message.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsRoleGearsIconUrl };
+        message.Footer = new DiscordEmbedBuilder.EmbedFooter()
+        {
+            Text = $"GTA: {GTAver} - RPH: {RPHver} - LSPDFR: {LSPDFRver} - Errors: {log.Errors.Count}"
+        };
+
+        foreach(DiscordEmbed originalEmbed in e.Message.Embeds) 
+        {
+            foreach (DiscordEmbedField originalField in e.Message.Embeds[0].Fields) 
             {
-                Text = $"GTA: {GTAver} - RPH: {RPHver} - LSPDFR: {LSPDFRver} - Errors: {log.Errors.Count}"
+                if (
+                    message.Fields != null
+                    && !message.Fields.Any(msgField => msgField.Name.Equals(originalField.Name)) 
+                    && tsInfoFieldNames.Contains(originalField.Name)
+                )
+                {
+                    message.AddField(originalField.Name, originalField.Value, originalField.Inline);
+                }
+                if (logOwnerId == null && originalField.Name.Equals("Log uploader:")) 
+                {
+                    logOwnerId = GetLogOwnerId(originalField.Value);
+                }
+            }
+        }
+        
+        if (outdated.Length >= 1024 || broken.Length >= 1024 || current.Length >= 1024)
+        {
+            message.AddField(":warning:     **Message Too Big**", "\r\nToo many plugins to display in a single message.\r\nFor error checking please first fix plugin issues.", true);
+            if (missing.Length > 0) message.AddField(PluginsNotRecognized, missing, false);
+            var currentMsg = new DiscordEmbedBuilder
+            {
+                Title = ":green_circle:     **Current:**",
+                Description = "\r\n- " + current,
+                Color = DiscordColor.Gold,
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsRoleGearsIconUrl }
             };
-
-            foreach(DiscordEmbed originalEmbed in e.Message.Embeds) 
+            var outdatedMsg = new DiscordEmbedBuilder
             {
-                foreach (DiscordEmbedField originalField in e.Message.Embeds[0].Fields) 
-                {
-                    if (!message.Fields.Any(msgField => msgField.Name.Equals(originalField.Name)) && fieldNamesToExclude.Contains(originalField.Name))
-                    {
-                        message.AddField(originalField.Name, originalField.Value, originalField.Inline);
-                    }
-                    if (logOwnerId == null && originalField.Name.Equals("User ID:")) 
-                    {
-                        try
-                        {
-                            logOwnerId = ulong.Parse(originalField.Value);
-                        }
-                        catch (Exception ex)            
-                        {                
-                            if (ex is ArgumentNullException || ex is FormatException || ex is OverflowException)
-                            {
-                                Console.WriteLine("Couldn't get logOwnerId. Field value is:", originalField.Value);
-                                continue;
-                            }
-                            throw;
-                        }
-                    }
-                }
+                Title = ":orange_circle:     **Update:**",
+                Description = "\r\n- " + outdated,
+                Color = DiscordColor.Gold,
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsRoleGearsIconUrl }
+            };
+            var brokenMsg = new DiscordEmbedBuilder
+            {
+                Title = ":red_circle:     **Remove:**",
+                Description = "\r\n- " + broken,
+                Color = DiscordColor.Gold,
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsRoleGearsIconUrl }
+            };
+            
+            var overflow = new DiscordWebhookBuilder();
+            overflow.AddEmbed(message);
+            // if (current.Length != 0) overflow.AddEmbed(currentPluginsMsg);
+            if (outdated.Length != 0) overflow.AddEmbed(outdatedMsg);
+            if (broken.Length != 0) overflow.AddEmbed(brokenMsg);
+            overflow.AddComponents(new DiscordComponent[]
+            {
+                new DiscordButtonComponent(ButtonStyle.Danger, "send2", "Send To User", false,
+                    new DiscordComponentEmoji("📨"))
+            });
+            await e.Interaction.EditOriginalResponseAsync(overflow);
+        }
+        else
+        {
+            if (current.Length != 0 && outdated.Length == 0 && broken.Length != 0) outdated = "**None**";
+            if (current.Length != 0 && outdated.Length != 0 && broken.Length == 0) broken = "**None**";
+            if (current.Length == 0 && outdated.Length != 0 || broken.Length != 0) current = "**None**";
+
+            if (outdated.Length > 0) message.AddField(":orange_circle:     **Update:**", "\r\n- " + outdated, true);
+            if (broken.Length > 0) message.AddField(":red_circle:     **Remove:**", "\r\n- " + broken, true);
+            //if (current.Length > 0) message.AddField(":green_circle:     **Current:**", "\r\n" + string.Join(", ", currentList), false);
+            if (missing.Length > 0) message.AddField(PluginsNotRecognized, missing, false);
+        
+            if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0) message.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
+            if (LSPDFRver == "X") message.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **Possible issues:**");
+            if (current.Length == 0 && outdated.Length == 0 && broken.Length == 0 && LSPDFRver != "X") message.AddField(":green_circle:     **No installed plugins!**", "- Can't have plugin issues if you don't got any!");
+
+            foreach (var error in log.Errors)
+            {
+                message.AddField($"```ID: {error.ID}``` {error.Level} Error Info", $"> {error.Solution}");
             }
             
-            if (outdated.Length >= 1024 || broken.Length >= 1024 || current.Length >= 1024)
+            await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().AddEmbed(message).AddComponents(new DiscordComponent[]
             {
-                message.AddField(":warning:     **Message Too Big**", "\r\nToo many plugins to display in a single message.\r\nFor error checking please first fix plugin issues.", true);
-                if (missing.Length > 0) message.AddField(PluginsNotRecognized, missing, false);
-                var message2 = new DiscordEmbedBuilder { Title = ":green_circle:     **Current:**", Description = "\r\n- " + current, Color = DiscordColor.Gold };
-                message2.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsRoleGearsIconUrl };
-                var message3 = new DiscordEmbedBuilder { Title = ":orange_circle:     **Update:**", Description = "\r\n- " + outdated, Color = DiscordColor.Gold };
-                message3.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsRoleGearsIconUrl };
-                var message4 = new DiscordEmbedBuilder { Title = ":red_circle:     **Remove:**", Description = "\r\n- " + broken, Color = DiscordColor.Gold };
-                message4.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsRoleGearsIconUrl };
-                
-                var overflow = new DiscordWebhookBuilder();
-                overflow.AddEmbed(message);
-                if (current.Length != 0) overflow.AddEmbed(message2);
-                if (outdated.Length != 0) overflow.AddEmbed(message3);
-                if (broken.Length != 0) overflow.AddEmbed(message4);
-                overflow.AddComponents(new DiscordComponent[]
-                {
-                    new DiscordButtonComponent(ButtonStyle.Danger, "send2", "Send To User", false,
-                        new DiscordComponentEmoji("📨"))
-                });
-                await e.Interaction.EditOriginalResponseAsync(overflow);
-            }
-            else
+                new DiscordButtonComponent(ButtonStyle.Danger, "send2", "Send To User", false, new DiscordComponentEmoji("📨"))
+            }));
+        }
+    }
+
+    private static ulong? GetLogOwnerId(string logUploaderMention) 
+    {
+        try
+        { 
+            string logOwnerIdFromTag = logUploaderMention.Split("<@")[1].Split(">")[0];
+            return ulong.Parse(logOwnerIdFromTag);
+        }
+        catch (Exception ex)            
+        {                
+            if (ex is ArgumentNullException || ex is FormatException || ex is OverflowException)
             {
-                if (current.Length != 0 && outdated.Length == 0 && broken.Length != 0) outdated = "**None**";
-                if (current.Length != 0 && outdated.Length != 0 && broken.Length == 0) broken = "**None**";
-                if (current.Length == 0 && outdated.Length != 0 || broken.Length != 0) current = "**None**";
-
-                if (outdated.Length > 0) message.AddField(":orange_circle:     **Update:**", "\r\n- " + outdated, true);
-                if (broken.Length > 0) message.AddField(":red_circle:     **Remove:**", "\r\n- " + broken, true);
-                //if (current.Length > 0) message.AddField(":green_circle:     **Current:**", "\r\n" + string.Join(", ", currentList), false);
-                if (missing.Length > 0) message.AddField(PluginsNotRecognized, missing, false);
-            
-                if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0) message.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
-                if (LSPDFRver == "X") message.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **Possible issues:**");
-                if (current.Length == 0 && outdated.Length == 0 && broken.Length == 0 && LSPDFRver != "X") message.AddField(":green_circle:     **No installed plugins!**", "- Can't have plugin issues if you don't got any!");
-
-                foreach (var error in log.Errors)
-                {
-                    message.AddField($"```ID: {error.ID}``` {error.Level} Error Info", $"> {error.Solution}");
-                }
-                
-                await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().AddEmbed(message).AddComponents(new DiscordComponent[]
-                {
-                    new DiscordButtonComponent(ButtonStyle.Danger, "send2", "Send To User", false, new DiscordComponentEmoji("📨"))
-                }));
+                Console.WriteLine("Couldn't get logOwnerId. Field value is:", logUploaderMention);
+                return null;
             }
+            throw;
         }
     }
 }
