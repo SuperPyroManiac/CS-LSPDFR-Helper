@@ -28,23 +28,47 @@ public class LogAnalyzer
                 {
                     if (plugin.State is "LSPDFR" or "EXTERNAL")
                     {
-                        var regex = new Regex($".+LSPD First Response: {Regex.Escape(plugin.Name)}. Version=[0-9.]+.+");
+                        var regex = new Regex($".+LSPD First Response: {Regex.Escape(plugin.Name)}. Version=([0-9.]+).+");
                         var match = regex.Match(line);
                         if (match.Success)
                         {
+                            string logVersion = match.Groups[1].Value;
                             var version = $"{plugin.Name}, Version={plugin.Version}";
                             var eaversion = $"{plugin.Name}, Version={plugin.EAVersion}";
-                            if (!string.IsNullOrEmpty(plugin.Version) && line.Contains(version))
+                            if (!string.IsNullOrEmpty(plugin.Version))
                             {
-                                if (!log.Current.Any(x => x.Name == plugin.Name)) log.Current.Add(plugin);
-                            }
-                            else if (!string.IsNullOrEmpty(plugin.EAVersion) && line.Contains(eaversion))
-                            {
-                                if (!log.Current.Any(x => x.Name == plugin.Name)) log.Current.Add(plugin);
-                            }
-                            else
-                            {
-                                if (!log.Outdated.Any(x => x.Name == plugin.Name)) log.Outdated.Add(plugin);
+                                int result = CompareVersions(logVersion, plugin.Version);
+                                if (result < 0)
+                                {
+                                    if (!log.Outdated.Any(x => x.Name == plugin.Name)) log.Outdated.Add(plugin);
+                                }
+                                else if (result > 0)
+                                {
+                                    if (!string.IsNullOrEmpty(plugin.EAVersion)) 
+                                    {
+                                        int resultEA = CompareVersions(logVersion, plugin.EAVersion);
+                                        if (resultEA < 0)
+                                        {
+                                            if (!log.Outdated.Any(x => x.Name == plugin.Name)) log.Outdated.Add(plugin);
+                                        }
+                                        else if (resultEA > 0)
+                                        {
+                                            // TODO: Collect plugins with unknown larger version numbers in separate list and notify TS
+                                            Console.WriteLine($"Plugin version {logVersion} of plugin {plugin.Name} in the RPH.log is larger than any known version in the DB!");
+                                        }
+                                        else
+                                        {
+                                            if (!log.Current.Any(x => x.Name == plugin.Name)) log.Current.Add(plugin);
+                                        }
+                                    } else {
+                                        // TODO: Collect plugins with unknown larger version numbers in separate list and notify TS
+                                        Console.WriteLine($"Plugin version {logVersion} of plugin {plugin.Name} in the RPH.log is larger than any known version in the DB!");
+                                    }
+                                }
+                                else
+                                {
+                                    if (!log.Current.Any(x => x.Name == plugin.Name)) log.Current.Add(plugin);
+                                }
                             }
                         }
                     }
@@ -137,5 +161,40 @@ public class LogAnalyzer
         Console.WriteLine("");
         Console.ForegroundColor = ConsoleColor.White;
         return log;
+    }
+
+    public static int CompareVersions(string version1, string version2)
+    {
+        string[] parts1 = version1.Split('.');
+        string[] parts2 = version2.Split('.');
+        
+        int minLength = Math.Min(parts1.Length, parts2.Length);
+
+        for (int i = 0; i < minLength; i++)
+        {
+            int part1 = int.Parse(parts1[i]);
+            int part2 = int.Parse(parts2[i]);
+
+            if (part1 < part2)
+            {
+                return -1; // version1 is smaller
+            }
+            else if (part1 > part2)
+            {
+                return 1; // version1 is larger
+            }
+        }
+
+        // If all common parts are equal, check the remaining parts
+        if (parts1.Length < parts2.Length)
+        {
+            return -1; // version1 is smaller
+        }
+        else if (parts1.Length > parts2.Length)
+        {
+            return 1; // version1 is larger
+        }
+        
+        return 0; // versions are equal
     }
 }
