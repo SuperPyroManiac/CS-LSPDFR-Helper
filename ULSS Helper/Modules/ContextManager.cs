@@ -123,12 +123,15 @@ internal class ContextManager : ApplicationCommandModule
             var message = new DiscordEmbedBuilder();
             message.Description = "# **Quick Log Information**";
             message.Color = DiscordColor.Gold;
-            message.Author = new DiscordEmbedBuilder.EmbedAuthor() { Name = e.TargetMessage.Author.Username, IconUrl = e.TargetMessage.Author.AvatarUrl};
             message.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsRoleGearsIconUrl };
             message.Footer = new DiscordEmbedBuilder.EmbedFooter()
-             {
-                 Text = $"GTA: {GTAver} - RPH: {RPHver} - LSPDFR: {LSPDFRver} - Errors: {log.Errors.Count}"
-             };
+            {
+                Text = $"GTA: {GTAver} - RPH: {RPHver} - LSPDFR: {LSPDFRver} - Errors: {log.Errors.Count}"
+            };
+
+            message.AddField("Log was uploaded by:", $"<@{e.TargetMessage.Author.Id}>", true);
+            message.AddField("User ID:", e.TargetMessage.Author.Id.ToString(), true);
+            message.AddField("Link to log message:", e.TargetMessage.JumpLink.ToString(), false);
             
             if (outdated.Length >= 1024 || broken.Length >= 1024)
             {
@@ -179,57 +182,81 @@ internal class ContextManager : ApplicationCommandModule
             throw;
         }
     }
-
-    // Removes fields from DiscordEmbeds that should not be visible for everyone once the message is being sent to the user.
-    internal static List<DiscordEmbed> PrepareEmbedsForSendToUser(IReadOnlyList<DiscordEmbed> originalEmbeds) 
-    {
-        List<DiscordEmbed> userMessageEmbeds = new List<DiscordEmbed>();
-        foreach(DiscordEmbed originalEmbed in originalEmbeds) {
-            if (originalEmbed.Fields.Any(field => field.Name.Equals(PluginsNotRecognized)))
-            {
-                var newEmbed = new DiscordEmbedBuilder();
-                newEmbed.Color = originalEmbed.Color;
-                if (originalEmbed.Description != null)
-                    newEmbed.Description = originalEmbed.Description;
-                if (originalEmbed.Author != null)
-                    newEmbed.Author = new DiscordEmbedBuilder.EmbedAuthor() { Name = originalEmbed.Author.Name, IconUrl = originalEmbed.Author.IconUrl.ToString() };
-                if (originalEmbed.Thumbnail != null)
-                    newEmbed.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = originalEmbed.Thumbnail.Url.ToString() };
-                if (originalEmbed.Footer != null)
-                    newEmbed.Footer = new DiscordEmbedBuilder.EmbedFooter() { Text = originalEmbed.Footer.Text };
-
-                foreach (DiscordEmbedField originalField in originalEmbed.Fields) 
-                {
-                    if (!originalField.Name.Equals(PluginsNotRecognized)) 
-                    {
-                        newEmbed.AddField(originalField.Name, originalField.Value, originalField.Inline);
-                    }
-                }
-                userMessageEmbeds.Add(newEmbed);
-            } 
-            else 
-            {
-                userMessageEmbeds.Add(originalEmbed);
-            }
-            
-        }
-        return userMessageEmbeds;
-    }
     
     internal static async Task OnButtonPress(DiscordClient s, ComponentInteractionCreateEventArgs e)
     {
-        if (e.Id == "send")
+        List<string> fieldNamesToExclude = new List<string>{
+            "Message ID:",
+            "Link to log message:",
+            "User ID:",
+            "Log was uploaded by:",
+            PluginsNotRecognized
+        };
+        ulong? logOwnerId = null;
+
+        if (e.Id == "send" || e.Id == "send2")
         {
-            await e.Interaction.DeferAsync();
-            List<DiscordEmbed> userMessageEmbeds = PrepareEmbedsForSendToUser(e.Message.Embeds);
-            await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().AddEmbeds(userMessageEmbeds));
-        }
-        
-        if (e.Id == "send2")
-        {
-            await e.Interaction.DeferAsync();
-            List<DiscordEmbed> userMessageEmbeds = PrepareEmbedsForSendToUser(e.Message.Embeds);
-            await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().AddEmbeds(userMessageEmbeds));
+            await e.Interaction.DeferAsync(true);
+            List<DiscordEmbed> userMessageEmbeds = new List<DiscordEmbed>();
+            // Removes fields from DiscordEmbeds that should not be visible for everyone once the message is being sent to the user.
+            foreach(DiscordEmbed originalEmbed in e.Message.Embeds) 
+            {
+                if (originalEmbed.Fields.Any(field => fieldNamesToExclude.Contains(field.Name)))
+                {
+                    var newEmbed = new DiscordEmbedBuilder();
+                    newEmbed.Color = originalEmbed.Color;
+                    if (originalEmbed.Description != null)
+                        newEmbed.Description = originalEmbed.Description;
+                    if (originalEmbed.Author != null)
+                        newEmbed.Author = new DiscordEmbedBuilder.EmbedAuthor() { Name = originalEmbed.Author.Name, IconUrl = originalEmbed.Author.IconUrl.ToString() };
+                    if (originalEmbed.Thumbnail != null)
+                        newEmbed.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = originalEmbed.Thumbnail.Url.ToString() };
+                    if (originalEmbed.Footer != null)
+                        newEmbed.Footer = new DiscordEmbedBuilder.EmbedFooter() { Text = originalEmbed.Footer.Text };
+
+                    foreach (DiscordEmbedField originalField in originalEmbed.Fields) 
+                    {
+                        if (!fieldNamesToExclude.Contains(originalField.Name))  //!originalField.Name.Equals(PluginsNotRecognized)) 
+                        {
+                            newEmbed.AddField(originalField.Name, originalField.Value, originalField.Inline);
+                        }
+                        if (logOwnerId == null && originalField.Name.Equals("User ID:")) 
+                        {
+                            try
+                            {
+                                logOwnerId = ulong.Parse(originalField.Value);
+                            }
+                            catch (Exception ex)            
+                            {                
+                                if (ex is ArgumentNullException || ex is FormatException || ex is OverflowException)
+                                {
+                                    Console.WriteLine("Couldn't get logOwnerId. Field value is:", originalField.Value);
+                                    continue;
+                                }
+                                throw;
+                            }
+                        }
+                    }
+                    userMessageEmbeds.Add(newEmbed);
+                } 
+                else 
+                {
+                    userMessageEmbeds.Add(originalEmbed);
+                }
+            }
+
+
+            var newMessage = new DiscordMessageBuilder();
+            newMessage.AddEmbeds(userMessageEmbeds);
+            if (logOwnerId != null) 
+            {
+                UserMention logOwner = new UserMention((ulong) logOwnerId);
+                newMessage.AddMention(logOwner);
+                newMessage.WithAllowedMention(logOwner);
+                newMessage.WithContent($"<@{logOwnerId}>");
+            }
+            await e.Interaction.DeleteOriginalResponseAsync();
+            await newMessage.SendAsync(e.Channel);
         }
 
         if (e.Id == "info")
@@ -249,9 +276,36 @@ internal class ContextManager : ApplicationCommandModule
             message.Color = DiscordColor.Gold;
             message.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsRoleGearsIconUrl };
             message.Footer = new DiscordEmbedBuilder.EmbedFooter()
-             {
-                 Text = $"GTA: {GTAver} - RPH: {RPHver} - LSPDFR: {LSPDFRver} - Errors: {log.Errors.Count}"
-             };
+            {
+                Text = $"GTA: {GTAver} - RPH: {RPHver} - LSPDFR: {LSPDFRver} - Errors: {log.Errors.Count}"
+            };
+
+            foreach(DiscordEmbed originalEmbed in e.Message.Embeds) 
+            {
+                foreach (DiscordEmbedField originalField in e.Message.Embeds[0].Fields) 
+                {
+                    if (!message.Fields.Any(msgField => msgField.Name.Equals(originalField.Name)) && fieldNamesToExclude.Contains(originalField.Name))
+                    {
+                        message.AddField(originalField.Name, originalField.Value, originalField.Inline);
+                    }
+                    if (logOwnerId == null && originalField.Name.Equals("User ID:")) 
+                    {
+                        try
+                        {
+                            logOwnerId = ulong.Parse(originalField.Value);
+                        }
+                        catch (Exception ex)            
+                        {                
+                            if (ex is ArgumentNullException || ex is FormatException || ex is OverflowException)
+                            {
+                                Console.WriteLine("Couldn't get logOwnerId. Field value is:", originalField.Value);
+                                continue;
+                            }
+                            throw;
+                        }
+                    }
+                }
+            }
             
             if (outdated.Length >= 1024 || broken.Length >= 1024 || current.Length >= 1024)
             {
