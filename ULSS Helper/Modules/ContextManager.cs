@@ -16,8 +16,12 @@ internal class ContextManager : ApplicationCommandModule
     private static string library;
     private static AnalyzedLog log;
     private static string? _file;
+    private static string GTAver = "X";
+    private static string LSPDFRver = "X";
+    private static string RPHver = "X";
     private const string TsRoleGearsIconUrl = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless";
-    private const string PluginsNotRecognized = ":bangbang:  **Plugins not recognized:**";
+    private const string LogUploaderFieldName = "Log uploader:";
+    private const string PluginsNotRecognizedFieldName = ":bangbang:  **Plugins not recognized:**";
     
     [ContextMenu(ApplicationCommandType.MessageContextMenu, "Analyze Log")]
     public static async Task OnMenuSelect(ContextMenuContext e)
@@ -112,31 +116,17 @@ internal class ContextManager : ApplicationCommandModule
             broken = string.Join("\r\n- ", brokenList);
             missing = string.Join(", ", missingList);
             library = string.Join(", ", libraryList);
-            var GTAver = "X";
-            var LSPDFRver = "X";
-            var RPHver = "X";
 
-            if (Settings.GTAVer == log.GTAVersion) GTAver = "\u2713";
-            if (Settings.LSPDFRVer == log.LSPDFRVersion) LSPDFRver = "\u2713";
-            if (Settings.RPHVer == log.RPHVersion) RPHver = "\u2713";
+            DiscordEmbedBuilder message = GetBaseLogInfoMessage("# **Quick Log Information**");
 
-            var message = new DiscordEmbedBuilder();
-            message.Description = "# **Quick Log Information**";
-            message.Color = DiscordColor.Gold;
-            message.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsRoleGearsIconUrl };
-            message.Footer = new DiscordEmbedBuilder.EmbedFooter()
-            {
-                Text = $"GTA: {GTAver} - RPH: {RPHver} - LSPDFR: {LSPDFRver} - Errors: {log.Errors.Count}"
-            };
-
-            message.AddField("Log uploader:", $"<@{e.TargetMessage.Author.Id}>", true); // don't change the field value here without changing the GetLogOwnerId method.
+            message.AddField(LogUploaderFieldName, $"<@{e.TargetMessage.Author.Id}>", true); // don't change the field value here without changing the GetLogOwnerId method.
             message.AddField("Log message:", e.TargetMessage.JumpLink.ToString(), true);
             message.AddField("\u200B", "\u200B", true); // This invisible field (zero-width characters) is necessary in order to force the next inline field to be in a new row. 
             
             if (outdated.Length >= 1024 || broken.Length >= 1024)
             {
                 message.AddField(":warning:     **Message Too Big**", "\r\nToo many plugins to display in a single message.", true);
-                if (missing.Length > 0) message.AddField(PluginsNotRecognized, missing, false);
+                if (missing.Length > 0) message.AddField(PluginsNotRecognizedFieldName, missing, false);
                 var message2 = new DiscordEmbedBuilder { Title = ":orange_circle:     **Update:**", Description = "\r\n- " + outdated, Color = DiscordColor.Gold };
                 message2.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsRoleGearsIconUrl };
                 var message3 = new DiscordEmbedBuilder { Title = ":red_circle:     **Remove:**", Description = "\r\n- " + broken, Color = DiscordColor.Gold };
@@ -157,17 +147,7 @@ internal class ContextManager : ApplicationCommandModule
             }
             else
             {
-                if (current.Length != 0 && outdated.Length == 0 && broken.Length != 0) outdated = "**None**";
-                if (current.Length != 0 && outdated.Length != 0 && broken.Length == 0) broken = "**None**";
-
-                if (outdated.Length > 0) message.AddField(":orange_circle:     **Update:**", "\r\n- " + outdated, true);
-                if (broken.Length > 0) message.AddField(":red_circle:     **Remove:**", "\r\n- " + broken, true);
-                if (missing.Length > 0) message.AddField(PluginsNotRecognized, missing, false);
-            
-                if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0) message.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
-                if (LSPDFRver == "X") message.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **You should manually check the log!**");
-                if (current.Length == 0 && outdated.Length == 0 && broken.Length == 0 && LSPDFRver != "X") message.AddField(":green_circle:     **No installed plugins!**", "- Can't have plugin issues if you don't got any!");
-
+                message = AddCommonFields(message);
                 
                 await e.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(message).AddComponents(new DiscordComponent[]
                 {
@@ -188,7 +168,7 @@ internal class ContextManager : ApplicationCommandModule
         // names of embed fields that should only be shown to ULSS staff
         List<string> tsInfoFieldNames = new List<string>{
             "Log message:",
-            "Log uploader:",
+            LogUploaderFieldName,
             "\u200B"
         };
         if (e.Id == "send" || e.Id == "send2") await SendMessageToUser(e, tsInfoFieldNames);
@@ -201,7 +181,7 @@ internal class ContextManager : ApplicationCommandModule
         
         ulong? logOwnerId = null;
         List<DiscordEmbed> userMessageEmbeds = new List<DiscordEmbed>();
-        tsInfoFieldNames.Add(PluginsNotRecognized);
+        tsInfoFieldNames.Add(PluginsNotRecognizedFieldName);
         
         foreach(DiscordEmbed originalEmbed in e.Message.Embeds) 
         {
@@ -229,7 +209,7 @@ internal class ContextManager : ApplicationCommandModule
                     {
                         newEmbed.AddField(originalField.Name, originalField.Value, originalField.Inline);
                     }
-                    if (logOwnerId == null && originalField.Name.Equals("Log uploader:")) 
+                    if (logOwnerId == null && originalField.Name.Equals(LogUploaderFieldName)) 
                     {
                         logOwnerId = GetLogOwnerId(originalField.Value);
                     }
@@ -260,22 +240,7 @@ internal class ContextManager : ApplicationCommandModule
         ulong? logOwnerId = null;
         await e.Interaction.DeferAsync(true);
         
-        var GTAver = "X";
-        var LSPDFRver = "X";
-        var RPHver = "X";
-
-        if (Settings.GTAVer == log.GTAVersion) GTAver = "\u2713";
-        if (Settings.LSPDFRVer == log.LSPDFRVersion) LSPDFRver = "\u2713";
-        if (Settings.RPHVer == log.RPHVersion) RPHver = "\u2713";
-
-        var message = new DiscordEmbedBuilder();
-        message.Description = "# **Detailed Log Information**";
-        message.Color = DiscordColor.Gold;
-        message.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsRoleGearsIconUrl };
-        message.Footer = new DiscordEmbedBuilder.EmbedFooter()
-        {
-            Text = $"GTA: {GTAver} - RPH: {RPHver} - LSPDFR: {LSPDFRver} - Errors: {log.Errors.Count}"
-        };
+        DiscordEmbedBuilder message = GetBaseLogInfoMessage("# **Detailed Log Information**");
 
         foreach(DiscordEmbed originalEmbed in e.Message.Embeds) 
         {
@@ -289,7 +254,7 @@ internal class ContextManager : ApplicationCommandModule
                 {
                     message.AddField(originalField.Name, originalField.Value, originalField.Inline);
                 }
-                if (logOwnerId == null && originalField.Name.Equals("Log uploader:")) 
+                if (logOwnerId == null && originalField.Name.Equals(LogUploaderFieldName)) 
                 {
                     logOwnerId = GetLogOwnerId(originalField.Value);
                 }
@@ -299,7 +264,7 @@ internal class ContextManager : ApplicationCommandModule
         if (outdated.Length >= 1024 || broken.Length >= 1024 || current.Length >= 1024)
         {
             message.AddField(":warning:     **Message Too Big**", "\r\nToo many plugins to display in a single message.\r\nFor error checking please first fix plugin issues.", true);
-            if (missing.Length > 0) message.AddField(PluginsNotRecognized, missing, false);
+            if (missing.Length > 0) message.AddField(PluginsNotRecognizedFieldName, missing, false);
             var currentMsg = new DiscordEmbedBuilder
             {
                 Title = ":green_circle:     **Current:**",
@@ -336,18 +301,7 @@ internal class ContextManager : ApplicationCommandModule
         }
         else
         {
-            if (current.Length != 0 && outdated.Length == 0 && broken.Length != 0) outdated = "**None**";
-            if (current.Length != 0 && outdated.Length != 0 && broken.Length == 0) broken = "**None**";
-            if (current.Length == 0 && outdated.Length != 0 || broken.Length != 0) current = "**None**";
-
-            if (outdated.Length > 0) message.AddField(":orange_circle:     **Update:**", "\r\n- " + outdated, true);
-            if (broken.Length > 0) message.AddField(":red_circle:     **Remove:**", "\r\n- " + broken, true);
-            //if (current.Length > 0) message.AddField(":green_circle:     **Current:**", "\r\n" + string.Join(", ", currentList), false);
-            if (missing.Length > 0) message.AddField(PluginsNotRecognized, missing, false);
-        
-            if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0) message.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
-            if (LSPDFRver == "X") message.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **Possible issues:**");
-            if (current.Length == 0 && outdated.Length == 0 && broken.Length == 0 && LSPDFRver != "X") message.AddField(":green_circle:     **No installed plugins!**", "- Can't have plugin issues if you don't got any!");
+            message = AddCommonFields(message);
 
             foreach (var error in log.Errors)
             {
@@ -359,6 +313,42 @@ internal class ContextManager : ApplicationCommandModule
                 new DiscordButtonComponent(ButtonStyle.Danger, "send2", "Send To User", false, new DiscordComponentEmoji("📨"))
             }));
         }
+    }
+
+    private static DiscordEmbedBuilder GetBaseLogInfoMessage(string description)
+    {
+        if (Settings.GTAVer == log.GTAVersion) GTAver = "\u2713";
+        if (Settings.LSPDFRVer == log.LSPDFRVersion) LSPDFRver = "\u2713";
+        if (Settings.RPHVer == log.RPHVersion) RPHver = "\u2713";
+
+        return new DiscordEmbedBuilder(){
+            Description = description,
+            Color = DiscordColor.Gold,
+            Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsRoleGearsIconUrl },
+            Footer = new DiscordEmbedBuilder.EmbedFooter()
+            {
+                Text = $"GTA: {GTAver} - RPH: {RPHver} - LSPDFR: {LSPDFRver} - Errors: {log.Errors.Count}"
+            }
+        };
+            
+    }
+
+    private static DiscordEmbedBuilder AddCommonFields(DiscordEmbedBuilder message)
+    {
+        if (current.Length != 0 && outdated.Length == 0 && broken.Length != 0) outdated = "**None**";
+        if (current.Length != 0 && outdated.Length != 0 && broken.Length == 0) broken = "**None**";
+        if (current.Length == 0 && outdated.Length != 0 || broken.Length != 0) current = "**None**";
+
+        //if (current.Length > 0) message.AddField(":green_circle:     **Current:**", "\r\n" + string.Join(", ", currentList), false);
+        if (outdated.Length > 0) message.AddField(":orange_circle:     **Update:**", "\r\n- " + outdated, true);
+        if (broken.Length > 0) message.AddField(":red_circle:     **Remove:**", "\r\n- " + broken, true);
+        if (missing.Length > 0) message.AddField(PluginsNotRecognizedFieldName, missing, false);
+    
+        if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0) message.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
+        if (LSPDFRver == "X") message.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **You should manually check the log!**");
+        if (current.Length == 0 && outdated.Length == 0 && broken.Length == 0 && LSPDFRver != "X") message.AddField(":green_circle:     **No installed plugins!**", "- Can't have plugin issues if you don't got any!");
+
+        return message;
     }
 
     private static ulong? GetLogOwnerId(string logUploaderMention) 
