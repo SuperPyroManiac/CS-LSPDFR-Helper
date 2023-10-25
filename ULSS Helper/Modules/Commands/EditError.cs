@@ -7,7 +7,11 @@ namespace ULSS_Helper.Modules.Commands;
 public class EditError : ApplicationCommandModule
 {
     [SlashCommand("EditError", "Edits an error in the database!")]
-    public async Task EditErrorCmd(InteractionContext ctx, [Option("ID", "Errors ID!")] string eI, [Option("Level", "Warning type (WARN, SEVERE")] Level lvl)
+    public async Task EditErrorCmd(
+        InteractionContext ctx, 
+        [Option("ID", "Errors ID!")] string eI, 
+        [Option("New_Level", "Warning type (WARN, SEVERE")] Level? lvl=null
+    )
     {
         if (ctx.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
         {
@@ -24,7 +28,7 @@ public class EditError : ApplicationCommandModule
         var error = DatabaseManager.LoadErrors().FirstOrDefault(x => x.ID.ToString() == eI);
 
         Program.ErrId = eI;
-        Program.ErrLevel = lvl;
+        if (lvl != null) Program.ErrLevel = (Level) lvl;
         
         DiscordInteractionResponseBuilder modal = new();
         modal.WithTitle($"Editing error ID: {Program.ErrId}!").WithCustomId("edit-error").AddComponents(
