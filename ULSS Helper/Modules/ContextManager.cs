@@ -305,7 +305,7 @@ internal class ContextManager : ApplicationCommandModule
 
             foreach (var error in log.Errors)
             {
-                message.AddField($"```{error.Level.ToString().ToUpperInvariant()} ID: {error.ID}``` Troubleshooting Steps:", $"> {error.Solution}");
+                message.AddField($"```{error.Level.ToString()} ID: {error.ID}``` Troubleshooting Steps:", $"> {error.Solution}");
             }
             
             await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().AddEmbed(message).AddComponents(new DiscordComponent[]
@@ -344,8 +344,8 @@ internal class ContextManager : ApplicationCommandModule
         if (missing.Length > 0) message.AddField(PluginsNotRecognizedFieldName, missing, false);
     
         if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0) message.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
-        if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0 && LSPDFRver == "X") message.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **No plugin information available!**");
-        if (current.Length == 0 && outdated.Length == 0 && broken.Length == 0 && LSPDFRver != "X") message.AddField(":green_circle:     **No installed plugins!**", "- Can't have plugin issues if you don't got any!");
+        if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0 && string.IsNullOrEmpty(log.LSPDFRVersion)) message.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **No plugin information available!**");
+        if (current.Length == 0 && outdated.Length == 0 && broken.Length == 0) message.AddField(":green_circle:     **No installed plugins!**", "- Can't have plugin issues if you don't got any!");
 
         return message;
     }
