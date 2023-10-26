@@ -339,13 +339,12 @@ internal class ContextManager : ApplicationCommandModule
         if (current.Length != 0 && outdated.Length != 0 && broken.Length == 0) broken = "**None**";
         if (current.Length == 0 && outdated.Length != 0 || broken.Length != 0) current = "**None**";
 
-        //if (current.Length > 0) message.AddField(":green_circle:     **Current:**", "\r\n" + string.Join(", ", currentList), false);
         if (outdated.Length > 0) message.AddField(":orange_circle:     **Update:**", "\r\n- " + outdated, true);
         if (broken.Length > 0) message.AddField(":red_circle:     **Remove:**", "\r\n- " + broken, true);
         if (missing.Length > 0) message.AddField(PluginsNotRecognizedFieldName, missing, false);
     
         if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0) message.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
-        if (LSPDFRver == "X") message.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **You should manually check the log!**");
+        if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0 && LSPDFRver == "X") message.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **No plugin information available!**");
         if (current.Length == 0 && outdated.Length == 0 && broken.Length == 0 && LSPDFRver != "X") message.AddField(":green_circle:     **No installed plugins!**", "- Can't have plugin issues if you don't got any!");
 
         return message;
