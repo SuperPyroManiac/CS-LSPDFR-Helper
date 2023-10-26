@@ -78,6 +78,7 @@ public class AnalyzedLog
     public List<Plugin?> Broken { get; set; }
     public List<Plugin?> Library { get; set; }
     public List<Plugin?> Missing { get; set; }
+    public List<Plugin> Missmatch { get; set; }
     
     public List<Error?> Errors { get; set; }
 
