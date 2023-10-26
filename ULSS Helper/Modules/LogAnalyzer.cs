@@ -53,16 +53,14 @@ public class LogAnalyzer
                                         }
                                         else if (resultEA > 0)
                                         {
-                                            // TODO: Collect plugins with unknown larger version numbers in separate list and notify TS
-                                            Console.WriteLine($"Plugin version {logVersion} of plugin {plugin.Name} in the RPH.log is larger than any known version in the DB!");
+                                            if (!log.Missmatch.Any(x => x.Name == plugin.Name)) log.Missmatch.Add(plugin);//TODO: Please Review
                                         }
                                         else
                                         {
                                             if (!log.Current.Any(x => x.Name == plugin.Name)) log.Current.Add(plugin);
                                         }
                                     } else {
-                                        // TODO: Collect plugins with unknown larger version numbers in separate list and notify TS
-                                        Console.WriteLine($"Plugin version {logVersion} of plugin {plugin.Name} in the RPH.log is larger than any known version in the DB!");
+                                        if (!log.Missmatch.Any(x => x.Name == plugin.Name)) log.Missmatch.Add(plugin);//TODO: Please review
                                     }
                                 }
                                 else
