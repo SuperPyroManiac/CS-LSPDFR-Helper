@@ -38,32 +38,34 @@ public class LogAnalyzer
                             if (!string.IsNullOrEmpty(plugin.Version))
                             {
                                 int result = CompareVersions(logVersion, plugin.Version);
-                                if (result < 0)
+                                if (result < 0) // plugin version in log is older than version in DB
                                 {
                                     if (!log.Outdated.Any(x => x.Name == plugin.Name)) log.Outdated.Add(plugin);
                                 }
-                                else if (result > 0)
+                                else if (result > 0) // plugin version in log is newer than version in DB
                                 {
                                     if (!string.IsNullOrEmpty(plugin.EAVersion)) 
                                     {
                                         int resultEA = CompareVersions(logVersion, plugin.EAVersion);
-                                        if (resultEA < 0)
+                                        if (resultEA < 0) // plugin version in log is older than Early Access version in DB
                                         {
                                             if (!log.Outdated.Any(x => x.Name == plugin.Name)) log.Outdated.Add(plugin);
                                         }
-                                        else if (resultEA > 0)
+                                        else if (resultEA > 0) // plugin version in log is newer than Early Access version in DB
                                         {
-                                            if (!log.Missmatch.Any(x => x.Name == plugin.Name)) log.Missmatch.Add(plugin);//TODO: Please Review
+                                            if (!log.Missmatch.Any(x => x.Name == plugin.Name)) log.Missmatch.Add(plugin);
                                         }
-                                        else
+                                        else // plugin version in log is up to date (equals Early Access version in DB)
                                         {
                                             if (!log.Current.Any(x => x.Name == plugin.Name)) log.Current.Add(plugin);
                                         }
-                                    } else {
-                                        if (!log.Missmatch.Any(x => x.Name == plugin.Name)) log.Missmatch.Add(plugin);//TODO: Please review
+                                    } 
+                                    else // plugin version in log is newer than version in DB and there is no Early Acccess version
+                                    { 
+                                        if (!log.Missmatch.Any(x => x.Name == plugin.Name)) log.Missmatch.Add(plugin);
                                     }
                                 }
-                                else
+                                else // plugin version in log is up to date (equals plugin version number in DB)
                                 {
                                     if (!log.Current.Any(x => x.Name == plugin.Name)) log.Current.Add(plugin);
                                 }
