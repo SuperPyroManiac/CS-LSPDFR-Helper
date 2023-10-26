@@ -305,7 +305,7 @@ internal class ContextManager : ApplicationCommandModule
 
             foreach (var error in log.Errors)
             {
-                message.AddField($"```ID: {error.ID}``` {error.Level} Error Info", $"> {error.Solution}");
+                message.AddField($"```{error.Level.ToString().ToUpperInvariant()} ID: {error.ID}``` Troubleshooting Steps:", $"> {error.Solution}");
             }
             
             await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().AddEmbed(message).AddComponents(new DiscordComponent[]
@@ -327,7 +327,7 @@ internal class ContextManager : ApplicationCommandModule
             Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsRoleGearsIconUrl },
             Footer = new DiscordEmbedBuilder.EmbedFooter()
             {
-                Text = $"GTA: {GTAver} - RPH: {RPHver} - LSPDFR: {LSPDFRver} - Errors: {log.Errors.Count}"
+                Text = $"GTA: {GTAver} - RPH: {RPHver} - LSPDFR: {LSPDFRver} - Notes: {log.Errors.Count}"
             }
         };
             
