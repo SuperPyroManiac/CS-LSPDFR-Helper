@@ -1,12 +1,14 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
+using DSharpPlus.SlashCommands.Attributes;
 
 namespace ULSS_Helper.Modules.Commands;
 
 public class RemoveError : ApplicationCommandModule
 {
     [SlashCommand("RemoveError", "Removes an error from the database!")]
+    [SlashRequirePermissions(Permissions.ManageMessages)]
     public async Task RemoveErrorCmd(InteractionContext ctx,
         [Option("ID", "Must match an existing error id!")] string errId)
     {

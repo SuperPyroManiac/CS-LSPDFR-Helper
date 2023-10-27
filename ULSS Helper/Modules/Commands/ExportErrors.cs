@@ -1,12 +1,15 @@
 using System.Xml.Serialization;
+using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
+using DSharpPlus.SlashCommands.Attributes;
 
 namespace ULSS_Helper.Modules.Commands;
 
 public class ExportErrors : ApplicationCommandModule
 {
     [SlashCommand("ExportErrors", "Exports all errors as an xml!")]
+    [SlashRequirePermissions(Permissions.ManageMessages)]
     public async Task ExportErrorsCmd(InteractionContext ctx)
     {
         var errors = DatabaseManager.LoadErrors().ToArray();

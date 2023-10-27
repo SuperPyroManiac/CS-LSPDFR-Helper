@@ -1,12 +1,14 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
+using DSharpPlus.SlashCommands.Attributes;
 
 namespace ULSS_Helper.Modules.Commands;
 
 public class AddPlugin : ApplicationCommandModule
 {
     [SlashCommand("AddPlugin", "Adds a plugin to the database!")]
+    [SlashRequirePermissions(Permissions.ManageMessages)]
     public async Task AddPluginCmd(InteractionContext ctx, 
         [Option("Name", "Plugins name as shown in the log!")] string? pN, 
         [Option("State", "Plugin state, LSPDFR, EXTERNAL, BROKEN, LIB")] State pS)

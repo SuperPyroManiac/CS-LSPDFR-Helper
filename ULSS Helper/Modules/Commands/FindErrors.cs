@@ -1,12 +1,14 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
+using DSharpPlus.SlashCommands.Attributes;
 
 namespace ULSS_Helper.Modules.Commands;
 
 public class FindErrors : ApplicationCommandModule
 {
     [SlashCommand("FindErrors", "Returns a list of all errors in the database that match the search parameters!")]
+    [SlashRequirePermissions(Permissions.ManageMessages)]
     public async Task FindErrorsCmd(InteractionContext ctx,
         [Option("ID", "The error id in the bot's database.")] string? errId=null,
         [Option("Regex", "Regex for detecting the error.")] string? regex=null,

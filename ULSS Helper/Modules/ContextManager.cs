@@ -1,8 +1,10 @@
 ﻿using System.Net;
 using DSharpPlus;
+using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
+using DSharpPlus.SlashCommands.Attributes;
 using static ULSS_Helper.Modules.MessageManager;
 
 namespace ULSS_Helper.Modules;
@@ -24,6 +26,7 @@ internal class ContextManager : ApplicationCommandModule
     internal static string RPHver = "X";
     
     [ContextMenu(ApplicationCommandType.MessageContextMenu, "Analyze Log")]
+    [SlashRequirePermissions(Permissions.ManageMessages)]
     public static async Task OnMenuSelect(ContextMenuContext e)
     {
         if (e.Member.Roles.All(role => role.Id != Settings.GetTSRole()))//TODO: Proper permissions setup

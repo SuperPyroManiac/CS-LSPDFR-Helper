@@ -1,12 +1,15 @@
 using System.Xml.Serialization;
+using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
+using DSharpPlus.SlashCommands.Attributes;
 
 namespace ULSS_Helper.Modules.Commands;
 
 public class ExportPlugins : ApplicationCommandModule
 {
     [SlashCommand("ExportPlugins", "Exports all plugins as an xml!")]
+    [SlashRequirePermissions(Permissions.ManageMessages)]
     public async Task ExportPluginsCmd(InteractionContext ctx)
     {
         var plugins = DatabaseManager.LoadPlugins().ToArray();

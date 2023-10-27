@@ -1,12 +1,14 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
+using DSharpPlus.SlashCommands.Attributes;
 
 namespace ULSS_Helper.Modules.Commands;
 
 public class EditError : ApplicationCommandModule
 {
     [SlashCommand("EditError", "Edits an error in the database!")]
+    [SlashRequirePermissions(Permissions.ManageMessages)]
     public async Task EditErrorCmd(
         InteractionContext ctx, 
         [Option("ID", "Errors ID!")] string eI, 
