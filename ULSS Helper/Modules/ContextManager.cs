@@ -106,12 +106,14 @@ internal class ContextManager : ApplicationCommandModule
             currentList = log.Current.Select(i => i?.DName).ToList();
             var brokenList = log.Broken.Select(i => i?.DName).ToList();
             var missingList = log.Missing.Select(i => i?.Name).ToList();
+            var missmatchList = log.Missmatch.Select(i => i?.Name).ToList();
             var libraryList = log.Library.Select(i => i?.DName).ToList();
             brokenList.AddRange(libraryList);
             current = string.Join("\r\n- ", currentList);
             outdated = string.Join("\r\n- ", linkedOutdated);
             broken = string.Join("\r\n- ", brokenList);
             missing = string.Join(", ", missingList);
+            missmatch = string.Join(", ", missingList);
             library = string.Join(", ", libraryList);
             
             //===============================================SEND QUICK VIEW=========================================================
