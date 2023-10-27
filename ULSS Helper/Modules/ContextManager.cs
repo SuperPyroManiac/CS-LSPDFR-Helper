@@ -207,6 +207,7 @@ internal class ContextManager : ApplicationCommandModule
         var newMessage = new DiscordMessageBuilder();
         newMessage.WithContent($"<@{senderID}>");
         newMessage.AddEmbeds(newEmbList);
+        newMessage.WithAllowedMention(new UserMention(senderID));
         await e.Interaction.DeleteOriginalResponseAsync();
         await newMessage.SendAsync(e.Channel);
     }
