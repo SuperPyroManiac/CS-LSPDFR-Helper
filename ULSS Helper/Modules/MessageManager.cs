@@ -80,7 +80,7 @@ internal static class MessageManager
         if (outdated.Length > 0) message.AddField(":orange_circle:     **Update:**", "\r\n- " + outdated, true);
         if (broken.Length > 0) message.AddField(":red_circle:     **Remove:**", "\r\n- " + broken, true);
         if (missing.Length > 0) message.AddField(":bangbang:  **Plugins not recognized:**", missing);
-        if (missmatch.Length > 0) message.AddField(":bangbang:  **Plugin version newer than DB:**", missing);
+        if (missmatch.Length > 0) message.AddField(":bangbang:  **Plugin version newer than DB:**", missmatch);
 
         if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0)
             message.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
