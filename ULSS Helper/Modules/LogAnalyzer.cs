@@ -17,6 +17,7 @@ public class LogAnalyzer
         log.Broken = new List<Plugin?>();
         log.Library = new List<Plugin?>();
         log.Missing = new List<Plugin?>();
+        log.Missmatch = new List<Plugin>();
         log.Errors = new List<Error?>();
 
         foreach (var lineReader in reader)
