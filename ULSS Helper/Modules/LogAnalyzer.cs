@@ -115,7 +115,8 @@ public class LogAnalyzer
                 line = line.Replace(",", string.Empty);
                 if (line.Length > 1 && !log.Current.Any(x => x.Name == line) &&
                     !log.Outdated.Any(x => x.Name == line) && !log.Broken.Any(x => x.Name == line) &&
-                    !log.Library.Any(x => x.Name == line) && !log.Missing.Any(x => x.Name == line))
+                    !log.Library.Any(x => x.Name == line) && !log.Missing.Any(x => x.Name == line) && 
+                    !log.Missmatch.Any(x => x.Name == line))
                 {
                     var temp = new Plugin();
                     temp.Name = line;

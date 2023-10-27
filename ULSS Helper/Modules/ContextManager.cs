@@ -113,7 +113,7 @@ internal class ContextManager : ApplicationCommandModule
             outdated = string.Join("\r\n- ", linkedOutdated);
             broken = string.Join("\r\n- ", brokenList);
             missing = string.Join(", ", missingList);
-            missmatch = string.Join(", ", missingList);
+            missmatch = string.Join(", ", missmatchList);
             library = string.Join(", ", libraryList);
             
             //===============================================SEND QUICK VIEW=========================================================
