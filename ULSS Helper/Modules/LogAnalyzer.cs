@@ -26,70 +26,74 @@ public class LogAnalyzer
             {
                 try
                 {
-                    if (plugin.State is "LSPDFR" or "EXTERNAL")
+                    switch (plugin.State)
                     {
-                        var regex = new Regex($".+LSPD First Response: {Regex.Escape(plugin.Name)}. Version=([0-9.]+).+");
-                        var match = regex.Match(line);
-                        if (match.Success)
+                        case "LSPDFR" or "EXTERNAL":
                         {
-                            string logVersion = match.Groups[1].Value;
-                            var version = $"{plugin.Name}, Version={plugin.Version}";
-                            var eaversion = $"{plugin.Name}, Version={plugin.EAVersion}";
-                            if (!string.IsNullOrEmpty(plugin.Version))
+                            var regex = new Regex($".+LSPD First Response: {Regex.Escape(plugin.Name)}. Version=([0-9.]+).+");
+                            var match = regex.Match(line);
+                            if (match.Success)
                             {
-                                int result = CompareVersions(logVersion, plugin.Version);
-                                if (result < 0) // plugin version in log is older than version in DB
+                                string logVersion = match.Groups[1].Value;
+                                var version = $"{plugin.Name}, Version={plugin.Version}";
+                                var eaversion = $"{plugin.Name}, Version={plugin.EAVersion}";
+                                if (!string.IsNullOrEmpty(plugin.Version))
                                 {
-                                    if (!log.Outdated.Any(x => x.Name == plugin.Name)) log.Outdated.Add(plugin);
-                                }
-                                else if (result > 0) // plugin version in log is newer than version in DB
-                                {
-                                    if (!string.IsNullOrEmpty(plugin.EAVersion)) 
+                                    var result = CompareVersions(logVersion, plugin.Version);
+                                    if (result < 0) // plugin version in log is older than version in DB
                                     {
-                                        int resultEA = CompareVersions(logVersion, plugin.EAVersion);
-                                        if (resultEA < 0) // plugin version in log is older than Early Access version in DB
+                                        if (!log.Outdated.Any(x => x.Name == plugin.Name)) log.Outdated.Add(plugin);
+                                    }
+                                    else if (result > 0) // plugin version in log is newer than version in DB
+                                    {
+                                        if (!string.IsNullOrEmpty(plugin.EAVersion)) 
                                         {
-                                            if (!log.Outdated.Any(x => x.Name == plugin.Name)) log.Outdated.Add(plugin);
-                                        }
-                                        else if (resultEA > 0) // plugin version in log is newer than Early Access version in DB
-                                        {
+                                            var resultEA = CompareVersions(logVersion, plugin.EAVersion);
+                                            if (resultEA < 0) // plugin version in log is older than Early Access version in DB
+                                            {
+                                                if (!log.Outdated.Any(x => x.Name == plugin.Name)) log.Outdated.Add(plugin);
+                                            }
+                                            else if (resultEA > 0) // plugin version in log is newer than Early Access version in DB
+                                            {
+                                                if (!log.Missmatch.Any(x => x.Name == plugin.Name)) log.Missmatch.Add(plugin);
+                                            }
+                                            else // plugin version in log is up to date (equals Early Access version in DB)
+                                            {
+                                                if (!log.Current.Any(x => x.Name == plugin.Name)) log.Current.Add(plugin);
+                                            }
+                                        } 
+                                        else // plugin version in log is newer than version in DB and there is no Early Acccess version
+                                        { 
                                             if (!log.Missmatch.Any(x => x.Name == plugin.Name)) log.Missmatch.Add(plugin);
                                         }
-                                        else // plugin version in log is up to date (equals Early Access version in DB)
-                                        {
-                                            if (!log.Current.Any(x => x.Name == plugin.Name)) log.Current.Add(plugin);
-                                        }
-                                    } 
-                                    else // plugin version in log is newer than version in DB and there is no Early Acccess version
-                                    { 
-                                        if (!log.Missmatch.Any(x => x.Name == plugin.Name)) log.Missmatch.Add(plugin);
+                                    }
+                                    else // plugin version in log is up to date (equals plugin version number in DB)
+                                    {
+                                        if (!log.Current.Any(x => x.Name == plugin.Name)) log.Current.Add(plugin);
                                     }
                                 }
-                                else // plugin version in log is up to date (equals plugin version number in DB)
-                                {
-                                    if (!log.Current.Any(x => x.Name == plugin.Name)) log.Current.Add(plugin);
-                                }
                             }
+                            break;
                         }
-                    }
-                    
-                    if (plugin.State == "BROKEN")
-                    {
-                        var regex = new Regex($".+LSPD First Response: {Regex.Escape(plugin.Name)}. Version=[0-9.]+.+");
-                        var match = regex.Match(line);
-                        if (match.Success)
+                        case "BROKEN":
                         {
-                            if (!log.Broken.Any(x => x.Name == plugin.Name)) log.Broken.Add(plugin);
+                            var regex = new Regex($".+LSPD First Response: {Regex.Escape(plugin.Name)}. Version=[0-9.]+.+");
+                            var match = regex.Match(line);
+                            if (match.Success)
+                            {
+                                if (!log.Broken.Any(x => x.Name == plugin.Name)) log.Broken.Add(plugin);
+                            }
+                            break;
                         }
-                    }
-                    
-                    if (plugin.State == "LIB")
-                    {
-                        var regex = new Regex($".+LSPD First Response: {Regex.Escape(plugin.Name)}. Version=[0-9.]+.+");
-                        var match = regex.Match(line);
-                        if (match.Success)
+                        case "LIB":
                         {
-                            if (!log.Library.Any(x => x.Name == plugin.Name)) log.Library.Add(plugin);
+                            var regex = new Regex($".+LSPD First Response: {Regex.Escape(plugin.Name)}. Version=[0-9.]+.+");
+                            var match = regex.Match(line);
+                            if (match.Success)
+                            {
+                                if (!log.Library.Any(x => x.Name == plugin.Name)) log.Library.Add(plugin);
+                            }
+                            break;
                         }
                     }
                 }
@@ -99,6 +103,7 @@ public class LogAnalyzer
                     throw;
                 }
             }
+            
             var allrounder = new Regex(".+LSPD First Response: (\\W*\\w*\\W*\\w*\\W*), Version=([0-9]+\\..+), Culture=\\w+, PublicKeyToken=\\w+");
             var allmatch = allrounder.Match(line);
             if (allmatch.Success)
@@ -156,6 +161,7 @@ public class LogAnalyzer
         Console.WriteLine($"Library: {log.Library.Count}");
         Console.ForegroundColor = ConsoleColor.Blue;
         Console.WriteLine($"Missing: {log.Missing.Count}");
+        Console.WriteLine($"Newer: {log.Missmatch.Count}");
         Console.WriteLine("");
         Console.WriteLine("");
         Console.WriteLine("");
