@@ -167,6 +167,11 @@ internal class ContextManager : ApplicationCommandModule
         await e.Interaction.DeferAsync(true);
         
         var message = GetBaseLogInfoMessage("# **Detailed Log Information**");
+        
+        message.AddField("Log uploader:", $"<@{senderID}>", true);
+        message.AddField("Log message:", e.Message.JumpLink.ToString(), true);
+        message.AddField("\u200B", "\u200B", true); //TS View only! Always index 0 - 2.
+        
         message = AddCommonFields(message);
 
         foreach (var error in log.Errors)
