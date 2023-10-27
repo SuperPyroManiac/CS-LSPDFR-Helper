@@ -16,7 +16,7 @@ internal class ContextManager : ApplicationCommandModule
     internal static string missing;
     internal static string library;
     internal static string missmatch;
-    internal static ulong senderID;
+    private static ulong senderID;
     internal static AnalyzedLog log;
     private static string? _file;
     internal static string GTAver = "X";
@@ -124,7 +124,7 @@ internal class ContextManager : ApplicationCommandModule
             
             if (outdated.Length >= 1024 || broken.Length >= 1024)
             {
-                message.AddField(":warning:     **Message Too Big**", "\r\nToo many plugins to display in a single message.\r\nFor detailed info, first fix plugins!", true);
+                message.AddField(":warning:     **Message Too Big**", "\r\nToo many plugins to display in a single message.\r\nFor detailed info, first fix the plugins!", true);
                 if (missing.Length > 0) message.AddField(":bangbang:  **Plugins not recognized:**", missing, false);
                 var message2 = new DiscordEmbedBuilder { Title = ":orange_circle:     **Update:**", Description = "\r\n- " + outdated, Color = DiscordColor.Gold };
                 message2.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon };
