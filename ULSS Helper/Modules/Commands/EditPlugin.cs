@@ -30,7 +30,17 @@ public class EditPlugin : ApplicationCommandModule
         var plugin = DatabaseManager.LoadPlugins().FirstOrDefault(x => x.Name == pN);
 
         Program.PlugName = plugin.Name;
-        if (pS != null) Program.PlugState = (State) pS;
+        if (pS != null)
+        {
+            Program.PlugState = (State) pS;
+        }
+        else
+        {
+            if (Enum.TryParse(plugin.State, out State newState))
+            {
+                Program.PlugState = (State) newState;
+            }
+        }
         
         DiscordInteractionResponseBuilder modal = new();
         modal.WithTitle($"Editing {Program.PlugName} as {Program.PlugState.ToString()}").WithCustomId("edit-plugin").AddComponents(
