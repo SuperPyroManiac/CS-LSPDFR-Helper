@@ -133,7 +133,7 @@ public class LogAnalyzer
             Match match2 = gtaver.Match(line);
             if (match2.Success) log.GTAVersion = match2.Groups[1].Value;
             
-            var lspdfrver = new Regex(@".+ This version: (\d+\.\d+\.\d+\.\d+), Version available on server:");
+            var lspdfrver = new Regex(@".+ Running LSPD First Response 0\.4\.9 \((\d+\.\d+\.\d+\.\d+)\)");
             Match match3 = lspdfrver.Match(line);
             if (match3.Success) log.LSPDFRVersion = match3.Groups[1].Value;
         }
