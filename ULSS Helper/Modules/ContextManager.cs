@@ -97,7 +97,7 @@ internal class ContextManager : ApplicationCommandModule
             using var client = new WebClient();
             client.DownloadFile(_file,
                 Path.Combine(Directory.GetCurrentDirectory(), "RPHLogs", Settings.LogNamer()));
-            log = LogAnalyzer.Run();
+            log = RPHLogAnalyzer.Run();
             
             //===============================================VARIABLES=========================================================
             

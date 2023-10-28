@@ -2,7 +2,7 @@
 
 namespace ULSS_Helper.Modules;
 
-public class LogAnalyzer
+public class RPHLogAnalyzer
 {
     internal static AnalyzedLog Run()
     {
