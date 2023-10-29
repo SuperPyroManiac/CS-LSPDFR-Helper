@@ -37,10 +37,4 @@ internal class ContextManager : ApplicationCommandModule
             throw;
         }
     }
-    
-    internal static async Task OnButtonPress(DiscordClient s, ComponentInteractionCreateEventArgs e)
-    {
-        if (e.Id is "send" or "send2") await SendMessageToUser(e);
-        if (e.Id == "info") await SendDetailedInfoMessage(e);
-    }
 }
