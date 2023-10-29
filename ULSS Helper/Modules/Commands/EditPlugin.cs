@@ -2,6 +2,7 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.Attributes;
+using ULSS_Helper.Modules.Messages;
 
 namespace ULSS_Helper.Modules.Commands;
 
@@ -17,13 +18,13 @@ public class EditPlugin : ApplicationCommandModule
     {
         if (ctx.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
         {
-            await ctx.CreateResponseAsync(embed: MessageManager.Error("You do not have permission for this!"));
+            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
             return;
         }
 
         if (!DatabaseManager.LoadPlugins().Any(x => x.Name == pN))
         {
-            await ctx.CreateResponseAsync(embed: MessageManager.Error($"No plugin found with name {pN}"));
+            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error($"No plugin found with name {pN}"));
             return;
         }
 

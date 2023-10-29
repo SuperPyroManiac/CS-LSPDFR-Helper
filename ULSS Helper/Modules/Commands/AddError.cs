@@ -2,6 +2,7 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.Attributes;
+using ULSS_Helper.Modules.Messages;
 
 namespace ULSS_Helper.Modules.Commands;
 
@@ -13,7 +14,7 @@ public class AddError : ApplicationCommandModule
     {
         if (ctx.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
         {
-            await ctx.CreateResponseAsync(embed: MessageManager.Error("You do not have permission for this!"));
+            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
             return;
         }
 

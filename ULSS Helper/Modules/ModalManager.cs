@@ -1,6 +1,7 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using ULSS_Helper.Modules.Messages;
 
 namespace ULSS_Helper.Modules;
 
@@ -30,7 +31,7 @@ public class ModalManager
             long dbRowId = DatabaseManager.AddPlugin(plug);
 
             await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder().AddEmbed(MessageManager.Info(
+                new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info(
                     $"**Added {Program.PlugName}!**\r\n"
                     + $"DB Row ID: {dbRowId}\r\n"
                     + $"Display Name: {plugDName}\r\n" 
@@ -55,14 +56,14 @@ public class ModalManager
             if (DatabaseManager.LoadErrors().Any(error => error.Regex == err.Regex))
             {
                 await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                    new DiscordInteractionResponseBuilder().AddEmbed(MessageManager.Error("This error already exists in the database!\r\nConsider using /EditError <ID>")));
+                    new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Error("This error already exists in the database!\r\nConsider using /EditError <ID>")));
                 return;
             }
 
             long dbRowId = DatabaseManager.AddError(err);
 
             await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder().AddEmbed(MessageManager.Info(
+                new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info(
                     $"**Added a {err.Level} error with ID {dbRowId}**\r\n"
                     + $"Regex:\r\n```{err.Regex}```\r\n" 
                     + $"Solution:\r\n```{err.Solution}```"
@@ -92,7 +93,7 @@ public class ModalManager
             DatabaseManager.EditPlugin(plug);
 
             await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder().AddEmbed(MessageManager.Info(
+                new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info(
                     $"**Modified {Program.PlugName}!**\r\n"
                     + $"Display Name: {plugDName}\r\n"
                     + $"Version: {plugVersion}\r\n"
@@ -120,7 +121,7 @@ public class ModalManager
             DatabaseManager.EditError(err);
 
             await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder().AddEmbed(MessageManager.Info(
+                new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info(
                     $"**Modified error ID: {Program.ErrId}!**\r\n"
                     + $"Regex: {errReg}\r\n"
                     + $"Solution: {errSol}\r\n"
