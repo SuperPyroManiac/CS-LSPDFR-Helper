@@ -155,11 +155,13 @@ public class RphLogAnalyzer
             var errmatch = errregex.Matches(wholeLog);
             foreach (Match match in errmatch)
             {
+                var newError = new Error()
+                { ID = error.ID, Level = error.Level, Regex = error.Regex, Solution = error.Solution };
                 for (var i = 0; i <= 10; i++)
                 {
-                    error.Solution = error.Solution.Replace("{" + i + "}", match.Groups[i].Value);
+                    newError.Solution = newError.Solution.Replace("{" + i + "}", match.Groups[i].Value);
                 }
-                if (!log.Errors.Any(x => x.Solution == error.Solution)) log.Errors.Add(error);
+                if (!log.Errors.Any(x => x.Solution == newError.Solution)) log.Errors.Add(newError);
             }
         }
 
