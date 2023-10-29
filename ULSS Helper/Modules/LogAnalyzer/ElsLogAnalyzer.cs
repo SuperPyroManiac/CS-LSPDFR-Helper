@@ -88,7 +88,6 @@ public class ElsLogAnalyzer
         Console.WriteLine("");
         Console.WriteLine("");
         Console.WriteLine("");
-        Console.ForegroundColor = ConsoleColor.White;
         return log;
     }
 }
