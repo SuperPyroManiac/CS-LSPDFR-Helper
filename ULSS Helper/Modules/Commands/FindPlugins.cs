@@ -2,6 +2,7 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.Attributes;
+using ULSS_Helper.Modules.Messages;
 
 namespace ULSS_Helper.Modules.Commands;
 
@@ -27,7 +28,7 @@ public class FindPlugins : ApplicationCommandModule
         
         if (ctx.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
         {
-            await ctx.CreateResponseAsync(embed: MessageManager.Error("You do not have permission for this!"));
+            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
             return;
         }
         
@@ -40,7 +41,7 @@ public class FindPlugins : ApplicationCommandModule
                 int limit = 3;
                 int numberOfResults = pluginsFound.Count <= limit ? pluginsFound.Count : limit;
                 var response = new DiscordWebhookBuilder();
-                response.AddEmbed(MessageManager.Generic(
+                response.AddEmbed(BasicEmbeds.Generic(
                     $"**I found {pluginsFound.Count} plugin{(pluginsFound.Count != 1 ? "s" : "")} that match{(pluginsFound.Count == 1 ? "es" : "")} the following search parameters:**\r\n"
                     + $"{(plugName != null ? "- Name: *"+plugName+"*\r\n" : "")}"
                     + $"{(plugDName != null ? "- Display Name: *"+plugDName+"*\r\n" : "")}"
@@ -53,7 +54,7 @@ public class FindPlugins : ApplicationCommandModule
                 for(int i=0; i < numberOfResults; i++)
                 {
                     Plugin plugin = pluginsFound[i];
-                    response.AddEmbed(MessageManager.Generic(
+                    response.AddEmbed(BasicEmbeds.Generic(
                         $"**Plugin {plugin.Name}**\r\n"
                         + $"Display Name: {plugin.DName}\r\n" 
                         + $"Version: {plugin.Version}\r\n"
@@ -69,7 +70,7 @@ public class FindPlugins : ApplicationCommandModule
             }
             else 
             {
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(MessageManager.Warning(
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Warning(
                     $"**No plugins found with the following search parameters:**\r\n"
                     + $"{(plugName != null ? "- Name: *"+plugName+"*\r\n" : "")}"
                     + $"{(plugDName != null ? "- Display Name: *"+plugDName+"*\r\n" : "")}"
@@ -82,7 +83,7 @@ public class FindPlugins : ApplicationCommandModule
         }
         catch (InvalidDataException e)
         {
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(MessageManager.Error(e.Message)));
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Error(e.Message)));
             return;
         }
         

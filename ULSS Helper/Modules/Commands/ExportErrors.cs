@@ -3,6 +3,7 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.Attributes;
+using ULSS_Helper.Modules.Messages;
 
 namespace ULSS_Helper.Modules.Commands;
 
@@ -20,7 +21,7 @@ public class ExportErrors : ApplicationCommandModule
         }
 
         var fs = new FileStream(Path.Combine(Directory.GetCurrentDirectory(), "Exports", "ErrorExport.xml"), FileMode.Open, FileAccess.Read);
-        await ctx.CreateResponseAsync(MessageManager.Info("Exporting errors..."));
+        await ctx.CreateResponseAsync(BasicEmbeds.Info("Exporting errors..."));
         await ctx.Channel.SendMessageAsync(new DiscordMessageBuilder()
             .AddFile(fs, AddFileOptions.CloseStream));
     }

@@ -2,6 +2,7 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.Attributes;
+using ULSS_Helper.Modules.Messages;
 
 namespace ULSS_Helper.Modules.Commands;
 
@@ -27,7 +28,7 @@ public class FindErrors : ApplicationCommandModule
         
         if (ctx.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
         {
-            await ctx.CreateResponseAsync(embed: MessageManager.Error("You do not have permission for this!"));
+            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
             return;
         }
         try 
@@ -38,7 +39,7 @@ public class FindErrors : ApplicationCommandModule
                 int limit = 3;
                 int numberOfResults = errorsFound.Count <= limit ? errorsFound.Count : limit;
                 var response = new DiscordWebhookBuilder();
-                response.AddEmbed(MessageManager.Generic(
+                response.AddEmbed(BasicEmbeds.Generic(
                     $"**I found {errorsFound.Count} error{(errorsFound.Count != 1 ? "s" : "")} that match{(errorsFound.Count == 1 ? "es" : "")} the following search parameters:**\r\n"
                     + $"{(errId != null ? "- ID: *"+errId+"*\r\n" : "")}"
                     + $"{(regex != null ? "- Regex:\n```"+regex+"```\r\n" : "")}"
@@ -51,7 +52,7 @@ public class FindErrors : ApplicationCommandModule
                 for(int i=0; i < numberOfResults; i++)
                 {
                     Error error = errorsFound[i];
-                    response.AddEmbed(MessageManager.Generic(
+                    response.AddEmbed(BasicEmbeds.Generic(
                         $"**Error ID {error.ID}**\r\n"
                         + $"Regex:\n```{error.Regex ?? " "}```\r\n" 
                         + $"Solution:\n```{error.Solution ?? " "}```\r\n"
@@ -64,7 +65,7 @@ public class FindErrors : ApplicationCommandModule
             }
             else 
             {
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(MessageManager.Warning(
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Warning(
                     $"**No errors found with the following search parameters:**\r\n"
                     + $"{(errId != null ? "- ID: *"+errId+"*\r\n" : "")}"
                     + $"{(regex != null ? "- Regex:\n```"+regex+"```\r\n" : "")}"
@@ -77,7 +78,7 @@ public class FindErrors : ApplicationCommandModule
         } 
         catch (InvalidDataException e)
         {
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(MessageManager.Error(e.Message)));
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Error(e.Message)));
             return;
         }
     }

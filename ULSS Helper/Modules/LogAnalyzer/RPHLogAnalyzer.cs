@@ -1,14 +1,25 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Net;
+using System.Text.RegularExpressions;
 
-namespace ULSS_Helper.Modules;
+namespace ULSS_Helper.Modules.LogAnalyzer;
 
-public class RPHLogAnalyzer
+public class RphLogAnalyzer
 {
-    internal static AnalyzedLog Run()
+    internal static AnalyzedRphLog Run(string fileName)
     {
+        using var client = new WebClient();
+        client.DownloadFile(
+            fileName,
+            Path.Combine(
+                Directory.GetCurrentDirectory(), 
+                "RPHLogs", 
+                Settings.LogNamer()
+            )
+        );
+
         var pluginData = DatabaseManager.LoadPlugins();
         var errorData = DatabaseManager.LoadErrors();
-        var log = new AnalyzedLog();
+        var log = new AnalyzedRphLog();
         var wholeLog = File.ReadAllText(Settings.RphLogPath);
         var reader = File.ReadAllLines(Settings.RphLogPath);
 
@@ -40,7 +51,7 @@ public class RPHLogAnalyzer
                                 var eaversion = $"{plugin.Name}, Version={plugin.EAVersion}";
                                 if (!string.IsNullOrEmpty(plugin.Version))
                                 {
-                                    var result = CompareVersions(logVersion, plugin.Version);
+                                    var result = LogAnalyzerManager.CompareVersions(logVersion, plugin.Version);
                                     if (result < 0) // plugin version in log is older than version in DB
                                     {
                                         if (!log.Outdated.Any(x => x.Name == plugin.Name)) log.Outdated.Add(plugin);
@@ -49,7 +60,7 @@ public class RPHLogAnalyzer
                                     {
                                         if (!string.IsNullOrEmpty(plugin.EAVersion)) 
                                         {
-                                            var resultEA = CompareVersions(logVersion, plugin.EAVersion);
+                                            var resultEA = LogAnalyzerManager.CompareVersions(logVersion, plugin.EAVersion);
                                             if (resultEA < 0) // plugin version in log is older than Early Access version in DB
                                             {
                                                 if (!log.Outdated.Any(x => x.Name == plugin.Name)) log.Outdated.Add(plugin);
@@ -169,40 +180,5 @@ public class RPHLogAnalyzer
         Console.WriteLine("");
         Console.ForegroundColor = ConsoleColor.White;
         return log;
-    }
-
-    public static int CompareVersions(string version1, string version2)
-    {
-        string[] parts1 = version1.Split('.');
-        string[] parts2 = version2.Split('.');
-        
-        int minLength = Math.Min(parts1.Length, parts2.Length);
-
-        for (int i = 0; i < minLength; i++)
-        {
-            int part1 = int.Parse(parts1[i]);
-            int part2 = int.Parse(parts2[i]);
-
-            if (part1 < part2)
-            {
-                return -1; // version1 is smaller
-            }
-            else if (part1 > part2)
-            {
-                return 1; // version1 is larger
-            }
-        }
-
-        // If all common parts are equal, check the remaining parts
-        if (parts1.Length < parts2.Length)
-        {
-            return -1; // version1 is smaller
-        }
-        else if (parts1.Length > parts2.Length)
-        {
-            return 1; // version1 is larger
-        }
-        
-        return 0; // versions are equal
     }
 }
