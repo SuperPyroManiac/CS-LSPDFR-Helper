@@ -19,7 +19,7 @@ internal class ElsLogAnalysisMessages : LogAnalysisMessages
 
         if (log.FaultyVcfFile != null) 
         {
-            embed.AddField($":red_circle:     Remove the following faulty VCF file from `{log.VcfContainer}`:", "\r\n**" + log.FaultyVcfFile + "**");
+            embed.AddField($":red_circle:     Faulty VCF found!", $"Remove `{log.FaultyVcfFile}` from `{log.VcfContainer}`");
         }
         else 
         {
