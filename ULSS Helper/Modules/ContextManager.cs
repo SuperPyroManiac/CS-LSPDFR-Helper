@@ -19,7 +19,8 @@ internal class ContextManager : ApplicationCommandModule
     internal static string library;
     internal static string missmatch;
     private static ulong senderID;
-    internal static AnalyzedLog log;
+    internal static AnalyzedRphLog rphLog;
+    internal static AnalyzedElsLog elsLog;
     private static string? _file;
     internal static string GTAver = "X";
     internal static string LSPDFRver = "X";
@@ -81,81 +82,109 @@ internal class ContextManager : ApplicationCommandModule
                 await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb);
                 return;
             }
-            if (!_file.Contains("RagePluginHook"))
+            if (!_file.Contains("RagePluginHook") && !_file.Contains("ELS") )
             {
                 var emb = new DiscordInteractionResponseBuilder();
                 emb.IsEphemeral = true;
-                emb.AddEmbed(Error("This file is not named `RagePluginHook.log`!"));
+                emb.AddEmbed(Error("This file is not named `RagePluginHook.log` or `ELS.log`!"));
                 await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb);
                 return;
-            }
-
-            await e.DeferAsync(true);
-
-            //===============================================PROCESS LOG=========================================================
-            
-            using var client = new WebClient();
-            client.DownloadFile(_file,
-                Path.Combine(Directory.GetCurrentDirectory(), "RPHLogs", Settings.LogNamer()));
-            log = RPHLogAnalyzer.Run();
-            
-            //===============================================VARIABLES=========================================================
-            
-            var linkedOutdated = log.Outdated.Select(i => i?.Link != null
-                    ? $"[{i.DName}]({i.Link})"
-                    : $"[{i?.DName}](https://www.google.com/search?q=lspdfr+{i.DName.Replace(" ", "+")})")
-                .ToList();
-            senderID = e.TargetMessage.Author.Id;
-            currentList = log.Current.Select(i => i?.DName).ToList();
-            var brokenList = log.Broken.Select(i => i?.DName).ToList();
-            var missingList = log.Missing.Select(i => i?.Name).ToList();
-            var missmatchList = log.Missmatch.Select(i => i?.Name).ToList();
-            var libraryList = log.Library.Select(i => i?.DName).ToList();
-            brokenList.AddRange(libraryList);
-            current = string.Join("\r\n- ", currentList);
-            outdated = string.Join("\r\n- ", linkedOutdated);
-            broken = string.Join("\r\n- ", brokenList);
-            missing = string.Join(", ", missingList);
-            missmatch = string.Join(", ", missmatchList);
-            library = string.Join(", ", libraryList);
-            
-            //===============================================SEND QUICK VIEW=========================================================
-
-            var message = GetBaseLogInfoMessage("# **Quick Log Information**");
-
-            message.AddField("Log uploader:", $"{e.TargetMessage.Author.Mention}", true);
-            message.AddField("Log message:", e.TargetMessage.JumpLink.ToString(), true);
-            message.AddField("\u200B", "\u200B", true); //TS View only! Always index 0 - 2.
-            
-            if (outdated.Length >= 1024 || broken.Length >= 1024)
+            } 
+            else if (_file.Contains("RagePluginHook"))
             {
-                message.AddField(":warning:     **Message Too Big**", "\r\nToo many plugins to display in a single message.\r\nFor detailed info, first fix the plugins!", true);
-                if (missing.Length > 0) message.AddField(":bangbang:  **Plugins not recognized:**", missing, false);
-                var message2 = new DiscordEmbedBuilder { Title = ":orange_circle:     **Update:**", Description = "\r\n- " + outdated, Color = DiscordColor.Gold };
-                message2.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon };
-                var message3 = new DiscordEmbedBuilder { Title = ":red_circle:     **Remove:**", Description = "\r\n- " + broken, Color = DiscordColor.Gold };
-                message3.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon };
+                await e.DeferAsync(true);
+
+                //===============================================PROCESS LOG=========================================================
                 
-                var overflow = new DiscordWebhookBuilder();
-                overflow.AddEmbed(message);
-                if (outdated.Length != 0) overflow.AddEmbed(message2);
-                if (broken.Length != 0) overflow.AddEmbed(message3);
-                overflow.AddComponents(new DiscordComponent[]
+                using var client = new WebClient();
+                client.DownloadFile(_file,
+                    Path.Combine(Directory.GetCurrentDirectory(), "RPHLogs", Settings.RphLogNamer()));
+                rphLog = RPHLogAnalyzer.Run();
+                
+                //===============================================VARIABLES=========================================================
+                
+                var linkedOutdated = rphLog.Outdated.Select(i => i?.Link != null
+                        ? $"[{i.DName}]({i.Link})"
+                        : $"[{i?.DName}](https://www.google.com/search?q=lspdfr+{i.DName.Replace(" ", "+")})")
+                    .ToList();
+                senderID = e.TargetMessage.Author.Id;
+                currentList = rphLog.Current.Select(i => i?.DName).ToList();
+                var brokenList = rphLog.Broken.Select(i => i?.DName).ToList();
+                var missingList = rphLog.Missing.Select(i => i?.Name).ToList();
+                var missmatchList = rphLog.Missmatch.Select(i => i?.Name).ToList();
+                var libraryList = rphLog.Library.Select(i => i?.DName).ToList();
+                brokenList.AddRange(libraryList);
+                current = string.Join("\r\n- ", currentList);
+                outdated = string.Join("\r\n- ", linkedOutdated);
+                broken = string.Join("\r\n- ", brokenList);
+                missing = string.Join(", ", missingList);
+                missmatch = string.Join(", ", missmatchList);
+                library = string.Join(", ", libraryList);
+                
+                //===============================================SEND QUICK VIEW=========================================================
+
+                var message = GetBaseLogInfoMessage("# **Quick Log Information**");
+
+                message.AddField("Log uploader:", $"{e.TargetMessage.Author.Mention}", true);
+                message.AddField("Log message:", e.TargetMessage.JumpLink.ToString(), true);
+                message.AddField("\u200B", "\u200B", true); //TS View only! Always index 0 - 2.
+                
+                if (outdated.Length >= 1024 || broken.Length >= 1024)
                 {
-                    new DiscordButtonComponent(ButtonStyle.Danger, "send", "Send To User", false,
-                        new DiscordComponentEmoji("📨"))
-                });
-                await e.EditResponseAsync(overflow);
+                    message.AddField(":warning:     **Message Too Big**", "\r\nToo many plugins to display in a single message.\r\nFor detailed info, first fix the plugins!", true);
+                    if (missing.Length > 0) message.AddField(":bangbang:  **Plugins not recognized:**", missing, false);
+                    var message2 = new DiscordEmbedBuilder { Title = ":orange_circle:     **Update:**", Description = "\r\n- " + outdated, Color = DiscordColor.Gold };
+                    message2.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon };
+                    var message3 = new DiscordEmbedBuilder { Title = ":red_circle:     **Remove:**", Description = "\r\n- " + broken, Color = DiscordColor.Gold };
+                    message3.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon };
+                    
+                    var overflow = new DiscordWebhookBuilder();
+                    overflow.AddEmbed(message);
+                    if (outdated.Length != 0) overflow.AddEmbed(message2);
+                    if (broken.Length != 0) overflow.AddEmbed(message3);
+                    overflow.AddComponents(new DiscordComponent[]
+                    {
+                        new DiscordButtonComponent(ButtonStyle.Danger, "send", "Send To User", false,
+                            new DiscordComponentEmoji("📨"))
+                    });
+                    await e.EditResponseAsync(overflow);
+                }
+                else
+                {
+                    message = AddCommonFields(message);
+                    
+                    await e.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(message).AddComponents(new DiscordComponent[]
+                    {
+                        new DiscordButtonComponent(ButtonStyle.Primary, "info", "More Info", false, new DiscordComponentEmoji(723417756938010646)),
+                        new DiscordButtonComponent(ButtonStyle.Danger, "send", "Send To User", false, new DiscordComponentEmoji("📨"))
+                    }));
+                }
             }
-            else
+        
+            else if (_file.Contains("ELS")) 
             {
-                message = AddCommonFields(message);
-                
-                await e.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(message).AddComponents(new DiscordComponent[]
+                await e.DeferAsync(true);
+
+                using var client = new WebClient();
+                client.DownloadFile(_file,
+                    Path.Combine(Directory.GetCurrentDirectory(), "ELSLogs", Settings.ElsLogNamer()));
+                elsLog = ELSLogAnalyzer.Run();
+                var message = new DiscordEmbedBuilder
                 {
-                    new DiscordButtonComponent(ButtonStyle.Primary, "info", "More Info", false, new DiscordComponentEmoji(723417756938010646)),
-                    new DiscordButtonComponent(ButtonStyle.Danger, "send", "Send To User", false, new DiscordComponentEmoji("📨"))
-                }));
+                    Title = "ELS Log Information",
+                    Description = $"Remove the following faulty vcf file from `{elsLog.VcfContainer}`:\r\n{elsLog.FaultyVcfFile}",
+                    Color = DiscordColor.Gold,
+                    Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon },
+                    Footer = new DiscordEmbedBuilder.EmbedFooter
+                    {
+                        Text = $"ELS Version: {elsLog.ElsVersion} - AdvancedHookV installed: {(elsLog.AdvancedHookVFound ? "\u2713" : "X")}"
+                    }
+                };
+
+                message.AddField("Valid VCFs:", string.Join(", ", elsLog.ValidElsVcfFiles));
+                message.AddField("Invalid VCFs:", string.Join(", ", elsLog.InvalidElsVcfFiles));
+
+                await e.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(message));
             }
         }
         catch (Exception exception)
@@ -179,7 +208,7 @@ internal class ContextManager : ApplicationCommandModule
         
         message = AddCommonFields(message);
 
-        foreach (var error in log.Errors)
+        foreach (var error in rphLog.Errors)
         {
             message.AddField($"```{error.Level.ToString()} ID: {error.ID}``` Troubleshooting Steps:", $"> {error.Solution}");
         }

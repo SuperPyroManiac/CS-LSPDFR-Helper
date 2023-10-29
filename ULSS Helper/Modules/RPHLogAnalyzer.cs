@@ -4,11 +4,11 @@ namespace ULSS_Helper.Modules;
 
 public class RPHLogAnalyzer
 {
-    internal static AnalyzedLog Run()
+    internal static AnalyzedRphLog Run()
     {
         var pluginData = DatabaseManager.LoadPlugins();
         var errorData = DatabaseManager.LoadErrors();
-        var log = new AnalyzedLog();
+        var log = new AnalyzedRphLog();
         var wholeLog = File.ReadAllText(Settings.RphLogPath);
         var reader = File.ReadAllLines(Settings.RphLogPath);
 

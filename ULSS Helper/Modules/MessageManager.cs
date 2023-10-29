@@ -54,9 +54,9 @@ internal static class MessageManager
 
     internal static DiscordEmbedBuilder GetBaseLogInfoMessage(string description)
     {
-        if (Settings.GTAVer.Equals(log.GTAVersion)) GTAver = "\u2713";
-        if (Settings.LSPDFRVer.Equals(log.LSPDFRVersion)) LSPDFRver = "\u2713";
-        if (Settings.RPHVer.Equals(log.RPHVersion)) RPHver = "\u2713";
+        if (Settings.GTAVer.Equals(rphLog.GTAVersion)) GTAver = "\u2713";
+        if (Settings.LSPDFRVer.Equals(rphLog.LSPDFRVersion)) LSPDFRver = "\u2713";
+        if (Settings.RPHVer.Equals(rphLog.RPHVersion)) RPHver = "\u2713";
 
         return new DiscordEmbedBuilder
         {
@@ -66,7 +66,7 @@ internal static class MessageManager
             Footer = new DiscordEmbedBuilder.EmbedFooter
             {
                 Text = $"GTA: {GTAver} - RPH: {RPHver}" +
-                       $" - LSPDFR: {LSPDFRver} - Notes: {log.Errors.Count}"
+                       $" - LSPDFR: {LSPDFRver} - Notes: {rphLog.Errors.Count}"
             }
         };
     }
@@ -84,7 +84,7 @@ internal static class MessageManager
 
         if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0)
             message.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
-        if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0 && string.IsNullOrEmpty(log.LSPDFRVersion))
+        if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0 && string.IsNullOrEmpty(rphLog.LSPDFRVersion))
             message.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **No plugin information available!**");
         if (current.Length == 0 && outdated.Length == 0 && broken.Length == 0)
             message.AddField(":green_circle:     **No loaded plugins!**", "- No plugins detected from this log.");

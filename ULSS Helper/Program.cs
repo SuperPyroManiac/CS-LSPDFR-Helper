@@ -71,7 +71,7 @@ public class Error
     public string Level { get; set; }
 }
 
-public class AnalyzedLog
+public class AnalyzedRphLog
 {
     public List<Plugin?> Current { get; set; }
     public List<Plugin?> Outdated { get; set; }
@@ -85,6 +85,15 @@ public class AnalyzedLog
     public string GTAVersion { get; set; }
     public string RPHVersion { get; set; }
     public string LSPDFRVersion { get; set; }
+}
+public class AnalyzedElsLog
+{
+    public string? ElsVersion { get; set; }
+    public bool AdvancedHookVFound { get; set; }
+    public string? VcfContainer { get; set; }
+    public List<string>? ValidElsVcfFiles { get; set; }
+    public List<string>? InvalidElsVcfFiles { get; set; }
+    public string? FaultyVcfFile { get; set; }
 }
 
 public enum State
