@@ -23,7 +23,7 @@ internal class ElsLogAnalysisMessages : LogAnalysisMessages
         }
         else 
         {
-            embed.AddField($":green_circle:     No faulty VCF file detected!", "Seems like ELS loaded fine and didn't cause a crash.");
+            embed.AddField($":green_circle:     No faulty VCF files detected!", "Seems like ELS loaded fine.");
         }
 
         if (log.TotalAmountElsModels != null) 
