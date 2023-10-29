@@ -11,7 +11,6 @@ namespace ULSS_Helper.Modules;
 
 internal class ContextManager : ApplicationCommandModule
 {
-
     
     [ContextMenu(ApplicationCommandType.MessageContextMenu, "Analyze Log")]
     [SlashRequirePermissions(Permissions.ManageMessages)]
@@ -19,7 +18,7 @@ internal class ContextManager : ApplicationCommandModule
     {
         await e.DeferAsync(true);
 
-        if (e.Member.Roles.All(role => role.Id != Settings.GetTSRole()))//TODO: Proper permissions setup
+        if (e.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
         {
             var emb = new DiscordInteractionResponseBuilder();
             emb.IsEphemeral = true;

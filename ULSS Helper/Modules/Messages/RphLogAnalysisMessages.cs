@@ -118,29 +118,6 @@ internal static class RphLogAnalysisMessages
         }
     }
 
-    internal static async Task SendMessageToUser(ComponentInteractionCreateEventArgs e)
-    {
-        await e.Interaction.DeferAsync(true);
-        var newEmbList = new List<DiscordEmbed>();
-        var newEmb = GetBaseLogInfoMessage(e.Message.Embeds[0].Description);
-        
-        foreach (var field in e.Message.Embeds[0].Fields)
-        {
-            if (!field.Name.Contains(":bangbang:")) newEmb.AddField(field.Name, field.Value, field.Inline);
-        }
-        newEmb.RemoveFieldRange(0, 3);
-        newEmbList.Add(newEmb);
-        newEmbList.AddRange(e.Message.Embeds);
-        newEmbList.RemoveAt(1);
-
-        var newMessage = new DiscordMessageBuilder();
-        newMessage.WithContent($"<@{senderID}>");
-        newMessage.AddEmbeds(newEmbList);
-        newMessage.WithAllowedMention(new UserMention(senderID));
-        await e.Interaction.DeleteOriginalResponseAsync();
-        await newMessage.SendAsync(e.Channel);
-    }
-
     internal static async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs e)
     {
         await e.Interaction.DeferAsync(true);
@@ -162,5 +139,28 @@ internal static class RphLogAnalysisMessages
         {
             new DiscordButtonComponent(ButtonStyle.Danger, "send2", "Send To User", false, new DiscordComponentEmoji("📨"))
         }));
+    }
+    
+    internal static async Task SendMessageToUser(ComponentInteractionCreateEventArgs e)
+    {
+        await e.Interaction.DeferAsync(true);
+        var newEmbList = new List<DiscordEmbed>();
+        var newEmb = GetBaseLogInfoMessage(e.Message.Embeds[0].Description);
+        
+        foreach (var field in e.Message.Embeds[0].Fields)
+        {
+            if (!field.Name.Contains(":bangbang:")) newEmb.AddField(field.Name, field.Value, field.Inline);
+        }
+        newEmb.RemoveFieldRange(0, 3);
+        newEmbList.Add(newEmb);
+        newEmbList.AddRange(e.Message.Embeds);
+        newEmbList.RemoveAt(1);
+
+        var newMessage = new DiscordMessageBuilder();
+        newMessage.WithContent($"<@{senderID}>");
+        newMessage.AddEmbeds(newEmbList);
+        newMessage.WithAllowedMention(new UserMention(senderID));
+        await e.Interaction.DeleteOriginalResponseAsync();
+        await newMessage.SendAsync(e.Channel);
     }
 }
