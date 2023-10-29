@@ -62,7 +62,6 @@ public class ElsLogAnalyzer
             var matchesElsXml = regexElsXml.Matches(wholeLog);
 
             log.FaultyVcfFile = matchesElsXml[matchesElsXml.Count - 1].Groups[1].Value;
-            Console.WriteLine($"The ELS VCF (XML) file that caused the crash is {log.FaultyVcfFile}");
         }
 
         var regexTotalAmountVcfs = new Regex($"<FILEV> Vehicle information retrieved\\. Loaded \\[ (\\d+) \\] ELS-enabled model\\(s\\)\\.");
@@ -70,7 +69,6 @@ public class ElsLogAnalyzer
         if (matchTotalAmountVcfs.Success) 
         {
             log.TotalAmountElsModels = int.Parse(matchTotalAmountVcfs.Groups[1].Value);
-            Console.WriteLine($"Total amount of ELS-enabled models: {log.TotalAmountElsModels}");
         }
         else {
             log.TotalAmountElsModels = null;
@@ -79,8 +77,10 @@ public class ElsLogAnalyzer
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("Log Processed...");
         Console.WriteLine("");
+        Console.WriteLine($"The ELS VCF (XML) file that caused the crash is {log.FaultyVcfFile}");
         Console.WriteLine($"Valid ELS XML Files: {log.ValidElsVcfFiles.Count}");
         Console.WriteLine($"Invalid ELS XML Files: {log.InvalidElsVcfFiles.Count}");
+        Console.WriteLine($"Total amount of ELS-enabled models: {log.TotalAmountElsModels}");
         Console.WriteLine("");
         Console.WriteLine("");
         Console.WriteLine("");

@@ -79,7 +79,7 @@ internal class RphLogAnalysisMessages : LogAnalysisMessages
         missmatch = string.Join(", ", missmatchList);
         library = string.Join(", ", libraryList);
         
-        DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("### Quick RPH.log Info");
+        DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Quick RPH.log Info");
 
         embed = AddTsViewFields(embed);
         
@@ -129,7 +129,7 @@ internal class RphLogAnalysisMessages : LogAnalysisMessages
     {
         await e.Interaction.DeferAsync(true);
         
-        var embed = GetBaseLogInfoEmbed("### Detailed RPH.log Info");
+        var embed = GetBaseLogInfoEmbed("## Detailed RPH.log Info");
         
         embed = AddTsViewFields(embed);
         

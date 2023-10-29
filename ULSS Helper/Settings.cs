@@ -47,7 +47,7 @@ internal static class Settings
     {
         ELSLogNumber++;
         LogName = $"ELSLog-{ELSLogNumber}.log";
-        RphLogPath = Path.Combine(Directory.GetCurrentDirectory(), "ELSLogs", LogName);
+        ElsLogPath = Path.Combine(Directory.GetCurrentDirectory(), "ELSLogs", LogName);
         return LogName;
     }
 

@@ -13,17 +13,17 @@ internal class ElsLogAnalysisMessages : LogAnalysisMessages
         logUploaderUserId = e.TargetMessage.Author.Id;
         logMessageLink = e.TargetMessage.JumpLink.ToString();
 
-        DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("### Quick ELS.log Info");
+        DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Quick ELS.log Info");
 
         embed = AddTsViewFields(embed);
 
         if (log.FaultyVcfFile != null) 
         {
-            embed.AddField($":red_circle:     Remove the following faulty VCF file from `{log.VcfContainer}`", log.FaultyVcfFile);
+            embed.AddField($":red_circle:     Remove the following faulty VCF file from `{log.VcfContainer}`:", "\r\n**" + log.FaultyVcfFile + "**");
         }
         else 
         {
-            embed.AddField($":green_circle     No faulty VCF file detected!", "Seems like ELS loaded fine and didn't cause a crash.");
+            embed.AddField($":green_circle:     No faulty VCF file detected!", "Seems like ELS loaded fine and didn't cause a crash.");
         }
 
         if (log.TotalAmountElsModels != null) 
@@ -47,7 +47,7 @@ internal class ElsLogAnalysisMessages : LogAnalysisMessages
     {
         await e.Interaction.DeferAsync(true);
         
-        DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("### Detailed ELS.log Info");
+        DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Detailed ELS.log Info");
         
         //embed = AddTsViewFields(embed);
 
