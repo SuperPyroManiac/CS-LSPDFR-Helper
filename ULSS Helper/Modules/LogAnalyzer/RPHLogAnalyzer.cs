@@ -166,7 +166,7 @@ public class RphLogAnalyzer
         }
 
         Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("Log Processed...");
+        Console.WriteLine("RPH Log Processed...");
         Console.WriteLine("");
         Console.WriteLine($"Current: {log.Current.Count}");
         Console.ForegroundColor = ConsoleColor.Yellow;

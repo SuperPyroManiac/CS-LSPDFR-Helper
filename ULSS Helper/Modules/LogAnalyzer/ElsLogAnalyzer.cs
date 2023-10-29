@@ -18,7 +18,6 @@ public class ElsLogAnalyzer
         );
         var log = new AnalyzedElsLog();
         var wholeLog = File.ReadAllText(Settings.ElsLogPath);
-
         log.ValidElsVcfFiles = new List<string>();
         log.InvalidElsVcfFiles = new List<string>();
 
@@ -37,21 +36,21 @@ public class ElsLogAnalyzer
         if (matchVcfContainer.Success) 
         {
             log.VcfContainer = matchVcfContainer.Groups[1].Value.Replace("//", "/");
-            Console.WriteLine($"ELS VCF Container is located here: {log.VcfContainer}");
-        }
-
-        var regexValidVcfFile = new Regex($"<FILEV> Found file: \\[ (.*) \\]\\.\\r\\n<FILEV> Verifying vehicle model name \\[ .* \\]\\.\\r\\n\\s+\\(OK\\) Is valid vehicle model, assigned VMID \\[ .* \\]\\.\\r\\n\\s+Parsing file. \\*A crash before all clear indicates faulty VCF\\.\\*\\r\\n\\s+VCF Description: .*\\r\\n\\s+VCF Author: .*(\\r\\n\\s+\\(OK\\) Collected data from: '\\w+'\\.)+\\r\\n\\s+\\(OK\\) ALL CLEAR -- Configuration file processed\\.");
-        var matchesValidVcfFile = regexValidVcfFile.Matches(wholeLog);
-        foreach (Match match in matchesValidVcfFile)
-        {
-            log.ValidElsVcfFiles.Add(match.Groups[1].Value);
         }
 
         var regexInvalidVcfFile = new Regex($"<FILEV> Found file: \\[ (.*) \\]\\.\\r\\n<FILEV> Verifying vehicle model name \\[ .* \\]\\.\\r\\n\\s+\\(ER\\) Model specified is not valid, discarding file\\.");
         var matchesInvalidVcfFile = regexInvalidVcfFile.Matches(wholeLog);
         foreach (Match match in matchesInvalidVcfFile)
         {
-            log.InvalidElsVcfFiles.Add(match.Groups[1].Value);
+            if (!log.InvalidElsVcfFiles.Any(x => x.Equals(match.Groups[1].Value))) log.InvalidElsVcfFiles.Add(match.Groups[1].Value);//TODO: Not removing dupes
+        }
+        
+        var regexValidVcfFile = new Regex($"<FILEV> Found file: \\[ (.*) \\]\\.\\r\\n<FILEV> Verifying vehicle model name \\[ .* \\]\\.\\r\\n\\s+\\(OK\\) Is valid vehicle model, assigned VMID \\[ .* \\]\\.\\r\\n\\s+Parsing file. \\*A crash before all clear indicates faulty VCF\\.\\*\\r\\n\\s+VCF Description: .*\\r\\n\\s+VCF Author: .*(\\r\\n\\s+\\(OK\\) Collected data from: '\\w+'\\.)+\\r\\n\\s+\\(OK\\) ALL CLEAR -- Configuration file processed\\.");
+        var matchesValidVcfFile = regexValidVcfFile.Matches(wholeLog);
+        foreach (Match match in matchesValidVcfFile)
+        {
+            if (!log.ValidElsVcfFiles.Any(x => x.Equals(match.Groups[1].Value)) && !log.InvalidElsVcfFiles.Any(x => x.Equals(match.Groups[1].Value)))
+                log.ValidElsVcfFiles.Add(match.Groups[1].Value);//TODO: Not removing dupes
         }
 
         var regexFaultyVcf = new Regex($"\\s+\\(OK\\) Collected data from: '\\w+'\\.\\r\\n$");
@@ -73,14 +72,19 @@ public class ElsLogAnalyzer
         else {
             log.TotalAmountElsModels = null;
         }
-
+        
         Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("Log Processed...");
+        Console.WriteLine("ELS Log Processed...");
         Console.WriteLine("");
-        Console.WriteLine($"The ELS VCF (XML) file that caused the crash is {log.FaultyVcfFile}");
-        Console.WriteLine($"Valid ELS XML Files: {log.ValidElsVcfFiles.Count}");
+        Console.WriteLine($"Valid: {log.ValidElsVcfFiles.Count}");
+        Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine($"Invalid ELS XML Files: {log.InvalidElsVcfFiles.Count}");
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine($"The ELS VCF (XML) file that caused the crash is {log.FaultyVcfFile}");
+        Console.WriteLine("");
+        Console.ForegroundColor = ConsoleColor.Blue;
         Console.WriteLine($"Total amount of ELS-enabled models: {log.TotalAmountElsModels}");
+        Console.ForegroundColor = ConsoleColor.White;
         Console.WriteLine("");
         Console.WriteLine("");
         Console.WriteLine("");

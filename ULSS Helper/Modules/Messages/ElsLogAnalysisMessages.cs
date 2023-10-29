@@ -59,7 +59,7 @@ internal class ElsLogAnalysisMessages : LogAnalysisMessages
         if (log.VcfContainer != null)
             embed.AddField("VCF Container Location:", log.VcfContainer);
 
-        string validVcFiles = "\r\n- " + string.Join("\r\n- ", log.ValidElsVcfFiles);
+        string validVcFiles = "\r\n- " + string.Join(", ", log.ValidElsVcfFiles);
         if (log.ValidElsVcfFiles.Count > 0)
             embed.AddField(":green_circle:     Valid VCFs:", validVcFiles, true);
 
