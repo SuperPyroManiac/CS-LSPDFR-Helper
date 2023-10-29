@@ -1,12 +1,21 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Net;
 using System.Text.RegularExpressions;
 
 namespace ULSS_Helper.Modules;
 
 public class ElsLogAnalyzer
 {
-    internal static AnalyzedElsLog Run()
+    internal static AnalyzedElsLog Run(string fileName)
     {
+        using var client = new WebClient();
+        client.DownloadFile(
+            fileName,
+            Path.Combine(
+                Directory.GetCurrentDirectory(), 
+                "ELSLogs", 
+                Settings.ElsLogNamer()
+            )
+        );
         var log = new AnalyzedElsLog();
         var wholeLog = File.ReadAllText(Settings.ElsLogPath);
 
@@ -54,6 +63,17 @@ public class ElsLogAnalyzer
 
             log.FaultyVcfFile = matchesElsXml[matchesElsXml.Count - 1].Groups[1].Value;
             Console.WriteLine($"The ELS VCF (XML) file that caused the crash is {log.FaultyVcfFile}");
+        }
+
+        var regexTotalAmountVcfs = new Regex($"<FILEV> Vehicle information retrieved\\. Loaded \\[ (\\d+) \\] ELS-enabled model\\(s\\)\\.");
+        var matchTotalAmountVcfs = regexTotalAmountVcfs.Match(wholeLog);
+        if (matchTotalAmountVcfs.Success) 
+        {
+            log.TotalAmountElsModels = int.Parse(matchTotalAmountVcfs.Groups[1].Value);
+            Console.WriteLine($"Total amount of ELS-enabled models: {log.TotalAmountElsModels}");
+        }
+        else {
+            log.TotalAmountElsModels = null;
         }
 
         Console.ForegroundColor = ConsoleColor.Green;

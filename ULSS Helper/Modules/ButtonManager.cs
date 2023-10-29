@@ -15,6 +15,7 @@ public class ButtonManager
         if (e.Id == "info") await Messages.RphLogAnalysisMessages.SendDetailedInfoMessage(e);
         
         //ELS log reader buttons
-        //TODO: make the dang thing
+        if (e.Id is "sendElsToUser" or "sendElsDetailsToUser") await Messages.ElsLogAnalysisMessages.SendMessageToUser(e);
+        if (e.Id == "elsDetails") await Messages.ElsLogAnalysisMessages.SendDetailedInfoMessage(e);
     }
 }

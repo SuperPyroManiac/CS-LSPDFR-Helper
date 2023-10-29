@@ -53,11 +53,11 @@ public class LogAnalyzerManager
                 await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb);
                 return;
             }
-            if (!_file.Contains("RagePluginHook"))
+            if (!_file.Contains("RagePluginHook") && !_file.Contains("ELS"))
             {
                 var emb = new DiscordInteractionResponseBuilder();
                 emb.IsEphemeral = true;
-                emb.AddEmbed(BasicEmbeds.Error("This file is not named `RagePluginHook.log`!"));
+                emb.AddEmbed(BasicEmbeds.Error("This file is not named `RagePluginHook.log` or `ELS.log`!"));
                 await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb);
                 return;
             }
@@ -66,6 +66,12 @@ public class LogAnalyzerManager
             {
                 RphLogAnalysisMessages.log = RphLogAnalyzer.Run(_file);
                 await RphLogAnalysisMessages.SendQuickLogInfoMessage(e);
+                return;
+            }
+            if (_file.Contains("ELS"))
+            {
+                ElsLogAnalysisMessages.log = ElsLogAnalyzer.Run(_file);
+                await ElsLogAnalysisMessages.SendQuickLogInfoMessage(e);
                 return;
             }
         }
