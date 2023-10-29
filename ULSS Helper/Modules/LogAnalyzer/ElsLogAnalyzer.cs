@@ -42,7 +42,7 @@ public class ElsLogAnalyzer
         var matchesInvalidVcfFile = regexInvalidVcfFile.Matches(wholeLog);
         foreach (Match match in matchesInvalidVcfFile)
         {
-            if (!log.InvalidElsVcfFiles.Any(x => x.Equals(match.Groups[1].Value))) log.InvalidElsVcfFiles.Add(match.Groups[1].Value);//TODO: Not removing dupes
+            if (!log.InvalidElsVcfFiles.Any(x => x.Equals(match.Groups[1].Value))) log.InvalidElsVcfFiles.Add(match.Groups[1].Value);
         }
         
         var regexValidVcfFile = new Regex($"<FILEV> Found file: \\[ (.*) \\]\\.\\r\\n<FILEV> Verifying vehicle model name \\[ .* \\]\\.\\r\\n\\s+\\(OK\\) Is valid vehicle model, assigned VMID \\[ .* \\]\\.\\r\\n\\s+Parsing file. \\*A crash before all clear indicates faulty VCF\\.\\*\\r\\n\\s+VCF Description: .*\\r\\n\\s+VCF Author: .*(\\r\\n\\s+\\(OK\\) Collected data from: '\\w+'\\.)+\\r\\n\\s+\\(OK\\) ALL CLEAR -- Configuration file processed\\.");
@@ -50,7 +50,7 @@ public class ElsLogAnalyzer
         foreach (Match match in matchesValidVcfFile)
         {
             if (!log.ValidElsVcfFiles.Any(x => x.Equals(match.Groups[1].Value)) && !log.InvalidElsVcfFiles.Any(x => x.Equals(match.Groups[1].Value)))
-                log.ValidElsVcfFiles.Add(match.Groups[1].Value);//TODO: Not removing dupes
+                log.ValidElsVcfFiles.Add(match.Groups[1].Value);
         }
 
         var regexFaultyVcf = new Regex($"\\s+\\(OK\\) Collected data from: '\\w+'\\.\\r\\n$");
