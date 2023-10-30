@@ -1,6 +1,7 @@
 using System.Net;
 using DSharpPlus;
 using DSharpPlus.Entities;
+using DSharpPlus.Lavalink.EventArgs;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Modules.Messages;
 
@@ -53,11 +54,11 @@ public class LogAnalyzerManager
                 await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb);
                 return;
             }
-            if (!_file.Contains("RagePluginHook"))
+            if (!_file.Contains("RagePluginHook") && !_file.Contains("ELS"))
             {
                 var emb = new DiscordInteractionResponseBuilder();
                 emb.IsEphemeral = true;
-                emb.AddEmbed(BasicEmbeds.Error("This file is not named `RagePluginHook.log`!"));
+                emb.AddEmbed(BasicEmbeds.Error("This file is not named `RagePluginHook.log` or `ELS.log`!"));
                 await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb);
                 return;
             }
@@ -65,12 +66,21 @@ public class LogAnalyzerManager
             if (_file.Contains("RagePluginHook"))
             {
                 RphLogAnalysisMessages.log = RphLogAnalyzer.Run(_file);
+                RphLogAnalysisMessages.log.MsgId = e.TargetMessage.Id;
                 await RphLogAnalysisMessages.SendQuickLogInfoMessage(e);
+                return;
+            }
+            if (_file.Contains("ELS"))
+            {
+                ElsLogAnalysisMessages.log = ElsLogAnalyzer.Run(_file);
+                ElsLogAnalysisMessages.log.MsgId = e.TargetMessage.Id;
+                await ElsLogAnalysisMessages.SendQuickLogInfoMessage(e);
                 return;
             }
         }
         catch (Exception exception)
         {
+            ErrorHandler.ErrLog(exception.ToString());
             Console.WriteLine(exception);
             throw;
         }

@@ -7,5 +7,7 @@ public enum Level
     [ChoiceName("WARN")]
     WARN,
     [ChoiceName("SEVERE")]
-    SEVERE
+    SEVERE,
+    [ChoiceName("CRITICAL")]
+    CRITICAL
 }

@@ -7,8 +7,10 @@ internal static class Settings
     private static readonly string dbpath = Path.Combine(Directory.GetCurrentDirectory(), "ULSSDB.db");
     internal static string DbLocation = $"Data Source={dbpath};Version=3;";
     internal static string RphLogPath = Path.Combine(Directory.GetCurrentDirectory(), "RPHLogs", "RPHLog-1.log");
+    internal static string ElsLogPath = Path.Combine(Directory.GetCurrentDirectory(), "ELSLogs", "ELSLog-1.log");
     private static string LogName = "RPHLog-1";
-    private static int LogNumber;
+    private static int RPHLogNumber;
+    private static int ELSLogNumber;
 
     internal static string RPHVer = "1.106.1330.16514";
     internal static string LSPDFRVer = "0.4.8678.25591";
@@ -34,11 +36,18 @@ internal static class Settings
         return 517568233360982017;
     }
     
-    internal static string LogNamer()
+    internal static string RphLogNamer()
     {
-        LogNumber++;
-        LogName = $"RPHLog-{LogNumber}.log";
+        RPHLogNumber++;
+        LogName = $"RPHLog-{RPHLogNumber}.log";
         RphLogPath = Path.Combine(Directory.GetCurrentDirectory(), "RPHLogs", LogName);
+        return LogName;
+    }
+    internal static string ElsLogNamer()
+    {
+        ELSLogNumber++;
+        LogName = $"ELSLog-{ELSLogNumber}.log";
+        ElsLogPath = Path.Combine(Directory.GetCurrentDirectory(), "ELSLogs", LogName);
         return LogName;
     }
 

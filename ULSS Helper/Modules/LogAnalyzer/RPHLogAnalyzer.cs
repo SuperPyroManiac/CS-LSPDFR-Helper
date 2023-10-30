@@ -1,5 +1,7 @@
 ﻿using System.Net;
 using System.Text.RegularExpressions;
+using DSharpPlus;
+using ULSS_Helper.Modules.Messages;
 
 namespace ULSS_Helper.Modules.LogAnalyzer;
 
@@ -13,7 +15,7 @@ public class RphLogAnalyzer
             Path.Combine(
                 Directory.GetCurrentDirectory(), 
                 "RPHLogs", 
-                Settings.LogNamer()
+                Settings.RphLogNamer()
             )
         );
 
@@ -111,6 +113,7 @@ public class RphLogAnalyzer
                 }
                 catch (Exception e)
                 {
+                    ErrorHandler.ErrLog(e.ToString());
                     Console.WriteLine(e);
                     throw;
                 }
@@ -164,9 +167,10 @@ public class RphLogAnalyzer
                 if (!log.Errors.Any(x => x.Solution == newError.Solution)) log.Errors.Add(newError);
             }
         }
+        log.Errors = log.Errors.OrderBy(x => x.Level).ToList();
 
         Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("Log Processed...");
+        Console.WriteLine("RPH Log Processed...");
         Console.WriteLine("");
         Console.WriteLine($"Current: {log.Current.Count}");
         Console.ForegroundColor = ConsoleColor.Yellow;
