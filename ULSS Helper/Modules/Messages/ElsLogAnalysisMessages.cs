@@ -45,28 +45,58 @@ internal class ElsLogAnalysisMessages : LogAnalysisMessages
 
     internal static async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs e)
     {
+        string validVcFiles = "\r\n- " + string.Join(", ", log.ValidElsVcfFiles);
+        string invalidVcFiles = "\r\n- " + string.Join("\r\n- ", log.InvalidElsVcfFiles);
+        
         await e.Interaction.DeferAsync(true);
         
         DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Detailed ELS.log Info");
         
-        //embed = AddTsViewFields(embed);
-
         foreach (var field in e.Message.Embeds[0].Fields)
         {
             embed.AddField(field.Name, field.Value, field.Inline);
         }
+        
+        if (validVcFiles.Length >= 1024 || invalidVcFiles.Length >= 1024)
+        {
+            embed.AddField(":warning:     **Message Too Big**", "\r\nToo many VCFs to display in a single message.", true);
+            
+            var embed2 = new DiscordEmbedBuilder
+            {
+                Title = ":green_circle:     **Valid VCFs:**",
+                Description = "\r\n- " + validVcFiles,
+                Color = DiscordColor.Gold,
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon }
+            };
+            var embed3 = new DiscordEmbedBuilder
+            {
+                Title = ":orange_circle:     **Invalid VCFs:**",
+                Description = "\r\n- " + invalidVcFiles,
+                Color = DiscordColor.Gold,
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon }
+            };
+
+            var overflow = new DiscordWebhookBuilder();
+            overflow.AddEmbed(embed);
+            if (validVcFiles.Length != 0) overflow.AddEmbed(embed2);
+            if (invalidVcFiles.Length != 0) overflow.AddEmbed(embed3);
+            overflow.AddComponents(new DiscordComponent[]
+            {
+                new DiscordButtonComponent(ButtonStyle.Danger, "sendElsDetailsToUser", "Send To User", false,
+                    new DiscordComponentEmoji("📨"))
+            });
+            await e.Interaction.EditOriginalResponseAsync(overflow);
+            return;
+        }
 
         if (log.VcfContainer != null)
             embed.AddField("VCF Container Location:", log.VcfContainer);
-
-        string validVcFiles = "\r\n- " + string.Join(", ", log.ValidElsVcfFiles);
+        
         if (log.ValidElsVcfFiles.Count > 0)
             embed.AddField(":green_circle:     Valid VCFs:", validVcFiles, true);
-
-        string invalidVcFiles = "\r\n- " + string.Join("\r\n- ", log.InvalidElsVcfFiles);
+        
         if (log.InvalidElsVcfFiles.Count > 0) 
             embed.AddField(":orange_circle:     Invalid VCFs:", invalidVcFiles, true);
-        
             
         await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed).AddComponents(new DiscordComponent[]
         {
