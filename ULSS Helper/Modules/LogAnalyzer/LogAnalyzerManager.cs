@@ -1,6 +1,7 @@
 using System.Net;
 using DSharpPlus;
 using DSharpPlus.Entities;
+using DSharpPlus.Lavalink.EventArgs;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Modules.Messages;
 
@@ -77,6 +78,8 @@ public class LogAnalyzerManager
         }
         catch (Exception exception)
         {
+            await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, ErrorHandler.ErrEmb());
+            ErrorHandler.ErrLog(exception.ToString());
             Console.WriteLine(exception);
             throw;
         }
