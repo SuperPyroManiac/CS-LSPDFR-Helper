@@ -9,6 +9,6 @@ internal class ErrorHandler
     {
         var log = new DiscordMessageBuilder()
             .WithContent($"# Error Detected\r\n```{e}```")
-            .SendAsync(Program.Client.GetChannelAsync(1168438186939273276).Result);
+            .SendAsync(Program.Client.GetChannelAsync(1168638324131508316).Result);
     }
 }
