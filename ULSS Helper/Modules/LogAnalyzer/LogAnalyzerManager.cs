@@ -78,7 +78,6 @@ public class LogAnalyzerManager
         }
         catch (Exception exception)
         {
-            await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, ErrorHandler.ErrEmb());
             ErrorHandler.ErrLog(exception.ToString());
             Console.WriteLine(exception);
             throw;

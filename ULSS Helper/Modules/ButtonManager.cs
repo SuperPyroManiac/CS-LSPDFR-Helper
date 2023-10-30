@@ -23,7 +23,6 @@ public class ButtonManager
         }
         catch (Exception exception)
         {
-            await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, ErrorHandler.ErrEmb());
             ErrorHandler.ErrLog(exception.ToString());
             Console.WriteLine(exception);
             throw;
