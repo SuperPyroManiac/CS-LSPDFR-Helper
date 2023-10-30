@@ -156,7 +156,6 @@ internal class RphLogAnalysisMessages : LogAnalysisMessages
         {
             if (!field.Name.Contains(":bangbang:")) newEmb.AddField(field.Name, field.Value, field.Inline);
         }
-        
         newEmb = RemoveTsViewFields(newEmb);
         newEmbList.Add(newEmb);
         newEmbList.AddRange(e.Message.Embeds);
