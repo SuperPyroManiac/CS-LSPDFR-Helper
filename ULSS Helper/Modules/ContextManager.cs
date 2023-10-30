@@ -16,8 +16,6 @@ internal class ContextManager : ApplicationCommandModule
     [SlashRequirePermissions(Permissions.ManageMessages)]
     public static async Task OnMenuSelect(ContextMenuContext e)
     {
-        await e.DeferAsync(true);
-
         if (e.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
         {
             var emb = new DiscordInteractionResponseBuilder();
