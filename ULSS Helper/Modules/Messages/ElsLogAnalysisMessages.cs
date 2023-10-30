@@ -64,14 +64,14 @@ internal class ElsLogAnalysisMessages : LogAnalysisMessages
             var embed2 = new DiscordEmbedBuilder
             {
                 Title = ":green_circle:     **Valid VCFs:**",
-                Description = "\r\n- " + validVcFiles,
+                Description = validVcFiles,
                 Color = DiscordColor.Gold,
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon }
             };
             var embed3 = new DiscordEmbedBuilder
             {
                 Title = ":orange_circle:     **Invalid VCFs:**",
-                Description = "\r\n- " + invalidVcFiles,
+                Description = invalidVcFiles,
                 Color = DiscordColor.Gold,
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon }
             };
