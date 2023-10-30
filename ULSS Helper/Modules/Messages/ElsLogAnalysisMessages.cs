@@ -10,6 +10,7 @@ internal class ElsLogAnalysisMessages : LogAnalysisMessages
 
     internal static async Task SendQuickLogInfoMessage(ContextMenuContext e)
     {
+        logUploaderUserId = e.TargetMessage.Author.Id;
         logMessageLink = e.TargetMessage.JumpLink.ToString();
 
         DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Quick ELS.log Info");
@@ -26,7 +27,7 @@ internal class ElsLogAnalysisMessages : LogAnalysisMessages
         }
 
         if (log.TotalAmountElsModels != null) 
-            embed.AddField("Total amount of ELS-enabled models:", log.TotalAmountElsModels.ToString());
+            embed.AddField("Total amount of ELS-enabled models:", log.TotalAmountElsModels.ToString() ?? "0");
 
         DiscordWebhookBuilder message = new DiscordWebhookBuilder()
             .AddEmbed(embed)

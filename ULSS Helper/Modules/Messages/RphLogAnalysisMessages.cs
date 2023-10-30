@@ -64,6 +64,7 @@ internal class RphLogAnalysisMessages : LogAnalysisMessages
                 ? $"[{i.DName}]({i.Link})"
                 : $"[{i?.DName}](https://www.google.com/search?q=lspdfr+{i.DName.Replace(" ", "+")})")
             .ToList();
+        logUploaderUserId = e.TargetMessage.Author.Id;
         logMessageLink = e.TargetMessage.JumpLink.ToString();
         currentList = log.Current.Select(i => i?.DName).ToList();
         var brokenList = log.Broken.Select(i => i?.DName).ToList();
