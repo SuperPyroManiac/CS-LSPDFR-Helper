@@ -10,9 +10,15 @@ namespace ULSS_Helper.Modules.Commands;
 public class ExportErrors : ApplicationCommandModule
 {
     [SlashCommand("ExportErrors", "Exports all errors as an xml!")]
-    [SlashRequirePermissions(Permissions.ManageMessages)]
+
     public async Task ExportErrorsCmd(InteractionContext ctx)
     {
+        if (ctx.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
+        {
+            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
+            return;
+        }
+        
         var errors = DatabaseManager.LoadErrors().ToArray();
         var serializer = new XmlSerializer(typeof(Error[]));
         await using (var writer = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "Exports", "ErrorExport.xml")))

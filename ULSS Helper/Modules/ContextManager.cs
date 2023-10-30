@@ -13,7 +13,7 @@ internal class ContextManager : ApplicationCommandModule
 {
     
     [ContextMenu(ApplicationCommandType.MessageContextMenu, "Analyze Log")]
-    [SlashRequirePermissions(Permissions.ManageMessages)]
+
     public static async Task OnMenuSelect(ContextMenuContext e)
     {
         if (e.Member.Roles.All(role => role.Id != Settings.GetTSRole()))

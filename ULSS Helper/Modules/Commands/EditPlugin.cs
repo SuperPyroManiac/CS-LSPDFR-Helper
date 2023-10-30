@@ -9,7 +9,7 @@ namespace ULSS_Helper.Modules.Commands;
 public class EditPlugin : ApplicationCommandModule
 {
     [SlashCommand("EditPlugin", "Edits a plugin in the database!")]
-    [SlashRequirePermissions(Permissions.ManageMessages)]
+
     public async Task Cmd(
         InteractionContext ctx, 
         [Option("Name", "Plugins name as shown in the log!")] string pN, 

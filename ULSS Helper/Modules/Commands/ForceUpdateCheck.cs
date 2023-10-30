@@ -9,7 +9,7 @@ namespace ULSS_Helper.Modules.Commands;
 public class ForceUpdateCheck : ApplicationCommandModule
 {
     [SlashCommand("ForceUpdateCheck", "Forced the database to update!")]
-    [SlashRequirePermissions(Permissions.ManageMessages)]
+
     public async Task ForceUpdateCmd(InteractionContext ctx)
     {
         await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);

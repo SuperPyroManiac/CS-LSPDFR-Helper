@@ -9,7 +9,7 @@ namespace ULSS_Helper.Modules.Commands;
 public class RemovePlugin : ApplicationCommandModule
 {
     [SlashCommand("RemovePlugin", "Removes a plugin from the database!")]
-    [SlashRequirePermissions(Permissions.ManageMessages)]
+
     public async Task RemovePluginCmd(InteractionContext ctx,
         [Option("Name", "Must match an existing plugin name!")] string plugName)
     {
