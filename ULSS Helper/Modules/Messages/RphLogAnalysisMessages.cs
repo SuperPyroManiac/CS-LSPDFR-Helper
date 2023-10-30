@@ -64,7 +64,6 @@ internal class RphLogAnalysisMessages : LogAnalysisMessages
                 ? $"[{i.DName}]({i.Link})"
                 : $"[{i?.DName}](https://www.google.com/search?q=lspdfr+{i.DName.Replace(" ", "+")})")
             .ToList();
-        logUploaderUserId = e.TargetMessage.Author.Id;
         logMessageLink = e.TargetMessage.JumpLink.ToString();
         currentList = log.Current.Select(i => i?.DName).ToList();
         var brokenList = log.Broken.Select(i => i?.DName).ToList();
@@ -156,15 +155,15 @@ internal class RphLogAnalysisMessages : LogAnalysisMessages
         {
             if (!field.Name.Contains(":bangbang:")) newEmb.AddField(field.Name, field.Value, field.Inline);
         }
+        
         newEmb = RemoveTsViewFields(newEmb);
         newEmbList.Add(newEmb);
         newEmbList.AddRange(e.Message.Embeds);
         newEmbList.RemoveAt(1);
 
         var newMessage = new DiscordMessageBuilder();
-        newMessage.WithContent($"<@{logUploaderUserId}>");
         newMessage.AddEmbeds(newEmbList);
-        newMessage.WithAllowedMention(new UserMention(logUploaderUserId));
+        newMessage.WithReply(log.MsgId, true);
         await e.Interaction.DeleteOriginalResponseAsync();
         await newMessage.SendAsync(e.Channel);
     }

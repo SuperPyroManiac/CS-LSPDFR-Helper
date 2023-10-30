@@ -14,4 +14,5 @@ public class AnalyzedRphLog
     public string GTAVersion { get; set; }
     public string RPHVersion { get; set; }
     public string LSPDFRVersion { get; set; }
+    public ulong MsgId { get; set; }
 }

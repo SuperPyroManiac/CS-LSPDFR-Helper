@@ -7,4 +7,5 @@ public class AnalyzedElsLog
     public List<string>? InvalidElsVcfFiles { get; set; }
     public string? FaultyVcfFile { get; set; }
     public int? TotalAmountElsModels { get; set; }
+    public ulong MsgId { get; set; }
 }

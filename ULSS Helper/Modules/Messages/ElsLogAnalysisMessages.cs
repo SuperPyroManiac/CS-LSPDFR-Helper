@@ -10,7 +10,6 @@ internal class ElsLogAnalysisMessages : LogAnalysisMessages
 
     internal static async Task SendQuickLogInfoMessage(ContextMenuContext e)
     {
-        logUploaderUserId = e.TargetMessage.Author.Id;
         logMessageLink = e.TargetMessage.JumpLink.ToString();
 
         DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Quick ELS.log Info");
@@ -90,9 +89,8 @@ internal class ElsLogAnalysisMessages : LogAnalysisMessages
         newEmbList.RemoveAt(1);
 
         var newMessage = new DiscordMessageBuilder();
-        newMessage.WithContent($"<@{logUploaderUserId}>");
         newMessage.AddEmbeds(newEmbList);
-        newMessage.WithAllowedMention(new UserMention(logUploaderUserId));
+        newMessage.WithReply(log.MsgId, true);
         await e.Interaction.DeleteOriginalResponseAsync();
         await newMessage.SendAsync(e.Channel);
     }

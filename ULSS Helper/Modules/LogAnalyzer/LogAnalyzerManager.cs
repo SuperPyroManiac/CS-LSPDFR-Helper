@@ -66,12 +66,14 @@ public class LogAnalyzerManager
             if (_file.Contains("RagePluginHook"))
             {
                 RphLogAnalysisMessages.log = RphLogAnalyzer.Run(_file);
+                RphLogAnalysisMessages.log.MsgId = e.TargetMessage.Id;
                 await RphLogAnalysisMessages.SendQuickLogInfoMessage(e);
                 return;
             }
             if (_file.Contains("ELS"))
             {
                 ElsLogAnalysisMessages.log = ElsLogAnalyzer.Run(_file);
+                ElsLogAnalysisMessages.log.MsgId = e.TargetMessage.Id;
                 await ElsLogAnalysisMessages.SendQuickLogInfoMessage(e);
                 return;
             }
