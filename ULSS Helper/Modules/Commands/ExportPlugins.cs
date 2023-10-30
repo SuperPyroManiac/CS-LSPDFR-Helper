@@ -30,5 +30,6 @@ public class ExportPlugins : ApplicationCommandModule
         await ctx.CreateResponseAsync(BasicEmbeds.Info("Exporting plugins..."));
         await ctx.Channel.SendMessageAsync(new DiscordMessageBuilder()
             .AddFile(fs, AddFileOptions.CloseStream));
+        Logging.sendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info("Exported plugins!"));
     }
 }

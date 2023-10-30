@@ -29,6 +29,7 @@ public class RemoveError : ApplicationCommandModule
                 DatabaseManager.DeleteError(error);
                 isValid = true;
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Warning($"**Removed error with id: {errId}**")));
+                Logging.sendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Warning($"Removed error: {errId}!"));
                 return;
             }
         }

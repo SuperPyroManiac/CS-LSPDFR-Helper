@@ -24,5 +24,6 @@ public class ForceUpdateCheck : ApplicationCommandModule
         th.Start();
         
         await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Info("All plugin versions will be updated!")));
+        Logging.sendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info("Forced DB updater to run!"));
     }
 }
