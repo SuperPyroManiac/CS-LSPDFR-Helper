@@ -1,7 +1,8 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using DSharpPlus.SlashCommands.Attributes;
+using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Extensions;
 using ULSS_Helper.Modules.Messages;
 
 namespace ULSS_Helper.Modules.Commands;
@@ -10,7 +11,7 @@ public class FindPlugins : ApplicationCommandModule
 {
     [SlashCommand("FindPlugins", "Returns a list of all plugins in the database that match the search parameters!")]
 
-    public async Task FindPluginsCmd(InteractionContext ctx,
+    public static async Task FindPluginsCmd(InteractionContext ctx,
         [Option("Name", "The plugin's name.")] string? plugName=null,
         [Option("DName", "The plugin's display name.")] string? plugDName=null,
         [Option("ID", "The plugin's id on lcpdfr.com.")] string? plugId=null,
@@ -38,10 +39,11 @@ public class FindPlugins : ApplicationCommandModule
 
             if (pluginsFound.Count > 0) 
             {
-                int limit = 3;
-                int numberOfResults = pluginsFound.Count <= limit ? pluginsFound.Count : limit;
-                var response = new DiscordWebhookBuilder();
-                response.AddEmbed(BasicEmbeds.Generic(
+                int resultsPerPage = 3;
+                int currentResultsPerPage = 0;
+                int numberOfResults = pluginsFound.Count <= resultsPerPage ? pluginsFound.Count : resultsPerPage;
+                List<Page> pages = new List<Page>();
+                string searchResultsHeader = 
                     $"**I found {pluginsFound.Count} plugin{(pluginsFound.Count != 1 ? "s" : "")} that match{(pluginsFound.Count == 1 ? "es" : "")} the following search parameters:**\r\n"
                     + $"{(plugName != null ? "- Name: *"+plugName+"*\r\n" : "")}"
                     + $"{(plugDName != null ? "- Display Name: *"+plugDName+"*\r\n" : "")}"
@@ -49,23 +51,34 @@ public class FindPlugins : ApplicationCommandModule
                     + $"{(plugState != null ? "- State: *"+plugState+"*\r\n" : "")}"
                     + $"{(exactMatch != null ? "- exactMatch: *"+exactMatch+"*\r\n" : "")}"
                     + "\n"
-                    + $"Showing {numberOfResults} of {pluginsFound.Count} results:", DiscordColor.DarkGreen
-                ));
-                for(int i=0; i < numberOfResults; i++)
+                    + $"Search results:";
+
+                string currentPageContent = searchResultsHeader;
+                for(int i=0; i < pluginsFound.Count; i++)
                 {
                     Plugin plugin = pluginsFound[i];
-                    response.AddEmbed(BasicEmbeds.Generic(
-                        $"**Plugin {plugin.Name}**\r\n"
-                        + $"Display Name: {plugin.DName}\r\n" 
-                        + $"Version: {plugin.Version}\r\n"
-                        + $"Early Access Version: {plugin.EAVersion}\r\n"
-                        + $"ID (on lcpdfr.com): {plugin.ID}\r\n"
-                        + $"Link: {plugin.Link}\r\n"
-                        + $"State: {plugin.State}",
-                        DiscordColor.DarkBlue
-                    ));
+                    currentPageContent += "\r\n\r\n"
+                        + $"> **Plugin {plugin.Name}**\r"
+                        + $"> Display Name: {plugin.DName}\r" 
+                        + $"> Version: {plugin.Version}\r\n"
+                        + $"> Early Access Version: {plugin.EAVersion}\r"
+                        + $"> ID (on lcpdfr.com): {plugin.ID}\r"
+                        + $"> Link: {plugin.Link}\r"
+                        + $"> State: {plugin.State}";
+                    currentResultsPerPage++;
+                    if (currentResultsPerPage == resultsPerPage || i == pluginsFound.Count-1) {
+                        var embed = BasicEmbeds.Generic(currentPageContent, DiscordColor.DarkBlue);
+                        embed.Footer = new DiscordEmbedBuilder.EmbedFooter
+                        {
+                            Text = $"Showing results {i+2 - currentResultsPerPage} - {i+1} (total: {pluginsFound.Count})"
+                        };
+                        var page = new Page(embed: embed);
+                        pages.Add(page);
+                        currentPageContent = searchResultsHeader;
+                        currentResultsPerPage = 0;
+                    }
                 }
-                await ctx.EditResponseAsync(response);
+                await ctx.Interaction.SendPaginatedResponseAsync(true, ctx.User, pages, asEditResponse: true);
                 return;
             }
             else 
