@@ -15,8 +15,8 @@ public class FindErrors : ApplicationCommandModule
         [Option("ID", "The error id in the bot's database.")] string? errId=null,
         [Option("Regex", "Regex for detecting the error.")] string? regex=null,
         [Option("Solution", "Solution for the error.")] string? solution=null,
-        [Option("Level", $"Error level (WARN, SEVERE).")] Level? level=null,
-        [Option("exactMatch", "Exact = true, approximate = false")] bool? exactMatch=false
+        [Option("Level", $"Error level (WARN, SEVERE, CRITICAL).")] Level? level=null,
+        [Option("Strict_Search", "true = enabled, false = disabled (approximate search)")] bool? exactMatch=false
         )
     {
         await ctx.CreateResponseAsync(
@@ -40,17 +40,15 @@ public class FindErrors : ApplicationCommandModule
             {
                 int resultsPerPage = 3;
                 int currentResultsPerPage = 0;
-                int numberOfResults = errorsFound.Count <= resultsPerPage ? errorsFound.Count : resultsPerPage;
                 List<Page> pages = new List<Page>();
-                string searchResultsHeader = 
-                    $"**I found {errorsFound.Count} error{(errorsFound.Count != 1 ? "s" : "")} that match{(errorsFound.Count == 1 ? "es" : "")} the following search parameters:**\r\n"
-                    + $"{(errId != null ? "- ID: *"+errId+"*\r" : "")}"
-                    + $"{(regex != null ? "- Regex:\n```"+regex+"```\r" : "")}"
-                    + $"{(solution != null ? "- Solution:\n```"+solution+"```\r" : "")}"
-                    + $"{(level != null ? "- Level: *"+level+"*\r" : "")}"
-                    + $"{(exactMatch != null ? "- exactMatch: *"+exactMatch+"*\r\n" : "")}"
-                    + "\n"
-                    + $"Search results:";
+                string searchResultsHeader = GetSearchParamsList(
+                    $"I found {errorsFound.Count} error{(errorsFound.Count != 1 ? "s" : "")} that match{(errorsFound.Count == 1 ? "es" : "")} the following search parameters:",
+                    errId,
+                    regex,
+                    solution,
+                    level,
+                    exactMatch
+                ) + "\nSearch results:";
 
                 string currentPageContent = searchResultsHeader;
                 for(int i=0; i < errorsFound.Count; i++)
@@ -80,14 +78,13 @@ public class FindErrors : ApplicationCommandModule
             }
             else 
             {
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Warning(
-                    $"**No errors found with the following search parameters:**\r\n"
-                    + $"{(errId != null ? "- ID: *"+errId+"*\r\n" : "")}"
-                    + $"{(regex != null ? "- Regex:\n```"+regex+"```\r\n" : "")}"
-                    + $"{(solution != null ? "- Solution:\n```"+solution+"```\r\n" : "")}"
-                    + $"{(level != null ? "- Level: *"+level+"*\r\n" : "")}"
-                    + $"{(exactMatch != null ? "- exactMatch: *"+exactMatch+"*\r\n" : "")}"
-                )));
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+                    .AddEmbed(
+                        BasicEmbeds.Warning(
+                            GetSearchParamsList("No errors found with the following search parameters:", errId, regex, solution, level, exactMatch)
+                        )
+                    )
+                );
                 return;
             }
         } 
@@ -96,5 +93,15 @@ public class FindErrors : ApplicationCommandModule
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Error(e.Message)));
             return;
         }
+    }
+
+    private static string GetSearchParamsList(string title, string? errId, string? regex, string? solution, Level? level, bool? exactMatch) 
+    {
+        return $"**{title}**\r\n"
+            + $"{(errId != null ? "- ID: *"+errId+"*\n" : "")}"
+            + $"{(regex != null ? "- Regex:\n```"+regex+"```\n" : "")}"
+            + $"{(solution != null ? "- Solution:\n```"+solution+"```\n" : "")}"
+            + $"{(level != null ? "- Level: *"+level+"*\n" : "")}"
+            + $"{(exactMatch != null ? "- Strict search enabled: *"+exactMatch+"*\n" : "")}";
     }
 }

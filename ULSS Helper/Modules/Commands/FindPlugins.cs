@@ -16,7 +16,7 @@ public class FindPlugins : ApplicationCommandModule
         [Option("DName", "The plugin's display name.")] string? plugDName=null,
         [Option("ID", "The plugin's id on lcpdfr.com.")] string? plugId=null,
         [Option("State", "The plugin's state (LSPDFR, EXTERNAL, BROKEN, LIB).")] State? plugState=null,
-        [Option("exactMatch", "Exact = true, approximate = false")] bool? exactMatch=false
+        [Option("Strict_Search", "true = enabled, false = disabled (approximate search)")] bool? exactMatch=false
         )
     {
         await ctx.CreateResponseAsync(
@@ -41,17 +41,15 @@ public class FindPlugins : ApplicationCommandModule
             {
                 int resultsPerPage = 3;
                 int currentResultsPerPage = 0;
-                int numberOfResults = pluginsFound.Count <= resultsPerPage ? pluginsFound.Count : resultsPerPage;
                 List<Page> pages = new List<Page>();
-                string searchResultsHeader = 
-                    $"**I found {pluginsFound.Count} plugin{(pluginsFound.Count != 1 ? "s" : "")} that match{(pluginsFound.Count == 1 ? "es" : "")} the following search parameters:**\r\n"
-                    + $"{(plugName != null ? "- Name: *"+plugName+"*\r\n" : "")}"
-                    + $"{(plugDName != null ? "- Display Name: *"+plugDName+"*\r\n" : "")}"
-                    + $"{(plugId != null ? "- ID (on lcpdfr.com): *"+plugId+"*\r\n" : "")}"
-                    + $"{(plugState != null ? "- State: *"+plugState+"*\r\n" : "")}"
-                    + $"{(exactMatch != null ? "- exactMatch: *"+exactMatch+"*\r\n" : "")}"
-                    + "\n"
-                    + $"Search results:";
+                string searchResultsHeader = GetSearchParamsList(
+                    $"I found {pluginsFound.Count} plugin{(pluginsFound.Count != 1 ? "s" : "")} that match{(pluginsFound.Count == 1 ? "es" : "")} the following search parameters:", 
+                    plugName, 
+                    plugDName, 
+                    plugId, 
+                    plugState, 
+                    exactMatch
+                ) + $"\nSearch results:";
 
                 string currentPageContent = searchResultsHeader;
                 for(int i=0; i < pluginsFound.Count; i++)
@@ -83,14 +81,13 @@ public class FindPlugins : ApplicationCommandModule
             }
             else 
             {
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Warning(
-                    $"**No plugins found with the following search parameters:**\r\n"
-                    + $"{(plugName != null ? "- Name: *"+plugName+"*\r\n" : "")}"
-                    + $"{(plugDName != null ? "- Display Name: *"+plugDName+"*\r\n" : "")}"
-                    + $"{(plugId != null ? "- ID (on lcpdfr.com): *"+plugId+"*\r\n" : "")}"
-                    + $"{(plugState != null ? "- State: *"+plugState+"*\r\n" : "")}"
-                    + $"{(exactMatch != null ? "- exactMatch: *"+exactMatch+"*" : "")}"
-                )));
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+                    .AddEmbed(
+                        BasicEmbeds.Warning(
+                            GetSearchParamsList($"No plugins found with the following search parameters:", plugName, plugDName, plugId, plugState, exactMatch)
+                        )
+                    )
+                );
                 return;
             }
         }
@@ -99,6 +96,15 @@ public class FindPlugins : ApplicationCommandModule
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Error(e.Message)));
             return;
         }
-        
+    }
+
+    private static string GetSearchParamsList(string title, string? plugName, string? plugDName, string? plugId, State? plugState, bool? exactMatch)
+    {
+        return $"**{title}**\r\n"
+            + $"{(plugName != null ? "- Name: *"+plugName+"*\r\n" : "")}"
+            + $"{(plugDName != null ? "- Display Name: *"+plugDName+"*\r\n" : "")}"
+            + $"{(plugId != null ? "- ID (on lcpdfr.com): *"+plugId+"*\r\n" : "")}"
+            + $"{(plugState != null ? "- State: *"+plugState+"*\r\n" : "")}"
+            + $"{(exactMatch != null ? "- Strict search enabled: *"+exactMatch+"*" : "")}";
     }
 }
