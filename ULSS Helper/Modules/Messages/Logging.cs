@@ -11,4 +11,5 @@ internal class Logging
             .WithEmbed(e)
             .SendAsync(Program.Client.GetChannelAsync(1168638324131508316).Result);
     }
+    //internal static void sendMissing(ulong msgID, )
 }
