@@ -4,13 +4,15 @@ using System.IO;
 internal static class Settings
 {
     internal static readonly string Token = GetToken();
-    private static readonly string dbpath = Path.Combine(Directory.GetCurrentDirectory(), "ULSSDB.db");
+    internal static readonly string dbpath = Path.Combine(Directory.GetCurrentDirectory(), "ULSSDB.db");
     internal static string DbLocation = $"Data Source={dbpath};Version=3;";
     internal static string RphLogPath = Path.Combine(Directory.GetCurrentDirectory(), "RPHLogs", "RPHLog-1.log");
     internal static string ElsLogPath = Path.Combine(Directory.GetCurrentDirectory(), "ELSLogs", "ELSLog-1.log");
-    private static string LogName = "RPHLog-1";
+    internal static string DbBackupPath = Path.Combine(Directory.GetCurrentDirectory(), "Backups", "DB-1.db");
+    private static string LogName = "ZehFirstLog";
     private static int RPHLogNumber;
     private static int ELSLogNumber;
+    private static int DbNameNumber;
 
     internal static string RPHVer = "1.106.1330.16514";
     internal static string LSPDFRVer = "0.4.8678.25591";
@@ -49,6 +51,14 @@ internal static class Settings
         LogName = $"ELSLog-{ELSLogNumber}.log";
         ElsLogPath = Path.Combine(Directory.GetCurrentDirectory(), "ELSLogs", LogName);
         return LogName;
+    }
+    
+    internal static string DbBackupNamer()
+    {
+        DbNameNumber++;
+        LogName = $"DB-{DbNameNumber}.db";
+        DbBackupPath = Path.Combine(Directory.GetCurrentDirectory(), "Backups", LogName);
+        return DbBackupPath;
     }
 
 }

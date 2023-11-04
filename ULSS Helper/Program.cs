@@ -19,6 +19,8 @@ internal class Program
     
     static async Task Main(string[] args)
     {
+        TimerModule.StartTimer();
+        
         var discordConfig = new DiscordConfiguration()
         {
             Intents = DiscordIntents.All,
