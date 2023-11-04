@@ -8,7 +8,6 @@ using ULSS_Helper.Modules;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 
-
 namespace ULSS_Helper;
 
 internal class Program
@@ -42,7 +41,6 @@ internal class Program
         //TODO: Client.VoiceStateUpdated += VoiceChatManager.OnMemberJoinLeaveVC;
 
         Client.UseInteractivity(new InteractivityConfiguration());
-
 
         await Client.ConnectAsync();
         await Task.Delay(-1);

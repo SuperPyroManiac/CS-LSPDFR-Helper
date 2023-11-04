@@ -4,6 +4,7 @@ using DSharpPlus.SlashCommands;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using ULSS_Helper.Modules.Messages;
+using System.Text.RegularExpressions;
 
 namespace ULSS_Helper.Modules.Commands;
 
@@ -48,17 +49,17 @@ public class FindErrors : ApplicationCommandModule
                     solution,
                     level,
                     exactMatch
-                ) + "\nSearch results:";
+                ) + "\r\nSearch results:";
 
                 string currentPageContent = searchResultsHeader;
                 for(int i=0; i < errorsFound.Count; i++)
                 {
                     Error error = errorsFound[i];
                     currentPageContent += "\r\n\r\n"
-                        + $"> **Error ID {error.ID}**\r"
-                        + $"> Regex:\n> ```{error.Regex ?? " "}```\r" 
-                        + $"> Solution:\n> ```{error.Solution ?? " "}```\r"
-                        + $"> Level: {error.Level}";
+                        + $"> **__Error ID {error.ID}__**\r\n"
+                        + $"> **Regex:**\r\n> {ConvertToCodeSnippetInQuote(error.Regex) ?? " "}\r\n> \r\n" 
+                        + $"> **Solution:**\r\n> {error.Solution ?? " "}\r\n> \r\n"
+                        + $"> **Level:**\r\n> {error.Level}";
                     currentResultsPerPage++;
                     if (currentResultsPerPage == resultsPerPage || i == errorsFound.Count-1) {
                         var embed = BasicEmbeds.Generic(currentPageContent, DiscordColor.DarkBlue);
@@ -97,11 +98,28 @@ public class FindErrors : ApplicationCommandModule
 
     private static string GetSearchParamsList(string title, string? errId, string? regex, string? solution, Level? level, bool? exactMatch) 
     {
-        return $"**{title}**\r\n"
-            + $"{(errId != null ? "- ID: *"+errId+"*\n" : "")}"
-            + $"{(regex != null ? "- Regex:\n```"+regex+"```\n" : "")}"
-            + $"{(solution != null ? "- Solution:\n```"+solution+"```\n" : "")}"
-            + $"{(level != null ? "- Level: *"+level+"*\n" : "")}"
-            + $"{(exactMatch != null ? "- Strict search enabled: *"+exactMatch+"*\n" : "")}";
+        string searchParamsList = $"**{title}**\r\n";
+        if (errId != null)
+            searchParamsList += $"- **ID:** *{errId}*\r\n";
+        if (regex != null)
+            searchParamsList += $"- **Regex:**\n```\n{regex}\n```\r\n";
+        if (solution != null)
+            searchParamsList += $"- **Solution:**\n```\n{solution}\n```\r\n";
+        if (level != null)
+            searchParamsList += $"- **Level:** *{level}*\r\n";
+        if (exactMatch != null)
+            searchParamsList += $"- **Strict search enabled:** *{exactMatch}*\r\n";
+
+        return searchParamsList;
+    }
+
+    private static string ConvertToCodeSnippetInQuote(string input)
+    {
+        return "`" + input.Replace("\n", "`\n> `") + "`";
+        string output = "`" + new Regex("\n(?!>)").Replace(input, "`\n> `");
+        char[]? outputChars = output.ToCharArray();
+        if (!outputChars[outputChars.Length - 1].Equals("`"))
+            output += "`";
+        return output;
     }
 }

@@ -49,20 +49,20 @@ public class FindPlugins : ApplicationCommandModule
                     plugId, 
                     plugState, 
                     exactMatch
-                ) + $"\nSearch results:";
+                ) + "\r\nSearch results:";
 
                 string currentPageContent = searchResultsHeader;
                 for(int i=0; i < pluginsFound.Count; i++)
                 {
                     Plugin plugin = pluginsFound[i];
                     currentPageContent += "\r\n\r\n"
-                        + $"> **Plugin {plugin.Name}**\r"
-                        + $"> Display Name: {plugin.DName}\r" 
-                        + $"> Version: {plugin.Version}\r\n"
-                        + $"> Early Access Version: {plugin.EAVersion}\r"
-                        + $"> ID (on lcpdfr.com): {plugin.ID}\r"
-                        + $"> Link: {plugin.Link}\r"
-                        + $"> State: {plugin.State}";
+                        + $"> **Plugin {plugin.Name}**\r\n"
+                        + $"> **Display Name:** {plugin.DName}\r\n" 
+                        + $"> **Version:** {plugin.Version}\r\n"
+                        + $"> **Early Access Version:** {plugin.EAVersion}\r\n"
+                        + $"> **ID (on lcpdfr.com):** {plugin.ID}\r\n"
+                        + $"> **Link:** {plugin.Link}\r\n"
+                        + $"> **State:** {plugin.State}";
                     currentResultsPerPage++;
                     if (currentResultsPerPage == resultsPerPage || i == pluginsFound.Count-1) {
                         var embed = BasicEmbeds.Generic(currentPageContent, DiscordColor.DarkBlue);
@@ -100,11 +100,18 @@ public class FindPlugins : ApplicationCommandModule
 
     private static string GetSearchParamsList(string title, string? plugName, string? plugDName, string? plugId, State? plugState, bool? exactMatch)
     {
-        return $"**{title}**\r\n"
-            + $"{(plugName != null ? "- Name: *"+plugName+"*\r\n" : "")}"
-            + $"{(plugDName != null ? "- Display Name: *"+plugDName+"*\r\n" : "")}"
-            + $"{(plugId != null ? "- ID (on lcpdfr.com): *"+plugId+"*\r\n" : "")}"
-            + $"{(plugState != null ? "- State: *"+plugState+"*\r\n" : "")}"
-            + $"{(exactMatch != null ? "- Strict search enabled: *"+exactMatch+"*" : "")}";
+        string searchParamsList = $"**{title}**\r\n";
+        if (plugName != null)
+            searchParamsList += $"- **Name:** *{plugName}*\r\n";
+        if (plugDName != null)
+            searchParamsList += $"- **Display Name:** *{plugDName}*\r\n";
+        if (plugId != null)
+            searchParamsList += $"- **ID (on lcpdfr.com):** *{plugId}*\r\n";
+        if (plugState != null)
+            searchParamsList += $"- **State:** *{plugState}*\r\n";
+        if (exactMatch != null)
+            searchParamsList += $"- **Strict search enabled:** *{exactMatch}*\r\n";;
+
+        return searchParamsList;
     }
 }
