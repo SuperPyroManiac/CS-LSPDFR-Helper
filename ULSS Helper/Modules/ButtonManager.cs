@@ -23,7 +23,7 @@ public class ButtonManager
         }
         catch (Exception exception)
         {
-            ErrorHandler.ErrLog(exception.ToString());
+            Logging.ErrLog(exception.ToString());
             Console.WriteLine(exception);
             throw;
         }

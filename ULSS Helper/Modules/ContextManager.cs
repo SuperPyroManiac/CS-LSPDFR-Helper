@@ -31,7 +31,7 @@ internal class ContextManager : ApplicationCommandModule
         }
         catch (Exception exception)
         {
-            ErrorHandler.ErrLog(exception.ToString());
+            Logging.ErrLog(exception.ToString());
             Console.WriteLine(exception);
             throw;
         }

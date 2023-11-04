@@ -113,7 +113,7 @@ public class RphLogAnalyzer
                 }
                 catch (Exception e)
                 {
-                    ErrorHandler.ErrLog(e.ToString());
+                    Logging.ErrLog(e.ToString());
                     Console.WriteLine(e);
                     throw;
                 }
