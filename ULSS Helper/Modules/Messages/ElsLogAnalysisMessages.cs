@@ -48,8 +48,6 @@ internal class ElsLogAnalysisMessages : LogAnalysisMessages
         string validVcFiles = "\r\n- " + string.Join(", ", log.ValidElsVcfFiles);
         string invalidVcFiles = "\r\n- " + string.Join("\r\n- ", log.InvalidElsVcfFiles);
         
-        await e.Interaction.DeferAsync(true);
-        
         DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Detailed ELS.log Info");
         
         foreach (var field in e.Message.Embeds[0].Fields)
@@ -59,6 +57,7 @@ internal class ElsLogAnalysisMessages : LogAnalysisMessages
         
         if (validVcFiles.Length >= 1024 || invalidVcFiles.Length >= 1024)
         {
+            await e.Interaction.DeferAsync(true);
             embed.AddField(":warning:     **Message Too Big**", "\r\nToo many VCFs to display in a single message.", true);
             
             var embed2 = new DiscordEmbedBuilder
