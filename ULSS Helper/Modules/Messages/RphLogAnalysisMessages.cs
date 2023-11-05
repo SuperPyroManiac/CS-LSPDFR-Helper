@@ -129,8 +129,6 @@ internal class RphLogAnalysisMessages : LogAnalysisMessages
 
     internal static async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs e)
     {
-        await e.Interaction.DeferAsync(true);
-        
         var embed = GetBaseLogInfoEmbed("## Detailed RPH.log Info");
         
         embed = AddTsViewFields(embed);
@@ -141,11 +139,12 @@ internal class RphLogAnalysisMessages : LogAnalysisMessages
         {
             embed.AddField($"```{error.Level.ToString()} ID: {error.ID}``` Troubleshooting Steps:", $"> {error.Solution.Replace("\n", "\n> ")}");
         }
-        
-        await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed).AddComponents(new DiscordComponent[]
-        {
-            new DiscordButtonComponent(ButtonStyle.Danger, "send2", "Send To User", false, new DiscordComponentEmoji("📨"))
-        }));
+
+        await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
+            new DiscordInteractionResponseBuilder().AddEmbed(embed).AddComponents(new DiscordComponent[]
+            {
+                new DiscordButtonComponent(ButtonStyle.Danger, "send2", "Send To User", false, new DiscordComponentEmoji("📨"))
+            }));
     }
     
     internal static async Task SendMessageToUser(ComponentInteractionCreateEventArgs e)

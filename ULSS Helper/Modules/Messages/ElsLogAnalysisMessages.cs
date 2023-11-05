@@ -98,7 +98,7 @@ internal class ElsLogAnalysisMessages : LogAnalysisMessages
         if (log.InvalidElsVcfFiles.Count > 0) 
             embed.AddField(":orange_circle:     Invalid VCFs:", invalidVcFiles, true);
             
-        await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed).AddComponents(new DiscordComponent[]
+        await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,new DiscordInteractionResponseBuilder().AddEmbed(embed).AddComponents(new DiscordComponent[]
         {
             new DiscordButtonComponent(ButtonStyle.Danger, "sendElsDetailsToUser", "Send To User", false, new DiscordComponentEmoji("📨"))
         }));
