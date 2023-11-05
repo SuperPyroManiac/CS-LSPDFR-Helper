@@ -105,7 +105,6 @@ internal class ElsLogAnalysisMessages : LogAnalysisMessages
 
     internal static async Task SendMessageToUser(ComponentInteractionCreateEventArgs e)
     {
-        await e.Interaction.DeferAsync(true);
         var newEmbList = new List<DiscordEmbed>();
         var newEmb = GetBaseLogInfoEmbed(e.Message.Embeds[0].Description);
         
@@ -121,6 +120,8 @@ internal class ElsLogAnalysisMessages : LogAnalysisMessages
         var newMessage = new DiscordMessageBuilder();
         newMessage.AddEmbeds(newEmbList);
         newMessage.WithReply(log.MsgId, true);
+        await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
+            new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Sent!")));
         await e.Interaction.DeleteOriginalResponseAsync();
         await newMessage.SendAsync(e.Channel);
     }
