@@ -58,7 +58,7 @@ public class FindErrors : ApplicationCommandModule
                     currentPageContent += "\r\n\r\n"
                         + $"> **__Error ID {error.ID}__**\r\n"
                         + $"> **Regex:**\r\n> {ConvertToCodeSnippetInQuote(error.Regex) ?? " "}\r\n> \r\n" 
-                        + $"> **Solution:**\r\n> {error.Solution ?? " "}\r\n> \r\n"
+                        + $"> **Solution:**\r\n> {error.Solution.Replace("\n", "\n> ") ?? " "}\r\n> \r\n"
                         + $"> **Level:**\r\n> {error.Level}";
                     currentResultsPerPage++;
                     if (currentResultsPerPage == resultsPerPage || i == errorsFound.Count-1) {
