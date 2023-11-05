@@ -57,7 +57,7 @@ public class FindErrors : ApplicationCommandModule
                     Error error = errorsFound[i];
                     currentPageContent += "\r\n\r\n"
                         + $"> **__Error ID {error.ID}__**\r\n"
-                        + $"> **Regex:**\r\n> {ConvertToCodeSnippetInQuote(error.Regex) ?? " "}\r\n> \r\n" 
+                        + $"> **Regex:**\r\n> `{error.Regex.Replace("\n", "`\n> `") ?? " "}`\r\n> \r\n" 
                         + $"> **Solution:**\r\n> {error.Solution.Replace("\n", "\n> ") ?? " "}\r\n> \r\n"
                         + $"> **Level:**\r\n> {error.Level}";
                     currentResultsPerPage++;
@@ -111,15 +111,5 @@ public class FindErrors : ApplicationCommandModule
             searchParamsList += $"- **Strict search enabled:** *{exactMatch}*\r\n";
 
         return searchParamsList;
-    }
-
-    private static string ConvertToCodeSnippetInQuote(string input)
-    {
-        return "`" + input.Replace("\n", "`\n> `") + "`";
-        string output = "`" + new Regex("\n(?!>)").Replace(input, "`\n> `");
-        char[]? outputChars = output.ToCharArray();
-        if (!outputChars[outputChars.Length - 1].Equals("`"))
-            output += "`";
-        return output;
     }
 }
