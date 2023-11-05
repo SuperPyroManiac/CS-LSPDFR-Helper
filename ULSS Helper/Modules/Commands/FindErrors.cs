@@ -1,8 +1,10 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using DSharpPlus.SlashCommands.Attributes;
+using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Extensions;
 using ULSS_Helper.Modules.Messages;
+using System.Text.RegularExpressions;
 
 namespace ULSS_Helper.Modules.Commands;
 
@@ -10,12 +12,12 @@ public class FindErrors : ApplicationCommandModule
 {
     [SlashCommand("FindErrors", "Returns a list of all errors in the database that match the search parameters!")]
 
-    public async Task FindErrorsCmd(InteractionContext ctx,
+    public static async Task FindErrorsCmd(InteractionContext ctx,
         [Option("ID", "The error id in the bot's database.")] string? errId=null,
         [Option("Regex", "Regex for detecting the error.")] string? regex=null,
         [Option("Solution", "Solution for the error.")] string? solution=null,
-        [Option("Level", $"Error level (WARN, SEVERE).")] Level? level=null,
-        [Option("exactMatch", "Exact = true, approximate = false")] bool? exactMatch=false
+        [Option("Level", $"Error level (WARN, SEVERE, CRITICAL).")] Level? level=null,
+        [Option("Strict_Search", "true = enabled, false = disabled (approximate search)")] bool? exactMatch=false
         )
     {
         await ctx.CreateResponseAsync(
@@ -34,45 +36,56 @@ public class FindErrors : ApplicationCommandModule
         try 
         {
             List<Error> errorsFound = DatabaseManager.FindErrors(errId, regex, solution, level, exactMatch);
+            
             if (errorsFound.Count > 0) 
             {
-                int limit = 3;
-                int numberOfResults = errorsFound.Count <= limit ? errorsFound.Count : limit;
-                var response = new DiscordWebhookBuilder();
-                response.AddEmbed(BasicEmbeds.Generic(
-                    $"**I found {errorsFound.Count} error{(errorsFound.Count != 1 ? "s" : "")} that match{(errorsFound.Count == 1 ? "es" : "")} the following search parameters:**\r\n"
-                    + $"{(errId != null ? "- ID: *"+errId+"*\r\n" : "")}"
-                    + $"{(regex != null ? "- Regex:\n```"+regex+"```\r\n" : "")}"
-                    + $"{(solution != null ? "- Solution:\n```"+solution+"```\r\n" : "")}"
-                    + $"{(level != null ? "- Level: *"+level+"*\r\n" : "")}"
-                    + $"{(exactMatch != null ? "- exactMatch: *"+exactMatch+"*\r\n" : "")}"
-                    + "\n"
-                    + $"Showing {numberOfResults} of {errorsFound.Count} results:", DiscordColor.DarkGreen
-                ));
-                for(int i=0; i < numberOfResults; i++)
+                int resultsPerPage = 3;
+                int currentResultsPerPage = 0;
+                List<Page> pages = new List<Page>();
+                string searchResultsHeader = GetSearchParamsList(
+                    $"I found {errorsFound.Count} error{(errorsFound.Count != 1 ? "s" : "")} that match{(errorsFound.Count == 1 ? "es" : "")} the following search parameters:",
+                    errId,
+                    regex,
+                    solution,
+                    level,
+                    exactMatch
+                ) + "\r\nSearch results:";
+
+                string currentPageContent = searchResultsHeader;
+                for(int i=0; i < errorsFound.Count; i++)
                 {
                     Error error = errorsFound[i];
-                    response.AddEmbed(BasicEmbeds.Generic(
-                        $"**Error ID {error.ID}**\r\n"
-                        + $"Regex:\n```{error.Regex ?? " "}```\r\n" 
-                        + $"Solution:\n```{error.Solution ?? " "}```\r\n"
-                        + $"Level: {error.Level}",
-                        DiscordColor.DarkBlue
-                    ));
+                    currentPageContent += "\r\n\r\n"
+                        + $"> **__Error ID {error.ID}__**\r\n"
+                        + $"> **Regex:**\r\n> {ConvertToCodeSnippetInQuote(error.Regex) ?? " "}\r\n> \r\n" 
+                        + $"> **Solution:**\r\n> {error.Solution ?? " "}\r\n> \r\n"
+                        + $"> **Level:**\r\n> {error.Level}";
+                    currentResultsPerPage++;
+                    if (currentResultsPerPage == resultsPerPage || i == errorsFound.Count-1) {
+                        var embed = BasicEmbeds.Generic(currentPageContent, DiscordColor.DarkBlue);
+                        embed.Footer = new DiscordEmbedBuilder.EmbedFooter
+                        {
+                            Text = $"Showing results {i+2 - currentResultsPerPage} - {i+1} (total: {errorsFound.Count})"
+                        };
+                        var page = new Page(embed: embed);
+                        pages.Add(page);
+                        currentPageContent = searchResultsHeader;
+                        currentResultsPerPage = 0;
+                    }
                 }
-                await ctx.EditResponseAsync(response);
+                
+                await ctx.Interaction.SendPaginatedResponseAsync(true, ctx.User, pages, asEditResponse: true);
                 return;
             }
             else 
             {
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Warning(
-                    $"**No errors found with the following search parameters:**\r\n"
-                    + $"{(errId != null ? "- ID: *"+errId+"*\r\n" : "")}"
-                    + $"{(regex != null ? "- Regex:\n```"+regex+"```\r\n" : "")}"
-                    + $"{(solution != null ? "- Solution:\n```"+solution+"```\r\n" : "")}"
-                    + $"{(level != null ? "- Level: *"+level+"*\r\n" : "")}"
-                    + $"{(exactMatch != null ? "- exactMatch: *"+exactMatch+"*\r\n" : "")}"
-                )));
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+                    .AddEmbed(
+                        BasicEmbeds.Warning(
+                            GetSearchParamsList("No errors found with the following search parameters:", errId, regex, solution, level, exactMatch)
+                        )
+                    )
+                );
                 return;
             }
         } 
@@ -81,5 +94,32 @@ public class FindErrors : ApplicationCommandModule
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Error(e.Message)));
             return;
         }
+    }
+
+    private static string GetSearchParamsList(string title, string? errId, string? regex, string? solution, Level? level, bool? exactMatch) 
+    {
+        string searchParamsList = $"**{title}**\r\n";
+        if (errId != null)
+            searchParamsList += $"- **ID:** *{errId}*\r\n";
+        if (regex != null)
+            searchParamsList += $"- **Regex:**\n```\n{regex}\n```\r\n";
+        if (solution != null)
+            searchParamsList += $"- **Solution:**\n```\n{solution}\n```\r\n";
+        if (level != null)
+            searchParamsList += $"- **Level:** *{level}*\r\n";
+        if (exactMatch != null)
+            searchParamsList += $"- **Strict search enabled:** *{exactMatch}*\r\n";
+
+        return searchParamsList;
+    }
+
+    private static string ConvertToCodeSnippetInQuote(string input)
+    {
+        return "`" + input.Replace("\n", "`\n> `") + "`";
+        string output = "`" + new Regex("\n(?!>)").Replace(input, "`\n> `");
+        char[]? outputChars = output.ToCharArray();
+        if (!outputChars[outputChars.Length - 1].Equals("`"))
+            output += "`";
+        return output;
     }
 }

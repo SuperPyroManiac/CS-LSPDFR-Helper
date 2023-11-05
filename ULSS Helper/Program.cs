@@ -5,6 +5,8 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Modules;
+using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Extensions;
 
 namespace ULSS_Helper;
 
@@ -39,6 +41,8 @@ internal class Program
         Client.ComponentInteractionCreated += ButtonManager.OnButtonPress;
         Client.MessageCreated += MessageSent;
         //TODO: Client.VoiceStateUpdated += VoiceChatManager.OnMemberJoinLeaveVC;
+
+        Client.UseInteractivity(new InteractivityConfiguration());
 
         await Client.ConnectAsync();
         await Task.Delay(-1);
