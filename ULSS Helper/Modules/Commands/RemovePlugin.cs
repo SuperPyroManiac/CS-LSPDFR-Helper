@@ -2,13 +2,14 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.Attributes;
+using ULSS_Helper.Modules.Messages;
 
 namespace ULSS_Helper.Modules.Commands;
 
 public class RemovePlugin : ApplicationCommandModule
 {
     [SlashCommand("RemovePlugin", "Removes a plugin from the database!")]
-    [SlashRequirePermissions(Permissions.ManageMessages)]
+
     public async Task RemovePluginCmd(InteractionContext ctx,
         [Option("Name", "Must match an existing plugin name!")] string plugName)
     {
@@ -16,7 +17,7 @@ public class RemovePlugin : ApplicationCommandModule
         
         if (ctx.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
         {
-            await ctx.CreateResponseAsync(embed: MessageManager.Error("You do not have permission for this!"));
+            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
             return;
         }
         
@@ -27,13 +28,14 @@ public class RemovePlugin : ApplicationCommandModule
             {
                 DatabaseManager.DeletePlugin(plugin);
                 isValid = true;
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(MessageManager.Warning($"**Removed: {plugName}**")));
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Warning($"**Removed: {plugName}**")));
+                Logging.sendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Warning($"Removed plugin: {plugName}!"));
                 return;
             }
         }
         if (!isValid)
         {
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(MessageManager.Error($"**No plugin found with name: {plugName}!**")));
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Error($"**No plugin found with name: {plugName}!**")));
             return;
         }
     }

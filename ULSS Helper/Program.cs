@@ -1,11 +1,12 @@
 ﻿using System.Reflection;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Modules;
+using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Extensions;
 
 namespace ULSS_Helper;
 
@@ -20,6 +21,8 @@ internal class Program
     
     static async Task Main(string[] args)
     {
+        TimerModule.StartTimer();
+        
         var discordConfig = new DiscordConfiguration()
         {
             Intents = DiscordIntents.All,
@@ -35,9 +38,11 @@ internal class Program
         sCommands.RegisterCommands<ContextManager>(Settings.GetServerID());
 
         Client.ModalSubmitted += ModalManager.PluginModal;
-        Client.ComponentInteractionCreated += ContextManager.OnButtonPress;
+        Client.ComponentInteractionCreated += ButtonManager.OnButtonPress;
         Client.MessageCreated += MessageSent;
         //TODO: Client.VoiceStateUpdated += VoiceChatManager.OnMemberJoinLeaveVC;
+
+        Client.UseInteractivity(new InteractivityConfiguration());
 
         await Client.ConnectAsync();
         await Task.Delay(-1);
@@ -50,58 +55,4 @@ internal class Program
             if (rNd == 1) await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":tarabruh:"));
         }
     }
-}
-
-public class Plugin
-{
-    public string? Name { get; set; }
-    public string? DName { get; set; }
-    public string? Version { get; set; }
-    public string? EAVersion { get; set; }
-    public string? ID { get; set; }
-    public string? State { get; set; }
-    public string? Link { get; set; }
-}
-
-public class Error
-{
-    public string? ID { get; set; }
-    public string Regex { get; set; }
-    public string Solution { get; set; }
-    public string Level { get; set; }
-}
-
-public class AnalyzedLog
-{
-    public List<Plugin?> Current { get; set; }
-    public List<Plugin?> Outdated { get; set; }
-    public List<Plugin?> Broken { get; set; }
-    public List<Plugin?> Library { get; set; }
-    public List<Plugin?> Missing { get; set; }
-    public List<Plugin> Missmatch { get; set; }
-    
-    public List<Error?> Errors { get; set; }
-
-    public string GTAVersion { get; set; }
-    public string RPHVersion { get; set; }
-    public string LSPDFRVersion { get; set; }
-}
-
-public enum State
-{
-    [ChoiceName("LSPDFR")]
-    LSPDFR,
-    [ChoiceName("EXTERNAL")]
-    EXTERNAL,
-    [ChoiceName("BROKEN")]
-    BROKEN,
-    [ChoiceName("LIB")]
-    LIB
-}
-public enum Level
-{
-    [ChoiceName("WARN")]
-    WARN,
-    [ChoiceName("SEVERE")]
-    SEVERE
 }

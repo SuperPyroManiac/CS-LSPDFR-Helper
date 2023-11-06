@@ -1,6 +1,7 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using ULSS_Helper.Modules.Messages;
 
 namespace ULSS_Helper.Modules;
 
@@ -29,18 +30,18 @@ public class ModalManager
 
             long dbRowId = DatabaseManager.AddPlugin(plug);
 
+            var emb = BasicEmbeds.Info(
+                $"**Added {Program.PlugName}!**\r\n"
+                + $"DB Row ID: {dbRowId}\r\n"
+                + $"Display Name: {plugDName}\r\n"
+                + $"Version: {plugVersion}\r\n"
+                + $"Early Access Version: {plugEaVersion}\r\n"
+                + $"ID (on lcpdfr.com): {plugId}\r\n"
+                + $"Link: {plugLink}\r\n"
+                + $"State: {Program.PlugState}");
             await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder().AddEmbed(MessageManager.Info(
-                    $"**Added {Program.PlugName}!**\r\n"
-                    + $"DB Row ID: {dbRowId}\r\n"
-                    + $"Display Name: {plugDName}\r\n" 
-                    + $"Version: {plugVersion}\r\n"
-                    + $"Early Access Version: {plugEaVersion}\r\n"
-                    + $"ID (on lcpdfr.com): {plugId}\r\n"
-                    + $"Link: {plugLink}\r\n"
-                    + $"State: {Program.PlugState}"
-                ))
-            );
+                new DiscordInteractionResponseBuilder().AddEmbed(emb));
+            Logging.sendLog(e.Interaction.Channel.Id, e.Interaction.User.Id, emb);
         }
         
         if (e.Interaction.Data.CustomId == "add-error")
@@ -55,19 +56,20 @@ public class ModalManager
             if (DatabaseManager.LoadErrors().Any(error => error.Regex == err.Regex))
             {
                 await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                    new DiscordInteractionResponseBuilder().AddEmbed(MessageManager.Error("This error already exists in the database!\r\nConsider using /EditError <ID>")));
+                    new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Error("This error already exists in the database!\r\nConsider using /EditError <ID>")));
                 return;
             }
 
             long dbRowId = DatabaseManager.AddError(err);
 
+            var emb = BasicEmbeds.Info(
+                $"**Added a {err.Level} error with ID {dbRowId}**\r\n"
+                + $"Regex:\r\n```{err.Regex}```\r\n"
+                + $"Solution:\r\n```{err.Solution}```");
+
             await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder().AddEmbed(MessageManager.Info(
-                    $"**Added a {err.Level} error with ID {dbRowId}**\r\n"
-                    + $"Regex:\r\n```{err.Regex}```\r\n" 
-                    + $"Solution:\r\n```{err.Solution}```"
-                ))
-            );
+                new DiscordInteractionResponseBuilder().AddEmbed(emb));
+            Logging.sendLog(e.Interaction.Channel.Id, e.Interaction.User.Id, emb);
         }
         
         if (e.Interaction.Data.CustomId == "edit-plugin")
@@ -91,17 +93,18 @@ public class ModalManager
 
             DatabaseManager.EditPlugin(plug);
 
+            var emb = BasicEmbeds.Info(
+                $"**Modified {Program.PlugName}!**\r\n"
+                + $"Display Name: {plugDName}\r\n"
+                + $"Version: {plugVersion}\r\n"
+                + $"Early Access Version: {plugEaVersion}\r\n"
+                + $"ID (on lcpdfr.com): {plugId}\r\n"
+                + $"Link: {plugLink}\r\n"
+                + $"State: {Program.PlugState}");
+
             await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder().AddEmbed(MessageManager.Info(
-                    $"**Modified {Program.PlugName}!**\r\n"
-                    + $"Display Name: {plugDName}\r\n"
-                    + $"Version: {plugVersion}\r\n"
-                    + $"Early Access Version: {plugEaVersion}\r\n"
-                    + $"ID (on lcpdfr.com): {plugId}\r\n"
-                    + $"Link: {plugLink}\r\n"
-                    + $"State: {Program.PlugState}"
-                ))
-            );
+                new DiscordInteractionResponseBuilder().AddEmbed(emb));
+            Logging.sendLog(e.Interaction.Channel.Id, e.Interaction.User.Id, emb);
         }
         
         if (e.Interaction.Data.CustomId == "edit-error")
@@ -119,14 +122,15 @@ public class ModalManager
 
             DatabaseManager.EditError(err);
 
+            var emb = BasicEmbeds.Info(
+                $"**Modified error ID: {Program.ErrId}!**\r\n"
+                + $"Regex: {errReg}\r\n"
+                + $"Solution: {errSol}\r\n"
+                + $"Level: {Program.ErrLevel.ToString()}");
+
             await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder().AddEmbed(MessageManager.Info(
-                    $"**Modified error ID: {Program.ErrId}!**\r\n"
-                    + $"Regex: {errReg}\r\n"
-                    + $"Solution: {errSol}\r\n"
-                    + $"Level: {Program.ErrLevel.ToString()}"
-                ))
-            );
+                new DiscordInteractionResponseBuilder().AddEmbed(emb));
+            Logging.sendLog(e.Interaction.Channel.Id, e.Interaction.User.Id, emb);
         }
     }
 }
