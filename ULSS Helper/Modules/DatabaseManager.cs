@@ -21,6 +21,32 @@ internal class DatabaseManager
             throw;
         }
     }
+
+    internal static Plugin? GetPlugin(string pluginName)
+    {
+        try
+        {
+            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            var output = cnn.Query<Plugin>($"select * from Plugin where Name='{pluginName}'", new DynamicParameters());
+            output = output.ToList();
+            if (output.Count() == 1) 
+            {
+                return output.First();
+            }
+            else if (output.Count() > 1)
+            {
+                throw new Exception($"GetPlugin unexpectedly returned more than one result for the plugin name '{pluginName}'!");
+            }
+            else {
+                return null;
+            }
+        }
+        catch (SQLiteException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
     
     internal static List<Plugin> FindPlugins(string? Name=null, string? DName=null, string? ID=null, State? State=null, bool? exactMatch=false)
     {
@@ -66,6 +92,32 @@ internal class DatabaseManager
             using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
             var output = cnn.Query<Error>("select * from Error", new DynamicParameters());
             return output.ToList();
+        }
+        catch (SQLiteException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    internal static Error? GetError(string errorId)
+    {
+        try
+        {
+            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            var output = cnn.Query<Error>($"select * from Error where ID='{errorId}'", new DynamicParameters());
+            output = output.ToList();
+            if (output.Count() == 1) 
+            {
+                return output.First();
+            }
+            else if (output.Count() > 1)
+            {
+                throw new Exception($"GetError unexpectedly returned more than one result for the error ID '{errorId}'!");
+            }
+            else {
+                return null;
+            }
         }
         catch (SQLiteException e)
         {

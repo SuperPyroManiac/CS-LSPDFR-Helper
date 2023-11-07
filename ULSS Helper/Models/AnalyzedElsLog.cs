@@ -1,3 +1,5 @@
+namespace ULSS_Helper;
+
 public class AnalyzedElsLog
 {
     public string? ElsVersion { get; set; }

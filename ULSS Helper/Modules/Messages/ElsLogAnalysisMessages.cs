@@ -4,6 +4,7 @@ using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
 
 namespace ULSS_Helper.Modules.Messages;
+
 internal class ElsLogAnalysisMessages : LogAnalysisMessages
 {
     internal static AnalyzedElsLog log;

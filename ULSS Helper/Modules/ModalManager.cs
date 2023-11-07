@@ -7,7 +7,7 @@ namespace ULSS_Helper.Modules;
 
 public class ModalManager
 {
-        public static async Task PluginModal(DiscordClient s, ModalSubmitEventArgs e)
+    public static async Task HandleModalSubmit(DiscordClient s, ModalSubmitEventArgs e)
     {
         if (e.Interaction.Data.CustomId == "add-plugin")
         {
@@ -28,20 +28,9 @@ public class ModalManager
                 Link = plugLink
             };
 
-            long dbRowId = DatabaseManager.AddPlugin(plug);
+            plug.DbRowId = DatabaseManager.AddPlugin(plug);
 
-            var emb = BasicEmbeds.Info(
-                $"**Added {Program.PlugName}!**\r\n"
-                + $"DB Row ID: {dbRowId}\r\n"
-                + $"Display Name: {plugDName}\r\n"
-                + $"Version: {plugVersion}\r\n"
-                + $"Early Access Version: {plugEaVersion}\r\n"
-                + $"ID (on lcpdfr.com): {plugId}\r\n"
-                + $"Link: {plugLink}\r\n"
-                + $"State: {Program.PlugState}");
-            await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder().AddEmbed(emb));
-            Logging.sendLog(e.Interaction.Channel.Id, e.Interaction.User.Id, emb);
+            await PluginCmdMessages.SendDbOperationConfirmation(plug, DbOperation.CREATE);
         }
         
         if (e.Interaction.Data.CustomId == "add-error")
@@ -60,16 +49,9 @@ public class ModalManager
                 return;
             }
 
-            long dbRowId = DatabaseManager.AddError(err);
+            err.ID = DatabaseManager.AddError(err).ToString();
 
-            var emb = BasicEmbeds.Info(
-                $"**Added a {err.Level} error with ID {dbRowId}**\r\n"
-                + $"Regex:\r\n```{err.Regex}```\r\n"
-                + $"Solution:\r\n```{err.Solution}```");
-
-            await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder().AddEmbed(emb));
-            Logging.sendLog(e.Interaction.Channel.Id, e.Interaction.User.Id, emb);
+            await ErrorCmdMessages.SendDbOperationConfirmation(newError: err, operation: DbOperation.CREATE, e: e);
         }
         
         if (e.Interaction.Data.CustomId == "edit-plugin")
@@ -91,20 +73,11 @@ public class ModalManager
                 Link = plugLink
             };
 
+            Plugin? oldPlugin = DatabaseManager.GetPlugin(plug.Name);
+
             DatabaseManager.EditPlugin(plug);
 
-            var emb = BasicEmbeds.Info(
-                $"**Modified {Program.PlugName}!**\r\n"
-                + $"Display Name: {plugDName}\r\n"
-                + $"Version: {plugVersion}\r\n"
-                + $"Early Access Version: {plugEaVersion}\r\n"
-                + $"ID (on lcpdfr.com): {plugId}\r\n"
-                + $"Link: {plugLink}\r\n"
-                + $"State: {Program.PlugState}");
-
-            await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder().AddEmbed(emb));
-            Logging.sendLog(e.Interaction.Channel.Id, e.Interaction.User.Id, emb);
+            await PluginCmdMessages.SendDbOperationConfirmation(newPlugin: plug, operation: DbOperation.UPDATE, oldPlugin: oldPlugin, e: e);
         }
         
         if (e.Interaction.Data.CustomId == "edit-error")
@@ -120,17 +93,11 @@ public class ModalManager
                 Level = Program.ErrLevel.ToString()
             };
 
+            Error? previousError = DatabaseManager.GetError(err.ID);
+
             DatabaseManager.EditError(err);
 
-            var emb = BasicEmbeds.Info(
-                $"**Modified error ID: {Program.ErrId}!**\r\n"
-                + $"Regex: {errReg}\r\n"
-                + $"Solution: {errSol}\r\n"
-                + $"Level: {Program.ErrLevel.ToString()}");
-
-            await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder().AddEmbed(emb));
-            Logging.sendLog(e.Interaction.Channel.Id, e.Interaction.User.Id, emb);
+            await ErrorCmdMessages.SendDbOperationConfirmation(newError: err, operation: DbOperation.UPDATE, oldError: previousError, e: e);
         }
     }
 }

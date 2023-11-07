@@ -4,7 +4,6 @@ using DSharpPlus.SlashCommands;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using ULSS_Helper.Modules.Messages;
-using System.Text.RegularExpressions;
 
 namespace ULSS_Helper.Modules.Commands;
 
@@ -42,7 +41,7 @@ public class FindErrors : ApplicationCommandModule
                 int resultsPerPage = 3;
                 int currentResultsPerPage = 0;
                 List<Page> pages = new List<Page>();
-                string searchResultsHeader = GetSearchParamsList(
+                string searchResultsHeader = ErrorCmdMessages.GetSearchParamsList(
                     $"I found {errorsFound.Count} error{(errorsFound.Count != 1 ? "s" : "")} that match{(errorsFound.Count == 1 ? "es" : "")} the following search parameters:",
                     errId,
                     regex,
@@ -82,7 +81,7 @@ public class FindErrors : ApplicationCommandModule
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder()
                     .AddEmbed(
                         BasicEmbeds.Warning(
-                            GetSearchParamsList("No errors found with the following search parameters:", errId, regex, solution, level, exactMatch)
+                            ErrorCmdMessages.GetSearchParamsList("No errors found with the following search parameters:", errId, regex, solution, level, exactMatch)
                         )
                     )
                 );
@@ -94,22 +93,5 @@ public class FindErrors : ApplicationCommandModule
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Error(e.Message)));
             return;
         }
-    }
-
-    private static string GetSearchParamsList(string title, string? errId, string? regex, string? solution, Level? level, bool? exactMatch) 
-    {
-        string searchParamsList = $"**{title}**\r\n";
-        if (errId != null)
-            searchParamsList += $"- **ID:** *{errId}*\r\n";
-        if (regex != null)
-            searchParamsList += $"- **Regex:**\n```\n{regex}\n```\r\n";
-        if (solution != null)
-            searchParamsList += $"- **Solution:**\n```\n{solution}\n```\r\n";
-        if (level != null)
-            searchParamsList += $"- **Level:** *{level}*\r\n";
-        if (exactMatch != null)
-            searchParamsList += $"- **Strict search enabled:** *{exactMatch}*\r\n";
-
-        return searchParamsList;
     }
 }

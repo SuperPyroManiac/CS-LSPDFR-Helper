@@ -1,7 +1,9 @@
 
 using DSharpPlus.Entities;
 
-public class LogAnalysisMessages
+namespace ULSS_Helper.Modules.Messages;
+
+internal class LogAnalysisMessages
 {
     internal const string TsIcon = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless";
     internal static ulong logUploaderUserId;

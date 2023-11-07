@@ -1,11 +1,8 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
-using DSharpPlus.SlashCommands.Attributes;
 using ULSS_Helper.Modules.LogAnalyzer;
 using ULSS_Helper.Modules.Messages;
-using static ULSS_Helper.Modules.Messages.RphLogAnalysisMessages;
 
 namespace ULSS_Helper.Modules;
 

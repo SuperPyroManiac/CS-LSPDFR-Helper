@@ -42,7 +42,7 @@ public class FindPlugins : ApplicationCommandModule
                 int resultsPerPage = 3;
                 int currentResultsPerPage = 0;
                 List<Page> pages = new List<Page>();
-                string searchResultsHeader = GetSearchParamsList(
+                string searchResultsHeader = PluginCmdMessages.GetSearchParamsList(
                     $"I found {pluginsFound.Count} plugin{(pluginsFound.Count != 1 ? "s" : "")} that match{(pluginsFound.Count == 1 ? "es" : "")} the following search parameters:", 
                     plugName, 
                     plugDName, 
@@ -84,7 +84,7 @@ public class FindPlugins : ApplicationCommandModule
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder()
                     .AddEmbed(
                         BasicEmbeds.Warning(
-                            GetSearchParamsList($"No plugins found with the following search parameters:", plugName, plugDName, plugId, plugState, exactMatch)
+                            PluginCmdMessages.GetSearchParamsList($"No plugins found with the following search parameters:", plugName, plugDName, plugId, plugState, exactMatch)
                         )
                     )
                 );
@@ -96,22 +96,5 @@ public class FindPlugins : ApplicationCommandModule
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Error(e.Message)));
             return;
         }
-    }
-
-    private static string GetSearchParamsList(string title, string? plugName, string? plugDName, string? plugId, State? plugState, bool? exactMatch)
-    {
-        string searchParamsList = $"**{title}**\r\n";
-        if (plugName != null)
-            searchParamsList += $"- **Name:** *{plugName}*\r\n";
-        if (plugDName != null)
-            searchParamsList += $"- **Display Name:** *{plugDName}*\r\n";
-        if (plugId != null)
-            searchParamsList += $"- **ID (on lcpdfr.com):** *{plugId}*\r\n";
-        if (plugState != null)
-            searchParamsList += $"- **State:** *{plugState}*\r\n";
-        if (exactMatch != null)
-            searchParamsList += $"- **Strict search enabled:** *{exactMatch}*\r\n";;
-
-        return searchParamsList;
     }
 }
