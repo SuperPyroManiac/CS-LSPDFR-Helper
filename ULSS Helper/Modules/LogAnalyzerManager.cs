@@ -1,8 +1,8 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
+using ULSS_Helper.Messages;
 using ULSS_Helper.Modules.ELS_Modules;
-using ULSS_Helper.Modules.Messages;
 using ULSS_Helper.Modules.RPH_Modules;
 
 namespace ULSS_Helper.Modules;

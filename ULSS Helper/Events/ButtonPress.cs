@@ -1,6 +1,6 @@
 using DSharpPlus;
 using DSharpPlus.EventArgs;
-using ULSS_Helper.Modules.Messages;
+using ULSS_Helper.Messages;
 
 namespace ULSS_Helper.Events;
 

@@ -1,6 +1,6 @@
 ﻿using DSharpPlus.Entities;
 
-namespace ULSS_Helper.Modules.Messages;
+namespace ULSS_Helper.Messages;
 
 internal static class BasicEmbeds
 {

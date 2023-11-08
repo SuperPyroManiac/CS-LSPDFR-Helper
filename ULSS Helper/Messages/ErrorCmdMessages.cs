@@ -1,10 +1,9 @@
-using System.Reflection;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Modules.Messages;
+namespace ULSS_Helper.Messages;
 
 internal class ErrorCmdMessages : DbCmdMessages
 {    

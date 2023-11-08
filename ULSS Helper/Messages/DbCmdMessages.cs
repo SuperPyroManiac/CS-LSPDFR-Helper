@@ -1,7 +1,7 @@
 
 using System.Reflection;
 
-namespace ULSS_Helper.Modules.Messages;
+namespace ULSS_Helper.Messages;
 
 internal class DbCmdMessages
 {
