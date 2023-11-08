@@ -2,6 +2,16 @@ using DSharpPlus.SlashCommands;
 
 namespace ULSS_Helper.Objects;
 
+public enum Level
+{
+    [ChoiceName("WARN")]
+    WARN,
+    [ChoiceName("SEVERE")]
+    SEVERE,
+    [ChoiceName("CRITICAL")]
+    CRITICAL
+}
+
 public enum State
 {
     [ChoiceName("LSPDFR")]
@@ -12,4 +22,12 @@ public enum State
     BROKEN,
     [ChoiceName("LIB")]
     LIB
+}
+
+public enum DbOperation
+{
+    CREATE,
+    READ,
+    UPDATE,
+    DELETE
 }
