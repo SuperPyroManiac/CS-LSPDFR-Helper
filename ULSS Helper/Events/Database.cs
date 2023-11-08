@@ -2,10 +2,11 @@
 using System.Data.SQLite;
 using System.Net;
 using Dapper;
+using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Modules;
+namespace ULSS_Helper.Events;
 
-internal class DatabaseManager
+internal class Database
 {
     internal static List<Plugin> LoadPlugins()
     {

@@ -1,4 +1,4 @@
-namespace ULSS_Helper;
+namespace ULSS_Helper.Objects;
 
 public enum DbOperation
 {

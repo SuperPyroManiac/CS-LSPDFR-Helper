@@ -1,11 +1,11 @@
 using System.Xml.Serialization;
-using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using DSharpPlus.SlashCommands.Attributes;
+using ULSS_Helper.Events;
 using ULSS_Helper.Modules.Messages;
+using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Modules.Commands;
+namespace ULSS_Helper.Commands;
 
 public class ExportPlugins : ApplicationCommandModule
 {
@@ -19,7 +19,7 @@ public class ExportPlugins : ApplicationCommandModule
             return;
         }
         
-        var plugins = DatabaseManager.LoadPlugins().ToArray();
+        var plugins = Database.LoadPlugins().ToArray();
         var serializer = new XmlSerializer(typeof(Plugin[]));
         await using (var writer = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "Exports", "PluginExport.xml")))
         {

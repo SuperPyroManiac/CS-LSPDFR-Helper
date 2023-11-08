@@ -1,10 +1,10 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using DSharpPlus.SlashCommands.Attributes;
+using ULSS_Helper.Events;
 using ULSS_Helper.Modules.Messages;
 
-namespace ULSS_Helper.Modules.Commands;
+namespace ULSS_Helper.Commands;
 
 public class RemoveError : ApplicationCommandModule
 {
@@ -22,11 +22,11 @@ public class RemoveError : ApplicationCommandModule
         }
         
         var isValid = false;
-        foreach (var error in DatabaseManager.LoadErrors())
+        foreach (var error in Database.LoadErrors())
         {
             if (error.ID == errId)
             {
-                DatabaseManager.DeleteError(error);
+                Database.DeleteError(error);
                 isValid = true;
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Warning($"**Removed error with id: {errId}**")));
                 Logging.sendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Warning($"Removed error: {errId}!"));

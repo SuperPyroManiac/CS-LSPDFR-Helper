@@ -2,10 +2,11 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using ULSS_Helper.Modules.Messages;
+using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Modules;
+namespace ULSS_Helper.Events;
 
-public class ModalManager
+public class ModalSent
 {
     public static async Task HandleModalSubmit(DiscordClient s, ModalSubmitEventArgs e)
     {
@@ -28,7 +29,7 @@ public class ModalManager
                 Link = plugLink
             };
 
-            plug.DbRowId = DatabaseManager.AddPlugin(plug);
+            plug.DbRowId = Database.AddPlugin(plug);
 
             await PluginCmdMessages.SendDbOperationConfirmation(plug, DbOperation.CREATE);
         }
@@ -42,14 +43,14 @@ public class ModalManager
                 Level = Program.ErrLevel.ToString().ToUpper()
             };
             
-            if (DatabaseManager.LoadErrors().Any(error => error.Regex == err.Regex))
+            if (Database.LoadErrors().Any(error => error.Regex == err.Regex))
             {
                 await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                     new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Error("This error already exists in the database!\r\nConsider using /EditError <ID>")));
                 return;
             }
 
-            err.ID = DatabaseManager.AddError(err).ToString();
+            err.ID = Database.AddError(err).ToString();
 
             await ErrorCmdMessages.SendDbOperationConfirmation(newError: err, operation: DbOperation.CREATE, e: e);
         }
@@ -73,9 +74,9 @@ public class ModalManager
                 Link = plugLink
             };
 
-            Plugin? oldPlugin = DatabaseManager.GetPlugin(plug.Name);
+            Plugin? oldPlugin = Database.GetPlugin(plug.Name);
 
-            DatabaseManager.EditPlugin(plug);
+            Database.EditPlugin(plug);
 
             await PluginCmdMessages.SendDbOperationConfirmation(newPlugin: plug, operation: DbOperation.UPDATE, oldPlugin: oldPlugin, e: e);
         }
@@ -93,9 +94,9 @@ public class ModalManager
                 Level = Program.ErrLevel.ToString()
             };
 
-            Error? previousError = DatabaseManager.GetError(err.ID);
+            Error? previousError = Database.GetError(err.ID);
 
-            DatabaseManager.EditError(err);
+            Database.EditError(err);
 
             await ErrorCmdMessages.SendDbOperationConfirmation(newError: err, operation: DbOperation.UPDATE, oldError: previousError, e: e);
         }

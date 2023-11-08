@@ -4,6 +4,7 @@ using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
+using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Modules.Messages;
 internal class RphLogAnalysisMessages : LogAnalysisMessages

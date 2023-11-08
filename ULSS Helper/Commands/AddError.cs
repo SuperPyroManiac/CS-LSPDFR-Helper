@@ -1,10 +1,10 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using DSharpPlus.SlashCommands.Attributes;
 using ULSS_Helper.Modules.Messages;
+using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Modules.Commands;
+namespace ULSS_Helper.Commands;
 
 public class AddError : ApplicationCommandModule
 {

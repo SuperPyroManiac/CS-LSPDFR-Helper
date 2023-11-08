@@ -7,6 +7,9 @@ using DSharpPlus.SlashCommands;
 using ULSS_Helper.Modules;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
+using ULSS_Helper.Events;
+using ULSS_Helper.Objects;
+using Timer = ULSS_Helper.Timer;
 
 namespace ULSS_Helper;
 
@@ -21,7 +24,7 @@ internal class Program
     
     static async Task Main(string[] args)
     {
-        TimerModule.StartTimer();
+        Timer.StartTimer();
         
         var discordConfig = new DiscordConfiguration()
         {
@@ -35,10 +38,10 @@ internal class Program
         var sCommands = Client.UseSlashCommands();
 
         sCommands.RegisterCommands(Assembly.GetExecutingAssembly(), Settings.GetServerID());
-        sCommands.RegisterCommands<ContextManager>(Settings.GetServerID());
+        sCommands.RegisterCommands<ContextMenu>(Settings.GetServerID());
 
-        Client.ModalSubmitted += ModalManager.HandleModalSubmit;
-        Client.ComponentInteractionCreated += ButtonManager.OnButtonPress;
+        Client.ModalSubmitted += ModalSent.HandleModalSubmit;
+        Client.ComponentInteractionCreated += ButtonPress.OnButtonPress;
         Client.MessageCreated += MessageSent;
         //TODO: Client.VoiceStateUpdated += VoiceChatManager.OnMemberJoinLeaveVC;
 

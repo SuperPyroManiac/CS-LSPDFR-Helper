@@ -1,10 +1,10 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using DSharpPlus.SlashCommands.Attributes;
+using ULSS_Helper.Events;
 using ULSS_Helper.Modules.Messages;
 
-namespace ULSS_Helper.Modules.Commands;
+namespace ULSS_Helper.Commands;
 
 public class ForceUpdateCheck : ApplicationCommandModule
 {
@@ -20,7 +20,7 @@ public class ForceUpdateCheck : ApplicationCommandModule
             return;
         }
 
-        var th = new Thread(DatabaseManager.UpdatePluginVersions);
+        var th = new Thread(Database.UpdatePluginVersions);
         th.Start();
         
         await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Info("All plugin versions will be updated!")));

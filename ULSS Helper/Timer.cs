@@ -1,9 +1,9 @@
 using System.Timers;
-using Timer = System.Timers.Timer;
+using ULSS_Helper.Events;
 
-namespace ULSS_Helper.Modules;
+namespace ULSS_Helper;
 
-internal class TimerModule
+internal class Timer
 {
     internal static void StartTimer()
     {
@@ -14,7 +14,7 @@ internal class TimerModule
     private static void OnTimedEvent(object source, ElapsedEventArgs e)
     {
         //Update Checker
-        var th = new Thread(DatabaseManager.UpdatePluginVersions);
+        var th = new Thread(Database.UpdatePluginVersions);
         th.Start();
         
         //Backup DB

@@ -1,7 +1,8 @@
 ﻿using System.Net;
 using System.Text.RegularExpressions;
+using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Modules;
+namespace ULSS_Helper.Modules.ELS_Modules;
 
 public class ElsLogAnalyzer
 {

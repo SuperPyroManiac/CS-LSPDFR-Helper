@@ -1,11 +1,10 @@
 using DSharpPlus;
 using DSharpPlus.EventArgs;
-using ULSS_Helper.Modules.LogAnalyzer;
 using ULSS_Helper.Modules.Messages;
 
-namespace ULSS_Helper.Modules;
+namespace ULSS_Helper.Events;
 
-public class ButtonManager
+public class ButtonPress
 {
     internal static async Task OnButtonPress(DiscordClient s, ComponentInteractionCreateEventArgs e)
     {

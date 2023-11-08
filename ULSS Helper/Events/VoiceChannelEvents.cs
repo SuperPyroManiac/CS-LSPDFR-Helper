@@ -1,9 +1,9 @@
 ﻿using DSharpPlus;
 using DSharpPlus.EventArgs;
 
-namespace ULSS_Helper.Modules;
+namespace ULSS_Helper.Events;
 
-public class VoiceChatManager
+public class VoiceChannelEvents
 {
     public static async Task OnMemberJoinLeaveVC(DiscordClient s, VoiceStateUpdateEventArgs ctx)
     {

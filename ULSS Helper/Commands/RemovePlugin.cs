@@ -1,10 +1,10 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using DSharpPlus.SlashCommands.Attributes;
+using ULSS_Helper.Events;
 using ULSS_Helper.Modules.Messages;
 
-namespace ULSS_Helper.Modules.Commands;
+namespace ULSS_Helper.Commands;
 
 public class RemovePlugin : ApplicationCommandModule
 {
@@ -22,11 +22,11 @@ public class RemovePlugin : ApplicationCommandModule
         }
         
         var isValid = false;
-        foreach (var plugin in DatabaseManager.LoadPlugins())
+        foreach (var plugin in Database.LoadPlugins())
         {
             if (plugin.Name == plugName)
             {
-                DatabaseManager.DeletePlugin(plugin);
+                Database.DeletePlugin(plugin);
                 isValid = true;
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Warning($"**Removed: {plugName}**")));
                 Logging.sendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Warning($"Removed plugin: {plugName}!"));

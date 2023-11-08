@@ -1,6 +1,6 @@
 using DSharpPlus.SlashCommands;
 
-namespace ULSS_Helper;
+namespace ULSS_Helper.Objects;
 
 public enum State
 {

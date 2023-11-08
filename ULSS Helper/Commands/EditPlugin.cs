@@ -1,10 +1,11 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using DSharpPlus.SlashCommands.Attributes;
+using ULSS_Helper.Events;
 using ULSS_Helper.Modules.Messages;
+using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Modules.Commands;
+namespace ULSS_Helper.Commands;
 
 public class EditPlugin : ApplicationCommandModule
 {
@@ -22,13 +23,13 @@ public class EditPlugin : ApplicationCommandModule
             return;
         }
 
-        if (!DatabaseManager.LoadPlugins().Any(x => x.Name == pN))
+        if (!Database.LoadPlugins().Any(x => x.Name == pN))
         {
             await ctx.CreateResponseAsync(embed: BasicEmbeds.Error($"No plugin found with name {pN}"));
             return;
         }
 
-        var plugin = DatabaseManager.LoadPlugins().FirstOrDefault(x => x.Name == pN);
+        var plugin = Database.LoadPlugins().FirstOrDefault(x => x.Name == pN);
 
         Program.PlugName = plugin.Name;
         if (pS != null)

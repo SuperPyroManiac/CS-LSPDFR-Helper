@@ -1,9 +1,10 @@
 ﻿using System.Net;
 using System.Text.RegularExpressions;
-using DSharpPlus;
+using ULSS_Helper.Events;
 using ULSS_Helper.Modules.Messages;
+using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Modules.LogAnalyzer;
+namespace ULSS_Helper.Modules.RPH_Modules;
 
 public class RphLogAnalyzer
 {
@@ -19,8 +20,8 @@ public class RphLogAnalyzer
             )
         );
 
-        var pluginData = DatabaseManager.LoadPlugins();
-        var errorData = DatabaseManager.LoadErrors();
+        var pluginData = Database.LoadPlugins();
+        var errorData = Database.LoadErrors();
         var log = new AnalyzedRphLog();
         var wholeLog = File.ReadAllText(Settings.RphLogPath);
         var reader = File.ReadAllLines(Settings.RphLogPath);

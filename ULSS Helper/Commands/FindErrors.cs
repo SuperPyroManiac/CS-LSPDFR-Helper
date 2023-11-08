@@ -1,21 +1,23 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
-using DSharpPlus.SlashCommands;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
+using DSharpPlus.SlashCommands;
+using ULSS_Helper.Events;
 using ULSS_Helper.Modules.Messages;
+using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Modules.Commands;
+namespace ULSS_Helper.Commands;
 
-public class FindPlugins : ApplicationCommandModule
+public class FindErrors : ApplicationCommandModule
 {
-    [SlashCommand("FindPlugins", "Returns a list of all plugins in the database that match the search parameters!")]
+    [SlashCommand("FindErrors", "Returns a list of all errors in the database that match the search parameters!")]
 
-    public static async Task FindPluginsCmd(InteractionContext ctx,
-        [Option("Name", "The plugin's name.")] string? plugName=null,
-        [Option("DName", "The plugin's display name.")] string? plugDName=null,
-        [Option("ID", "The plugin's id on lcpdfr.com.")] string? plugId=null,
-        [Option("State", "The plugin's state (LSPDFR, EXTERNAL, BROKEN, LIB).")] State? plugState=null,
+    public static async Task FindErrorsCmd(InteractionContext ctx,
+        [Option("ID", "The error id in the bot's database.")] string? errId=null,
+        [Option("Regex", "Regex for detecting the error.")] string? regex=null,
+        [Option("Solution", "Solution for the error.")] string? solution=null,
+        [Option("Level", $"Error level (WARN, SEVERE, CRITICAL).")] Level? level=null,
         [Option("Strict_Search", "true = enabled, false = disabled (approximate search)")] bool? exactMatch=false
         )
     {
@@ -32,43 +34,39 @@ public class FindPlugins : ApplicationCommandModule
             await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
             return;
         }
-        
         try 
         {
-            List<Plugin> pluginsFound = DatabaseManager.FindPlugins(plugName, plugDName, plugId, plugState, exactMatch);
-
-            if (pluginsFound.Count > 0) 
+            List<Error> errorsFound = Database.FindErrors(errId, regex, solution, level, exactMatch);
+            
+            if (errorsFound.Count > 0) 
             {
                 int resultsPerPage = 3;
                 int currentResultsPerPage = 0;
                 List<Page> pages = new List<Page>();
-                string searchResultsHeader = PluginCmdMessages.GetSearchParamsList(
-                    $"I found {pluginsFound.Count} plugin{(pluginsFound.Count != 1 ? "s" : "")} that match{(pluginsFound.Count == 1 ? "es" : "")} the following search parameters:", 
-                    plugName, 
-                    plugDName, 
-                    plugId, 
-                    plugState, 
+                string searchResultsHeader = ErrorCmdMessages.GetSearchParamsList(
+                    $"I found {errorsFound.Count} error{(errorsFound.Count != 1 ? "s" : "")} that match{(errorsFound.Count == 1 ? "es" : "")} the following search parameters:",
+                    errId,
+                    regex,
+                    solution,
+                    level,
                     exactMatch
                 ) + "\r\nSearch results:";
 
                 string currentPageContent = searchResultsHeader;
-                for(int i=0; i < pluginsFound.Count; i++)
+                for(int i=0; i < errorsFound.Count; i++)
                 {
-                    Plugin plugin = pluginsFound[i];
+                    Error error = errorsFound[i];
                     currentPageContent += "\r\n\r\n"
-                        + $"> **Plugin {plugin.Name}**\r\n"
-                        + $"> **Display Name:** {plugin.DName}\r\n" 
-                        + $"> **Version:** {plugin.Version}\r\n"
-                        + $"> **Early Access Version:** {plugin.EAVersion}\r\n"
-                        + $"> **ID (on lcpdfr.com):** {plugin.ID}\r\n"
-                        + $"> **Link:** {plugin.Link}\r\n"
-                        + $"> **State:** {plugin.State}";
+                        + $"> **__Error ID {error.ID}__**\r\n"
+                        + $"> **Regex:**\r\n> `{error.Regex.Replace("\n", "`\n> `") ?? " "}`\r\n> \r\n" 
+                        + $"> **Solution:**\r\n> {error.Solution.Replace("\n", "\n> ") ?? " "}\r\n> \r\n"
+                        + $"> **Level:**\r\n> {error.Level}";
                     currentResultsPerPage++;
-                    if (currentResultsPerPage == resultsPerPage || i == pluginsFound.Count-1) {
+                    if (currentResultsPerPage == resultsPerPage || i == errorsFound.Count-1) {
                         var embed = BasicEmbeds.Generic(currentPageContent, DiscordColor.DarkBlue);
                         embed.Footer = new DiscordEmbedBuilder.EmbedFooter
                         {
-                            Text = $"Showing results {i+2 - currentResultsPerPage} - {i+1} (total: {pluginsFound.Count})"
+                            Text = $"Showing results {i+2 - currentResultsPerPage} - {i+1} (total: {errorsFound.Count})"
                         };
                         var page = new Page(embed: embed);
                         pages.Add(page);
@@ -76,6 +74,7 @@ public class FindPlugins : ApplicationCommandModule
                         currentResultsPerPage = 0;
                     }
                 }
+                
                 await ctx.Interaction.SendPaginatedResponseAsync(true, ctx.User, pages, asEditResponse: true);
                 return;
             }
@@ -84,13 +83,13 @@ public class FindPlugins : ApplicationCommandModule
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder()
                     .AddEmbed(
                         BasicEmbeds.Warning(
-                            PluginCmdMessages.GetSearchParamsList($"No plugins found with the following search parameters:", plugName, plugDName, plugId, plugState, exactMatch)
+                            ErrorCmdMessages.GetSearchParamsList("No errors found with the following search parameters:", errId, regex, solution, level, exactMatch)
                         )
                     )
                 );
                 return;
             }
-        }
+        } 
         catch (InvalidDataException e)
         {
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Error(e.Message)));

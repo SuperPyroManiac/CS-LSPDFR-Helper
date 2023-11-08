@@ -1,10 +1,11 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using DSharpPlus.SlashCommands.Attributes;
+using ULSS_Helper.Events;
 using ULSS_Helper.Modules.Messages;
+using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Modules.Commands;
+namespace ULSS_Helper.Commands;
 
 public class AddPlugin : ApplicationCommandModule
 {
@@ -20,7 +21,7 @@ public class AddPlugin : ApplicationCommandModule
             return;
         }
 
-        if (DatabaseManager.LoadPlugins().Any(plugin => plugin.Name == pN))
+        if (Database.LoadPlugins().Any(plugin => plugin.Name == pN))
         {
             await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("This plugin already exists in the database!\r\nConsider using /EditPlugin <Name> <State>"));
             return;

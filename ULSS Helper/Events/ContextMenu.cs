@@ -1,12 +1,12 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using ULSS_Helper.Modules.LogAnalyzer;
+using ULSS_Helper.Modules;
 using ULSS_Helper.Modules.Messages;
 
-namespace ULSS_Helper.Modules;
+namespace ULSS_Helper.Events;
 
-internal class ContextManager : ApplicationCommandModule
+internal class ContextMenu : ApplicationCommandModule
 {
     
     [ContextMenu(ApplicationCommandType.MessageContextMenu, "Analyze Log")]
