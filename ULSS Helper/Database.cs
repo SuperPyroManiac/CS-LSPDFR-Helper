@@ -19,6 +19,7 @@ internal class Database
         catch (SQLiteException e)
         {
             Console.WriteLine(e);
+            Messages.Logging.ErrLog($"SQL Issue: {e}");
             throw;
         }
     }
@@ -45,6 +46,7 @@ internal class Database
         catch (SQLiteException e)
         {
             Console.WriteLine(e);
+            Messages.Logging.ErrLog($"SQL Issue: {e}");
             throw;
         }
     }
@@ -77,11 +79,13 @@ internal class Database
         catch (SQLiteException e)
         {
             Console.WriteLine(e);
+            Messages.Logging.ErrLog($"SQL Issue: {e}");
             throw;
         }
         catch (InvalidDataException e)
         {
             Console.WriteLine(e);
+            Messages.Logging.ErrLog($"SQL Issue: {e}");
             throw;
         }
     }
@@ -97,6 +101,7 @@ internal class Database
         catch (SQLiteException e)
         {
             Console.WriteLine(e);
+            Messages.Logging.ErrLog($"SQL Issue: {e}");
             throw;
         }
     }
@@ -123,6 +128,7 @@ internal class Database
         catch (SQLiteException e)
         {
             Console.WriteLine(e);
+            Messages.Logging.ErrLog($"SQL Issue: {e}");
             throw;
         }
     }
@@ -155,11 +161,13 @@ internal class Database
         catch (SQLiteException e)
         {
             Console.WriteLine(e);
+            Messages.Logging.ErrLog($"SQL Issue: {e}");
             throw;
         }
         catch (InvalidDataException e)
         {
             Console.WriteLine(e);
+            Messages.Logging.ErrLog($"SQL Issue: {e}");
             throw;
         }
     }
@@ -178,6 +186,7 @@ internal class Database
         catch (SQLiteException e)
         {
             Console.WriteLine(e);
+            Messages.Logging.ErrLog($"SQL Issue: {e}");
             throw;
         }
     }
@@ -196,6 +205,7 @@ internal class Database
         catch (SQLiteException e)
         {
             Console.WriteLine(e);
+            Messages.Logging.ErrLog($"SQL Issue: {e}");
             throw;
         }
     }
@@ -210,6 +220,7 @@ internal class Database
         catch (SQLiteException e)
         {
             Console.WriteLine(e);
+            Messages.Logging.ErrLog($"SQL Issue: {e}");
             throw;
         }
     }
@@ -224,6 +235,7 @@ internal class Database
         catch (SQLiteException e)
         {
             Console.WriteLine(e);
+            Messages.Logging.ErrLog($"SQL Issue: {e}");
             throw;
         }
     }
@@ -238,6 +250,7 @@ internal class Database
         catch (SQLiteException e)
         {
             Console.WriteLine(e);
+            Messages.Logging.ErrLog($"SQL Issue: {e}");
             throw;
         }
     }
@@ -252,6 +265,7 @@ internal class Database
         catch (SQLiteException e)
         {
             Console.WriteLine(e);
+            Messages.Logging.ErrLog($"SQL Issue: {e}");
             throw;
         }
     }
@@ -295,6 +309,7 @@ internal class Database
                     catch (SQLiteException e)
                     {
                         Console.WriteLine(e);
+                        Messages.Logging.ErrLog($"SQL Issue: {e}");
                         throw;
                     }
                 }
@@ -302,6 +317,7 @@ internal class Database
             catch (Exception e)
             {
                 Console.WriteLine(e);
+                Messages.Logging.ErrLog($"SQL Issue: {e}");
                 throw;
             }
         }
