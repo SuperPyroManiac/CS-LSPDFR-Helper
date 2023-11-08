@@ -14,7 +14,7 @@ internal class RphLogAnalysisMessages : LogAnalysisMessages
     internal static string missing;
     internal static string library;
     internal static string missmatch;
-    internal static AnalyzedRphLog log;
+    internal static RPHLog log;
     internal static string GTAver = "X";
     internal static string LSPDFRver = "X";
     internal static string RPHver = "X";

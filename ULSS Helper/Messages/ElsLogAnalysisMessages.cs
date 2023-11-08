@@ -8,7 +8,7 @@ namespace ULSS_Helper.Messages;
 
 internal class ElsLogAnalysisMessages : LogAnalysisMessages
 {
-    internal static AnalyzedElsLog log;
+    internal static ELSLog log;
 
     internal static async Task SendQuickLogInfoMessage(ContextMenuContext e)
     {

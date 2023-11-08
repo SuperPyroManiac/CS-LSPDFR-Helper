@@ -1,6 +1,6 @@
 namespace ULSS_Helper.Objects;
 
-public class AnalyzedElsLog
+public class ELSLog
 {
     public string? ElsVersion { get; set; }
     public bool AdvancedHookVFound { get; set; }

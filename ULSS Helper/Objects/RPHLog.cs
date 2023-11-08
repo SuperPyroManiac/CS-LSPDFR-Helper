@@ -1,6 +1,6 @@
 namespace ULSS_Helper.Objects;
 
-public class AnalyzedRphLog
+public class RPHLog
 {
     public List<Plugin?> Current { get; set; }
     public List<Plugin?> Outdated { get; set; }

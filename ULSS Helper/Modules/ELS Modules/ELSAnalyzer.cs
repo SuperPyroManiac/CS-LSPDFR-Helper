@@ -4,9 +4,9 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Modules.ELS_Modules;
 
-public class ElsLogAnalyzer
+public class ELSAnalyzer
 {
-    internal static AnalyzedElsLog Run(string fileName)
+    internal static ELSLog Run(string fileName)
     {
         using var client = new WebClient();
         client.DownloadFile(
@@ -17,7 +17,7 @@ public class ElsLogAnalyzer
                 Settings.ElsLogNamer()
             )
         );
-        var log = new AnalyzedElsLog();
+        var log = new ELSLog();
         var wholeLog = File.ReadAllText(Settings.ElsLogPath);
         log.ValidElsVcfFiles = new List<string>();
         log.InvalidElsVcfFiles = new List<string>();

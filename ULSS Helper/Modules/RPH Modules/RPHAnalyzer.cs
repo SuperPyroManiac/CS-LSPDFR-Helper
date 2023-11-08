@@ -6,9 +6,9 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Modules.RPH_Modules;
 
-public class RphLogAnalyzer
+public class RPHAnalyzer
 {
-    internal static AnalyzedRphLog Run(string fileName)
+    internal static RPHLog Run(string fileName)
     {
         using var client = new WebClient();
         client.DownloadFile(
@@ -22,7 +22,7 @@ public class RphLogAnalyzer
 
         var pluginData = Database.LoadPlugins();
         var errorData = Database.LoadErrors();
-        var log = new AnalyzedRphLog();
+        var log = new RPHLog();
         var wholeLog = File.ReadAllText(Settings.RphLogPath);
         var reader = File.ReadAllLines(Settings.RphLogPath);
 
