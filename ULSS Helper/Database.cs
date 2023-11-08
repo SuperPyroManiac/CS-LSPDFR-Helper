@@ -4,7 +4,7 @@ using System.Net;
 using Dapper;
 using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Events;
+namespace ULSS_Helper;
 
 internal class Database
 {
