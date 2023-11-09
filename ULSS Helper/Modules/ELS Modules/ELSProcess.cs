@@ -44,16 +44,13 @@ internal class ELSProcess : LogAnalysisProcess
                 }
             );
 
+        DiscordMessage? sentMessage;
         if (context != null)
-        {
-            DiscordMessage? sentMessage = await context.EditResponseAsync(message);
-            Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this));
-        }
+            sentMessage = await context.EditResponseAsync(message);
         else
-        {
-            DiscordMessage? sentMessage = await eventArgs.Interaction.EditOriginalResponseAsync(message);
-            Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this));
-        }
+            sentMessage = await eventArgs.Interaction.EditOriginalResponseAsync(message);
+            
+        Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this));
     }
 
 

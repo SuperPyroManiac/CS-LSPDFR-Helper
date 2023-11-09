@@ -117,17 +117,14 @@ internal class RPHProcess : LogAnalysisProcess
                 new DiscordButtonComponent(ButtonStyle.Danger, "send", "Send To User", false,
                     new DiscordComponentEmoji("📨"))
             });
+            
             DiscordMessage? sentOverflowMessage;
             if (context != null)
-            {
                 sentOverflowMessage = await context.EditResponseAsync(overflow);
-                Program.Cache.SaveProcess(sentOverflowMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
-            }
             else
-            {
                 sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflow);
-                Program.Cache.SaveProcess(sentOverflowMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
-            }
+                 
+            Program.Cache.SaveProcess(sentOverflowMessage.Id, new(cache.Interaction, cache.OriginalMessage, this));
         }
         else
         {
@@ -143,16 +140,13 @@ internal class RPHProcess : LogAnalysisProcess
                 }
             );
 
+            DiscordMessage? sentMessage;
             if (context != null)
-            {
-                DiscordMessage sentMessage = await context.EditResponseAsync(webhookBuilder);
-                Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
-            }
+                sentMessage = await context.EditResponseAsync(webhookBuilder);
             else
-            {
-                DiscordMessage sentMessage = await eventArgs.Interaction.EditOriginalResponseAsync(webhookBuilder);
-                Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
-            }
+                sentMessage = await eventArgs.Interaction.EditOriginalResponseAsync(webhookBuilder);
+                
+            Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
         }
     }
 
