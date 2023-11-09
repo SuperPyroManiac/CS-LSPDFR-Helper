@@ -15,6 +15,7 @@ internal class ContextMenu : ApplicationCommandModule
     [ContextMenu(ApplicationCommandType.MessageContextMenu, "Analyze Log")]
     public async Task OnMenuSelect(ContextMenuContext e)
     {
+        //===//===//===////===//===//===////===//Permissions/===////===//===//===////===//===//===//
         if (e.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
         {
             var emb = new DiscordInteractionResponseBuilder();
@@ -23,9 +24,9 @@ internal class ContextMenu : ApplicationCommandModule
             await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb);
             return;
         }
-
         try
         {
+            //===//===//===////===//===//===////===//Attachment Checks/===////===//===//===////===//===//===//
             switch (e.TargetMessage.Attachments.Count)
             {
                 case 0:
@@ -56,7 +57,6 @@ internal class ContextMenu : ApplicationCommandModule
                     }
                     break;
             }
-            
             if (_file == null)
             {
                 var emb = new DiscordInteractionResponseBuilder();
@@ -73,21 +73,21 @@ internal class ContextMenu : ApplicationCommandModule
                 await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb);
                 return;
             }
-
+            //===//===//===////===//===//===////===//Process Attachments/===////===//===//===////===//===//===//
             if (_file.Contains("RagePluginHook"))
             {
                 await e.DeferAsync(true);
-                RphLogAnalysisMessages.log = RPHAnalyzer.Run(_file);
-                RphLogAnalysisMessages.log.MsgId = e.TargetMessage.Id;
-                await RphLogAnalysisMessages.SendQuickLogInfoMessage(e);
+                RPHProcess.log = RPHAnalyzer.Run(_file);
+                RPHProcess.log.MsgId = e.TargetMessage.Id;
+                await RPHProcess.SendQuickLogInfoMessage(e);
                 return;
             }
             if (_file.Contains("ELS"))
             {
                 await e.DeferAsync(true);
-                ElsLogAnalysisMessages.log = ELSAnalyzer.Run(_file);
-                ElsLogAnalysisMessages.log.MsgId = e.TargetMessage.Id;
-                await ElsLogAnalysisMessages.SendQuickLogInfoMessage(e);
+                ELSProcess.log = ELSAnalyzer.Run(_file);
+                ELSProcess.log.MsgId = e.TargetMessage.Id;
+                await ELSProcess.SendQuickLogInfoMessage(e);
                 return;
             }
         }

@@ -6,7 +6,7 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Events;
 
-public class ModalSent
+public class ModalSubmit
 {
     public static async Task HandleModalSubmit(DiscordClient s, ModalSubmitEventArgs e)
     {

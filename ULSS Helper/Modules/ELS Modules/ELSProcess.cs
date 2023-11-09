@@ -2,11 +2,12 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
+using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Messages;
+namespace ULSS_Helper.Modules.ELS_Modules;
 
-internal class ElsLogAnalysisMessages : LogAnalysisMessages
+internal class ELSProcess : LogAnalysisMessages
 {
     internal static ELSLog log;
 

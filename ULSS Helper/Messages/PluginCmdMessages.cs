@@ -74,7 +74,7 @@ internal class PluginCmdMessages : DbCmdMessages
                 );
                 try 
                 {
-                text += GetModifiedPropertiesList(oldPlugin, newPlugin, labels, defaultPropLines);
+                    text += GetModifiedPropertiesList(oldPlugin, newPlugin, labels, defaultPropLines);
                 }
                 catch (Exception exception)
                 {
@@ -82,32 +82,6 @@ internal class PluginCmdMessages : DbCmdMessages
                     Console.WriteLine(value: exception);
                     break;
                 }
-                /* for (int i=0; i < newPlugin.GetType().GetProperties().Length; i++)
-                {
-                    PropertyInfo oldPluginProp =  oldPlugin.GetType().GetProperties()[i];
-                    PropertyInfo newPluginProp =  newPlugin.GetType().GetProperties()[i];
-                    Type? type = Nullable.GetUnderlyingType(newPluginProp.PropertyType) ?? newPluginProp.PropertyType;
-
-                    string? oldPluginPropValue = oldPluginProp.GetValue(oldPlugin)?.ToString();
-                    string? newPluginPropValue = newPluginProp.GetValue(newPlugin)?.ToString();
-                    if (oldPluginPropValue == null || newPluginPropValue == null || defaultPropLines[i].Equals(SHOULD_BE_SKIPPED))
-                        continue;
-                    
-                    if (oldPluginPropValue.Equals(newPluginPropValue))
-                    {
-                        text += defaultPropLines[i];
-                    }
-                    else 
-                    {
-                        string label = labels[i];
-                        text += $"**{label}:**\r\n```diff\r\n";
-                        text += $"- {oldPluginPropValue}\r\n";
-                        text += $"+ {newPluginPropValue}\r\n";
-                        text += "```\r\n";
-                        countChanges++;
-                    }
-                }
-                 */
                 embed = BasicEmbeds.Info(text);
                 embed.Footer = new DiscordEmbedBuilder.EmbedFooter
                 {

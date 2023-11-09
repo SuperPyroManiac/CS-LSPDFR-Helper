@@ -2,10 +2,11 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
+using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Messages;
-internal class RphLogAnalysisMessages : LogAnalysisMessages
+namespace ULSS_Helper.Modules.RPH_Modules;
+internal class RPHProcess : LogAnalysisMessages
 {
     internal static string current;
     private static List<string?> currentList;

@@ -3,7 +3,7 @@ using DSharpPlus.EventArgs;
 
 namespace ULSS_Helper.Events;
 
-public class VoiceChannelEvents
+public class VCJoinLeave
 {
     public static async Task OnMemberJoinLeaveVC(DiscordClient s, VoiceStateUpdateEventArgs ctx)
     {

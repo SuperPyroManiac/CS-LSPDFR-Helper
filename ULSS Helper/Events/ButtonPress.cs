@@ -1,6 +1,8 @@
 using DSharpPlus;
 using DSharpPlus.EventArgs;
 using ULSS_Helper.Messages;
+using ULSS_Helper.Modules.ELS_Modules;
+using ULSS_Helper.Modules.RPH_Modules;
 
 namespace ULSS_Helper.Events;
 
@@ -11,12 +13,12 @@ public class ButtonPress
         try
         {
             //RPH log reader buttons
-            if (e.Id is "send" or "send2") await RphLogAnalysisMessages.SendMessageToUser(e);
-            if (e.Id == "info") await RphLogAnalysisMessages.SendDetailedInfoMessage(e);
+            if (e.Id is "send" or "send2") await RPHProcess.SendMessageToUser(e);
+            if (e.Id == "info") await RPHProcess.SendDetailedInfoMessage(e);
         
             //ELS log reader buttons
-            if (e.Id is "sendElsToUser" or "sendElsDetailsToUser") await ElsLogAnalysisMessages.SendMessageToUser(e);
-            if (e.Id == "elsDetails") await ElsLogAnalysisMessages.SendDetailedInfoMessage(e);
+            if (e.Id is "sendElsToUser" or "sendElsDetailsToUser") await ELSProcess.SendMessageToUser(e);
+            if (e.Id == "elsDetails") await ELSProcess.SendDetailedInfoMessage(e);
         }
         catch (Exception exception)
         {
