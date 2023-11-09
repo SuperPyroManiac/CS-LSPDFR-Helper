@@ -7,7 +7,7 @@ namespace ULSS_Helper.Events;
 
 public class ComponentInteraction
 {
-    internal static async Task OnButtonPress(DiscordClient s, ComponentInteractionCreateEventArgs e)
+    internal static async Task HandleInteraction(DiscordClient s, ComponentInteractionCreateEventArgs e)
     {
         try
         {
