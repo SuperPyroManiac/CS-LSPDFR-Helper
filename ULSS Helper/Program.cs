@@ -44,7 +44,7 @@ internal class Program
         sCommands.RegisterCommands<ContextMenu>(Settings.GetServerID());
 
         Client.ModalSubmitted += ModalSubmit.HandleModalSubmit;
-        Client.ComponentInteractionCreated += ButtonPress.OnButtonPress;
+        Client.ComponentInteractionCreated += ComponentInteraction.HandleInteraction;
         Client.MessageCreated += MessageSent;
         //TODO: Client.VoiceStateUpdated += VoiceChatManager.OnMemberJoinLeaveVC;
 
