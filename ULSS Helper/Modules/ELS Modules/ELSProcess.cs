@@ -67,14 +67,14 @@ internal class ELSProcess : LogAnalysisMessages
             {
                 Title = ":green_circle:     **Valid VCFs:**",
                 Description = validVcFiles,
-                Color = DiscordColor.Gold,
+                Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon }
             };
             var embed3 = new DiscordEmbedBuilder
             {
                 Title = ":orange_circle:     **Invalid VCFs:**",
                 Description = invalidVcFiles,
-                Color = DiscordColor.Gold,
+                Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon }
             };
 
@@ -134,7 +134,7 @@ internal class ELSProcess : LogAnalysisMessages
         return new DiscordEmbedBuilder
         {
             Description = description,
-            Color = DiscordColor.Gold,
+            Color = new DiscordColor(243, 154, 18),
             Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon },
             Footer = new DiscordEmbedBuilder.EmbedFooter
             {

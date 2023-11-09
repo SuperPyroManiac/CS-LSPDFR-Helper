@@ -29,7 +29,7 @@ internal class RPHProcess : LogAnalysisMessages
         return new DiscordEmbedBuilder
         {
             Description = description,
-            Color = DiscordColor.Gold,
+            Color = new DiscordColor(243, 154, 18),
             Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon },
             Footer = new DiscordEmbedBuilder.EmbedFooter
             {
@@ -93,14 +93,14 @@ internal class RPHProcess : LogAnalysisMessages
             {
                 Title = ":orange_circle:     **Update:**",
                 Description = "\r\n- " + outdated,
-                Color = DiscordColor.Gold,
+                Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon }
             };
             var embed3 = new DiscordEmbedBuilder
             {
                 Title = ":red_circle:     **Remove:**",
                 Description = "\r\n- " + broken,
-                Color = DiscordColor.Gold,
+                Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon }
             };
 

@@ -5,7 +5,7 @@ namespace ULSS_Helper.Messages;
 
 internal class LogAnalysisMessages
 {
-    internal const string TsIcon = "https://cdn.discordapp.com/role-icons/517568233360982017/645944c1c220c8121bf779ea2e10b7be.webp?size=128&quality=lossless";
+    internal const string TsIcon = "https://cdn.discordapp.com/role-icons/517568233360982017/b69077cfafb6856a0752c863e1bb87f0.webp?size=128&quality=lossless";
     internal static ulong logUploaderUserId;
     internal static string logMessageLink;
 
