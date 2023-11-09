@@ -1,6 +1,6 @@
 namespace ULSS_Helper.Objects;
 
-public class RPHLog
+public class RPHLog : Log
 {
     public List<Plugin?> Current { get; set; }
     public List<Plugin?> Outdated { get; set; }
@@ -14,5 +14,4 @@ public class RPHLog
     public string GTAVersion { get; set; }
     public string RPHVersion { get; set; }
     public string LSPDFRVersion { get; set; }
-    public ulong MsgId { get; set; }
 }
