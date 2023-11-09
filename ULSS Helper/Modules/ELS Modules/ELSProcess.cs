@@ -19,7 +19,8 @@ internal class ELSProcess : LogAnalysisProcess
         DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Quick ELS.log Info");
 
         DiscordMessage targetMessage = context?.TargetMessage ?? eventArgs.Message;
-        embed = AddTsViewFields(embed, targetMessage.Id);
+        ProcessCache cache = Program.Cache.GetProcessCache(targetMessage.Id);
+        embed = AddTsViewFields(embed, cache.OriginalMessage);
 
         if (log.FaultyVcfFile != null) 
         {
@@ -46,31 +47,32 @@ internal class ELSProcess : LogAnalysisProcess
         if (context != null)
         {
             DiscordMessage? sentMessage = await context.EditResponseAsync(message);
-            Program.Cache.SaveProcess(sentMessage.Id, new(context.Interaction, context.TargetMessage, this));
+            Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this));
         }
         else
         {
             DiscordMessage? sentMessage = await eventArgs.Interaction.EditOriginalResponseAsync(message);
-            Program.Cache.SaveProcess(sentMessage.Id, new(eventArgs.Interaction, eventArgs.Message, this));
+            Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this));
         }
     }
 
 
-    internal async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs e)
+    internal async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs eventArgs)
     {
         string validVcFiles = "\r\n- " + string.Join(", ", log.ValidElsVcfFiles);
         string invalidVcFiles = "\r\n- " + string.Join("\r\n- ", log.InvalidElsVcfFiles);
+        ProcessCache cache = Program.Cache.GetProcessCache(eventArgs.Message.Id);
         
         DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Detailed ELS.log Info");
         
-        foreach (var field in e.Message.Embeds[0].Fields)
+        foreach (var field in eventArgs.Message.Embeds[0].Fields)
         {
             embed.AddField(field.Name, field.Value, field.Inline);
         }
         
         if (validVcFiles.Length >= 1024 || invalidVcFiles.Length >= 1024)
         {
-            await e.Interaction.DeferAsync(true);
+            await eventArgs.Interaction.DeferAsync(true);
             embed.AddField(":warning:     **Message Too Big**", "\r\nToo many VCFs to display in a single message.", true);
             
             var embed2 = new DiscordEmbedBuilder
@@ -97,8 +99,8 @@ internal class ELSProcess : LogAnalysisProcess
                 new DiscordButtonComponent(ButtonStyle.Danger, "sendElsDetailsToUser", "Send To User", false,
                     new DiscordComponentEmoji("📨"))
             });
-            DiscordMessage? sentOverflowMessage = await e.Interaction.EditOriginalResponseAsync(overflow);
-            Program.Cache.SaveProcess(sentOverflowMessage.Id, new(e.Interaction, e.Message, this)); 
+            DiscordMessage? sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflow);
+            Program.Cache.SaveProcess(sentOverflowMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
             return;
         }
 
@@ -111,35 +113,35 @@ internal class ELSProcess : LogAnalysisProcess
         if (log.InvalidElsVcfFiles.Count > 0) 
             embed.AddField(":orange_circle:     Invalid VCFs:", invalidVcFiles, true);
             
-        await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,new DiscordInteractionResponseBuilder().AddEmbed(embed).AddComponents(new DiscordComponent[]
+        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,new DiscordInteractionResponseBuilder().AddEmbed(embed).AddComponents(new DiscordComponent[]
         {
             new DiscordButtonComponent(ButtonStyle.Danger, "sendElsDetailsToUser", "Send To User", false, new DiscordComponentEmoji("📨"))
         }));
-        var sentMessage = await e.Interaction.GetFollowupMessageAsync(e.Message.Id);
-        Program.Cache.SaveProcess(sentMessage.Id, new(e.Interaction, e.Message, this)); 
+        var sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
+        Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
     }
 
-    internal async Task SendMessageToUser(ComponentInteractionCreateEventArgs e)
+    internal async Task SendMessageToUser(ComponentInteractionCreateEventArgs eventArgs)
     {
         var newEmbList = new List<DiscordEmbed>();
-        var newEmb = GetBaseLogInfoEmbed(e.Message.Embeds[0].Description);
+        var newEmb = GetBaseLogInfoEmbed(eventArgs.Message.Embeds[0].Description);
         
-        foreach (var field in e.Message.Embeds[0].Fields)
+        foreach (var field in eventArgs.Message.Embeds[0].Fields)
         {
             newEmb.AddField(field.Name, field.Value, field.Inline);
         }
         newEmb = RemoveTsViewFields(newEmb);
         newEmbList.Add(newEmb);
-        newEmbList.AddRange(e.Message.Embeds);
+        newEmbList.AddRange(eventArgs.Message.Embeds);
         newEmbList.RemoveAt(1);
 
         var newMessage = new DiscordMessageBuilder();
         newMessage.AddEmbeds(newEmbList);
         newMessage.WithReply(log.MsgId, true);
-        await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
+        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
             new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Sent!")));
-        await e.Interaction.DeleteOriginalResponseAsync();
-        await newMessage.SendAsync(e.Channel);
+        await eventArgs.Interaction.DeleteOriginalResponseAsync();
+        await newMessage.SendAsync(eventArgs.Channel);
     }
 
     private DiscordEmbedBuilder GetBaseLogInfoEmbed(string description) 

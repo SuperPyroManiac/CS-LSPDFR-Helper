@@ -13,15 +13,15 @@ internal class ContextMenu : ApplicationCommandModule
     private static DiscordAttachment? attachmentForAnalysis;
     
     [ContextMenu(ApplicationCommandType.MessageContextMenu, "Analyze Log")]
-    public async Task OnMenuSelect(ContextMenuContext e)
+    public async Task OnMenuSelect(ContextMenuContext context)
     {
         //===//===//===////===//===//===////===//Permissions/===////===//===//===////===//===//===//
-        if (e.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
+        if (context.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
         {
             var emb = new DiscordInteractionResponseBuilder();
             emb.IsEphemeral = true;
             emb.AddEmbed(BasicEmbeds.Error("You do not have permission for this!"));
-            await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb);
+            await context.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb);
             return;
         }
 
@@ -33,19 +33,20 @@ internal class ContextMenu : ApplicationCommandModule
         });
         string acceptedFileNamesString = string.Join(" or ", acceptedFileNames);
         string acceptedLogFileNamesString = "`" + string.Join(".log` or `", acceptedFileNames) + ".log`";
+        LogAnalysisProcess process = new();
         try
         {
-            switch (e.TargetMessage.Attachments.Count)
+            switch (context.TargetMessage.Attachments.Count)
             {
                 case 0:
-                    await LogAnalysisProcess.SendAttachmentErrorMessage(e, $"No attachment found. There needs to be a {acceptedFileNamesString} log file attached to the message!");
+                    await process.SendAttachmentErrorMessage(context, $"No attachment found. There needs to be a {acceptedFileNamesString} log file attached to the message!");
                     return;
                 case 1:
-                    attachmentForAnalysis = e.TargetMessage.Attachments[0];
+                    attachmentForAnalysis = context.TargetMessage.Attachments[0];
                     break;
                 case > 1:
                     List<DiscordAttachment> acceptedAttachments = new List<DiscordAttachment>();
-                    foreach(DiscordAttachment attachment in e.TargetMessage.Attachments)
+                    foreach(DiscordAttachment attachment in context.TargetMessage.Attachments)
                     {
                         if (acceptedFileNames.Any(attachment.FileName.Contains))
                         {
@@ -54,15 +55,15 @@ internal class ContextMenu : ApplicationCommandModule
                     }
                     if (acceptedAttachments.Count == 0)
                     {
-                        await LogAnalysisProcess.SendAttachmentErrorMessage(e, $"There is no file named {acceptedLogFileNamesString} attached!");
+                        await process.SendAttachmentErrorMessage(context, $"There is no file named {acceptedLogFileNamesString} attached!");
                         return;
                     }
                     else if (acceptedAttachments.Count == 1) 
                         attachmentForAnalysis = acceptedAttachments[0];
                     else if (acceptedAttachments.Count > 1)
                     {
-                        await e.DeferAsync(true);
-                        await LogAnalysisProcess.SendSelectFileForAnalysisMessage(e, acceptedAttachments);
+                        await context.DeferAsync(true);
+                        await process.SendSelectFileForAnalysisMessage(context, acceptedAttachments);
                         return;
                     }
                     break;
@@ -70,33 +71,33 @@ internal class ContextMenu : ApplicationCommandModule
             
             if (attachmentForAnalysis == null)
             {
-                await LogAnalysisProcess.SendAttachmentErrorMessage(e, "Failed to load attached file!");
+                await process.SendAttachmentErrorMessage(context, "Failed to load attached file!");
                 return;
             }
             if (!acceptedFileNames.Any(attachmentForAnalysis.FileName.Contains))
             {
-                await LogAnalysisProcess.SendAttachmentErrorMessage(e, $"This file is not named {acceptedLogFileNamesString}!");
+                await process.SendAttachmentErrorMessage(context, $"This file is not named {acceptedLogFileNamesString}!");
                 return;
             }
             //===//===//===////===//===//===////===//Process Attachments/===////===//===//===////===//===//===//
             if (attachmentForAnalysis.FileName.Contains("RagePluginHook"))
             {
-                await e.DeferAsync(true);
+                await context.DeferAsync(true);
                 RPHProcess rphProcess = new RPHProcess();
                 rphProcess.log = RPHAnalyzer.Run(attachmentForAnalysis.Url);
-                rphProcess.log.MsgId = e.TargetMessage.Id;
-                Program.Cache.SaveProcess(e.TargetMessage.Id, new(e.Interaction, e.TargetMessage, rphProcess));
-                await rphProcess.SendQuickLogInfoMessage(e);
+                rphProcess.log.MsgId = context.TargetMessage.Id;
+                Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, rphProcess));
+                await rphProcess.SendQuickLogInfoMessage(context);
                 return;
             }
             if (attachmentForAnalysis.FileName.Contains("ELS"))
             {
-                await e.DeferAsync(true);
+                await context.DeferAsync(true);
                 ELSProcess elsProcess = new ELSProcess();
                 elsProcess.log = ELSAnalyzer.Run(attachmentForAnalysis.Url);
-                elsProcess.log.MsgId = e.TargetMessage.Id;
-                Program.Cache.SaveProcess(e.TargetMessage.Id, new(e.Interaction, e.TargetMessage, elsProcess));
-                await elsProcess.SendQuickLogInfoMessage(e);
+                elsProcess.log.MsgId = context.TargetMessage.Id;
+                Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, elsProcess));
+                await elsProcess.SendQuickLogInfoMessage(context);
                 return;
             }
         }

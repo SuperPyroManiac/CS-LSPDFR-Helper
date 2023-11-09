@@ -9,6 +9,7 @@ namespace ULSS_Helper.Modules;
 internal class LogAnalysisProcess
 {
     internal const string TsIcon = "https://cdn.discordapp.com/role-icons/517568233360982017/b69077cfafb6856a0752c863e1bb87f0.webp?size=128&quality=lossless";
+    internal const string OptionValueSeparator = "&";
     internal Guid Guid { get; }
 
     public LogAnalysisProcess()
@@ -16,25 +17,25 @@ internal class LogAnalysisProcess
         Guid = Guid.NewGuid();
     }
 
-    internal static async Task SendAttachmentErrorMessage(ContextMenuContext e, string message)
+    internal async Task SendAttachmentErrorMessage(ContextMenuContext context, string message)
     {
         var response = new DiscordInteractionResponseBuilder
         {
             IsEphemeral = true
         };
         response.AddEmbed(BasicEmbeds.Error(message));
-        await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
+        await context.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
         return;
     }
     
-    internal static async Task SendSelectFileForAnalysisMessage(ContextMenuContext e, List<DiscordAttachment> acceptedAttachments)
+    internal async Task SendSelectFileForAnalysisMessage(ContextMenuContext context, List<DiscordAttachment> acceptedAttachments)
     {
         DiscordEmbedBuilder embed = BasicEmbeds.Warning("There were multiple attachments detected for log analysis. Please select the one you would like to be analyzed!");
         
         List<DiscordSelectComponentOption> selectOptions = new List<DiscordSelectComponentOption>();
         foreach(DiscordAttachment acceptedAttachment in acceptedAttachments)
         {
-            string value = e.TargetMessage.Id + "&&" + acceptedAttachment.Id.ToString();
+            string value = context.TargetMessage.Id + OptionValueSeparator + acceptedAttachment.Id.ToString();
             DiscordSelectComponentOption? option = new DiscordSelectComponentOption(acceptedAttachment.FileName, value);
             selectOptions.Add(option);
         }
@@ -52,20 +53,20 @@ internal class LogAnalysisProcess
                 }
             );  
 
-        await e.EditResponseAsync(webhookBuilder);
+        var sentMessage = await context.EditResponseAsync(webhookBuilder);
+        Program.Cache.SaveProcess(sentMessage.Id, new(context.Interaction, context.TargetMessage, this));
+
     }
 
-    internal static DiscordEmbedBuilder AddTsViewFields(DiscordEmbedBuilder embed, ulong messageId) 
+    internal DiscordEmbedBuilder AddTsViewFields(DiscordEmbedBuilder embed, DiscordMessage originalMessage) 
     {
-        ProcessCache cache = Program.Cache.GetProcessCache(messageId);
-
-        embed.AddField("Log uploader:", $"<@{cache.OriginalMessage.Author.Id}>", true);
-        embed.AddField("Log message:", cache.OriginalMessage.JumpLink.ToString(), true);
+        embed.AddField("Log uploader:", $"<@{originalMessage.Author.Id}>", true);
+        embed.AddField("Log message:", originalMessage.JumpLink.ToString(), true);
         embed.AddField("\u200B", "\u200B", true); //TS View only! Always index 0 - 2.
         return embed;
     }
 
-    internal static DiscordEmbedBuilder RemoveTsViewFields(DiscordEmbedBuilder embed)
+    internal DiscordEmbedBuilder RemoveTsViewFields(DiscordEmbedBuilder embed)
     {
         return embed.RemoveFieldRange(0, 3);
     }

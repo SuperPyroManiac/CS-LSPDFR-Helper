@@ -1,4 +1,5 @@
 using DSharpPlus.Entities;
+using ULSS_Helper.Modules;
 using ULSS_Helper.Modules.ELS_Modules;
 using ULSS_Helper.Modules.RPH_Modules;
 
@@ -8,6 +9,7 @@ internal class ProcessCache
 {
     internal DiscordInteraction Interaction { get; }
     internal DiscordMessage OriginalMessage { get; }
+    internal LogAnalysisProcess? Process { get; }
     internal ELSProcess? ElsProcess { get; }
     internal RPHProcess? RphProcess { get; }
 
@@ -22,5 +24,11 @@ internal class ProcessCache
         Interaction = interaction;
         OriginalMessage = originalMessage;
         RphProcess = rphProcess;
+    }
+    internal ProcessCache(DiscordInteraction interaction, DiscordMessage originalMessage, LogAnalysisProcess process)
+    {
+        Interaction = interaction;
+        OriginalMessage = originalMessage;
+        Process = process;
     }
 }

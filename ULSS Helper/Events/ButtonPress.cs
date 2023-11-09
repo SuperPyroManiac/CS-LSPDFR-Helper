@@ -2,6 +2,8 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using ULSS_Helper.Messages;
+using ULSS_Helper.Modules;
+using ULSS_Helper.Modules.ELS_Modules;
 using ULSS_Helper.Modules.RPH_Modules;
 using ULSS_Helper.Objects;
 
@@ -18,7 +20,7 @@ public class ComponentInteraction
             if (eventArgs.Id.Equals("selectAttachmentForAnalysis"))
             {
                 string? selectedValue = eventArgs.Values.FirstOrDefault();
-                string[]? ids = selectedValue.Split("&&");
+                string[]? ids = selectedValue.Split(LogAnalysisProcess.OptionValueSeparator);
                 ulong messageId = ulong.Parse(ids[0]);
                 ulong targetAttachmentId = ulong.Parse(ids[1]);
                 DiscordMessage? message = await eventArgs.Channel.GetMessageAsync(messageId);
@@ -27,22 +29,25 @@ public class ComponentInteraction
                 if (targetAttachment.FileName.Contains("RagePluginHook"))
                 {
                     await eventArgs.Interaction.DeferAsync(true);
-                    cache.RphProcess.log = RPHAnalyzer.Run(targetAttachment.Url);
-                    cache.RphProcess.log.MsgId = message.Id;
-                    await cache.RphProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
+                    RPHProcess rphProcess = new RPHProcess();
+                    rphProcess.log = RPHAnalyzer.Run(targetAttachment.Url);
+                    rphProcess.log.MsgId = cache.OriginalMessage.Id;
+                    Program.Cache.SaveProcess(messageId: eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, rphProcess));
+                    await rphProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                     return;
                 }
                 if (targetAttachment.FileName.Contains("ELS"))
                 {
                     await eventArgs.Interaction.DeferAsync(true);
-                    cache.ElsProcess.log = ELSAnalyzer.Run(targetAttachment.Url);
-                    cache.ElsProcess.log.MsgId = message.Id;
-                    await cache.ElsProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
+                    ELSProcess elsProcess = new ELSProcess();
+                    elsProcess.log = ELSAnalyzer.Run(targetAttachment.Url);
+                    elsProcess.log.MsgId = cache.OriginalMessage.Id;
+                    Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, elsProcess));
+                    await elsProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                     return;
                 }
             }
 
-            
             //RPH log reader buttons
             if (eventArgs.Id is "send" or "send2") await cache.RphProcess.SendMessageToUser(eventArgs);
             if (eventArgs.Id == "info") await cache.RphProcess.SendDetailedInfoMessage(eventArgs);
