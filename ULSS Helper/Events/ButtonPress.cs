@@ -5,7 +5,7 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Events;
 
-public class ButtonPress
+public class ComponentInteraction
 {
     internal static async Task OnButtonPress(DiscordClient s, ComponentInteractionCreateEventArgs e)
     {
