@@ -6,11 +6,11 @@ namespace ULSS_Helper.Modules.ELS_Modules;
 
 public class ELSAnalyzer
 {
-    internal static ELSLog Run(string fileName)
+    internal static ELSLog Run(string attachmentUrl)
     {
         using var client = new WebClient();
         client.DownloadFile(
-            fileName,
+            attachmentUrl,
             Path.Combine(
                 Directory.GetCurrentDirectory(), 
                 "ELSLogs", 

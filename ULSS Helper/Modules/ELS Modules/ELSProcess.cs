@@ -11,11 +11,15 @@ internal class ELSProcess : LogAnalysisProcess
 {
     internal ELSLog log;
 
-    internal async Task SendQuickLogInfoMessage(ContextMenuContext e)
+    internal async Task SendQuickLogInfoMessage(ContextMenuContext? context=null, ComponentInteractionCreateEventArgs? eventArgs=null)
     {
+        if (context == null && eventArgs == null)
+            throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
+
         DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Quick ELS.log Info");
 
-        embed = AddTsViewFields(embed, e.TargetMessage.Id);
+        DiscordMessage targetMessage = context?.TargetMessage ?? eventArgs.Message;
+        embed = AddTsViewFields(embed, targetMessage.Id);
 
         if (log.FaultyVcfFile != null) 
         {
@@ -39,8 +43,16 @@ internal class ELSProcess : LogAnalysisProcess
                 }
             );
 
-        var sentMessage = await e.EditResponseAsync(message);
-        Program.Cache.SaveProcess(sentMessage.Id, new(e.Interaction, e.TargetMessage, this));
+        if (context != null)
+        {
+            DiscordMessage? sentMessage = await context.EditResponseAsync(message);
+            Program.Cache.SaveProcess(sentMessage.Id, new(context.Interaction, context.TargetMessage, this));
+        }
+        else
+        {
+            DiscordMessage? sentMessage = await eventArgs.Interaction.EditOriginalResponseAsync(message);
+            Program.Cache.SaveProcess(sentMessage.Id, new(eventArgs.Interaction, eventArgs.Message, this));
+        }
     }
 
 

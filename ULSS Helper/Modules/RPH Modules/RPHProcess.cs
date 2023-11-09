@@ -60,8 +60,11 @@ internal class RPHProcess : LogAnalysisProcess
         return embed;
     }
 
-    internal async Task SendQuickLogInfoMessage(ContextMenuContext e)
+    internal async Task SendQuickLogInfoMessage(ContextMenuContext? context=null, ComponentInteractionCreateEventArgs? eventArgs=null)
     {
+        if (context == null && eventArgs == null)
+            throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
+        
         var linkedOutdated = log.Outdated.Select(i => i?.Link != null
                 ? $"[{i.DName}]({i.Link})"
                 : $"[{i?.DName}](https://www.google.com/search?q=lspdfr+{i.DName.Replace(" ", "+")})")
@@ -112,19 +115,43 @@ internal class RPHProcess : LogAnalysisProcess
                 new DiscordButtonComponent(ButtonStyle.Danger, "send", "Send To User", false,
                     new DiscordComponentEmoji("📨"))
             });
-            var sentOverflowMessage = await e.EditResponseAsync(overflow);
-            Program.Cache.SaveProcess(sentOverflowMessage.Id, new(e.Interaction, e.TargetMessage, this)); 
+            DiscordMessage? sentOverflowMessage;
+            if (context != null)
+            {
+                sentOverflowMessage = await context.EditResponseAsync(overflow);
+                Program.Cache.SaveProcess(sentOverflowMessage.Id, new(context.Interaction, context.TargetMessage, this)); 
+            }
+            else
+            {
+                sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflow);
+                Program.Cache.SaveProcess(sentOverflowMessage.Id, new(eventArgs.Interaction, eventArgs.Message, this)); 
+            }
         }
         else
         {
             embed = AddCommonFields(embed);
             
-            var sentMessage = await e.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed).AddComponents(new DiscordComponent[]
+            DiscordWebhookBuilder webhookBuilder = new();
+            webhookBuilder.AddEmbed(embed);
+            webhookBuilder.AddComponents(
+                new DiscordComponent[]
+                {
+                    new DiscordButtonComponent(ButtonStyle.Primary, "info", "More Info", false, new DiscordComponentEmoji(723417756938010646)),
+                    new DiscordButtonComponent(ButtonStyle.Danger, "send", "Send To User", false, new DiscordComponentEmoji("📨"))
+                }
+            );
+
+            DiscordMessage sentMessage;
+            if (context != null)
             {
-                new DiscordButtonComponent(ButtonStyle.Primary, "info", "More Info", false, new DiscordComponentEmoji(723417756938010646)),
-                new DiscordButtonComponent(ButtonStyle.Danger, "send", "Send To User", false, new DiscordComponentEmoji("📨"))
-            }));
-            Program.Cache.SaveProcess(sentMessage.Id, new(e.Interaction, e.TargetMessage, this)); 
+                sentMessage = await context.EditResponseAsync(webhookBuilder);
+                Program.Cache.SaveProcess(sentMessage.Id, new(context.Interaction, context.TargetMessage, this)); 
+            }
+            else
+            {
+                sentMessage = await eventArgs.Interaction.EditOriginalResponseAsync(webhookBuilder);
+                Program.Cache.SaveProcess(sentMessage.Id, new(eventArgs.Interaction, eventArgs.Message, this)); 
+            }
         }
     }
 

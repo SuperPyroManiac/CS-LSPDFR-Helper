@@ -8,11 +8,11 @@ namespace ULSS_Helper.Modules.RPH_Modules;
 
 public class RPHAnalyzer
 {
-    internal static RPHLog Run(string fileName)
+    internal static RPHLog Run(string attachmentUrl)
     {
         using var client = new WebClient();
         client.DownloadFile(
-            fileName,
+            attachmentUrl,
             Path.Combine(
                 Directory.GetCurrentDirectory(), 
                 "RPHLogs", 

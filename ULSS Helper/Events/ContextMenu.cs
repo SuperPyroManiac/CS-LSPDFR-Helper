@@ -2,6 +2,7 @@
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
+using ULSS_Helper.Modules;
 using ULSS_Helper.Modules.ELS_Modules;
 using ULSS_Helper.Modules.RPH_Modules;
 
@@ -9,7 +10,7 @@ namespace ULSS_Helper.Events;
 
 internal class ContextMenu : ApplicationCommandModule
 {
-    private string? _file;
+    private static DiscordAttachment? attachmentForAnalysis;
     
     [ContextMenu(ApplicationCommandType.MessageContextMenu, "Analyze Log")]
     public async Task OnMenuSelect(ContextMenuContext e)
@@ -25,7 +26,7 @@ internal class ContextMenu : ApplicationCommandModule
         }
 
         //===//===//===////===//===//===////===//Attachment Checks/===////===//===//===////===//===//===//
-        _file = null;
+        attachmentForAnalysis = null;
         List<string> acceptedFileNames = new(new string[]{
             "RagePluginHook",
             "ELS"
@@ -37,65 +38,62 @@ internal class ContextMenu : ApplicationCommandModule
             switch (e.TargetMessage.Attachments.Count)
             {
                 case 0:
-                    var emb = new DiscordInteractionResponseBuilder();
-                    emb.IsEphemeral = true;
-                    emb.AddEmbed(BasicEmbeds.Error($"No attachment found. There needs to be a {acceptedFileNamesString} log file attached to the message!"));
-                    await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb);
+                    await LogAnalysisProcess.SendAttachmentErrorMessage(e, $"No attachment found. There needs to be a {acceptedFileNamesString} log file attached to the message!");
                     return;
                 case 1:
-                    _file = e.TargetMessage.Attachments[0]?.Url;
+                    attachmentForAnalysis = e.TargetMessage.Attachments[0];
                     break;
                 case > 1:
+                    List<DiscordAttachment> acceptedAttachments = new List<DiscordAttachment>();
                     foreach(DiscordAttachment attachment in e.TargetMessage.Attachments)
                     {
-                        if (acceptedFileNames.Any(attachment.Url.Contains))
+                        if (acceptedFileNames.Any(attachment.FileName.Contains))
                         {
-                            _file = attachment.Url;
-                            break;
+                            acceptedAttachments.Add(attachment);
                         }
                     }
-                    if (_file == null)
+                    if (acceptedAttachments.Count == 0)
                     {
-                        var emb2 = new DiscordInteractionResponseBuilder();
-                        emb2.IsEphemeral = true;
-                        emb2.AddEmbed(BasicEmbeds.Error($"There is no log file named {acceptedLogFileNamesString} file attached!"));
-                        await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb2);
+                        await LogAnalysisProcess.SendAttachmentErrorMessage(e, $"There is no file named {acceptedLogFileNamesString} attached!");
+                        return;
+                    }
+                    else if (acceptedAttachments.Count == 1) 
+                        attachmentForAnalysis = acceptedAttachments[0];
+                    else if (acceptedAttachments.Count > 1)
+                    {
+                        await e.DeferAsync(true);
+                        await LogAnalysisProcess.SendSelectFileForAnalysisMessage(e, acceptedAttachments);
                         return;
                     }
                     break;
             }
-            if (_file == null)
+            
+            if (attachmentForAnalysis == null)
             {
-                var emb = new DiscordInteractionResponseBuilder();
-                emb.IsEphemeral = true;
-                emb.AddEmbed(BasicEmbeds.Error("Failed to load attached file!"));
-                await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb);
+                await LogAnalysisProcess.SendAttachmentErrorMessage(e, "Failed to load attached file!");
                 return;
             }
-            if (!acceptedFileNames.Any(_file.Contains))
+            if (!acceptedFileNames.Any(attachmentForAnalysis.FileName.Contains))
             {
-                var emb = new DiscordInteractionResponseBuilder();
-                emb.IsEphemeral = true;
-                emb.AddEmbed(BasicEmbeds.Error($"This file is not named {acceptedLogFileNamesString}!"));
-                await e.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb);
+                await LogAnalysisProcess.SendAttachmentErrorMessage(e, $"This file is not named {acceptedLogFileNamesString}!");
                 return;
             }
             //===//===//===////===//===//===////===//Process Attachments/===////===//===//===////===//===//===//
-            if (_file.Contains("RagePluginHook"))
+            if (attachmentForAnalysis.FileName.Contains("RagePluginHook"))
             {
                 await e.DeferAsync(true);
                 RPHProcess rphProcess = new RPHProcess();
-                rphProcess.log = RPHAnalyzer.Run(_file);
+                rphProcess.log = RPHAnalyzer.Run(attachmentForAnalysis.Url);
                 rphProcess.log.MsgId = e.TargetMessage.Id;
                 Program.Cache.SaveProcess(e.TargetMessage.Id, new(e.Interaction, e.TargetMessage, rphProcess));
                 await rphProcess.SendQuickLogInfoMessage(e);
                 return;
             }
-            if (_file.Contains("ELS"))
+            if (attachmentForAnalysis.FileName.Contains("ELS"))
             {
                 await e.DeferAsync(true);
                 ELSProcess elsProcess = new ELSProcess();
-                elsProcess.log = ELSAnalyzer.Run(_file);
+                elsProcess.log = ELSAnalyzer.Run(attachmentForAnalysis.Url);
                 elsProcess.log.MsgId = e.TargetMessage.Id;
                 Program.Cache.SaveProcess(e.TargetMessage.Id, new(e.Interaction, e.TargetMessage, elsProcess));
                 await elsProcess.SendQuickLogInfoMessage(e);
