@@ -45,36 +45,20 @@ internal class PluginCmdMessages : DbCmdMessages
             case DbOperation.UPDATE:
                 string title = $"**Modified {newPlugin.Name}!**\r\n";
                 string text = title;
-                
-                List<string> labels = new List<string>(
-                    new string[] 
-                    { 
-                        "Name", // should be skipped
-                        "DB ID",
-                        "Display Name",
-                        "Version",
-                        "Early Access Version",
-                        "ID (on lcpdfr.com)",
-                        "Link",
-                        "State"
-                    }
-                );
-                List<string> defaultPropLines = new List<string>(
-                    new string[] 
-                    { 
-                        SHOULD_BE_SKIPPED, // Plugin.Name
-                        pluginDbRowId,
-                        pluginDName,
-                        pluginVersion,
-                        pluginEaVersion,
-                        pluginId,
-                        pluginLink,
-                        pluginState
-                    }
-                );
+
+                List<ModifiedProperty> properties = new()
+                {
+                    new ModifiedProperty("DB ID", oldPlugin.DbRowId.ToString(), oldPlugin.DbRowId.ToString(), pluginDbRowId),
+                    new ModifiedProperty("Display Name", oldPlugin.DName, newPlugin.DName, pluginDName),
+                    new ModifiedProperty("Version", oldPlugin.Version, newPlugin.Version, pluginVersion),
+                    new ModifiedProperty("Early Access Version", oldPlugin.EAVersion, newPlugin.EAVersion, pluginEaVersion),
+                    new ModifiedProperty("ID (on lcpdfr.com)", oldPlugin.ID, newPlugin.ID, pluginId),
+                    new ModifiedProperty("Link", oldPlugin.Link, newPlugin.Link, pluginLink),
+                    new ModifiedProperty("State", oldPlugin.State, newPlugin.State, pluginState),
+                };
                 try 
                 {
-                    text += GetModifiedPropertiesList(oldPlugin, newPlugin, labels, defaultPropLines);
+                    text += GetModifiedPropertiesList(properties);
                 }
                 catch (Exception exception)
                 {

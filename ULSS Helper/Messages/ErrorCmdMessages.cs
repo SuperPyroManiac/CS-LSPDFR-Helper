@@ -42,27 +42,15 @@ internal class ErrorCmdMessages : DbCmdMessages
                 string title = $"**Modified error ID: {newError.ID}!**\r\n";
                 string text = title;
 
-                List<string> labels = new List<string>(
-                    new string[] 
-                    { 
-                        "ID", // should be skipped
-                        "Regex",
-                        "Solution",
-                        "Level" 
-                    }
-                );
-                List<string> defaultPropLines = new List<string>(
-                    new string[] 
-                    { 
-                        SHOULD_BE_SKIPPED, // Error.ID
-                        errorRegex,
-                        errorSolution,
-                        errorLevel 
-                    }
-                );
+                List<ModifiedProperty> properties = new()
+                {
+                    new ModifiedProperty("Regex", oldError.Regex, newError.Regex, errorRegex),
+                    new ModifiedProperty("Solution", oldError.Solution, newError.Solution, errorSolution),
+                    new ModifiedProperty("Level", oldError.Level, newError.Level, errorLevel),
+                };
                 try 
                 {
-                    text += GetModifiedPropertiesList(oldError, newError, labels, defaultPropLines); 
+                    text += GetModifiedPropertiesList(properties); 
                 }
                 catch (Exception exception)
                 {
@@ -71,45 +59,6 @@ internal class ErrorCmdMessages : DbCmdMessages
                     break;
                 }
                 
-                /* 
-                if (oldError.Regex.Equals(newError.Regex))
-                {
-                    text += errorRegex;
-                }
-                else 
-                {
-                    text += $"**Regex:**\r\n```diff\r\n";
-                    text += $"- {oldError.Regex}\r\n";
-                    text += $"+ {newError.Regex}\r\n";
-                    text += "```\r\n";
-                    countChanges++;
-                }
-
-                if (oldError.Solution.Equals(newError.Solution))
-                {
-                    text += errorSolution;
-                }
-                else 
-                {
-                    text += $"**Solution:**\r\n```diff\r\n";
-                    text += $"- {oldError.Solution}\r\n";
-                    text += $"+ {newError.Solution}\r\n";
-                    text += "```\r\n";
-                    countChanges++;
-                }
-
-                if (oldError.Level.Equals(newError.Level))
-                {
-                    text += errorLevel;
-                }
-                else 
-                {
-                    text += $"**Level:**\r\n```diff\r\n";
-                    text += $"- {oldError.Level}\r\n";
-                    text += $"+ {newError.Level}\r\n";
-                    text += "```\r\n";
-                    countChanges++;
-                } */
                 embed = BasicEmbeds.Info(text);
                 embed.Footer = new DiscordEmbedBuilder.EmbedFooter
                 {

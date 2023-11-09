@@ -1,5 +1,4 @@
-
-using System.Reflection;
+using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Messages;
 
@@ -8,31 +7,25 @@ internal class DbCmdMessages
     static internal int ChangesCount = 0;
     internal const string SHOULD_BE_SKIPPED = "should_be_skipped";
     
-    internal static string GetModifiedPropertiesList(object oldObj, object newObj, List<string> labels, List<string> defaultPropLines)
+    internal static string GetModifiedPropertiesList(List<ModifiedProperty> properties)
     {
         string text = "";
-        for (int i=0; i < newObj.GetType().GetProperties().Length; i++)
+        foreach (ModifiedProperty prop in properties)
         {
-            PropertyInfo oldObjProp = oldObj.GetType().GetProperties()[i];
-            PropertyInfo newObjProp = newObj.GetType().GetProperties()[i];
-            Type? type = Nullable.GetUnderlyingType(newObjProp.PropertyType) ?? newObjProp.PropertyType;
-
-            string? oldObjPropValue = oldObjProp.GetValue(oldObj)?.ToString();
-            string? newObjPropValue = newObjProp.GetValue(newObj)?.ToString();
-            if (oldObjPropValue == null || newObjPropValue == null || defaultPropLines[i].Equals(SHOULD_BE_SKIPPED))
+            if (prop.OldValue == null || prop.NewValue == null)
                 continue;
             
-            if (oldObjPropValue.Equals(newObjPropValue))
+            if (prop.OldValue.Equals(prop.NewValue))
             {
-                text += defaultPropLines[i];
+                text += prop.DefaultOutput;
             }
             else 
             {
-                text += $"**{labels[i]}:**\r\n```diff\r\n";
+                text += $"**{prop.Label}:**\r\n```diff\r\n";
                 string diffText = "";
 
-                var oldLines = oldObjPropValue.Split("\n");
-                var newLines = newObjPropValue.Split("\n");
+                var oldLines = prop.OldValue.Split("\n");
+                var newLines = prop.NewValue.Split("\n");
                 int maxLines = Math.Max(oldLines.Length, newLines.Length);
                 int countChangedLines = 0;
                 for (int lineIdx=0; lineIdx < maxLines; lineIdx++)
@@ -67,8 +60,8 @@ internal class DbCmdMessages
                 }
                 if (countChangedLines == maxLines)
                 {
-                    diffText = "- " + oldObjPropValue.Replace("\n", $"\n- ");
-                    diffText += "\r\n+ " + newObjPropValue.Replace("\n", $"\n+ ");
+                    diffText = "- " + prop.OldValue.Replace("\n", $"\n- ");
+                    diffText += "\r\n+ " + prop.NewValue.Replace("\n", $"\n+ ");
                 }
                 text += diffText + "```\r\n";
                 ChangesCount++;
