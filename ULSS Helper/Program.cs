@@ -21,6 +21,7 @@ internal class Program
     public static Level ErrLevel;
     internal static DiscordClient Client {get; set;}
     internal static CommandsNextExtension Commands {get; set;}
+    internal static Cache Cache;
     
     static async Task Main(string[] args)
     {
@@ -34,6 +35,8 @@ internal class Program
             AutoReconnect = true
         };
         Client = new DiscordClient(discordConfig);
+
+        Cache = new Cache();
 
         var sCommands = Client.UseSlashCommands();
 

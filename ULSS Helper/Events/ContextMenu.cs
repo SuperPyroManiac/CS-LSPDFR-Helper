@@ -2,7 +2,6 @@
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
-using ULSS_Helper.Modules;
 using ULSS_Helper.Modules.ELS_Modules;
 using ULSS_Helper.Modules.RPH_Modules;
 
@@ -77,17 +76,21 @@ internal class ContextMenu : ApplicationCommandModule
             if (_file.Contains("RagePluginHook"))
             {
                 await e.DeferAsync(true);
-                RPHProcess.log = RPHAnalyzer.Run(_file);
-                RPHProcess.log.MsgId = e.TargetMessage.Id;
-                await RPHProcess.SendQuickLogInfoMessage(e);
+                RPHProcess rphProcess = new RPHProcess();
+                rphProcess.log = RPHAnalyzer.Run(_file);
+                rphProcess.log.MsgId = e.TargetMessage.Id;
+                Program.Cache.SaveProcess(e.TargetMessage.Id, new(e.Interaction, e.TargetMessage, rphProcess));
+                await rphProcess.SendQuickLogInfoMessage(e);
                 return;
             }
             if (_file.Contains("ELS"))
             {
                 await e.DeferAsync(true);
-                ELSProcess.log = ELSAnalyzer.Run(_file);
-                ELSProcess.log.MsgId = e.TargetMessage.Id;
-                await ELSProcess.SendQuickLogInfoMessage(e);
+                ELSProcess elsProcess = new ELSProcess();
+                elsProcess.log = ELSAnalyzer.Run(_file);
+                elsProcess.log.MsgId = e.TargetMessage.Id;
+                Program.Cache.SaveProcess(e.TargetMessage.Id, new(e.Interaction, e.TargetMessage, elsProcess));
+                await elsProcess.SendQuickLogInfoMessage(e);
                 return;
             }
         }

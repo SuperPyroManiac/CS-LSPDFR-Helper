@@ -1,6 +1,6 @@
 namespace ULSS_Helper.Objects;
 
-public class ELSLog
+public class ELSLog : Log
 {
     public string? ElsVersion { get; set; }
     public bool AdvancedHookVFound { get; set; }
@@ -9,5 +9,4 @@ public class ELSLog
     public List<string>? InvalidElsVcfFiles { get; set; }
     public string? FaultyVcfFile { get; set; }
     public int? TotalAmountElsModels { get; set; }
-    public ulong MsgId { get; set; }
 }

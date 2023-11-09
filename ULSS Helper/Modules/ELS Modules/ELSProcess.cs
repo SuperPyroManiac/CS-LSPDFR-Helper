@@ -7,18 +7,15 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Modules.ELS_Modules;
 
-internal class ELSProcess : LogAnalysisMessages
+internal class ELSProcess : LogAnalysisProcess
 {
-    internal static ELSLog log;
+    internal ELSLog log;
 
-    internal static async Task SendQuickLogInfoMessage(ContextMenuContext e)
+    internal async Task SendQuickLogInfoMessage(ContextMenuContext e)
     {
-        logUploaderUserId = e.TargetMessage.Author.Id;
-        logMessageLink = e.TargetMessage.JumpLink.ToString();
-
         DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Quick ELS.log Info");
 
-        embed = AddTsViewFields(embed);
+        embed = AddTsViewFields(embed, e.TargetMessage.Id);
 
         if (log.FaultyVcfFile != null) 
         {
@@ -42,11 +39,12 @@ internal class ELSProcess : LogAnalysisMessages
                 }
             );
 
-        await e.EditResponseAsync(message);
+        var sentMessage = await e.EditResponseAsync(message);
+        Program.Cache.SaveProcess(sentMessage.Id, new(e.Interaction, e.TargetMessage, this));
     }
 
 
-    internal static async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs e)
+    internal async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs e)
     {
         string validVcFiles = "\r\n- " + string.Join(", ", log.ValidElsVcfFiles);
         string invalidVcFiles = "\r\n- " + string.Join("\r\n- ", log.InvalidElsVcfFiles);
@@ -87,7 +85,8 @@ internal class ELSProcess : LogAnalysisMessages
                 new DiscordButtonComponent(ButtonStyle.Danger, "sendElsDetailsToUser", "Send To User", false,
                     new DiscordComponentEmoji("📨"))
             });
-            await e.Interaction.EditOriginalResponseAsync(overflow);
+            DiscordMessage? sentOverflowMessage = await e.Interaction.EditOriginalResponseAsync(overflow);
+            Program.Cache.SaveProcess(sentOverflowMessage.Id, new(e.Interaction, e.Message, this)); 
             return;
         }
 
@@ -104,9 +103,11 @@ internal class ELSProcess : LogAnalysisMessages
         {
             new DiscordButtonComponent(ButtonStyle.Danger, "sendElsDetailsToUser", "Send To User", false, new DiscordComponentEmoji("📨"))
         }));
+        var sentMessage = await e.Interaction.GetFollowupMessageAsync(e.Message.Id);
+        Program.Cache.SaveProcess(sentMessage.Id, new(e.Interaction, e.Message, this)); 
     }
 
-    internal static async Task SendMessageToUser(ComponentInteractionCreateEventArgs e)
+    internal async Task SendMessageToUser(ComponentInteractionCreateEventArgs e)
     {
         var newEmbList = new List<DiscordEmbed>();
         var newEmb = GetBaseLogInfoEmbed(e.Message.Embeds[0].Description);
@@ -129,7 +130,7 @@ internal class ELSProcess : LogAnalysisMessages
         await newMessage.SendAsync(e.Channel);
     }
 
-    private static DiscordEmbedBuilder GetBaseLogInfoEmbed(string description) 
+    private DiscordEmbedBuilder GetBaseLogInfoEmbed(string description) 
     {
         return new DiscordEmbedBuilder
         {

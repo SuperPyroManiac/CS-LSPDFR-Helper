@@ -6,21 +6,21 @@ using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Modules.RPH_Modules;
-internal class RPHProcess : LogAnalysisMessages
+internal class RPHProcess : LogAnalysisProcess
 {
-    internal static string current;
-    private static List<string?> currentList;
-    internal static string outdated;
-    internal static string broken;
-    internal static string missing;
-    internal static string library;
-    internal static string missmatch;
-    internal static RPHLog log;
-    internal static string GTAver = "X";
-    internal static string LSPDFRver = "X";
-    internal static string RPHver = "X";
+    internal string current;
+    private List<string?> currentList;
+    internal string outdated;
+    internal string broken;
+    internal string missing;
+    internal string library;
+    internal string missmatch;
+    internal RPHLog log;
+    internal string GTAver = "X";
+    internal string LSPDFRver = "X";
+    internal string RPHver = "X";
 
-    private static DiscordEmbedBuilder GetBaseLogInfoEmbed(string description)
+    private DiscordEmbedBuilder GetBaseLogInfoEmbed(string description)
     {
         if (Settings.GTAVer.Equals(log.GTAVersion)) GTAver = "\u2713";
         if (Settings.LSPDFRVer.Equals(log.LSPDFRVersion)) LSPDFRver = "\u2713";
@@ -39,7 +39,7 @@ internal class RPHProcess : LogAnalysisMessages
         };
     }
 
-    internal static DiscordEmbedBuilder AddCommonFields(DiscordEmbedBuilder embed)
+    internal DiscordEmbedBuilder AddCommonFields(DiscordEmbedBuilder embed)
     {
         if (current.Length != 0 && outdated.Length == 0 && broken.Length != 0) outdated = "**None**";
         if (current.Length != 0 && outdated.Length != 0 && broken.Length == 0) broken = "**None**";
@@ -60,14 +60,13 @@ internal class RPHProcess : LogAnalysisMessages
         return embed;
     }
 
-    internal static async Task SendQuickLogInfoMessage(ContextMenuContext e)
+    internal async Task SendQuickLogInfoMessage(ContextMenuContext e)
     {
         var linkedOutdated = log.Outdated.Select(i => i?.Link != null
                 ? $"[{i.DName}]({i.Link})"
                 : $"[{i?.DName}](https://www.google.com/search?q=lspdfr+{i.DName.Replace(" ", "+")})")
             .ToList();
-        logUploaderUserId = e.TargetMessage.Author.Id;
-        logMessageLink = e.TargetMessage.JumpLink.ToString();
+        
         currentList = log.Current.Select(i => i?.DName).ToList();
         var brokenList = log.Broken.Select(i => i?.DName).ToList();
         var missingList = log.Missing.Select(i => i?.Name).ToList();
@@ -83,7 +82,7 @@ internal class RPHProcess : LogAnalysisMessages
         
         DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Quick RPH.log Info");
 
-        embed = AddTsViewFields(embed);
+        embed = AddTsViewFields(embed, e.TargetMessage.Id);
         
         if (outdated.Length >= 1024 || broken.Length >= 1024)
         {
@@ -113,25 +112,27 @@ internal class RPHProcess : LogAnalysisMessages
                 new DiscordButtonComponent(ButtonStyle.Danger, "send", "Send To User", false,
                     new DiscordComponentEmoji("📨"))
             });
-            await e.EditResponseAsync(overflow);
+            var sentOverflowMessage = await e.EditResponseAsync(overflow);
+            Program.Cache.SaveProcess(sentOverflowMessage.Id, new(e.Interaction, e.TargetMessage, this)); 
         }
         else
         {
             embed = AddCommonFields(embed);
             
-            await e.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed).AddComponents(new DiscordComponent[]
+            var sentMessage = await e.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed).AddComponents(new DiscordComponent[]
             {
                 new DiscordButtonComponent(ButtonStyle.Primary, "info", "More Info", false, new DiscordComponentEmoji(723417756938010646)),
                 new DiscordButtonComponent(ButtonStyle.Danger, "send", "Send To User", false, new DiscordComponentEmoji("📨"))
             }));
+            Program.Cache.SaveProcess(sentMessage.Id, new(e.Interaction, e.TargetMessage, this)); 
         }
     }
 
-    internal static async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs e)
+    internal async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs e)
     {
         var embed = GetBaseLogInfoEmbed("## Detailed RPH.log Info");
         
-        embed = AddTsViewFields(embed);
+        embed = AddTsViewFields(embed, e.Message.Id);
         
         embed = AddCommonFields(embed);
 
@@ -145,9 +146,11 @@ internal class RPHProcess : LogAnalysisMessages
             {
                 new DiscordButtonComponent(ButtonStyle.Danger, "send2", "Send To User", false, new DiscordComponentEmoji("📨"))
             }));
+        var sentMessage = await e.Interaction.GetFollowupMessageAsync(e.Message.Id);
+        Program.Cache.SaveProcess(sentMessage.Id, new(e.Interaction, e.Message, this)); 
     }
     
-    internal static async Task SendMessageToUser(ComponentInteractionCreateEventArgs e)
+    internal async Task SendMessageToUser(ComponentInteractionCreateEventArgs e)
     {
         var newEmbList = new List<DiscordEmbed>();
         var newEmb = GetBaseLogInfoEmbed(e.Message.Embeds[0].Description);
