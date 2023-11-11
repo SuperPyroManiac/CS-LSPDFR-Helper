@@ -32,7 +32,7 @@ internal class DatabaseManager
             string endOfComparison = "'";
             if (!(exactMatch ?? true))  
             {
-                comparisonOperator = " like '%";
+                comparisonOperator = " LIKE '%";
                 endOfComparison = "%'";
             }
 
@@ -42,8 +42,8 @@ internal class DatabaseManager
             if (State != null) conditions.Add("State" + comparisonOperator + State.ToString() + endOfComparison);
 
             if (conditions.Count == 0) throw new InvalidDataException("At least one of the input parameters has to have a non-null value!");
-            string conditionsString = string.Join(" and ", conditions);
-            var output = cnn.Query<Plugin>($"select * from Plugin where {conditionsString}", new DynamicParameters());
+            string conditionsString = string.Join(" AND ", conditions);
+            var output = cnn.Query<Plugin>($"SELECT * FROM Plugin WHERE {conditionsString}", new DynamicParameters());
 
             return output.ToList();
         }
