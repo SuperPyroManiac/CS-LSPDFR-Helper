@@ -31,7 +31,7 @@ public class ModalSubmit
 
             plug.DbRowId = Database.AddPlugin(plug);
 
-            await PluginCmdMessages.SendDbOperationConfirmation(plug, DbOperation.CREATE);
+            await FindPluginMessages.SendDbOperationConfirmation(plug, DbOperation.CREATE);
         }
         
         if (e.Interaction.Data.CustomId == "add-error")
@@ -52,7 +52,7 @@ public class ModalSubmit
 
             err.ID = Database.AddError(err).ToString();
 
-            await ErrorCmdMessages.SendDbOperationConfirmation(newError: err, operation: DbOperation.CREATE, e: e);
+            await FindErrorMessages.SendDbOperationConfirmation(newError: err, operation: DbOperation.CREATE, e: e);
         }
         
         if (e.Interaction.Data.CustomId == "edit-plugin")
@@ -78,7 +78,7 @@ public class ModalSubmit
 
             Database.EditPlugin(plug);
 
-            await PluginCmdMessages.SendDbOperationConfirmation(newPlugin: plug, operation: DbOperation.UPDATE, oldPlugin: oldPlugin, e: e);
+            await FindPluginMessages.SendDbOperationConfirmation(newPlugin: plug, operation: DbOperation.UPDATE, oldPlugin: oldPlugin, e: e);
         }
         
         if (e.Interaction.Data.CustomId == "edit-error")
@@ -98,7 +98,7 @@ public class ModalSubmit
 
             Database.EditError(err);
 
-            await ErrorCmdMessages.SendDbOperationConfirmation(newError: err, operation: DbOperation.UPDATE, oldError: previousError, e: e);
+            await FindErrorMessages.SendDbOperationConfirmation(newError: err, operation: DbOperation.UPDATE, oldError: previousError, e: e);
         }
     }
 }

@@ -41,7 +41,7 @@ public class FindErrors : ApplicationCommandModule
                 int resultsPerPage = 3;
                 int currentResultsPerPage = 0;
                 List<Page> pages = new List<Page>();
-                string searchResultsHeader = ErrorCmdMessages.GetSearchParamsList(
+                string searchResultsHeader = FindErrorMessages.GetSearchParamsList(
                     $"I found {errorsFound.Count} error{(errorsFound.Count != 1 ? "s" : "")} that match{(errorsFound.Count == 1 ? "es" : "")} the following search parameters:",
                     errId,
                     regex,
@@ -81,7 +81,7 @@ public class FindErrors : ApplicationCommandModule
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder()
                     .AddEmbed(
                         BasicEmbeds.Warning(
-                            ErrorCmdMessages.GetSearchParamsList("No errors found with the following search parameters:", errId, regex, solution, level, exactMatch)
+                            FindErrorMessages.GetSearchParamsList("No errors found with the following search parameters:", errId, regex, solution, level, exactMatch)
                         )
                     )
                 );

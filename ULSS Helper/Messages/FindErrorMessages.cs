@@ -5,7 +5,7 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Messages;
 
-internal class ErrorCmdMessages : DbCmdMessages
+internal class FindErrorMessages : FindBaseMessages
 {    
     internal static string GetSearchParamsList(string title, string? errId, string? regex, string? solution, Level? level, bool? exactMatch) 
     {
