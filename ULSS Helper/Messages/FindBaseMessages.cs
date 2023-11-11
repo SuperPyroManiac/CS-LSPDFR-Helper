@@ -2,7 +2,7 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Messages;
 
-internal class DbCmdMessages
+internal class FindBaseMessages
 {
     static internal int ChangesCount = 0;
     internal const string SHOULD_BE_SKIPPED = "should_be_skipped";

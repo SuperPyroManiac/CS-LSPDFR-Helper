@@ -6,14 +6,14 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper;
 
-internal class Database
+internal class Database //TODO: Make strings safe
 {
     internal static List<Plugin> LoadPlugins()
     {
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
-            var output = cnn.Query<Plugin>("select * from Plugin", new DynamicParameters());
+            var output = cnn.Query<Plugin>("select * from Plugin");
             return output.ToList();
         }
         catch (SQLiteException e)
@@ -29,19 +29,17 @@ internal class Database
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
-            var output = cnn.Query<Plugin>($"select * from Plugin where Name='{pluginName}'", new DynamicParameters());
+            var output = cnn.Query<Plugin>($"select * from Plugin where Name='{pluginName}'");
             output = output.ToList();
             if (output.Count() == 1) 
             {
                 return output.First();
             }
-            else if (output.Count() > 1)
+            if (output.Count() > 1)
             {
                 throw new Exception($"GetPlugin unexpectedly returned more than one result for the plugin name '{pluginName}'!");
             }
-            else {
-                return null;
-            }
+            return null;
         }
         catch (SQLiteException e)
         {
@@ -72,7 +70,7 @@ internal class Database
 
             if (conditions.Count == 0) throw new InvalidDataException("At least one of the input parameters has to have a non-null value!");
             string conditionsString = string.Join(" and ", conditions);
-            var output = cnn.Query<Plugin>($"select * from Plugin where {conditionsString}", new DynamicParameters());
+            var output = cnn.Query<Plugin>($"select * from Plugin where {conditionsString}");
 
             return output.ToList();
         }
@@ -95,7 +93,7 @@ internal class Database
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
-            var output = cnn.Query<Error>("select * from Error", new DynamicParameters());
+            var output = cnn.Query<Error>("select * from Error");
             return output.ToList();
         }
         catch (SQLiteException e)
@@ -111,19 +109,17 @@ internal class Database
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
-            var output = cnn.Query<Error>($"select * from Error where ID='{errorId}'", new DynamicParameters());
+            var output = cnn.Query<Error>($"select * from Error where ID='{errorId}'");
             output = output.ToList();
             if (output.Count() == 1) 
             {
                 return output.First();
             }
-            else if (output.Count() > 1)
+            if (output.Count() > 1)
             {
                 throw new Exception($"GetError unexpectedly returned more than one result for the error ID '{errorId}'!");
             }
-            else {
-                return null;
-            }
+            return null;
         }
         catch (SQLiteException e)
         {

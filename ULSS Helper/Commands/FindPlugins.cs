@@ -37,6 +37,8 @@ public class FindPlugins : ApplicationCommandModule
         
         try 
         {
+            Logging.sendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info($"Ran FindPlugins with: {plugId}, {plugName}, {plugDName}"));
+            
             List<Plugin> pluginsFound = Database.FindPlugins(plugName, plugDName, plugId, plugState, exactMatch);
 
             if (pluginsFound.Count > 0) 
@@ -44,7 +46,7 @@ public class FindPlugins : ApplicationCommandModule
                 int resultsPerPage = 3;
                 int currentResultsPerPage = 0;
                 List<Page> pages = new List<Page>();
-                string searchResultsHeader = PluginCmdMessages.GetSearchParamsList(
+                string searchResultsHeader = FindPluginMessages.GetSearchParamsList(
                     $"I found {pluginsFound.Count} plugin{(pluginsFound.Count != 1 ? "s" : "")} that match{(pluginsFound.Count == 1 ? "es" : "")} the following search parameters:", 
                     plugName, 
                     plugDName, 
@@ -86,7 +88,7 @@ public class FindPlugins : ApplicationCommandModule
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder()
                     .AddEmbed(
                         BasicEmbeds.Warning(
-                            PluginCmdMessages.GetSearchParamsList($"No plugins found with the following search parameters:", plugName, plugDName, plugId, plugState, exactMatch)
+                            FindPluginMessages.GetSearchParamsList($"No plugins found with the following search parameters:", plugName, plugDName, plugId, plugState, exactMatch)
                         )
                     )
                 );

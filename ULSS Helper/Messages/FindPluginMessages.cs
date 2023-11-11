@@ -5,7 +5,7 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Messages;
 
-internal class PluginCmdMessages : DbCmdMessages
+internal class FindPluginMessages : FindBaseMessages
 {
     internal static string GetSearchParamsList(string title, string? plugName, string? plugDName, string? plugId, State? plugState, bool? exactMatch)
     {

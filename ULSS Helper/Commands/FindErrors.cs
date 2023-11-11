@@ -23,11 +23,7 @@ public class FindErrors : ApplicationCommandModule
     {
         await ctx.CreateResponseAsync(
             InteractionResponseType.DeferredChannelMessageWithSource,
-            new DiscordInteractionResponseBuilder
-            {
-                IsEphemeral = true
-            }
-        );
+            new DiscordInteractionResponseBuilder { IsEphemeral = true });
         
         if (ctx.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
         {
@@ -36,6 +32,8 @@ public class FindErrors : ApplicationCommandModule
         }
         try 
         {
+            Logging.sendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info($"Ran FindErrors with: {errId}, {regex}, {solution}"));
+            
             List<Error> errorsFound = Database.FindErrors(errId, regex, solution, level, exactMatch);
             
             if (errorsFound.Count > 0) 
@@ -43,7 +41,7 @@ public class FindErrors : ApplicationCommandModule
                 int resultsPerPage = 3;
                 int currentResultsPerPage = 0;
                 List<Page> pages = new List<Page>();
-                string searchResultsHeader = ErrorCmdMessages.GetSearchParamsList(
+                string searchResultsHeader = FindErrorMessages.GetSearchParamsList(
                     $"I found {errorsFound.Count} error{(errorsFound.Count != 1 ? "s" : "")} that match{(errorsFound.Count == 1 ? "es" : "")} the following search parameters:",
                     errId,
                     regex,
@@ -83,7 +81,7 @@ public class FindErrors : ApplicationCommandModule
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder()
                     .AddEmbed(
                         BasicEmbeds.Warning(
-                            ErrorCmdMessages.GetSearchParamsList("No errors found with the following search parameters:", errId, regex, solution, level, exactMatch)
+                            FindErrorMessages.GetSearchParamsList("No errors found with the following search parameters:", errId, regex, solution, level, exactMatch)
                         )
                     )
                 );

@@ -2,11 +2,12 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
+using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Modules.RPH_Modules;
-internal class RPHProcess : LogAnalysisProcess
+internal class RPHProcess : SharedLogInfo
 {
     internal string current;
     private List<string?> currentList;
@@ -114,7 +115,7 @@ internal class RPHProcess : LogAnalysisProcess
             if (broken.Length != 0) overflow.AddEmbed(embed3);
             overflow.AddComponents(new DiscordComponent[]
             {
-                new DiscordButtonComponent(ButtonStyle.Danger, "send", "Send To User", false,
+                new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.RphQuickSendToUser, "Send To User", false,
                     new DiscordComponentEmoji("📨"))
             });
             
@@ -135,8 +136,8 @@ internal class RPHProcess : LogAnalysisProcess
             webhookBuilder.AddComponents(
                 new DiscordComponent[]
                 {
-                    new DiscordButtonComponent(ButtonStyle.Primary, "info", "More Info", false, new DiscordComponentEmoji(723417756938010646)),
-                    new DiscordButtonComponent(ButtonStyle.Danger, "send", "Send To User", false, new DiscordComponentEmoji("📨"))
+                    new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.RphGetDetailedInfo, "More Info", false, new DiscordComponentEmoji(723417756938010646)),
+                    new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.RphQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
                 }
             );
 
@@ -147,7 +148,7 @@ internal class RPHProcess : LogAnalysisProcess
                 sentMessage = await eventArgs.Interaction.EditOriginalResponseAsync(webhookBuilder);
                 
             Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
-        }
+         }
     }
 
     internal async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs eventArgs)
@@ -166,7 +167,7 @@ internal class RPHProcess : LogAnalysisProcess
         await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
             new DiscordInteractionResponseBuilder().AddEmbed(embed).AddComponents(new DiscordComponent[]
             {
-                new DiscordButtonComponent(ButtonStyle.Danger, "send2", "Send To User", false, new DiscordComponentEmoji("📨"))
+                new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.RphDetailedSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
             }));
         var sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
         Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 

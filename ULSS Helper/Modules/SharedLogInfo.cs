@@ -1,18 +1,18 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
+using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
-using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Modules;
 
-internal class LogAnalysisProcess
+internal class SharedLogInfo
 {
     internal const string TsIcon = "https://cdn.discordapp.com/role-icons/517568233360982017/b69077cfafb6856a0752c863e1bb87f0.webp?size=128&quality=lossless";
     internal const string OptionValueSeparator = "&";
     internal Guid Guid { get; }
-
-    public LogAnalysisProcess()
+    
+    public SharedLogInfo()
     {
         Guid = Guid.NewGuid();
     }
@@ -46,7 +46,7 @@ internal class LogAnalysisProcess
                 new DiscordComponent[]
                 {
                     new DiscordSelectComponent(
-                        customId: "selectAttachmentForAnalysis",
+                        customId: ComponentInteraction.SelectAttachmentForAnalysis,
                         placeholder: "Select",
                         options: selectOptions
                     )
@@ -54,7 +54,7 @@ internal class LogAnalysisProcess
             );  
 
         var sentMessage = await context.EditResponseAsync(webhookBuilder);
-        Program.Cache.SaveProcess(sentMessage.Id, new(context.Interaction, context.TargetMessage, this));
+        Program.Cache.SaveProcess(sentMessage.Id, new(context.Interaction, context.TargetMessage));
 
     }
 

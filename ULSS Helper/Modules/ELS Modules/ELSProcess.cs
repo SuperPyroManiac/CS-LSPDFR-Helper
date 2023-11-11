@@ -2,12 +2,13 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
+using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Modules.ELS_Modules;
 
-internal class ELSProcess : LogAnalysisProcess
+internal class ELSProcess : SharedLogInfo
 {
     internal ELSLog log;
 
@@ -39,8 +40,8 @@ internal class ELSProcess : LogAnalysisProcess
             .AddComponents(
                 new DiscordComponent[]
                 {
-                    new DiscordButtonComponent(ButtonStyle.Primary, "elsDetails", "More Info", false, new DiscordComponentEmoji(723417756938010646)),
-                    new DiscordButtonComponent(ButtonStyle.Danger, "sendElsToUser", "Send To User", false, new DiscordComponentEmoji("📨"))
+                    new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.ElsGetDetailedInfo, "More Info", false, new DiscordComponentEmoji(723417756938010646)),
+                    new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.ElsQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
                 }
             );
 
@@ -93,7 +94,7 @@ internal class ELSProcess : LogAnalysisProcess
             if (invalidVcFiles.Length != 0) overflow.AddEmbed(embed3);
             overflow.AddComponents(new DiscordComponent[]
             {
-                new DiscordButtonComponent(ButtonStyle.Danger, "sendElsDetailsToUser", "Send To User", false,
+                new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.ElsDetailedSendToUser, "Send To User", false,
                     new DiscordComponentEmoji("📨"))
             });
             DiscordMessage? sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflow);
@@ -112,7 +113,7 @@ internal class ELSProcess : LogAnalysisProcess
             
         await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,new DiscordInteractionResponseBuilder().AddEmbed(embed).AddComponents(new DiscordComponent[]
         {
-            new DiscordButtonComponent(ButtonStyle.Danger, "sendElsDetailsToUser", "Send To User", false, new DiscordComponentEmoji("📨"))
+            new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.ElsDetailedSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
         }));
         var sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
         Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 

@@ -9,7 +9,6 @@ internal class ProcessCache
 {
     internal DiscordInteraction Interaction { get; }
     internal DiscordMessage OriginalMessage { get; }
-    internal LogAnalysisProcess? Process { get; }
     internal ELSProcess? ElsProcess { get; }
     internal RPHProcess? RphProcess { get; }
 
@@ -25,10 +24,9 @@ internal class ProcessCache
         OriginalMessage = originalMessage;
         RphProcess = rphProcess;
     }
-    internal ProcessCache(DiscordInteraction interaction, DiscordMessage originalMessage, LogAnalysisProcess process)
+    internal ProcessCache(DiscordInteraction interaction, DiscordMessage originalMessage)
     {
         Interaction = interaction;
         OriginalMessage = originalMessage;
-        Process = process;
     }
 }

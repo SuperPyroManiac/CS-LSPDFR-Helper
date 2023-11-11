@@ -33,13 +33,13 @@ internal class ContextMenu : ApplicationCommandModule
         });
         string acceptedFileNamesString = string.Join(" or ", acceptedFileNames);
         string acceptedLogFileNamesString = "`" + string.Join(".log` or `", acceptedFileNames) + ".log`";
-        LogAnalysisProcess process = new();
+        SharedLogInfo sharedLogInfo = new();
         try
         {
             switch (context.TargetMessage.Attachments.Count)
             {
                 case 0:
-                    await process.SendAttachmentErrorMessage(context, $"No attachment found. There needs to be a {acceptedFileNamesString} log file attached to the message!");
+                    await sharedLogInfo.SendAttachmentErrorMessage(context, $"No attachment found. There needs to be a {acceptedFileNamesString} log file attached to the message!");
                     return;
                 case 1:
                     attachmentForAnalysis = context.TargetMessage.Attachments[0];
@@ -55,7 +55,7 @@ internal class ContextMenu : ApplicationCommandModule
                     }
                     if (acceptedAttachments.Count == 0)
                     {
-                        await process.SendAttachmentErrorMessage(context, $"There is no file named {acceptedLogFileNamesString} attached!");
+                        await sharedLogInfo.SendAttachmentErrorMessage(context, $"There is no file named {acceptedLogFileNamesString} attached!");
                         return;
                     }
                     else if (acceptedAttachments.Count == 1) 
@@ -63,7 +63,7 @@ internal class ContextMenu : ApplicationCommandModule
                     else if (acceptedAttachments.Count > 1)
                     {
                         await context.DeferAsync(true);
-                        await process.SendSelectFileForAnalysisMessage(context, acceptedAttachments);
+                        await sharedLogInfo.SendSelectFileForAnalysisMessage(context, acceptedAttachments);
                         return;
                     }
                     break;
@@ -71,12 +71,12 @@ internal class ContextMenu : ApplicationCommandModule
             
             if (attachmentForAnalysis == null)
             {
-                await process.SendAttachmentErrorMessage(context, "Failed to load attached file!");
+                await sharedLogInfo.SendAttachmentErrorMessage(context, "Failed to load attached file!");
                 return;
             }
             if (!acceptedFileNames.Any(attachmentForAnalysis.FileName.Contains))
             {
-                await process.SendAttachmentErrorMessage(context, $"This file is not named {acceptedLogFileNamesString}!");
+                await sharedLogInfo.SendAttachmentErrorMessage(context, $"This file is not named {acceptedLogFileNamesString}!");
                 return;
             }
             //===//===//===////===//===//===////===//Process Attachments/===////===//===//===////===//===//===//
