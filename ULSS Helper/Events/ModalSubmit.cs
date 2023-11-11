@@ -31,7 +31,7 @@ public class ModalSubmit
 
             plug.DbRowId = Database.AddPlugin(plug);
 
-            await FindPluginMessages.SendDbOperationConfirmation(plug, DbOperation.CREATE);
+            await FindPluginMessages.SendDbOperationConfirmation(newPlugin: plug, operation: DbOperation.CREATE, e: e);
         }
         
         if (e.Interaction.Data.CustomId == "add-error")
