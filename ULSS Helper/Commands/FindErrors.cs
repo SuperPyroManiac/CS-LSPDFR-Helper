@@ -23,11 +23,7 @@ public class FindErrors : ApplicationCommandModule
     {
         await ctx.CreateResponseAsync(
             InteractionResponseType.DeferredChannelMessageWithSource,
-            new DiscordInteractionResponseBuilder
-            {
-                IsEphemeral = true
-            }
-        );
+            new DiscordInteractionResponseBuilder { IsEphemeral = true });
         
         if (ctx.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
         {
@@ -36,6 +32,8 @@ public class FindErrors : ApplicationCommandModule
         }
         try 
         {
+            Logging.sendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info($"Ran FindErrors with: {errId}, {regex}, {solution}"));
+            
             List<Error> errorsFound = Database.FindErrors(errId, regex, solution, level, exactMatch);
             
             if (errorsFound.Count > 0) 

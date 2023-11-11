@@ -37,6 +37,8 @@ public class FindPlugins : ApplicationCommandModule
         
         try 
         {
+            Logging.sendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info($"Ran FindPlugins with: {plugId}, {plugName}, {plugDName}"));
+            
             List<Plugin> pluginsFound = Database.FindPlugins(plugName, plugDName, plugId, plugState, exactMatch);
 
             if (pluginsFound.Count > 0) 
