@@ -4,12 +4,12 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Modules;
 
-internal class LogAnalysisProcess
+internal class SharedLogInfo
 {
     internal const string TsIcon = "https://cdn.discordapp.com/role-icons/517568233360982017/b69077cfafb6856a0752c863e1bb87f0.webp?size=128&quality=lossless";
     internal Guid Guid { get; }
     
-    public LogAnalysisProcess()
+    public SharedLogInfo()
     {
         Guid = Guid.NewGuid();
     }

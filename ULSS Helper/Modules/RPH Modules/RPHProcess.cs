@@ -7,7 +7,7 @@ using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Modules.RPH_Modules;
-internal class RPHProcess : LogAnalysisProcess
+internal class RPHProcess : SharedLogInfo
 {
     internal string current;
     private List<string?> currentList;

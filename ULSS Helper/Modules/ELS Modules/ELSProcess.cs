@@ -8,7 +8,7 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Modules.ELS_Modules;
 
-internal class ELSProcess : LogAnalysisProcess
+internal class ELSProcess : SharedLogInfo
 {
     internal ELSLog log;
 
