@@ -7,6 +7,9 @@ using DSharpPlus.SlashCommands;
 using ULSS_Helper.Modules;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
+using ULSS_Helper.Events;
+using ULSS_Helper.Objects;
+using Timer = ULSS_Helper.Timer;
 
 namespace ULSS_Helper;
 
@@ -18,10 +21,11 @@ internal class Program
     public static Level ErrLevel;
     internal static DiscordClient Client {get; set;}
     internal static CommandsNextExtension Commands {get; set;}
+    internal static Cache Cache = new Cache();
     
     static async Task Main(string[] args)
     {
-        TimerModule.StartTimer();
+        Timer.StartTimer();
         
         var discordConfig = new DiscordConfiguration()
         {
@@ -31,14 +35,14 @@ internal class Program
             AutoReconnect = true
         };
         Client = new DiscordClient(discordConfig);
-
+        
         var sCommands = Client.UseSlashCommands();
 
         sCommands.RegisterCommands(Assembly.GetExecutingAssembly(), Settings.GetServerID());
-        sCommands.RegisterCommands<ContextManager>(Settings.GetServerID());
+        sCommands.RegisterCommands<ContextMenu>(Settings.GetServerID());
 
-        Client.ModalSubmitted += ModalManager.PluginModal;
-        Client.ComponentInteractionCreated += ButtonManager.OnButtonPress;
+        Client.ModalSubmitted += ModalSubmit.HandleModalSubmit;
+        Client.ComponentInteractionCreated += ComponentInteraction.HandleInteraction;
         Client.MessageCreated += MessageSent;
         //TODO: Client.VoiceStateUpdated += VoiceChatManager.OnMemberJoinLeaveVC;
 
@@ -49,10 +53,16 @@ internal class Program
     }
     private static async Task MessageSent(DiscordClient s, MessageCreateEventArgs ctx)
     {
-        if (ctx.Author.Id == 478591527321337857 || ctx.Author.Id == 614191277528973428)
+        if (ctx.Author.Id is 478591527321337857 or 614191277528973428)
         {
-            var rNd = new Random().Next(4);
+            var rNd = new Random().Next(3);
             if (rNd == 1) await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":tarabruh:"));
+            if (rNd == 2) await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":middle_finger:"));
+            if (rNd == 3)
+            {
+                await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":tarabruh:"));
+                await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":middle_finger:"));
+            }
         }
     }
 }
