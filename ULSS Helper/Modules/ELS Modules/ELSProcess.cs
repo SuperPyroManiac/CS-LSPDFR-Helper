@@ -12,11 +12,16 @@ internal class ELSProcess : SharedLogInfo
 {
     internal ELSLog log;
 
-    internal async Task SendQuickLogInfoMessage(ContextMenuContext e)
+    internal async Task SendQuickLogInfoMessage(ContextMenuContext? context=null, ComponentInteractionCreateEventArgs? eventArgs=null)
     {
+        if (context == null && eventArgs == null)
+            throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
+
         DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Quick ELS.log Info");
 
-        embed = AddTsViewFields(embed, e.TargetMessage.Id);
+        DiscordMessage targetMessage = context?.TargetMessage ?? eventArgs.Message;
+        ProcessCache cache = Program.Cache.GetProcessCache(targetMessage.Id);
+        embed = AddTsViewFields(embed, cache.OriginalMessage);
 
         if (log.FaultyVcfFile != null) 
         {
@@ -40,26 +45,32 @@ internal class ELSProcess : SharedLogInfo
                 }
             );
 
-        var sentMessage = await e.EditResponseAsync(message);
-        Program.Cache.SaveProcess(sentMessage.Id, new(e.Interaction, e.TargetMessage, this));
+        DiscordMessage? sentMessage;
+        if (context != null)
+            sentMessage = await context.EditResponseAsync(message);
+        else
+            sentMessage = await eventArgs.Interaction.EditOriginalResponseAsync(message);
+            
+        Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this));
     }
 
 
-    internal async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs e)
+    internal async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs eventArgs)
     {
         string validVcFiles = "\r\n- " + string.Join(", ", log.ValidElsVcfFiles);
         string invalidVcFiles = "\r\n- " + string.Join("\r\n- ", log.InvalidElsVcfFiles);
+        ProcessCache cache = Program.Cache.GetProcessCache(eventArgs.Message.Id);
         
         DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Detailed ELS.log Info");
         
-        foreach (var field in e.Message.Embeds[0].Fields)
+        foreach (var field in eventArgs.Message.Embeds[0].Fields)
         {
             embed.AddField(field.Name, field.Value, field.Inline);
         }
         
         if (validVcFiles.Length >= 1024 || invalidVcFiles.Length >= 1024)
         {
-            await e.Interaction.DeferAsync(true);
+            await eventArgs.Interaction.DeferAsync(true);
             embed.AddField(":warning:     **Message Too Big**", "\r\nToo many VCFs to display in a single message.", true);
             
             var embed2 = new DiscordEmbedBuilder
@@ -86,8 +97,8 @@ internal class ELSProcess : SharedLogInfo
                 new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.ElsDetailedSendToUser, "Send To User", false,
                     new DiscordComponentEmoji("📨"))
             });
-            DiscordMessage? sentOverflowMessage = await e.Interaction.EditOriginalResponseAsync(overflow);
-            Program.Cache.SaveProcess(sentOverflowMessage.Id, new(e.Interaction, e.Message, this)); 
+            DiscordMessage? sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflow);
+            Program.Cache.SaveProcess(sentOverflowMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
             return;
         }
 
@@ -100,35 +111,35 @@ internal class ELSProcess : SharedLogInfo
         if (log.InvalidElsVcfFiles.Count > 0) 
             embed.AddField(":orange_circle:     Invalid VCFs:", invalidVcFiles, true);
             
-        await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,new DiscordInteractionResponseBuilder().AddEmbed(embed).AddComponents(new DiscordComponent[]
+        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,new DiscordInteractionResponseBuilder().AddEmbed(embed).AddComponents(new DiscordComponent[]
         {
             new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.ElsDetailedSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
         }));
-        var sentMessage = await e.Interaction.GetFollowupMessageAsync(e.Message.Id);
-        Program.Cache.SaveProcess(sentMessage.Id, new(e.Interaction, e.Message, this)); 
+        var sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
+        Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
     }
 
-    internal async Task SendMessageToUser(ComponentInteractionCreateEventArgs e)
+    internal async Task SendMessageToUser(ComponentInteractionCreateEventArgs eventArgs)
     {
         var newEmbList = new List<DiscordEmbed>();
-        var newEmb = GetBaseLogInfoEmbed(e.Message.Embeds[0].Description);
+        var newEmb = GetBaseLogInfoEmbed(eventArgs.Message.Embeds[0].Description);
         
-        foreach (var field in e.Message.Embeds[0].Fields)
+        foreach (var field in eventArgs.Message.Embeds[0].Fields)
         {
             newEmb.AddField(field.Name, field.Value, field.Inline);
         }
         newEmb = RemoveTsViewFields(newEmb);
         newEmbList.Add(newEmb);
-        newEmbList.AddRange(e.Message.Embeds);
+        newEmbList.AddRange(eventArgs.Message.Embeds);
         newEmbList.RemoveAt(1);
 
         var newMessage = new DiscordMessageBuilder();
         newMessage.AddEmbeds(newEmbList);
         newMessage.WithReply(log.MsgId, true);
-        await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
+        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
             new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Sent!")));
-        await e.Interaction.DeleteOriginalResponseAsync();
-        await newMessage.SendAsync(e.Channel);
+        await eventArgs.Interaction.DeleteOriginalResponseAsync();
+        await newMessage.SendAsync(eventArgs.Channel);
     }
 
     private DiscordEmbedBuilder GetBaseLogInfoEmbed(string description) 

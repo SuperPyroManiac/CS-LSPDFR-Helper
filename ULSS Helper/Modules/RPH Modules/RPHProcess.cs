@@ -61,8 +61,11 @@ internal class RPHProcess : SharedLogInfo
         return embed;
     }
 
-    internal async Task SendQuickLogInfoMessage(ContextMenuContext e)
+    internal async Task SendQuickLogInfoMessage(ContextMenuContext? context=null, ComponentInteractionCreateEventArgs? eventArgs=null)
     {
+        if (context == null && eventArgs == null)
+            throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
+        
         var linkedOutdated = log.Outdated.Select(i => i?.Link != null
                 ? $"[{i.DName}]({i.Link})"
                 : $"[{i?.DName}](https://www.google.com/search?q=lspdfr+{i.DName.Replace(" ", "+")})")
@@ -83,7 +86,9 @@ internal class RPHProcess : SharedLogInfo
         
         DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Quick RPH.log Info");
 
-        embed = AddTsViewFields(embed, e.TargetMessage.Id);
+        DiscordMessage targetMessage = context?.TargetMessage ?? eventArgs.Message;
+        ProcessCache cache = Program.Cache.GetProcessCache(targetMessage.Id);
+        embed = AddTsViewFields(embed, cache.OriginalMessage);
         
         if (outdated.Length >= 1024 || broken.Length >= 1024)
         {
@@ -113,27 +118,44 @@ internal class RPHProcess : SharedLogInfo
                 new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.RphQuickSendToUser, "Send To User", false,
                     new DiscordComponentEmoji("📨"))
             });
-            var sentOverflowMessage = await e.EditResponseAsync(overflow);
-            Program.Cache.SaveProcess(sentOverflowMessage.Id, new(e.Interaction, e.TargetMessage, this)); 
+            
+            DiscordMessage? sentOverflowMessage;
+            if (context != null)
+                sentOverflowMessage = await context.EditResponseAsync(overflow);
+            else
+                sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflow);
+                 
+            Program.Cache.SaveProcess(sentOverflowMessage.Id, new(cache.Interaction, cache.OriginalMessage, this));
         }
         else
         {
             embed = AddCommonFields(embed);
             
-            var sentMessage = await e.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed).AddComponents(new DiscordComponent[]
-            {
-                new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.RphGetDetailedInfo, "More Info", false, new DiscordComponentEmoji(723417756938010646)),
-                new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.RphQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
-            }));
-            Program.Cache.SaveProcess(sentMessage.Id, new(e.Interaction, e.TargetMessage, this)); 
-        }
+            DiscordWebhookBuilder webhookBuilder = new();
+            webhookBuilder.AddEmbed(embed);
+            webhookBuilder.AddComponents(
+                new DiscordComponent[]
+                {
+                    new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.RphGetDetailedInfo, "More Info", false, new DiscordComponentEmoji(723417756938010646)),
+                    new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.RphQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
+                }
+            );
+
+            DiscordMessage? sentMessage;
+            if (context != null)
+                sentMessage = await context.EditResponseAsync(webhookBuilder);
+            else
+                sentMessage = await eventArgs.Interaction.EditOriginalResponseAsync(webhookBuilder);
+                
+            Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
+         }
     }
 
-    internal async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs e)
+    internal async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs eventArgs)
     {
         var embed = GetBaseLogInfoEmbed("## Detailed RPH.log Info");
-        
-        embed = AddTsViewFields(embed, e.Message.Id);
+        ProcessCache cache = Program.Cache.GetProcessCache(eventArgs.Message.Id);
+        embed = AddTsViewFields(embed, cache.OriginalMessage);
         
         embed = AddCommonFields(embed);
 
@@ -142,36 +164,36 @@ internal class RPHProcess : SharedLogInfo
             embed.AddField($"```{error.Level.ToString()} ID: {error.ID}``` Troubleshooting Steps:", $"> {error.Solution.Replace("\n", "\n> ")}");
         }
 
-        await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
+        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
             new DiscordInteractionResponseBuilder().AddEmbed(embed).AddComponents(new DiscordComponent[]
             {
                 new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.RphDetailedSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
             }));
-        var sentMessage = await e.Interaction.GetFollowupMessageAsync(e.Message.Id);
-        Program.Cache.SaveProcess(sentMessage.Id, new(e.Interaction, e.Message, this)); 
+        var sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
+        Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
     }
     
-    internal async Task SendMessageToUser(ComponentInteractionCreateEventArgs e)
+    internal async Task SendMessageToUser(ComponentInteractionCreateEventArgs eventArgs)
     {
         var newEmbList = new List<DiscordEmbed>();
-        var newEmb = GetBaseLogInfoEmbed(e.Message.Embeds[0].Description);
+        var newEmb = GetBaseLogInfoEmbed(eventArgs.Message.Embeds[0].Description);
         
-        foreach (var field in e.Message.Embeds[0].Fields)
+        foreach (var field in eventArgs.Message.Embeds[0].Fields)
         {
             if (!field.Name.Contains(":bangbang:")) newEmb.AddField(field.Name, field.Value, field.Inline);
         }
         
         newEmb = RemoveTsViewFields(newEmb);
         newEmbList.Add(newEmb);
-        newEmbList.AddRange(e.Message.Embeds);
+        newEmbList.AddRange(eventArgs.Message.Embeds);
         newEmbList.RemoveAt(1);
 
         var newMessage = new DiscordMessageBuilder();
         newMessage.AddEmbeds(newEmbList);
         newMessage.WithReply(log.MsgId, true);
-        await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
+        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
             new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Sent!")));
-        await e.Interaction.DeleteOriginalResponseAsync();
-        await newMessage.SendAsync(e.Channel);
+        await eventArgs.Interaction.DeleteOriginalResponseAsync();
+        await newMessage.SendAsync(eventArgs.Channel);
     }
 }
