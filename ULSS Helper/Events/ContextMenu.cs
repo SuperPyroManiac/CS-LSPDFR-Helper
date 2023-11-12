@@ -27,10 +27,7 @@ internal class ContextMenu : ApplicationCommandModule
 
         //===//===//===////===//===//===////===//Attachment Checks/===////===//===//===////===//===//===//
         attachmentForAnalysis = null;
-        List<string> acceptedFileNames = new(new string[]{
-            "RagePluginHook",
-            "ELS"
-        });
+        List<string> acceptedFileNames = new(new string[]{ "RagePluginHook", "ELS" });
         string acceptedFileNamesString = string.Join(" or ", acceptedFileNames);
         string acceptedLogFileNamesString = "`" + string.Join(".log` or `", acceptedFileNames) + ".log`";
         SharedLogInfo sharedLogInfo = new();

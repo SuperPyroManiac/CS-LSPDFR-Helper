@@ -148,7 +148,7 @@ internal class RPHProcess : SharedLogInfo
                 sentMessage = await eventArgs.Interaction.EditOriginalResponseAsync(webhookBuilder);
                 
             Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
-         }
+        }
     }
 
     internal async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs eventArgs)

@@ -53,10 +53,16 @@ internal class Program
     }
     private static async Task MessageSent(DiscordClient s, MessageCreateEventArgs ctx)
     {
-        if (ctx.Author.Id == 478591527321337857 || ctx.Author.Id == 614191277528973428)
+        if (ctx.Author.Id is 478591527321337857 or 614191277528973428)
         {
-            var rNd = new Random().Next(4);
+            var rNd = new Random().Next(3);
             if (rNd == 1) await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":tarabruh:"));
+            if (rNd == 2) await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":middle_finger:"));
+            if (rNd == 3)
+            {
+                await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":tarabruh:"));
+                await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":middle_finger:"));
+            }
         }
     }
 }

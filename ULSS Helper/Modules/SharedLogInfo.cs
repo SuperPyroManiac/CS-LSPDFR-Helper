@@ -10,12 +10,7 @@ internal class SharedLogInfo
 {
     internal const string TsIcon = "https://cdn.discordapp.com/role-icons/517568233360982017/b69077cfafb6856a0752c863e1bb87f0.webp?size=128&quality=lossless";
     internal const string OptionValueSeparator = "&";
-    internal Guid Guid { get; }
-    
-    public SharedLogInfo()
-    {
-        Guid = Guid.NewGuid();
-    }
+    internal Guid Guid { get; } = Guid.NewGuid();
 
     internal async Task SendAttachmentErrorMessage(ContextMenuContext context, string message)
     {
@@ -30,7 +25,7 @@ internal class SharedLogInfo
     
     internal async Task SendSelectFileForAnalysisMessage(ContextMenuContext context, List<DiscordAttachment> acceptedAttachments)
     {
-        DiscordEmbedBuilder embed = BasicEmbeds.Warning("There were multiple attachments detected for log analysis. Please select the one you would like to be analyzed!");
+        DiscordEmbedBuilder embed = BasicEmbeds.Warning(" There were multiple attachments detected for log analysis!\r\n Please select the one you would like to be analyzed!");
         
         List<DiscordSelectComponentOption> selectOptions = new List<DiscordSelectComponentOption>();
         foreach(DiscordAttachment acceptedAttachment in acceptedAttachments)
