@@ -84,7 +84,11 @@ internal class RPHProcess : SharedLogInfo
         missmatch = string.Join(", ", missmatchList);
         library = string.Join(", ", libraryList);
         
-        DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Quick RPH.log Info");
+        string embedDescription = "## Quick RPH.log Info";
+        if (outdated.Length > 0 || broken.Length > 0) 
+            embedDescription += "\r\nUpdate or remove the following files in `GTAV/plugins/LSPDFR`.";
+
+        DiscordEmbedBuilder embed = GetBaseLogInfoEmbed(embedDescription);
 
         DiscordMessage targetMessage = context?.TargetMessage ?? eventArgs.Message;
         ProcessCache cache = Program.Cache.GetProcessCache(targetMessage.Id);
