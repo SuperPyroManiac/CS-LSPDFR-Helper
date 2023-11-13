@@ -58,7 +58,7 @@ internal class Program
             var rNd = new Random().Next(3);
             if (rNd == 1) await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":tarabruh:"));
             if (rNd == 2) await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":middle_finger:"));
-            if (rNd == 3)
+            if (rNd == 0)
             {
                 await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":tarabruh:"));
                 await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":middle_finger:"));

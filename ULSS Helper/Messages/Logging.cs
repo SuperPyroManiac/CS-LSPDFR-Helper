@@ -4,19 +4,33 @@ namespace ULSS_Helper.Messages;
 
 internal class Logging
 {
+    //Standard Logging
     internal static void ErrLog(string e)
     {
         var log = new DiscordMessageBuilder()
             .WithContent($"### Error Detected\r\n```{e}```")
-            .SendAsync(Program.Client.GetChannelAsync(1168638324131508316).Result);
+            .SendAsync(Program.Client.GetChannelAsync(1173304071084585050).Result);
     }
     
-    internal static void sendLog(ulong chLink, ulong msgSender, DiscordEmbedBuilder e)
+    internal static void SendLog(ulong chLink, ulong msgSender, DiscordEmbedBuilder e)
     {
         var log = new DiscordMessageBuilder()
-            .WithContent($"### Sent by: <@{msgSender}> - In: <#{chLink}>")
+            .WithContent($"**Sent by: <@{msgSender}> in: <#{chLink}>**")
             .WithEmbed(e)
-            .SendAsync(Program.Client.GetChannelAsync(1168638324131508316).Result);
+            .SendAsync(Program.Client.GetChannelAsync(1173304071084585050).Result);
     }
-    //internal static void sendMissing(ulong msgID, )
+    
+    //Public Logging
+    internal static void SendPubLog(DiscordEmbedBuilder e)
+    {
+        var log = new DiscordMessageBuilder()
+            .WithEmbed(e)
+            .SendAsync(Program.Client.GetChannelAsync(1173304117557477456).Result);
+    }
+    internal static void ReportPubLog(DiscordEmbedBuilder e)
+    {
+        var log = new DiscordMessageBuilder()
+            .WithEmbed(e)
+            .SendAsync(Program.Client.GetChannelAsync(547311030477520896).Result);
+    }
 }

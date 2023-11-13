@@ -80,7 +80,7 @@ internal class FindPluginMessages : FindBaseMessages
             InteractionResponseType.ChannelMessageWithSource,
             new DiscordInteractionResponseBuilder().AddEmbed(embed)
             );
-            Logging.sendLog(e.Interaction.Channel.Id, e.Interaction.User.Id, embed);
+            Logging.SendLog(e.Interaction.Channel.Id, e.Interaction.User.Id, embed);
             return;
         }
         else 
