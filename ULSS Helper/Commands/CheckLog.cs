@@ -18,6 +18,8 @@ public class CheckLog : ApplicationCommandModule
         var response = new DiscordInteractionResponseBuilder();
         response.IsEphemeral = true;
 
+        //===//===//===////===//===//===////===//Check Permissions//===////===//===//===////===//===//===//
+        
         if (ctx.Member.Roles.All(role => role.Id != 1134534059771572356))
         {
             if (ctx.Channel != ctx.Guild.GetChannel(672541961969729540) && ctx.Channel != ctx.Guild.GetChannel(692254906752696332))
@@ -31,14 +33,14 @@ public class CheckLog : ApplicationCommandModule
                 response.AddEmbed(BasicEmbeds.Error("There was an error here!\r\nPlease wait a minute and try again!"));
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
                 Logging.SendPubLog(BasicEmbeds.Error(
-                    $"Failed upload!\r\nSender: <@{ctx.Member.Id}>\r\nChannel: <#{ctx.Channel.Id}>\r\n\r\nReason denied: Failed to acquire log!"));
+                    $"Failed upload!\r\nSender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\nChannel: <#{ctx.Channel.Id}>\r\n\r\nReason denied: Failed to acquire log!"));
                 return;
             }
             if (attach.FileName != "RagePluginHook.log")
             {
-                response.AddEmbed(BasicEmbeds.Error("This is not a RagePluginHook.log file!"));
+                response.AddEmbed(BasicEmbeds.Error("Incorrect file name.\r\nPlease make sure your file is called `RagePluginHook.log`!"));
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
-                Logging.SendPubLog(BasicEmbeds.Warning($"Rejected upload!\r\nSender: <@{ctx.Member.Id}>\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize/1000}KB\r\n[Download Here]({attach.Url})\r\n\r\nReason denied: Incorrect name"));
+                Logging.SendPubLog(BasicEmbeds.Warning($"Rejected upload!\r\nSender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize/1000}KB\r\n[Download Here]({attach.Url})\r\n\r\nReason denied: Incorrect name"));
                 return;
             }
             if (attach.FileSize > 10000000)
@@ -49,9 +51,9 @@ public class CheckLog : ApplicationCommandModule
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
                 await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(1134534059771572356));
                 Logging.ReportPubLog(BasicEmbeds.Error(
-                    $"Possible bot abuse!\r\nUser has been blacklisted from bot use! (Dunce role added!)\r\nSender: <@{ctx.Member.Id}>\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})\r\n\r\nReason denied: File way too large! (Larger than 10 MB)"));
+                    $"Possible bot abuse!\r\nUser has been blacklisted from bot use! (Dunce role added!)\r\nSender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})\r\n\r\nReason denied: File way too large! (Larger than 10 MB)"));
                 Logging.SendPubLog(BasicEmbeds.Error(
-                    $"Rejected upload!\r\nSender: <@{ctx.Member.Id}>\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})\r\n\r\nReason denied: File way too large! (Larger than 10 MB)"));
+                    $"Rejected upload!\r\nSender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})\r\n\r\nReason denied: File way too large! (Larger than 10 MB)"));
                 return;
             }
             if (attach.FileSize > 3000000)
@@ -59,11 +61,13 @@ public class CheckLog : ApplicationCommandModule
                 response.AddEmbed(BasicEmbeds.Error("File is too big!\r\nAsk our TS to check this log!"));
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
                 Logging.SendPubLog(BasicEmbeds.Warning(
-                    $"Rejected upload!\r\nSender: <@{ctx.Member.Id}>\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})\r\n\r\nReason denied: File too large!"));
+                    $"Rejected upload!\r\nSender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})\r\n\r\nReason denied: File too large!"));
                 return;
             }
             await ctx.DeferAsync(true);
 
+            //===//===//===////===//===//===////===//Process Attachment//===////===//===//===////===//===//===//
+            
             try
             {
                 var log = RPHAnalyzer.Run(attach.Url);
@@ -81,7 +85,7 @@ public class CheckLog : ApplicationCommandModule
                 if (Settings.LSPDFRVer.Equals(log.LSPDFRVersion)) LSPDFRver = "\u2713";
                 if (Settings.RPHVer.Equals(log.RPHVersion)) RPHver = "\u2713";
 
-                var linkedOutdated = log.Outdated.Select(i => i?.Link != null
+                var linkedOutdated = log.Outdated.Select(i => !string.IsNullOrEmpty(i?.Link)
                         ? $"[{i.DName}]({i.Link})"
                         : $"[{i?.DName}](https://www.google.com/search?q=lspdfr+{i.DName.Replace(" ", "+")})")
                     .ToList();
@@ -160,7 +164,7 @@ public class CheckLog : ApplicationCommandModule
                     webhookBuilder.AddEmbed(embed);
                     await ctx.EditResponseAsync(webhookBuilder);
                     
-                    Logging.SendPubLog(BasicEmbeds.Info($"Successful upload!\r\nSender: <@{ctx.Member.Id}>\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})"));
+                    Logging.SendPubLog(BasicEmbeds.Info($"Successful upload!\r\nSender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})"));
                     return;
                 }
             }
@@ -170,14 +174,15 @@ public class CheckLog : ApplicationCommandModule
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
                 await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(1134534059771572356));
                 Logging.ReportPubLog(BasicEmbeds.Error(
-                    $"Possible bot abuse!\r\nUser has been blacklisted from bot use! (Dunce role added!)\r\nSender: <@{ctx.Member.Id}>\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})\r\n\r\nReason denied: Log caused an error! See <#1173304071084585050>"));
+                    $"Possible bot abuse!\r\nUser has been blacklisted from bot use! (Dunce role added!)\r\nSender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})\r\n\r\nReason denied: Log caused an error! See <#1173304071084585050>"));
                 Logging.SendPubLog(BasicEmbeds.Error(
-                    $"Rejected upload!\r\nSender: <@{ctx.Member.Id}>\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})\r\n\r\nReason denied: Log caused an error! See <#1173304071084585050>"));
+                    $"Rejected upload!\r\nSender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})\r\n\r\nReason denied: Log caused an error! See <#1173304071084585050>"));
                 Logging.ErrLog($"Public Log Error: {e}");
                 Console.WriteLine(e);
                 throw;
             }
 
+            //===//===//===////===//===//===////===//Has Dunce Role//===////===//===//===////===//===//===//
             response.AddEmbed(BasicEmbeds.Error(
                 "You are blacklisted from the bot!\r\nContact server staff in <#693303741071228938> if you think this is an error!"));
         }

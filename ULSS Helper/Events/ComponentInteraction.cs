@@ -3,6 +3,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Modules;
+using ULSS_Helper.Modules.ASI_Modules;
 using ULSS_Helper.Modules.ELS_Modules;
 using ULSS_Helper.Modules.RPH_Modules;
 using ULSS_Helper.Objects;
@@ -18,6 +19,9 @@ public class ComponentInteraction
     public const string ElsGetDetailedInfo = "ElsGetDetailedInfo";
     public const string ElsQuickSendToUser = "ElsQuickInfoSendToUser";
     public const string ElsDetailedSendToUser = "ElsDetailedSendToUser";
+    public const string AsiGetDetailedInfo = "AsiGetDetailedInfo";
+    public const string AsiQuickSendToUser = "AsiQuickInfoSendToUser";
+    public const string AsiDetailedSendToUser = "AsiDetailedSendToUser";
 
     internal static async Task HandleInteraction(DiscordClient s, ComponentInteractionCreateEventArgs eventArgs)
     {
@@ -30,6 +34,9 @@ public class ComponentInteraction
             ElsGetDetailedInfo,
             ElsQuickSendToUser,
             ElsDetailedSendToUser,
+            AsiGetDetailedInfo,
+            AsiQuickSendToUser,
+            AsiDetailedSendToUser
         };
         try
         {
@@ -66,21 +73,38 @@ public class ComponentInteraction
                         await elsProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                         return;
                     }
+                    if (targetAttachment.FileName.Contains("asiloader"))
+                    {
+                        await eventArgs.Interaction.DeferAsync(true);
+                        ASIProcess asiProcess = new ASIProcess();
+                        asiProcess.log = ASIAnalyzer.Run(targetAttachment.Url);
+                        asiProcess.log.MsgId = cache.OriginalMessage.Id;
+                        Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, asiProcess));
+                        await asiProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
+                        return;
+                    }
                 }
 
-                // RPH log reader buttons
+                //===//===//===////===//===//===////===//RPH Buttons/===////===//===//===////===//===//===//
                 if (eventArgs.Id is RphQuickSendToUser or RphDetailedSendToUser) 
                     await cache.RphProcess.SendMessageToUser(eventArgs);
                 
                 if (eventArgs.Id == RphGetDetailedInfo) 
                     await cache.RphProcess.SendDetailedInfoMessage(eventArgs);
             
-                // ELS log reader buttons
+                //===//===//===////===//===//===////===//ELS Buttons/===////===//===//===////===//===//===//
                 if (eventArgs.Id is ElsQuickSendToUser or ElsDetailedSendToUser)
                     await cache.ElsProcess.SendMessageToUser(eventArgs);
                 
                 if (eventArgs.Id == ElsGetDetailedInfo) 
                     await cache.ElsProcess.SendDetailedInfoMessage(eventArgs);
+                
+                //===//===//===////===//===//===////===//ASI Buttons/===////===//===//===////===//===//===//
+                if (eventArgs.Id is AsiQuickSendToUser or AsiDetailedSendToUser)
+                    await cache.AsiProcess.SendMessageToUser(eventArgs);
+                
+                if (eventArgs.Id == AsiGetDetailedInfo) 
+                    await cache.AsiProcess.SendDetailedInfoMessage(eventArgs);
             }
         }
         catch (Exception exception)

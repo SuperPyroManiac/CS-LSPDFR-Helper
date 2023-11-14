@@ -3,6 +3,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Modules;
+using ULSS_Helper.Modules.ASI_Modules;
 using ULSS_Helper.Modules.ELS_Modules;
 using ULSS_Helper.Modules.RPH_Modules;
 
@@ -27,7 +28,7 @@ internal class ContextMenu : ApplicationCommandModule
 
         //===//===//===////===//===//===////===//Attachment Checks/===////===//===//===////===//===//===//
         attachmentForAnalysis = null;
-        List<string> acceptedFileNames = new(new string[]{ "RagePluginHook", "ELS" });
+        List<string> acceptedFileNames = new(new string[]{ "RagePluginHook", "ELS", "asiloader" });
         string acceptedFileNamesString = string.Join(" or ", acceptedFileNames);
         string acceptedLogFileNamesString = "`" + string.Join(".log` or `", acceptedFileNames) + ".log`";
         SharedLogInfo sharedLogInfo = new();
@@ -95,6 +96,16 @@ internal class ContextMenu : ApplicationCommandModule
                 elsProcess.log.MsgId = context.TargetMessage.Id;
                 Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, elsProcess));
                 await elsProcess.SendQuickLogInfoMessage(context);
+                return;
+            }
+            if (attachmentForAnalysis.FileName.Contains("asiloader"))
+            {
+                await context.DeferAsync(true);
+                ASIProcess asiProcess = new ASIProcess();
+                asiProcess.log = ASIAnalyzer.Run(attachmentForAnalysis.Url);
+                asiProcess.log.MsgId = context.TargetMessage.Id;
+                Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, asiProcess));
+                await asiProcess.SendQuickLogInfoMessage(context);
                 return;
             }
         }

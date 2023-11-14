@@ -43,7 +43,7 @@ internal class Program
 
         Client.ModalSubmitted += ModalSubmit.HandleModalSubmit;
         Client.ComponentInteractionCreated += ComponentInteraction.HandleInteraction;
-        Client.MessageCreated += MessageSent;
+        //Client.MessageCreated += MessageSent;
         //TODO: Client.VoiceStateUpdated += VoiceChatManager.OnMemberJoinLeaveVC;
 
         Client.UseInteractivity(new InteractivityConfiguration());
@@ -55,7 +55,7 @@ internal class Program
     {
         if (ctx.Author.Id is 478591527321337857 or 614191277528973428)
         {
-            var rNd = new Random().Next(3);
+            var rNd = new Random().Next(4);
             if (rNd == 1) await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":tarabruh:"));
             if (rNd == 2) await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":middle_finger:"));
             if (rNd == 0)
