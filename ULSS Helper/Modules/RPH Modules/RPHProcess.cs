@@ -66,10 +66,11 @@ internal class RPHProcess : SharedLogInfo
         if (context == null && eventArgs == null)
             throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
         
-        var linkedOutdated = log.Outdated.Select(i => i?.Link != null
-                ? $"[{i.DName}]({i.Link})"
-                : $"[{i?.DName}](https://www.google.com/search?q=lspdfr+{i.DName.Replace(" ", "+")})")
-            .ToList();
+        var linkedOutdated = log.Outdated.Select(
+            plugin => (plugin?.Link != null && plugin.Link.StartsWith("https://"))
+                ? $"[{plugin.DName}]({plugin.Link})"
+                : $"[{plugin?.DName}](https://www.google.com/search?q=lspdfr+{plugin.DName.Replace(" ", "+")})"
+        ).ToList();
         
         currentList = log.Current.Select(i => i?.DName).ToList();
         var brokenList = log.Broken.Select(i => i?.DName).ToList();
