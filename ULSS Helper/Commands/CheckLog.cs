@@ -5,6 +5,7 @@ using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Modules;
 using ULSS_Helper.Modules.RPH_Modules;
+using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Commands;
 
@@ -150,8 +151,6 @@ public class CheckLog : ApplicationCommandModule
 
                     if (outdated.Length > 0) embed.AddField(":orange_circle:     **Update:**", "\r\n- " + outdated, true);
                     if (broken.Length > 0) embed.AddField(":red_circle:     **Remove:**", "\r\n- " + broken, true);
-                    if (missing.Length > 0) embed.AddField(":bangbang:  **Plugins not recognized:**", missing);
-                    if (missmatch.Length > 0) embed.AddField(":bangbang:  **Plugin version newer than DB:**", missmatch);
 
                     if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0)
                         embed.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
@@ -159,6 +158,9 @@ public class CheckLog : ApplicationCommandModule
                         embed.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **No plugin information available!**");
                     if (current.Length == 0 && outdated.Length == 0 && broken.Length == 0)
                         embed.AddField(":green_circle:     **No loaded plugins!**", "- No plugins detected from this log.");
+                    
+                    if (log.Errors.Any(x => x.Level == "CRITICAL"))
+                        embed.AddField(":bangbang:     **Critical Error Detected!**", "- You should post this log for our TS to check!");
                 
                     DiscordWebhookBuilder webhookBuilder = new();
                     webhookBuilder.AddEmbed(embed);
