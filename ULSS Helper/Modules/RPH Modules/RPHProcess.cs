@@ -185,7 +185,7 @@ internal class RPHProcess : SharedLogInfo
         
         foreach (var field in eventArgs.Message.Embeds[0].Fields)
         {
-            if (!field.Name.Contains(":bangbang:")) newEmb.AddField(field.Name, field.Value, field.Inline);
+            if (!field.Name.Contains(":bangbang:") && !field.Name.Contains("XTRA")) newEmb.AddField(field.Name, field.Value, field.Inline);
         }
         
         newEmb = RemoveTsViewFields(newEmb);

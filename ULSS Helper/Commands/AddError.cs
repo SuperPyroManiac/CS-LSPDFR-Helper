@@ -10,7 +10,7 @@ public class AddError : ApplicationCommandModule
 {
     [SlashCommand("AddError", "Adds an error to the database!")]
     
-    public async Task AddErrorCmd(InteractionContext ctx, [Option("Level", "Warning type (WARN, SEVERE, CRITICAL)")] Level lvl)
+    public async Task AddErrorCmd(InteractionContext ctx, [Option("Level", "Warning type (XTRA, WARN, SEVERE, CRITICAL)")] Level lvl)
     {
         if (ctx.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
         {

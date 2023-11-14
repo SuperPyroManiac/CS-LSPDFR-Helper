@@ -4,6 +4,8 @@ namespace ULSS_Helper.Objects;
 
 public enum Level
 {
+    [ChoiceName("XTRA")]
+    XTRA,
     [ChoiceName("WARN")]
     WARN,
     [ChoiceName("SEVERE")]
