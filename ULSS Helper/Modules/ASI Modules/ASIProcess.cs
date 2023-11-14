@@ -38,7 +38,7 @@ internal class ASIProcess : SharedLogInfo
 
         if (log.FailedASIFiles.Count != 0) 
         {
-            embed.AddField($":red_circle:     ASIs failed to load!", "\r\n- " + string.Join("\r\n- ", log.FailedASIFiles));
+            embed.AddField($":red_circle:     Some ASIs failed to load!", "Select `More Info` for details!");
         }
         else 
         {
@@ -74,7 +74,10 @@ internal class ASIProcess : SharedLogInfo
         
         foreach (var field in eventArgs.Message.Embeds[0].Fields)
         {
-            embed.AddField(field.Name, field.Value, field.Inline);
+            if (!field.Name.Contains("failed to load"))
+            {
+                embed.AddField(field.Name, field.Value, field.Inline);
+            }
         }
         
         if (LoadedASIFilesList.Length >= 1024 || FailedASIFilesList.Length >= 1024)
