@@ -14,8 +14,8 @@ internal class Logging
     
     internal static void SendLog(ulong chLink, ulong msgSender, DiscordEmbedBuilder e)
     {
+        e.AddField("Sent By", $"<@{msgSender}> in: <#{chLink}>");
         var log = new DiscordMessageBuilder()
-            .WithContent($"**Sent by: <@{msgSender}> in: <#{chLink}>**")
             .WithEmbed(e)
             .SendAsync(Program.Client.GetChannelAsync(1173304071084585050).Result);
     }
