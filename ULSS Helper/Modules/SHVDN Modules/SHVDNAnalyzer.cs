@@ -9,17 +9,11 @@ public class SHVDNAnalyzer
     internal static SHVDNLog Run(string attachmentUrl)
     {
         using var client = new WebClient();
-        client.DownloadFile(
-            attachmentUrl,
-            Path.Combine(
-                Directory.GetCurrentDirectory(), 
-                "SHVDNLogs", 
-                Settings.ShvdnLogNamer()
-            )
-        );
+        string fullFilePath = Settings.GenerateNewFilePath(FileType.SHVDN_LOG);
+        client.DownloadFile(attachmentUrl, fullFilePath);
 
         var log = new SHVDNLog();
-        var wholeLog = File.ReadAllText(Settings.ShvdnLogPath);
+        var wholeLog = File.ReadAllText(fullFilePath);
         log.Scripts = new List<string>();
         log.MissingDepends = new List<string>();
         

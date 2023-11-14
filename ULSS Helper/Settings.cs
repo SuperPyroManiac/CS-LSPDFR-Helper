@@ -1,23 +1,12 @@
 ﻿namespace ULSS_Helper;
 using System.IO;
+using ULSS_Helper.Objects;
 
 internal static class Settings
 {
     internal static readonly string Token = GetToken();
     internal static readonly string dbpath = Path.Combine(Directory.GetCurrentDirectory(), "ULSSDB.db");
     internal static string DbLocation = $"Data Source={dbpath};Version=3;";
-    internal static string RphLogPath = Path.Combine(Directory.GetCurrentDirectory(), "RPHLogs", "RPHLog-1.log");
-    internal static string ElsLogPath = Path.Combine(Directory.GetCurrentDirectory(), "ELSLogs", "ELSLog-1.log");
-    internal static string AsiLogPath = Path.Combine(Directory.GetCurrentDirectory(), "ASILogs", "ASILog-1.log");
-    internal static string ShvdnLogPath = Path.Combine(Directory.GetCurrentDirectory(), "SHVDNLogs", "SHVDNLog-1.log");
-    internal static string DbBackupPath = Path.Combine(Directory.GetCurrentDirectory(), "Backups", "DB-1.db");
-    private static string LogName = "ZehFirstLog";
-    private static int RPHLogNumber;
-    private static int ELSLogNumber;
-    private static int ASILogNumber;
-    private static int SHVDNLogNumber;
-    private static int DbNameNumber;
-
     internal static string RPHVer = "1.106.1330.16514";
     internal static string LSPDFRVer = "0.4.8678.25591";
     internal static string GTAVer = "1.0.3028.0";
@@ -42,41 +31,43 @@ internal static class Settings
         return 517568233360982017;
     }
     
-    internal static string RphLogNamer()
+    internal static string GenerateNewFilePath(FileType fileType)
     {
-        RPHLogNumber++;
-        LogName = $"RPHLog-{RPHLogNumber}.log";
-        RphLogPath = Path.Combine(Directory.GetCurrentDirectory(), "RPHLogs", LogName);
-        return LogName;
-    }
-    internal static string ElsLogNamer()
-    {
-        ELSLogNumber++;
-        LogName = $"ELSLog-{ELSLogNumber}.log";
-        ElsLogPath = Path.Combine(Directory.GetCurrentDirectory(), "ELSLogs", LogName);
-        return LogName;
-    }
-    internal static string AsiLogNamer()
-    {
-        ASILogNumber++;
-        LogName = $"ASILog-{ASILogNumber}.log";
-        AsiLogPath = Path.Combine(Directory.GetCurrentDirectory(), "ASILogs", LogName);
-        return LogName;
-    }
-    internal static string ShvdnLogNamer()
-    {
-        SHVDNLogNumber++;
-        LogName = $"SHVDNLog-{ASILogNumber}.log";
-        ShvdnLogPath = Path.Combine(Directory.GetCurrentDirectory(), "SHVDNLogs", LogName);
-        return LogName;
-    }
-    
-    internal static string DbBackupNamer()
-    {
-        DbNameNumber++;
-        LogName = $"DB-{DbNameNumber}.db";
-        DbBackupPath = Path.Combine(Directory.GetCurrentDirectory(), "Backups", LogName);
-        return DbBackupPath;
+        string fileName;
+        DateTime currentDateTime = DateTime.Now;
+        string formattedDateTime = currentDateTime.ToString("yyyy-MM-dd_HH-mm-ss-fff");
+
+        switch(fileType)
+        {
+            case FileType.RPH_LOG:
+                fileName = $"RagePluginHook_{formattedDateTime}.log";
+                return Path.Combine(GetOrCreateFolder("RPHLogs"), fileName);
+
+            case FileType.ELS_LOG:
+                fileName = $"ELS_{formattedDateTime}.log";
+                return Path.Combine(GetOrCreateFolder("ELSLogs"), fileName);
+
+            case FileType.ASI_LOG:
+                fileName = $"asiloader_{formattedDateTime}.log";
+                return Path.Combine(GetOrCreateFolder("ASILogs"), fileName);
+
+            case FileType.SHVDN_LOG:
+                fileName = $"ScriptHookVDotNet_{formattedDateTime}.log";
+                return Path.Combine(GetOrCreateFolder( "SHVDNLogs"), fileName);
+
+            case FileType.DB_BACKUP:
+                fileName = $"ULSSDB_{formattedDateTime}.db";
+                return Path.Combine(GetOrCreateFolder( "Backups"), fileName);
+
+            default:
+                throw new ArgumentException("Invalid FileType!");
+        }
     }
 
+    private static string GetOrCreateFolder(string folder)
+    {
+        string path = Path.Combine(Directory.GetCurrentDirectory(), folder);
+        if (!Path.Exists(path)) Directory.CreateDirectory(path);
+        return path;
+    }
 }

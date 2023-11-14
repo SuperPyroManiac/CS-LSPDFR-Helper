@@ -18,6 +18,6 @@ internal class Timer
         th.Start();
         
         //Backup DB
-        File.Copy(Settings.dbpath, Settings.DbBackupNamer());
+        File.Copy(Settings.dbpath, Settings.GenerateNewFilePath(FileType.DB_BACKUP));
     }
 }

@@ -9,17 +9,11 @@ public class ASIAnalyzer
     internal static ASILog Run(string attachmentUrl)
     {
         using var client = new WebClient();
-        client.DownloadFile(
-            attachmentUrl,
-            Path.Combine(
-                Directory.GetCurrentDirectory(), 
-                "ASILogs", 
-                Settings.AsiLogNamer()
-            )
-        );
+        string fullFilePath = Settings.GenerateNewFilePath(FileType.ASI_LOG);
+        client.DownloadFile(attachmentUrl, fullFilePath);
 
         var log = new ASILog();
-        var wholeLog = File.ReadAllText(Settings.AsiLogPath);
+        var wholeLog = File.ReadAllText(path: fullFilePath);
         log.LoadedASIFiles = new List<string>();
         log.FailedASIFiles = new List<string>();
         

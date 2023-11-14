@@ -9,16 +9,10 @@ public class ELSAnalyzer
     internal static ELSLog Run(string attachmentUrl)
     {
         using var client = new WebClient();
-        client.DownloadFile(
-            attachmentUrl,
-            Path.Combine(
-                Directory.GetCurrentDirectory(), 
-                "ELSLogs", 
-                Settings.ElsLogNamer()
-            )
-        );
+        string fullFilePath = Settings.GenerateNewFilePath(FileType.ELS_LOG);
+        client.DownloadFile(attachmentUrl, fullFilePath);
         var log = new ELSLog();
-        var wholeLog = File.ReadAllText(Settings.ElsLogPath);
+        var wholeLog = File.ReadAllText(fullFilePath);
         log.ValidElsVcfFiles = new List<string>();
         log.InvalidElsVcfFiles = new List<string>();
 
