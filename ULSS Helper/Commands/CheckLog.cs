@@ -159,8 +159,8 @@ public class CheckLog : ApplicationCommandModule
                     if (current.Length == 0 && outdated.Length == 0 && broken.Length == 0)
                         embed.AddField(":green_circle:     **No loaded plugins!**", "- No plugins detected from this log.");
                     
-                    if (log.Errors.Any(x => x.Level == "CRITICAL"))
-                        embed.AddField(":bangbang:     **Critical Error Detected!**", "- You should post this log for our TS to check!");
+                    if (log.Errors.Any(x => x.Level == "CRITICAL") || log.Errors.Any(x => x.Level == "SEVERE"))
+                        embed.AddField(":bangbang:     **Serious Error Detected!**", "- You should post this log for our TS to check!");
                 
                     DiscordWebhookBuilder webhookBuilder = new();
                     webhookBuilder.AddEmbed(embed);
