@@ -38,20 +38,20 @@ internal class FindBaseMessages
                         diffText += $"{oldLine}\n";
                         continue;
                     }
-                    if (!string.IsNullOrEmpty(oldLine) && !string.IsNullOrEmpty(newLine))
+                    if (oldLine != null && newLine != null)
                     {
                         diffText += $"- {oldLine}\n";
                         diffText += $"+ {newLine}\n";
                         countChangedLines++;
                         continue;
                     }
-                    if (string.IsNullOrEmpty(newLine))
+                    if (newLine != null)
                     {
                         diffText += $"- {oldLine}\n";
                         countChangedLines++;
                         continue;
                     }
-                    if (string.IsNullOrEmpty(oldLine))
+                    if (oldLine != null)
                     {
                         diffText += $"+ {newLine}\n";
                         countChangedLines++;
