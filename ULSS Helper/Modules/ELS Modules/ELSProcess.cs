@@ -11,6 +11,20 @@ namespace ULSS_Helper.Modules.ELS_Modules;
 internal class ELSProcess : SharedLogInfo
 {
     internal ELSLog log;
+    
+    private DiscordEmbedBuilder GetBaseLogInfoEmbed(string description) 
+    {
+        return new DiscordEmbedBuilder
+        {
+            Description = description,
+            Color = new DiscordColor(243, 154, 18),
+            Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon },
+            Footer = new DiscordEmbedBuilder.EmbedFooter
+            {
+                Text = $"ELS Version: {log.ElsVersion} - AdvancedHookV installed: {(log.AdvancedHookVFound ? "\u2713" : "X")}"
+            }
+        };
+    }
 
     internal async Task SendQuickLogInfoMessage(ContextMenuContext? context=null, ComponentInteractionCreateEventArgs? eventArgs=null)
     {
@@ -140,19 +154,5 @@ internal class ELSProcess : SharedLogInfo
             new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Sent!")));
         await eventArgs.Interaction.DeleteOriginalResponseAsync();
         await newMessage.SendAsync(eventArgs.Channel);
-    }
-
-    private DiscordEmbedBuilder GetBaseLogInfoEmbed(string description) 
-    {
-        return new DiscordEmbedBuilder
-        {
-            Description = description,
-            Color = new DiscordColor(243, 154, 18),
-            Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon },
-            Footer = new DiscordEmbedBuilder.EmbedFooter
-            {
-                Text = $"ELS Version: {log.ElsVersion} - AdvancedHookV installed: {(log.AdvancedHookVFound ? "\u2713" : "X")}"
-            }
-        };
     }
 }
