@@ -1,3 +1,5 @@
+using System.Data.SqlTypes;
+using System.Diagnostics;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
