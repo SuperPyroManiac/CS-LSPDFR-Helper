@@ -43,7 +43,7 @@ internal class ELSProcess : SharedLogInfo
         }
         else 
         {
-            embed.AddField($":green_circle:     No faulty VCF files detected!", "Seems like ELS loaded fine.");
+            embed.AddField($":green_circle:     No faulty VCF files detected!", "Seems like ELS loaded fine. If ELS still is not working correctly, make sure to check the asiloader.log as well!");
         }
 
         if (log.TotalAmountElsModels != null) 

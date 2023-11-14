@@ -32,7 +32,15 @@ public class FindErrors : ApplicationCommandModule
         }
         try 
         {
-            Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info($"Ran FindErrors with: {errId}, {regex}, {solution}"));
+            string searchParamsListForLog = FindErrorMessages.GetSearchParamsList(
+                "Ran 'FindErrors' command with the following parameters:", 
+                errId,
+                regex,
+                solution,
+                level,
+                exactMatch
+            );
+            Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info(searchParamsListForLog));
             
             List<Error> errorsFound = Database.FindErrors(errId, regex, solution, level, exactMatch);
             

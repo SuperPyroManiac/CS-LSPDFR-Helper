@@ -14,7 +14,7 @@ public class EditError : ApplicationCommandModule
     public async Task EditErrorCmd(
         InteractionContext ctx, 
         [Option("ID", "Errors ID!")] string eI, 
-        [Option("New_Level", "Warning type (WARN, SEVERE")] Level? lvl=null
+        [Option("New_Level", "Warning type (WARN, SEVERE, CRITICAL)")] Level? lvl=null
     )
     {
         if (ctx.Member.Roles.All(role => role.Id != Settings.GetTSRole()))

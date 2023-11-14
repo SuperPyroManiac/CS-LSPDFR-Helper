@@ -66,10 +66,11 @@ internal class RPHProcess : SharedLogInfo
         if (context == null && eventArgs == null)
             throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
         
-        var linkedOutdated = log.Outdated.Select(i => !string.IsNullOrEmpty(i?.Link)
-                ? $"[{i.DName}]({i.Link})"
-                : $"[{i?.DName}](https://www.google.com/search?q=lspdfr+{i.DName.Replace(" ", "+")})")
-            .ToList();
+        var linkedOutdated = log.Outdated.Select(
+            plugin => (plugin?.Link != null && plugin.Link.StartsWith("https://"))
+                ? $"[{plugin.DName}]({plugin.Link})"
+                : $"[{plugin?.DName}](https://www.google.com/search?q=lspdfr+{plugin.DName.Replace(" ", "+")})"
+        ).ToList();
         
         currentList = log.Current.Select(i => i?.DName).ToList();
         var brokenList = log.Broken.Select(i => i?.DName).ToList();
@@ -84,7 +85,11 @@ internal class RPHProcess : SharedLogInfo
         missmatch = string.Join(", ", missmatchList);
         library = string.Join(", ", libraryList);
         
-        DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Quick RPH.log Info");
+        string embedDescription = "## Quick RPH.log Info";
+        if (outdated.Length > 0 || broken.Length > 0) 
+            embedDescription += "\r\nUpdate or remove the following files in `GTAV/plugins/LSPDFR`.";
+
+        DiscordEmbedBuilder embed = GetBaseLogInfoEmbed(embedDescription);
 
         DiscordMessage targetMessage = context?.TargetMessage ?? eventArgs.Message;
         ProcessCache cache = Program.Cache.GetProcessCache(targetMessage.Id);

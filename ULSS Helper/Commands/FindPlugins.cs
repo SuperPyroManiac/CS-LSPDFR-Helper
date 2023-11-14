@@ -37,7 +37,15 @@ public class FindPlugins : ApplicationCommandModule
         
         try 
         {
-            Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info($"Ran FindPlugins with: {plugId}, {plugName}, {plugDName}"));
+            string searchParamsListForLog = FindPluginMessages.GetSearchParamsList(
+                "Ran 'FindPlugins' command with the following parameters:", 
+                plugName, 
+                plugDName, 
+                plugId, 
+                plugState, 
+                exactMatch
+            );
+            Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info(searchParamsListForLog));
             
             List<Plugin> pluginsFound = Database.FindPlugins(plugName, plugDName, plugId, plugState, exactMatch);
 
