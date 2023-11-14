@@ -6,6 +6,7 @@ using ULSS_Helper.Modules;
 using ULSS_Helper.Modules.ASI_Modules;
 using ULSS_Helper.Modules.ELS_Modules;
 using ULSS_Helper.Modules.RPH_Modules;
+using ULSS_Helper.Modules.SHVDN_Modules;
 
 namespace ULSS_Helper.Events;
 
@@ -28,7 +29,7 @@ internal class ContextMenu : ApplicationCommandModule
 
         //===//===//===////===//===//===////===//Attachment Checks/===////===//===//===////===//===//===//
         attachmentForAnalysis = null;
-        List<string> acceptedFileNames = new(new string[]{ "RagePluginHook", "ELS", "asiloader" });
+        List<string> acceptedFileNames = new(new string[]{ "RagePluginHook", "ELS", "asiloader", "ScriptHookVDotNet" });
         string acceptedFileNamesString = string.Join(" or ", acceptedFileNames);
         string acceptedLogFileNamesString = "`" + string.Join(".log` or `", acceptedFileNames) + ".log`";
         SharedLogInfo sharedLogInfo = new();
@@ -106,6 +107,16 @@ internal class ContextMenu : ApplicationCommandModule
                 asiProcess.log.MsgId = context.TargetMessage.Id;
                 Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, asiProcess));
                 await asiProcess.SendQuickLogInfoMessage(context);
+                return;
+            }
+            if (attachmentForAnalysis.FileName.Contains("ScriptHookVDotNet"))
+            {
+                await context.DeferAsync(true);
+                SHVDNProcess shvdnProcess = new SHVDNProcess();
+                shvdnProcess.log = SHVDNAnalyzer.Run(attachmentForAnalysis.Url);
+                shvdnProcess.log.MsgId = context.TargetMessage.Id;
+                Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, shvdnProcess));
+                await shvdnProcess.SendQuickLogInfoMessage(context);
                 return;
             }
         }

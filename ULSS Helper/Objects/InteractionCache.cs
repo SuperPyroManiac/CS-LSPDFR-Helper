@@ -3,6 +3,7 @@ using ULSS_Helper.Modules;
 using ULSS_Helper.Modules.ASI_Modules;
 using ULSS_Helper.Modules.ELS_Modules;
 using ULSS_Helper.Modules.RPH_Modules;
+using ULSS_Helper.Modules.SHVDN_Modules;
 
 namespace ULSS_Helper.Objects;
 
@@ -13,6 +14,7 @@ internal class ProcessCache
     internal ELSProcess? ElsProcess { get; }
     internal RPHProcess? RphProcess { get; }
     internal ASIProcess? AsiProcess { get; }
+    internal SHVDNProcess? ShvdnProcess { get; }
 
     internal ProcessCache(DiscordInteraction interaction, DiscordMessage originalMessage, ELSProcess elsProcess)
     {
@@ -31,6 +33,12 @@ internal class ProcessCache
         Interaction = interaction;
         OriginalMessage = originalMessage;
         AsiProcess = asiProcess;
+    }
+    internal ProcessCache(DiscordInteraction interaction, DiscordMessage originalMessage, SHVDNProcess shvdnProcess)
+    {
+        Interaction = interaction;
+        OriginalMessage = originalMessage;
+        ShvdnProcess = shvdnProcess;
     }
     internal ProcessCache(DiscordInteraction interaction, DiscordMessage originalMessage)
     {

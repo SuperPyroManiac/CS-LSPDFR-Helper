@@ -9,11 +9,13 @@ internal static class Settings
     internal static string RphLogPath = Path.Combine(Directory.GetCurrentDirectory(), "RPHLogs", "RPHLog-1.log");
     internal static string ElsLogPath = Path.Combine(Directory.GetCurrentDirectory(), "ELSLogs", "ELSLog-1.log");
     internal static string AsiLogPath = Path.Combine(Directory.GetCurrentDirectory(), "ASILogs", "ASILog-1.log");
+    internal static string ShvdnLogPath = Path.Combine(Directory.GetCurrentDirectory(), "SHVDNLogs", "SHVDNLog-1.log");
     internal static string DbBackupPath = Path.Combine(Directory.GetCurrentDirectory(), "Backups", "DB-1.db");
     private static string LogName = "ZehFirstLog";
     private static int RPHLogNumber;
     private static int ELSLogNumber;
     private static int ASILogNumber;
+    private static int SHVDNLogNumber;
     private static int DbNameNumber;
 
     internal static string RPHVer = "1.106.1330.16514";
@@ -59,6 +61,13 @@ internal static class Settings
         ASILogNumber++;
         LogName = $"ASILog-{ASILogNumber}.log";
         AsiLogPath = Path.Combine(Directory.GetCurrentDirectory(), "ASILogs", LogName);
+        return LogName;
+    }
+    internal static string ShvdnLogNamer()
+    {
+        SHVDNLogNumber++;
+        LogName = $"SHVDNLog-{ASILogNumber}.log";
+        ShvdnLogPath = Path.Combine(Directory.GetCurrentDirectory(), "SHVDNLogs", LogName);
         return LogName;
     }
     

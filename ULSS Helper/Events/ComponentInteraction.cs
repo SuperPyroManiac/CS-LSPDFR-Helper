@@ -6,6 +6,7 @@ using ULSS_Helper.Modules;
 using ULSS_Helper.Modules.ASI_Modules;
 using ULSS_Helper.Modules.ELS_Modules;
 using ULSS_Helper.Modules.RPH_Modules;
+using ULSS_Helper.Modules.SHVDN_Modules;
 using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Events;
@@ -22,6 +23,9 @@ public class ComponentInteraction
     public const string AsiGetDetailedInfo = "AsiGetDetailedInfo";
     public const string AsiQuickSendToUser = "AsiQuickInfoSendToUser";
     public const string AsiDetailedSendToUser = "AsiDetailedSendToUser";
+    public const string ShvdnGetDetailedInfo = "ShvdnGetDetailedInfo";
+    public const string ShvdnQuickSendToUser = "ShvdnQuickInfoSendToUser";
+    public const string ShvdnDetailedSendToUser = "ShvdnDetailedSendToUser";
 
     internal static async Task HandleInteraction(DiscordClient s, ComponentInteractionCreateEventArgs eventArgs)
     {
@@ -36,7 +40,10 @@ public class ComponentInteraction
             ElsDetailedSendToUser,
             AsiGetDetailedInfo,
             AsiQuickSendToUser,
-            AsiDetailedSendToUser
+            AsiDetailedSendToUser,
+            ShvdnGetDetailedInfo,
+            ShvdnQuickSendToUser,
+            ShvdnDetailedSendToUser
         };
         try
         {
@@ -83,6 +90,16 @@ public class ComponentInteraction
                         await asiProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                         return;
                     }
+                    if (targetAttachment.FileName.Contains("ScriptHookVDotNet"))
+                    {
+                        await eventArgs.Interaction.DeferAsync(true);
+                        SHVDNProcess shvdnProcess = new SHVDNProcess();
+                        shvdnProcess.log = SHVDNAnalyzer.Run(targetAttachment.Url);
+                        shvdnProcess.log.MsgId = cache.OriginalMessage.Id;
+                        Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, shvdnProcess));
+                        await shvdnProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
+                        return;
+                    }
                 }
 
                 //===//===//===////===//===//===////===//RPH Buttons/===////===//===//===////===//===//===//
@@ -105,6 +122,13 @@ public class ComponentInteraction
                 
                 if (eventArgs.Id == AsiGetDetailedInfo) 
                     await cache.AsiProcess.SendDetailedInfoMessage(eventArgs);
+                
+                //===//===//===////===//===//===////===//SHVDN Buttons/===////===//===//===////===//===//===//
+                if (eventArgs.Id is ShvdnQuickSendToUser or ShvdnDetailedSendToUser)
+                    await cache.ShvdnProcess.SendMessageToUser(eventArgs);
+                
+                if (eventArgs.Id == ShvdnGetDetailedInfo) 
+                    await cache.ShvdnProcess.SendDetailedInfoMessage(eventArgs);
             }
         }
         catch (Exception exception)
