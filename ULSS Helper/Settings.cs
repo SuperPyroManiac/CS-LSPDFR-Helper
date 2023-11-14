@@ -1,5 +1,6 @@
 ﻿namespace ULSS_Helper;
 using System.IO;
+using ULSS_Helper.Objects;
 
 internal static class Settings
 {
@@ -69,13 +70,4 @@ internal static class Settings
         if (!Path.Exists(path)) Directory.CreateDirectory(path);
         return path;
     }
-}
-
-internal enum FileType
-{
-    RPH_LOG,
-    ELS_LOG,
-    ASI_LOG,
-    SHVDN_LOG,
-    DB_BACKUP
 }
