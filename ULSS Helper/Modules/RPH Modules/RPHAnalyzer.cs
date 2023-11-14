@@ -11,20 +11,14 @@ public class RPHAnalyzer
     internal static RPHLog Run(string attachmentUrl)
     {
         using var client = new WebClient();
-        client.DownloadFile(
-            attachmentUrl,
-            Path.Combine(
-                Directory.GetCurrentDirectory(), 
-                "RPHLogs", 
-                Settings.RphLogNamer()
-            )
-        );
+        string fullFilePath = Settings.GenerateNewFilePath(FileType.RPH_LOG);
+        client.DownloadFile(attachmentUrl, fullFilePath);
 
         var pluginData = Database.LoadPlugins();
         var errorData = Database.LoadErrors();
         var log = new RPHLog();
-        var wholeLog = File.ReadAllText(Settings.RphLogPath);
-        var reader = File.ReadAllLines(Settings.RphLogPath);
+        var wholeLog = File.ReadAllText(fullFilePath);
+        var reader = File.ReadAllLines(fullFilePath);
 
         log.Current = new List<Plugin?>();
         log.Outdated = new List<Plugin?>();
