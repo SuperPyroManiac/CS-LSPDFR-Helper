@@ -2,6 +2,7 @@ using System.Data.SqlTypes;
 using System.Diagnostics;
 using DSharpPlus;
 using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
@@ -70,114 +71,9 @@ public class CheckLog : ApplicationCommandModule
             await ctx.DeferAsync(true);
 
             //===//===//===////===//===//===////===//Process Attachment//===////===//===//===////===//===//===//
-            
             try
             {
-                var log = RPHAnalyzer.Run(attach.Url);
-                string current;
-                List<string?> currentList;
-                string outdated;
-                string broken;
-                string missing;
-                string library;
-                string missmatch;
-                string GTAver = "X";
-                string LSPDFRver = "X";
-                string RPHver = "X";
-                if (Settings.GTAVer.Equals(log.GTAVersion)) GTAver = "\u2713";
-                if (Settings.LSPDFRVer.Equals(log.LSPDFRVersion)) LSPDFRver = "\u2713";
-                if (Settings.RPHVer.Equals(log.RPHVersion)) RPHver = "\u2713";
-
-                var linkedOutdated = log.Outdated.Select(i => !string.IsNullOrEmpty(i?.Link)
-                        ? $"[{i.DName}]({i.Link})"
-                        : $"[{i?.DName}](https://www.google.com/search?q=lspdfr+{i.DName.Replace(" ", "+")})")
-                    .ToList();
-                currentList = log.Current.Select(i => i?.DName).ToList();
-                var brokenList = log.Broken.Select(i => i?.DName).ToList();
-                var missingList = log.Missing.Select(i => i?.Name).ToList();
-                var missmatchList = log.Missmatch.Select(i => i?.Name).ToList();
-                var libraryList = log.Library.Select(i => i?.DName).ToList();
-                brokenList.AddRange(libraryList);
-                current = string.Join("\r\n- ", currentList);
-                outdated = string.Join("\r\n- ", linkedOutdated);
-                broken = string.Join("\r\n- ", brokenList);
-                missing = string.Join(", ", missingList);
-                missmatch = string.Join(", ", missmatchList);
-                library = string.Join(", ", libraryList);
-
-                if (log.Missing.Count > 0 || log.Missmatch.Count > 0) 
-                {
-                    RPHProcess rphProcess = new RPHProcess();
-                    rphProcess.log = log;
-                    rphProcess.SendUnknownPluginsLog(ctx.Channel.Id, ctx.Member.Id);
-                }
-
-                var embed = new DiscordEmbedBuilder
-                {
-                    Description = "## ULSS Log Reader\r\n*For detailed info, ask for help!*",
-                    Color = new DiscordColor(243, 154, 18),
-                    Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = SharedLogInfo.TsIcon },
-                    Footer = new DiscordEmbedBuilder.EmbedFooter
-                    {
-                        Text = $"GTA: {GTAver} - RPH: {RPHver}" +
-                               $" - LSPDFR: {LSPDFRver} - Generated in discord.gg/ulss"
-                    }
-                };
-
-                if (outdated.Length >= 1024 || broken.Length >= 1024)
-                {
-                    embed.AddField(":warning:     **Message Too Big**",
-                        "\r\nToo many plugins to display in a single message.\r\nFor detailed info, ask for help!",
-                        true);
-                    if (missing.Length > 0) embed.AddField(":bangbang:  **Plugins not recognized:**", missing, false);
-                    var embed2 = new DiscordEmbedBuilder
-                    {
-                        Title = ":orange_circle:     **Update:**",
-                        Description = "\r\n- " + outdated,
-                        Color = new DiscordColor(243, 154, 18),
-                        Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = SharedLogInfo.TsIcon }
-                    };
-                    var embed3 = new DiscordEmbedBuilder
-                    {
-                        Title = ":red_circle:     **Remove:**",
-                        Description = "\r\n- " + broken,
-                        Color = new DiscordColor(243, 154, 18),
-                        Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = SharedLogInfo.TsIcon }
-                    };
-
-                    var overflow = new DiscordWebhookBuilder();
-                    overflow.AddEmbed(embed);
-                    if (outdated.Length != 0) overflow.AddEmbed(embed2);
-                    if (broken.Length != 0) overflow.AddEmbed(embed3);
-                    await ctx.EditResponseAsync(overflow);
-
-                }
-                else
-                {
-                    if (current.Length != 0 && outdated.Length == 0 && broken.Length != 0) outdated = "**None**";
-                    if (current.Length != 0 && outdated.Length != 0 && broken.Length == 0) broken = "**None**";
-                    if ((current.Length == 0 && outdated.Length != 0) || broken.Length != 0) current = "**None**";
-
-                    if (outdated.Length > 0) embed.AddField(":orange_circle:     **Update:**", "\r\n- " + outdated, true);
-                    if (broken.Length > 0) embed.AddField(":red_circle:     **Remove:**", "\r\n- " + broken, true);
-
-                    if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0)
-                        embed.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
-                    if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0 && string.IsNullOrEmpty(log.LSPDFRVersion))
-                        embed.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **No plugin information available!**");
-                    if (current.Length == 0 && outdated.Length == 0 && broken.Length == 0)
-                        embed.AddField(":green_circle:     **No loaded plugins!**", "- No plugins detected from this log.");
-                    
-                    if (log.Errors.Any(x => x.Level == "CRITICAL") || log.Errors.Any(x => x.Level == "SEVERE"))
-                        embed.AddField(":bangbang:     **Serious Error Detected!**", "- You should post this log for our TS to check!");
-                
-                    DiscordWebhookBuilder webhookBuilder = new();
-                    webhookBuilder.AddEmbed(embed);
-                    await ctx.EditResponseAsync(webhookBuilder);
-                    
-                    Logging.SendPubLog(BasicEmbeds.Info($"Successful upload!\r\nSender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})"));
-                    return;
-                }
+                await CheckLogMessage(ctx, attach);
             }
             catch (Exception e)
             {
@@ -196,6 +92,119 @@ public class CheckLog : ApplicationCommandModule
             //===//===//===////===//===//===////===//Has Dunce Role//===////===//===//===////===//===//===//
             response.AddEmbed(BasicEmbeds.Error(
                 "You are blacklisted from the bot!\r\nContact server staff in <#693303741071228938> if you think this is an error!"));
+        }
+    }
+
+    internal async Task CheckLogMessage(InteractionContext? context, DiscordAttachment attach)
+    {
+        var log = RPHAnalyzer.Run(attach.Url);
+        string current;
+        List<string?> currentList;
+        string outdated;
+        string broken;
+        string missing;
+        string library;
+        string missmatch;
+        string GTAver = "X";
+        string LSPDFRver = "X";
+        string RPHver = "X";
+        if (Settings.GTAVer.Equals(log.GTAVersion)) GTAver = "\u2713";
+        if (Settings.LSPDFRVer.Equals(log.LSPDFRVersion)) LSPDFRver = "\u2713";
+        if (Settings.RPHVer.Equals(log.RPHVersion)) RPHver = "\u2713";
+
+        var linkedOutdated = log.Outdated.Select(i => !string.IsNullOrEmpty(i?.Link)
+                ? $"[{i.DName}]({i.Link})"
+                : $"[{i?.DName}](https://www.google.com/search?q=lspdfr+{i.DName.Replace(" ", "+")})")
+                .ToList();
+        currentList = log.Current.Select(i => i?.DName).ToList();
+        var brokenList = log.Broken.Select(i => i?.DName).ToList();
+        var missingList = log.Missing.Select(i => i?.Name).ToList();
+        var missmatchList = log.Missmatch.Select(i => i?.Name).ToList();
+        var libraryList = log.Library.Select(i => i?.DName).ToList();
+        brokenList.AddRange(libraryList);
+        current = string.Join("\r\n- ", currentList);
+        outdated = string.Join("\r\n- ", linkedOutdated);
+        broken = string.Join("\r\n- ", brokenList);
+        missing = string.Join(", ", missingList);
+        missmatch = string.Join(", ", missmatchList);
+        library = string.Join(", ", libraryList);
+
+        if (log.Missing.Count > 0 || log.Missmatch.Count > 0) 
+        {
+            RPHProcess rphProcess = new RPHProcess();
+            rphProcess.log = log;
+            rphProcess.SendUnknownPluginsLog(context.Channel.Id, context.Member.Id);
+        }
+
+        var embed = new DiscordEmbedBuilder
+        {
+            Description = "## ULSS Log Reader\r\n*For detailed info, ask for help!*",
+            Color = new DiscordColor(243, 154, 18),
+            Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = SharedLogInfo.TsIcon },
+            Footer = new DiscordEmbedBuilder.EmbedFooter
+            {
+                Text = $"GTA: {GTAver} - RPH: {RPHver}" +
+                       $" - LSPDFR: {LSPDFRver} - Generated in discord.gg/ulss"
+            }
+        };
+
+        if (outdated.Length >= 1024 || broken.Length >= 1024)
+        {
+            embed.AddField(":warning:     **Message Too Big**",
+                "\r\nToo many plugins to display in a single message.\r\nFor detailed info, ask for help!",
+                true);
+            var embed2 = new DiscordEmbedBuilder
+            {
+                Title = ":orange_circle:     **Update:**",
+                Description = "\r\n- " + outdated,
+                Color = new DiscordColor(243, 154, 18),
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = SharedLogInfo.TsIcon }
+            };
+            var embed3 = new DiscordEmbedBuilder
+            {
+                Title = ":red_circle:     **Remove:**",
+                Description = "\r\n- " + broken,
+                Color = new DiscordColor(243, 154, 18),
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = SharedLogInfo.TsIcon }
+            };
+
+            var overflow = new DiscordWebhookBuilder();
+            overflow.AddEmbed(embed);
+            if (outdated.Length != 0) overflow.AddEmbed(embed2);
+            if (broken.Length != 0) overflow.AddEmbed(embed3);
+            await context.EditResponseAsync(overflow);
+
+        }
+        else
+        {
+            if (current.Length != 0 && outdated.Length == 0 && broken.Length != 0) outdated = "**None**";
+            if (current.Length != 0 && outdated.Length != 0 && broken.Length == 0) broken = "**None**";
+            if ((current.Length == 0 && outdated.Length != 0) || broken.Length != 0) current = "**None**";
+
+            if (outdated.Length > 0) embed.AddField(":orange_circle:     **Update:**", "\r\n- " + outdated, true);
+            if (broken.Length > 0) embed.AddField(":red_circle:     **Remove:**", "\r\n- " + broken, true);
+
+            if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0)
+                embed.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
+            if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0 && string.IsNullOrEmpty(log.LSPDFRVersion))
+                embed.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **No plugin information available!**");
+            if (current.Length == 0 && outdated.Length == 0 && broken.Length == 0)
+                embed.AddField(":green_circle:     **No loaded plugins!**", "- No plugins detected from this log.");
+                    
+            if (log.Errors.Any(x => x.Level == "CRITICAL") || log.Errors.Any(x => x.Level == "SEVERE"))
+                embed.AddField(":bangbang:     **Serious Error Detected!**", "- You should post this log for our TS to check!");
+                
+            DiscordWebhookBuilder webhookBuilder = new();
+            webhookBuilder.AddEmbed(embed);
+            webhookBuilder.AddComponents(new DiscordComponent[]
+            {
+                new DiscordButtonComponent(ButtonStyle.Danger, "SendFeedback", "Send Feedback", false,
+                    new DiscordComponentEmoji("📨"))
+            });
+            await context.EditResponseAsync(webhookBuilder);
+                    
+            Logging.SendPubLog(BasicEmbeds.Info($"Successful upload!\r\nSender: <@{context.Member.Id}> ({context.Member.Username})\r\nChannel: <#{context.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})"));
+            return;
         }
     }
 }

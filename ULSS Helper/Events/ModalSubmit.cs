@@ -100,5 +100,14 @@ public class ModalSubmit
 
             await FindErrorMessages.SendDbOperationConfirmation(newError: err, operation: DbOperation.UPDATE, oldError: previousError, e: e);
         }
+        
+        if (e.Interaction.Data.CustomId == "SendFeedback")
+        {
+            var feedback = e.Values["feedback"];
+            var embed = BasicEmbeds.Generic($"Feedback received!\r\n\r\n```{feedback}```\r\n\r\nSent By:\r\n<@{e.Interaction.User.Id}> ({e.Interaction.User.Username}) in: <#{e.Interaction.ChannelId}>", DiscordColor.PhthaloGreen);
+            Logging.SendPubLog(embed);
+            await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
+                new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Feedback sent!")));
+        }
     }
 }
