@@ -234,10 +234,11 @@ public class RPHAnalyzer
         string timeString = dateLineMatch.Groups[2].Value;
         string dateTimeString = dateString + " " + timeString;
 
-        if (!dateLineMatch.Success) return false;
+        if (!dateLineMatch.Success) 
+            return false;
 
         Regex dateRegex1 = new Regex(@"(\d+)(\W{1,2})(\d+)(\W{1,2})(\d+)(\S{0,1})");
-        Regex dateRegex2 = new Regex(@"(\d+)(\W)(\w+)(\W)(\d+)");
+        Regex dateRegex2 = new Regex(@"(\d+)(\W)([a-zA-Z]{3})(\W)(\d+)");
         Regex timeRegex = new Regex(@"(\d{1,2})(\W)(\d{1,2})(\W)(\d{1,2})");
 
         Match dateMatch1 = dateRegex1.Match(dateString);
@@ -255,51 +256,74 @@ public class RPHAnalyzer
         List<string> genericFormats = new();
         if (dateMatch1.Success)
         {
-            string sep1 = dateMatch1.Groups[2].Value;
-            string sep2 = dateMatch1.Groups[4].Value;
-            string sep3 = dateMatch1.Groups[6].Value;
+            string sep1 = dateMatch1.Groups[2].Value ?? "";
+            string sep2 = dateMatch1.Groups[4].Value ?? "";
+            string sep3 = dateMatch1.Groups[6].Value ?? "";
             genericFormats.Add($"dd{sep1}MM{sep2}yyyy{sep3} HH{timeSep1}mm{timeSep2}ss");
+            genericFormats.Add($"d{sep1}M{sep2}yyyy{sep3} H{timeSep1}mm{timeSep2}ss");
             genericFormats.Add($"MM{sep1}dd{sep2}yyyy{sep3} HH{timeSep1}mm{timeSep2}ss");
+            genericFormats.Add($"M{sep1}d{sep2}yyyy{sep3} H{timeSep1}mm{timeSep2}ss");
             genericFormats.Add($"yyyy{sep1}MM{sep2}dd{sep3} HH{timeSep1}mm{timeSep2}ss");
+            genericFormats.Add($"yyyy{sep1}M{sep2}d{sep3} H{timeSep1}mm{timeSep2}ss");
         }
         else if (dateMatch2.Success)
         {
-            string sep1 = dateMatch2.Groups[2].Value;
-            string sep2 = dateMatch2.Groups[4].Value;
+            string sep1 = dateMatch2.Groups[2].Value ?? "";
+            string sep2 = dateMatch2.Groups[4].Value ?? "";
             genericFormats.Add($"dd{sep1}MMM{sep2}yyyy HH{timeSep1}mm{timeSep2}ss");
+            genericFormats.Add($"d{sep1}MMM{sep2}yyyy H{timeSep1}mm{timeSep2}ss");
             genericFormats.Add($"yyyy{sep1}MMM{sep2}dd HH{timeSep1}mm{timeSep2}ss");
+            genericFormats.Add($"yyyy{sep1}MMM{sep2}d H{timeSep1}mm{timeSep2}ss");
         }
 
-        List<DateTime> results = new();
+        List<DateTime> parsedDates = new();
         DateTime parsedDate1;
 
-        if (DateTime.TryParse(dateTimeString, out parsedDate1))
-            results.Add(parsedDate1);
+        bool success = DateTime.TryParse(dateTimeString, out parsedDate1);
+        if (success)
+            parsedDates.Add(parsedDate1);
 
         foreach (string genericFormat in genericFormats)
         {
-            if (DateTime.TryParseExact(dateTimeString, genericFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDate2))
-                results.Add(parsedDate2);
+            bool successExact = DateTime.TryParseExact(dateTimeString, genericFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out DateTime parsedDate2);
+            if (successExact)
+                parsedDates.Add(parsedDate2);
         }        
         
         DateTime currentDate = DateTime.Now;
+        DateTime currentDateWithBuffer = currentDate.AddHours(24); // add a buffer of 14h to allow for any time zone differences
         DateTime closestDate = DateTime.MinValue;
         TimeSpan closestDifference = TimeSpan.MaxValue;
+        bool noValidResult = true;
 
-        foreach (DateTime result in results)
+        /*
+        The following loop determines the date in the list of parsedDates that...
+        - is not more than 24h in the future (doesn't make sense)
+        - is the closest to the currentDate (because we don't know the actual correct date format and want to assume that the correct date is the most recent one)
+
+        If no parsedDate meets the two conditions above, we can't say anything meaningful about the age of the log file (noValidResult remains true)
+        */
+        foreach (DateTime parsedDate in parsedDates)
         {
-            TimeSpan difference = result - currentDate;
-            
-            if (difference < closestDifference)
+            if (parsedDate <= currentDateWithBuffer)
             {
-                closestDifference = difference;
-                closestDate = result;
+                TimeSpan difference = currentDate - parsedDate;
+                
+                if (difference < closestDifference)
+                {
+                    closestDifference = difference;
+                    closestDate = parsedDate;
+                    noValidResult = false;
+                }
             }
         }
 
-        TimeSpan difference2 = currentDate - closestDate;
-        if (difference2.TotalHours > 24) 
-            return true;
+        if (noValidResult) 
+            return false; // we don't know whether the log file is too old, so we just assume it's the most recent log
+
+        TimeSpan difference2 = currentDateWithBuffer - closestDate;
+        if (difference2.TotalHours > 48) 
+            return true; // the uploaded RPH log is older than 48h compared to the current dateTime (including the 24h buffer to allow time zone differences)
 
         return false;
     }
