@@ -206,8 +206,7 @@ internal class RPHProcess : SharedLogInfo
 
     private void SendUnknownPluginsLog(ProcessCache cache)
     {
-        DiscordEmbedBuilder embed = new DiscordEmbedBuilder();
-        embed.Description = $"## Unknown plugins or plugin versions!\r\nThere was a [RagePluginHook.log]({log.DownloadLink}) uploaded that has plugins or plugin versions that are unknown to the bot's DB!\r\n";
+        DiscordEmbedBuilder embed = BasicEmbeds.Warning($"**Unknown plugins or plugin versions!**\r\n\r\nThere was a [RagePluginHook.log]({log.DownloadLink}) uploaded that has plugins or plugin versions that are unknown to the bot's DB!\r\n");
 
         var missingList = log.Missing.Select(plugin => $"{plugin?.Name} {plugin?.Version}").ToList();
         var missmatchList = log.Missmatch.Select(plugin => $"{plugin?.Name} {plugin?.EAVersion}").ToList();
