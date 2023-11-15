@@ -86,14 +86,17 @@ internal class RPHProcess : SharedLogInfo
         library = string.Join(", ", libraryList);
         
         string embedDescription = "## Quick RPH.log Info";
-        if (outdated.Length > 0 || broken.Length > 0) 
-            embedDescription += "\r\nUpdate or remove the following files in `GTAV/plugins/LSPDFR`.";
 
         DiscordEmbedBuilder embed = GetBaseLogInfoEmbed(embedDescription);
 
         DiscordMessage targetMessage = context?.TargetMessage ?? eventArgs.Message;
         ProcessCache cache = Program.Cache.GetProcessCache(targetMessage.Id);
         embed = AddTsViewFields(embed, cache.OriginalMessage);
+        
+        if (log.FilePossiblyOutdated)
+        {
+            embed.AddField(":warning: Attention!", "This log file is probably too old to determine the current RPH-related issues of the uploader!");
+        }
 
         if (missmatch.Length > 0 || missing.Length > 0) SendUnknownPluginsLog(cache);
         
@@ -183,7 +186,10 @@ internal class RPHProcess : SharedLogInfo
     internal async Task SendMessageToUser(ComponentInteractionCreateEventArgs eventArgs)
     {
         var newEmbList = new List<DiscordEmbed>();
-        var newEmb = GetBaseLogInfoEmbed(eventArgs.Message.Embeds[0].Description);
+        string embedDescription = eventArgs.Message.Embeds[0].Description;
+        if (outdated.Length > 0 || broken.Length > 0) 
+            embedDescription += "\r\nUpdate or remove the following files in `GTAV/plugins/LSPDFR`.";
+        var newEmb = GetBaseLogInfoEmbed(embedDescription);
         
         foreach (var field in eventArgs.Message.Embeds[0].Fields)
         {

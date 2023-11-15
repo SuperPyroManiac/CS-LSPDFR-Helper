@@ -1,6 +1,6 @@
-﻿using System.Net;
+﻿using System.Globalization;
+using System.Net;
 using System.Text.RegularExpressions;
-using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
@@ -27,6 +27,9 @@ public class RPHAnalyzer
         log.Missing = new List<Plugin?>();
         log.Missmatch = new List<Plugin>();
         log.Errors = new List<Error?>();
+
+        if (reader.Length > 0)
+            log.FilePossiblyOutdated = IsPossiblyOutdatedFile(reader[0]);
 
         foreach (var lineReader in reader)
         {
@@ -220,5 +223,83 @@ public class RPHAnalyzer
         }
         
         return 0; // versions are equal
+    }
+
+    private static bool IsPossiblyOutdatedFile(string dateLine)
+    {
+        Regex? dateLineRegex = new Regex(@".+Started new log on \D*(\d+\W{1,2}\d+\W{1,2}\d+\S{0,1}|\d+\W\w+\W\d+)\D*(\d{1,2}\W\d{1,2}\W\d{1,2})\s*\D*\.\d{1,3}");
+        Match? dateLineMatch = dateLineRegex.Match(dateLine);
+        string dateString = dateLineMatch.Groups[1].Value; 
+        string timeString = dateLineMatch.Groups[2].Value;
+        string dateTimeString = dateString + " " + timeString;
+
+        if (!dateLineMatch.Success) return false;
+
+        Regex dateRegex1 = new Regex(@"(\d+)(\W{1,2})(\d+)(\W{1,2})(\d+)(\S{0,1})");
+        Regex dateRegex2 = new Regex(@"(\d+)(\W)(\w+)(\W)(\d+)");
+        Regex timeRegex = new Regex(@"(\d{1,2})(\W)(\d{1,2})(\W)(\d{1,2})");
+
+        Match dateMatch1 = dateRegex1.Match(dateString);
+        Match dateMatch2 = dateRegex2.Match(dateString);
+        Match timeMatch = timeRegex.Match(timeString);
+
+        string timeSep1 = ":";
+        string timeSep2 = ":";
+        if (timeMatch.Success)
+        {
+            timeSep1 = timeMatch.Groups[2].Value;
+            timeSep2 = timeMatch.Groups[4].Value;
+        }
+
+        List<string> genericFormats = new();
+        if (dateMatch1.Success)
+        {
+            string sep1 = dateMatch1.Groups[2].Value;
+            string sep2 = dateMatch1.Groups[4].Value;
+            string sep3 = dateMatch1.Groups[6].Value;
+            genericFormats.Add($"dd{sep1}MM{sep2}yyyy{sep3} HH{timeSep1}mm{timeSep2}ss");
+            genericFormats.Add($"MM{sep1}dd{sep2}yyyy{sep3} HH{timeSep1}mm{timeSep2}ss");
+            genericFormats.Add($"yyyy{sep1}MM{sep2}dd{sep3} HH{timeSep1}mm{timeSep2}ss");
+        }
+        else if (dateMatch2.Success)
+        {
+            string sep1 = dateMatch2.Groups[2].Value;
+            string sep2 = dateMatch2.Groups[4].Value;
+            genericFormats.Add($"dd{sep1}MMM{sep2}yyyy HH{timeSep1}mm{timeSep2}ss");
+            genericFormats.Add($"yyyy{sep1}MMM{sep2}dd HH{timeSep1}mm{timeSep2}ss");
+        }
+
+        List<DateTime> results = new();
+        DateTime parsedDate1;
+
+        if (DateTime.TryParse(dateTimeString, out parsedDate1))
+            results.Add(parsedDate1);
+
+        foreach (string genericFormat in genericFormats)
+        {
+            if (DateTime.TryParseExact(dateTimeString, genericFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDate2))
+                results.Add(parsedDate2);
+        }        
+        
+        DateTime currentDate = DateTime.Now;
+        DateTime closestDate = DateTime.MinValue;
+        TimeSpan closestDifference = TimeSpan.MaxValue;
+
+        foreach (DateTime result in results)
+        {
+            TimeSpan difference = result - currentDate;
+            
+            if (difference < closestDifference)
+            {
+                closestDifference = difference;
+                closestDate = result;
+            }
+        }
+
+        TimeSpan difference2 = currentDate - closestDate;
+        if (difference2.TotalHours > 24) 
+            return true;
+
+        return false;
     }
 }
