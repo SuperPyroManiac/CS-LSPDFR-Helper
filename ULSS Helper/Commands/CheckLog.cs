@@ -73,7 +73,8 @@ public class CheckLog : ApplicationCommandModule
             //===//===//===////===//===//===////===//Process Attachment//===////===//===//===////===//===//===//
             try
             {
-                await CheckLogMessage(ctx, attach);
+                var th = new Thread(() => CheckLogMessage(ctx, attach));
+                th.Start();
             }
             catch (Exception e)
             {
@@ -95,7 +96,7 @@ public class CheckLog : ApplicationCommandModule
         }
     }
 
-    internal async Task CheckLogMessage(InteractionContext? context, DiscordAttachment attach)
+    private async Task CheckLogMessage(InteractionContext? context, DiscordAttachment attach)
     {
         var log = RPHAnalyzer.Run(attach.Url);
         string current;
