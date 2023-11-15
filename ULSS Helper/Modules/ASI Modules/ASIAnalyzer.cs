@@ -13,6 +13,7 @@ public class ASIAnalyzer
         client.DownloadFile(attachmentUrl, fullFilePath);
 
         var log = new ASILog();
+        log.DownloadLink = attachmentUrl;
         var wholeLog = File.ReadAllText(path: fullFilePath);
         log.LoadedASIFiles = new List<string>();
         log.FailedASIFiles = new List<string>();

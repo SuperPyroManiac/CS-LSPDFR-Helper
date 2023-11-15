@@ -17,6 +17,7 @@ public class RPHAnalyzer
         var pluginData = Database.LoadPlugins();
         var errorData = Database.LoadErrors();
         var log = new RPHLog();
+        log.DownloadLink = attachmentUrl;
         var wholeLog = File.ReadAllText(fullFilePath);
         var reader = File.ReadAllLines(fullFilePath);
 
