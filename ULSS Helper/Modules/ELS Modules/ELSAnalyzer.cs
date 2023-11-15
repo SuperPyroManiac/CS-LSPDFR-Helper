@@ -12,6 +12,7 @@ public class ELSAnalyzer
         string fullFilePath = Settings.GenerateNewFilePath(FileType.ELS_LOG);
         client.DownloadFile(attachmentUrl, fullFilePath);
         var log = new ELSLog();
+        log.DownloadLink = attachmentUrl;
         var wholeLog = File.ReadAllText(fullFilePath);
         log.ValidElsVcfFiles = new List<string>();
         log.InvalidElsVcfFiles = new List<string>();
