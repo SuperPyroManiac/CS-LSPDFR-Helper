@@ -12,7 +12,7 @@ namespace ULSS_Helper.Events;
 
 internal class ContextMenu : ApplicationCommandModule
 {
-    private static DiscordAttachment? attachmentForAnalysis;
+    private static DiscordAttachment? _attachmentForAnalysis;
     
     [ContextMenu(ApplicationCommandType.MessageContextMenu, "Analyze Log")]
     public async Task OnMenuSelect(ContextMenuContext context)
@@ -28,7 +28,7 @@ internal class ContextMenu : ApplicationCommandModule
         }
 
         //===//===//===////===//===//===////===//Attachment Checks/===////===//===//===////===//===//===//
-        attachmentForAnalysis = null;
+        _attachmentForAnalysis = null;
         List<string> acceptedFileNames = new(new string[]{ "RagePluginHook", "ELS", "asiloader", "ScriptHookVDotNet" });
         string acceptedFileNamesString = string.Join(" or ", acceptedFileNames);
         string acceptedLogFileNamesString = "`" + string.Join(".log` or `", acceptedFileNames) + ".log`";
@@ -41,7 +41,7 @@ internal class ContextMenu : ApplicationCommandModule
                     await sharedLogInfo.SendAttachmentErrorMessage(context, $"No attachment found. There needs to be a {acceptedFileNamesString} log file attached to the message!");
                     return;
                 case 1:
-                    attachmentForAnalysis = context.TargetMessage.Attachments[0];
+                    _attachmentForAnalysis = context.TargetMessage.Attachments[0];
                     break;
                 case > 1:
                     List<DiscordAttachment> acceptedAttachments = new List<DiscordAttachment>();
@@ -58,7 +58,7 @@ internal class ContextMenu : ApplicationCommandModule
                         return;
                     }
                     else if (acceptedAttachments.Count == 1) 
-                        attachmentForAnalysis = acceptedAttachments[0];
+                        _attachmentForAnalysis = acceptedAttachments[0];
                     else if (acceptedAttachments.Count > 1)
                     {
                         await context.DeferAsync(true);
@@ -67,56 +67,40 @@ internal class ContextMenu : ApplicationCommandModule
                     }
                     break;
             }
-            
-            if (attachmentForAnalysis == null)
+            if (_attachmentForAnalysis == null)
             {
                 await sharedLogInfo.SendAttachmentErrorMessage(context, "Failed to load attached file!");
                 return;
             }
-            if (!acceptedFileNames.Any(attachmentForAnalysis.FileName.Contains))
+            if (!acceptedFileNames.Any(_attachmentForAnalysis.FileName.Contains))
             {
                 await sharedLogInfo.SendAttachmentErrorMessage(context, $"This file is not named {acceptedLogFileNamesString}!");
                 return;
             }
+            
             //===//===//===////===//===//===////===//Process Attachments/===////===//===//===////===//===//===//
-            if (attachmentForAnalysis.FileName.Contains("RagePluginHook"))
+            if (_attachmentForAnalysis.FileName.Contains("RagePluginHook"))
             {
-                await context.DeferAsync(true);
-                RPHProcess rphProcess = new RPHProcess();
-                rphProcess.log = RPHAnalyzer.Run(attachmentForAnalysis.Url);
-                rphProcess.log.MsgId = context.TargetMessage.Id;
-                Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, rphProcess));
-                await rphProcess.SendQuickLogInfoMessage(context);
+                var th = new Thread(() => RPHThread(context, _attachmentForAnalysis));
+                th.Start();
                 return;
             }
-            if (attachmentForAnalysis.FileName.Contains("ELS"))
+            if (_attachmentForAnalysis.FileName.Contains("ELS"))
             {
-                await context.DeferAsync(true);
-                ELSProcess elsProcess = new ELSProcess();
-                elsProcess.log = ELSAnalyzer.Run(attachmentForAnalysis.Url);
-                elsProcess.log.MsgId = context.TargetMessage.Id;
-                Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, elsProcess));
-                await elsProcess.SendQuickLogInfoMessage(context);
+                var th = new Thread(() => ELSThread(context, _attachmentForAnalysis));
+                th.Start();
                 return;
             }
-            if (attachmentForAnalysis.FileName.Contains("asiloader"))
+            if (_attachmentForAnalysis.FileName.Contains("asiloader"))
             {
-                await context.DeferAsync(true);
-                ASIProcess asiProcess = new ASIProcess();
-                asiProcess.log = ASIAnalyzer.Run(attachmentForAnalysis.Url);
-                asiProcess.log.MsgId = context.TargetMessage.Id;
-                Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, asiProcess));
-                await asiProcess.SendQuickLogInfoMessage(context);
+                var th = new Thread(() => ASIThread(context, _attachmentForAnalysis));
+                th.Start();
                 return;
             }
-            if (attachmentForAnalysis.FileName.Contains("ScriptHookVDotNet"))
+            if (_attachmentForAnalysis.FileName.Contains("ScriptHookVDotNet"))
             {
-                await context.DeferAsync(true);
-                SHVDNProcess shvdnProcess = new SHVDNProcess();
-                shvdnProcess.log = SHVDNAnalyzer.Run(attachmentForAnalysis.Url);
-                shvdnProcess.log.MsgId = context.TargetMessage.Id;
-                Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, shvdnProcess));
-                await shvdnProcess.SendQuickLogInfoMessage(context);
+                var th = new Thread(() => SHVDNThread(context, _attachmentForAnalysis));
+                th.Start();
                 return;
             }
         }
@@ -126,5 +110,42 @@ internal class ContextMenu : ApplicationCommandModule
             Console.WriteLine(exception);
             throw;
         }
+    }
+    
+    private async Task RPHThread(ContextMenuContext context, DiscordAttachment attachmentForAnalysis)
+    {
+        await context.DeferAsync(true);
+        RPHProcess rphProcess = new RPHProcess();
+        rphProcess.log = RPHAnalyzer.Run(attachmentForAnalysis.Url);
+        rphProcess.log.MsgId = context.TargetMessage.Id;
+        Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, rphProcess));
+        await rphProcess.SendQuickLogInfoMessage(context);
+    }
+    private async Task ELSThread(ContextMenuContext context, DiscordAttachment attachmentForAnalysis)
+    {
+        await context.DeferAsync(true);
+        ELSProcess elsProcess = new ELSProcess();
+        elsProcess.log = ELSAnalyzer.Run(attachmentForAnalysis.Url);
+        elsProcess.log.MsgId = context.TargetMessage.Id;
+        Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, elsProcess));
+        await elsProcess.SendQuickLogInfoMessage(context);
+    }
+    private async Task ASIThread(ContextMenuContext context, DiscordAttachment attachmentForAnalysis)
+    {
+        await context.DeferAsync(true);
+        ASIProcess asiProcess = new ASIProcess();
+        asiProcess.log = ASIAnalyzer.Run(attachmentForAnalysis.Url);
+        asiProcess.log.MsgId = context.TargetMessage.Id;
+        Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, asiProcess));
+        await asiProcess.SendQuickLogInfoMessage(context);
+    }
+    private async Task SHVDNThread(ContextMenuContext context, DiscordAttachment attachmentForAnalysis)
+    {
+        await context.DeferAsync(true);
+        SHVDNProcess shvdnProcess = new SHVDNProcess();
+        shvdnProcess.log = SHVDNAnalyzer.Run(attachmentForAnalysis.Url);
+        shvdnProcess.log.MsgId = context.TargetMessage.Id;
+        Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, shvdnProcess));
+        await shvdnProcess.SendQuickLogInfoMessage(context);
     }
 }

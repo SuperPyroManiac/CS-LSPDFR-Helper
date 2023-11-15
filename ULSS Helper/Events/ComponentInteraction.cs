@@ -101,34 +101,45 @@ public class ComponentInteraction
                         return;
                     }
                 }
-
-                //===//===//===////===//===//===////===//RPH Buttons/===////===//===//===////===//===//===//
+                    
+                //===//===//===////===//===//===////===//RPH Buttons//===////===//===//===////===//===//===//
                 if (eventArgs.Id is RphQuickSendToUser or RphDetailedSendToUser) 
                     await cache.RphProcess.SendMessageToUser(eventArgs);
                 
                 if (eventArgs.Id == RphGetDetailedInfo) 
                     await cache.RphProcess.SendDetailedInfoMessage(eventArgs);
             
-                //===//===//===////===//===//===////===//ELS Buttons/===////===//===//===////===//===//===//
+                //===//===//===////===//===//===////===//ELS Buttons//===////===//===//===////===//===//===//
                 if (eventArgs.Id is ElsQuickSendToUser or ElsDetailedSendToUser)
                     await cache.ElsProcess.SendMessageToUser(eventArgs);
                 
                 if (eventArgs.Id == ElsGetDetailedInfo) 
                     await cache.ElsProcess.SendDetailedInfoMessage(eventArgs);
                 
-                //===//===//===////===//===//===////===//ASI Buttons/===////===//===//===////===//===//===//
+                //===//===//===////===//===//===////===//ASI Buttons//===////===//===//===////===//===//===//
                 if (eventArgs.Id is AsiQuickSendToUser or AsiDetailedSendToUser)
                     await cache.AsiProcess.SendMessageToUser(eventArgs);
                 
                 if (eventArgs.Id == AsiGetDetailedInfo) 
                     await cache.AsiProcess.SendDetailedInfoMessage(eventArgs);
                 
-                //===//===//===////===//===//===////===//SHVDN Buttons/===////===//===//===////===//===//===//
+                //===//===//===////===//===//===////===//SHVDN Buttons//===////===//===//===////===//===//===//
                 if (eventArgs.Id is ShvdnQuickSendToUser or ShvdnDetailedSendToUser)
                     await cache.ShvdnProcess.SendMessageToUser(eventArgs);
                 
                 if (eventArgs.Id == ShvdnGetDetailedInfo) 
                     await cache.ShvdnProcess.SendDetailedInfoMessage(eventArgs);
+            }
+            
+            //===//===//===////===//===//===////===//Send Feedback Button//===////===//===//===////===//===//===//
+            if (eventArgs.Id == "SendFeedback")
+            {
+                DiscordInteractionResponseBuilder modal = new();
+                modal.WithTitle($"Send Feedback").WithCustomId("SendFeedback").AddComponents(
+                    new TextInputComponent("Feedback:", "feedback", required: true, style: TextInputStyle.Paragraph));
+                Console.Write("We got here");
+                await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
+                Console.Write("and its fucked");
             }
         }
         catch (Exception exception)
