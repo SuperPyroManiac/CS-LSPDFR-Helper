@@ -85,6 +85,7 @@ internal class ContextMenu : ApplicationCommandModule
                 RPHProcess rphProcess = new RPHProcess();
                 rphProcess.log = RPHAnalyzer.Run(attachmentForAnalysis.Url);
                 rphProcess.log.MsgId = context.TargetMessage.Id;
+                rphProcess.log.DownloadLink = attachmentForAnalysis.Url;
                 Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, rphProcess));
                 await rphProcess.SendQuickLogInfoMessage(context);
                 return;
@@ -95,6 +96,7 @@ internal class ContextMenu : ApplicationCommandModule
                 ELSProcess elsProcess = new ELSProcess();
                 elsProcess.log = ELSAnalyzer.Run(attachmentForAnalysis.Url);
                 elsProcess.log.MsgId = context.TargetMessage.Id;
+                elsProcess.log.DownloadLink = attachmentForAnalysis.Url;
                 Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, elsProcess));
                 await elsProcess.SendQuickLogInfoMessage(context);
                 return;
@@ -105,6 +107,7 @@ internal class ContextMenu : ApplicationCommandModule
                 ASIProcess asiProcess = new ASIProcess();
                 asiProcess.log = ASIAnalyzer.Run(attachmentForAnalysis.Url);
                 asiProcess.log.MsgId = context.TargetMessage.Id;
+                asiProcess.log.DownloadLink = attachmentForAnalysis.Url;
                 Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, asiProcess));
                 await asiProcess.SendQuickLogInfoMessage(context);
                 return;
@@ -115,6 +118,7 @@ internal class ContextMenu : ApplicationCommandModule
                 SHVDNProcess shvdnProcess = new SHVDNProcess();
                 shvdnProcess.log = SHVDNAnalyzer.Run(attachmentForAnalysis.Url);
                 shvdnProcess.log.MsgId = context.TargetMessage.Id;
+                shvdnProcess.log.DownloadLink = attachmentForAnalysis.Url;
                 Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, shvdnProcess));
                 await shvdnProcess.SendQuickLogInfoMessage(context);
                 return;
