@@ -228,7 +228,7 @@ public class RPHAnalyzer
 
     private static bool IsPossiblyOutdatedFile(string dateLine)
     {
-        Regex? dateLineRegex = new Regex(@".+Started new log on \D*(\d+\W{1,2}\d+\W{1,2}\d+\S{0,1}|\d+\W\w+\W\d+)\D*(\d{1,2}\W\d{1,2}\W\d{1,2})\s*\D*\.\d{1,3}");
+        Regex? dateLineRegex = new Regex(@".+Started new log on \D*(\d+\W{1,2}\d+\W{1,2}\d+\S{0,1}|\d+\W[a-zA-Z]{3}\W\d+)\D*(\d{1,2}\W\d{1,2}\W\d{1,2})\s*\D*\.\d{1,3}");
         Match? dateLineMatch = dateLineRegex.Match(dateLine);
         string dateString = dateLineMatch.Groups[1].Value; 
         string timeString = dateLineMatch.Groups[2].Value;
@@ -277,9 +277,8 @@ public class RPHAnalyzer
         }
 
         List<DateTime> parsedDates = new();
-        DateTime parsedDate1;
 
-        bool success = DateTime.TryParse(dateTimeString, out parsedDate1);
+        bool success = DateTime.TryParse(dateTimeString, out DateTime parsedDate1);
         if (success)
             parsedDates.Add(parsedDate1);
 
