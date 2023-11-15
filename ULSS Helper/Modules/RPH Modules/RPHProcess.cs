@@ -72,11 +72,11 @@ internal class RPHProcess : SharedLogInfo
                 : $"[{plugin?.DName}](https://www.google.com/search?q=lspdfr+{plugin.DName.Replace(" ", "+")})"
         ).ToList();
         
-        currentList = log.Current.Select(i => i?.DName).ToList();
-        var brokenList = log.Broken.Select(i => i?.DName).ToList();
-        var missingList = log.Missing.Select(i => i?.Name).ToList();
-        var missmatchList = log.Missmatch.Select(i => i?.Name).ToList();
-        var libraryList = log.Library.Select(i => i?.DName).ToList();
+        currentList = log.Current.Select(plugin => plugin?.DName).ToList();
+        var brokenList = log.Broken.Select(plugin => plugin?.DName).ToList();
+        var missingList = log.Missing.Select(plugin => $"{plugin?.Name} ({plugin?.Version})").ToList();
+        var missmatchList = log.Missmatch.Select(plugin => $"{plugin?.Name} ({plugin?.EAVersion})").ToList();
+        var libraryList = log.Library.Select(plugin => plugin?.DName).ToList();
         brokenList.AddRange(libraryList);
         current = string.Join("\r\n- ", currentList);
         outdated = string.Join("\r\n- ", linkedOutdated);
@@ -94,6 +94,8 @@ internal class RPHProcess : SharedLogInfo
         DiscordMessage targetMessage = context?.TargetMessage ?? eventArgs.Message;
         ProcessCache cache = Program.Cache.GetProcessCache(targetMessage.Id);
         embed = AddTsViewFields(embed, cache.OriginalMessage);
+
+        if (missmatch.Length > 0 || missing.Length > 0) SendUnknownPluginsLog(cache);
         
         if (outdated.Length >= 1024 || broken.Length >= 1024)
         {
@@ -200,5 +202,35 @@ internal class RPHProcess : SharedLogInfo
             new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Sent!")));
         await eventArgs.Interaction.DeleteOriginalResponseAsync();
         await newMessage.SendAsync(eventArgs.Channel);
+    }
+
+    private void SendUnknownPluginsLog(ProcessCache cache)
+    {
+        string embedDescription = "**Unknown plugins or plugin versions!**\r\n\r\n";
+        string rphLogLink = (log.DownloadLink != null && log.DownloadLink.StartsWith("http")) 
+            ? $"[RagePluginHook.log]({log.DownloadLink})" 
+            : "RagePluginHook.log";
+        embedDescription += $"There was a {rphLogLink} uploaded that has plugins or plugin versions that are unknown to the bot's DB!\r\n\r\n";
+        DiscordEmbedBuilder embed = BasicEmbeds.Warning(embedDescription);
+
+        var missingList = log.Missing.Select(plugin => $"{plugin?.Name} {plugin?.Version}").ToList();
+        var missmatchList = log.Missmatch.Select(plugin => $"{plugin?.Name} {plugin?.EAVersion}").ToList();
+        
+        string missingDashListStr = "- " + string.Join("\n- ", missingList) + "\n";
+        if (missingDashListStr.Length > 0 && missingDashListStr.Length < 1024) 
+        {
+            embed.AddField(":bangbang:  **Plugins not recognized:**", missingDashListStr);
+        }
+
+        string missmatchDashListStr = "- " + string.Join("\n- ", missmatchList) + "\n";
+        if (missmatchDashListStr.Length > 0 && missmatchDashListStr.Length < 1024) 
+        {
+            embed.AddField(":bangbang:  **Plugin version newer than DB:**", missmatchDashListStr);
+        }
+
+        if (missingDashListStr.Length >= 1024 || missmatchDashListStr.Length >= 1024)
+            embed.AddField("Attention!", "Too many unknown plugins to display them in this message. Please check the log manually.");
+
+        Logging.SendLog(cache.OriginalMessage.ChannelId, cache.OriginalMessage.Author.Id, embed);
     }
 }

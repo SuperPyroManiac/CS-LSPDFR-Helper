@@ -64,6 +64,7 @@ public class RPHAnalyzer
                                             }
                                             else if (resultEA > 0) // plugin version in log is newer than Early Access version in DB
                                             {
+                                                plugin.EAVersion = logVersion; // save logVersion in log.Missmatch so we can access it later when building bot responses
                                                 if (!log.Missmatch.Any(x => x.Name == plugin.Name)) log.Missmatch.Add(plugin);
                                             }
                                             else // plugin version in log is up to date (equals Early Access version in DB)
@@ -72,7 +73,8 @@ public class RPHAnalyzer
                                             }
                                         } 
                                         else // plugin version in log is newer than version in DB and there is no Early Acccess version
-                                        { 
+                                        {
+                                            plugin.EAVersion = logVersion; // save logVersion in log.Missmatch so we can access it later when building bot responses
                                             if (!log.Missmatch.Any(x => x.Name == plugin.Name)) log.Missmatch.Add(plugin);
                                         }
                                     }
@@ -127,8 +129,10 @@ public class RPHAnalyzer
                     !log.Library.Any(x => x.Name == line) && !log.Missing.Any(x => x.Name == line) && 
                     !log.Missmatch.Any(x => x.Name == line))
                 {
+                    // save info from log about unrecognized plugin in log.Missing so we can access it later when building bot responses
                     var temp = new Plugin();
                     temp.Name = line;
+                    temp.Version = allmatch.Groups[2].Value;
                     temp.State = "MISSING";
                     log.Missing.Add(temp);
                 }
