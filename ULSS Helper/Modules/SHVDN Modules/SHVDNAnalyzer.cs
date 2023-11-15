@@ -13,6 +13,7 @@ public class SHVDNAnalyzer
         client.DownloadFile(attachmentUrl, fullFilePath);
 
         var log = new SHVDNLog();
+        log.DownloadLink = attachmentUrl;
         var wholeLog = File.ReadAllText(fullFilePath);
         log.Scripts = new List<string>();
         log.MissingDepends = new List<string>();

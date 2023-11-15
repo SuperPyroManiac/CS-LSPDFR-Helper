@@ -105,6 +105,13 @@ public class CheckLog : ApplicationCommandModule
                 missmatch = string.Join(", ", missmatchList);
                 library = string.Join(", ", libraryList);
 
+                if (log.Missing.Count > 0 || log.Missmatch.Count > 0) 
+                {
+                    RPHProcess rphProcess = new RPHProcess();
+                    rphProcess.log = log;
+                    rphProcess.SendUnknownPluginsLog(ctx.Channel.Id, ctx.Member.Id);
+                }
+
                 var embed = new DiscordEmbedBuilder
                 {
                     Description = "## ULSS Log Reader\r\n*For detailed info, ask for help!*",

@@ -66,7 +66,6 @@ public class ComponentInteraction
                         RPHProcess rphProcess = new RPHProcess();
                         rphProcess.log = RPHAnalyzer.Run(targetAttachment.Url);
                         rphProcess.log.MsgId = cache.OriginalMessage.Id;
-                        rphProcess.log.DownloadLink = targetAttachment.Url;
                         Program.Cache.SaveProcess(messageId: eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, rphProcess));
                         await rphProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                         return;
@@ -77,7 +76,6 @@ public class ComponentInteraction
                         ELSProcess elsProcess = new ELSProcess();
                         elsProcess.log = ELSAnalyzer.Run(targetAttachment.Url);
                         elsProcess.log.MsgId = cache.OriginalMessage.Id;
-                        elsProcess.log.DownloadLink = targetAttachment.Url;
                         Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, elsProcess));
                         await elsProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                         return;
@@ -88,7 +86,6 @@ public class ComponentInteraction
                         ASIProcess asiProcess = new ASIProcess();
                         asiProcess.log = ASIAnalyzer.Run(targetAttachment.Url);
                         asiProcess.log.MsgId = cache.OriginalMessage.Id;
-                        asiProcess.log.DownloadLink = targetAttachment.Url;
                         Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, asiProcess));
                         await asiProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                         return;
@@ -99,7 +96,6 @@ public class ComponentInteraction
                         SHVDNProcess shvdnProcess = new SHVDNProcess();
                         shvdnProcess.log = SHVDNAnalyzer.Run(targetAttachment.Url);
                         shvdnProcess.log.MsgId = cache.OriginalMessage.Id;
-                        shvdnProcess.log.DownloadLink = targetAttachment.Url;
                         Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, shvdnProcess));
                         await shvdnProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                         return;
