@@ -4,7 +4,7 @@ namespace ULSS_Helper.Messages;
 
 internal class Logging
 {
-    const ulong BotLogChannelId = 1173909572440825866; // 1173304071084585050
+    const ulong BotLogChannelId = 1173304071084585050;
     const ulong PublicLogChannelId = 1173304117557477456;
     const ulong PublicLogReportsChannelId = 547311030477520896;
 
