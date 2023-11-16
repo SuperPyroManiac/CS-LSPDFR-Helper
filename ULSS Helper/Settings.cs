@@ -21,7 +21,7 @@ internal class Settings
             if (parsedEnvJson != null) 
             {
                 Env = parsedEnvJson;
-                Console.WriteLine($"Successfully loaded environment config from '{configFileName}'. File content:\n{jsonContent}");
+                Console.WriteLine($"Successfully loaded environment config from '{configFileName}'!");
             }
             else throw new Exception("parsedEnvJson is null!");
         }

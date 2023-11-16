@@ -13,7 +13,7 @@ public class EditTS : ApplicationCommandModule
         InteractionContext ctx, 
         [Option("View", "0 all, 1 warn+, 2 severe+, 3 crit only, 4 none")] long view)
     {
-        if (ctx.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
+        if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
         {
             await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
             return;
@@ -46,7 +46,7 @@ public class EditTS : ApplicationCommandModule
         [Option("ID", "User ID to change!")] string id,
         [Option("Allow", "Allow access to advanced bot commands!")] bool allow)
     {
-        if (ctx.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
+        if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
         {
             await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
             return;
