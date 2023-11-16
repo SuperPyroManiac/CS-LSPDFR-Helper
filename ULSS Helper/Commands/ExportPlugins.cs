@@ -13,7 +13,7 @@ public class ExportPlugins : ApplicationCommandModule
 
     public async Task ExportPluginsCmd(InteractionContext ctx)
     {
-        if (ctx.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
+        if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
         {
             await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
             return;

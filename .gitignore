@@ -230,3 +230,4 @@ TOKEN.txt
 ULSSDB.db
 SERVERID.txt
 TSROLE.txt
+environment-config*.json

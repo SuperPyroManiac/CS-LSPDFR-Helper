@@ -13,7 +13,7 @@ public class AddTS : ApplicationCommandModule
     public async Task AddTSCmd(InteractionContext ctx, [Option("ID", "User discord ID")] string id,
         [Option("Allow", "Allow access to the bot commands!")] bool allow)
     {
-        if (ctx.Member.Id != 339550607847194624)
+        if (!Program.Settings.Env.BotAdminUserIds.Any(adminId => adminId == ctx.Member.Id))
         {
             await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
             return;

@@ -12,7 +12,7 @@ internal class Database //TODO: Make strings safe
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             var output = cnn.Query<Plugin>("select * from Plugin");
             return output.ToList();
         }
@@ -28,7 +28,7 @@ internal class Database //TODO: Make strings safe
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             var output = cnn.Query<Plugin>($"select * from Plugin where Name='{pluginName}'");
             output = output.ToList();
             if (output.Count() == 1) 
@@ -53,7 +53,7 @@ internal class Database //TODO: Make strings safe
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             List<string> conditions = new List<string>();
             string comparisonOperator = " = '";
             string endOfComparison = "'";
@@ -92,7 +92,7 @@ internal class Database //TODO: Make strings safe
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             var output = cnn.Query<Error>("select * from Error");
             return output.ToList();
         }
@@ -108,7 +108,7 @@ internal class Database //TODO: Make strings safe
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             var output = cnn.Query<Error>($"select * from Error where ID='{errorId}'");
             output = output.ToList();
             if (output.Count() == 1) 
@@ -133,7 +133,7 @@ internal class Database //TODO: Make strings safe
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             List<string> conditions = new List<string>();
             string comparisonOperator = " = '";
             string endOfComparison = "'";
@@ -172,7 +172,7 @@ internal class Database //TODO: Make strings safe
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             cnn.Open();
             cnn.Execute("insert into Plugin (Name, DName, Version, EAVersion, ID, State, Link) VALUES (@Name, @DName, @Version, @EAVersion, @ID, @State, @Link)", plugin);
             long id = ((SQLiteConnection) cnn).LastInsertRowId;
@@ -191,7 +191,7 @@ internal class Database //TODO: Make strings safe
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             cnn.Open();
             cnn.Execute("insert into Error (Regex, Solution, Level) VALUES (@Regex, @Solution, @Level)", error);
             long id = ((SQLiteConnection) cnn).LastInsertRowId;
@@ -210,7 +210,7 @@ internal class Database //TODO: Make strings safe
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             cnn.Execute($"UPDATE Plugin SET (Name, DName, Version, EAVersion, ID, State, Link) = (@Name, @DName, @Version, @EAVersion, @ID, @State, @Link) WHERE Name = (@Name)", plugin);
         }
         catch (SQLiteException e)
@@ -225,7 +225,7 @@ internal class Database //TODO: Make strings safe
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             cnn.Execute($"UPDATE Error SET (Regex, Solution, Level) = (@Regex, @Solution, @Level) WHERE ID = (@ID)", error);
         }
         catch (SQLiteException e)
@@ -240,7 +240,7 @@ internal class Database //TODO: Make strings safe
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             cnn.Execute($"delete from Plugin where Name = (@Name)", plugin);
         }
         catch (SQLiteException e)
@@ -255,7 +255,7 @@ internal class Database //TODO: Make strings safe
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             cnn.Execute($"delete from Error where ID = (@ID)", error);
         }
         catch (SQLiteException e)
@@ -270,7 +270,7 @@ internal class Database //TODO: Make strings safe
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             var output = cnn.Query<TS>("select * from TS");
             return output.ToList();
         }
@@ -286,7 +286,7 @@ internal class Database //TODO: Make strings safe
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             cnn.Open();
             cnn.Execute("insert into TS (ID, Username, View, Allow) VALUES (@ID, @Username, @View, @Allow)", ts);
             long id = ((SQLiteConnection) cnn).LastInsertRowId;
@@ -305,7 +305,7 @@ internal class Database //TODO: Make strings safe
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             cnn.Execute($"UPDATE Error SET (Username, View, Allow) = (@Username, @View, @Allow) WHERE ID = (@ID)", ts);
         }
         catch (SQLiteException e)
@@ -320,7 +320,7 @@ internal class Database //TODO: Make strings safe
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             cnn.Execute($"delete from TS where ID = (@ID)", ts);
         }
         catch (SQLiteException e)
@@ -364,7 +364,7 @@ internal class Database //TODO: Make strings safe
                     {
                         Console.WriteLine($"Updating Plugin {plugin.Name} from {plugin.Version} to {onlineVersion}");
                         
-                        using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+                        using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
                         cnn.Execute($"UPDATE Plugin SET Version = '{onlineVersion}' WHERE Name = '{plugin.Name}';");
                     }
                     catch (SQLiteException e)

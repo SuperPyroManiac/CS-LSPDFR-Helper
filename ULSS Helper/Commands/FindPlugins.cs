@@ -29,7 +29,7 @@ public class FindPlugins : ApplicationCommandModule
             }
         );
         
-        if (ctx.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
+        if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
         {
             await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
             return;

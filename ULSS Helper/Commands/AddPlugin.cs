@@ -15,7 +15,7 @@ public class AddPlugin : ApplicationCommandModule
         [Option("Name", "Plugins name as shown in the log!")] string? pN, 
         [Option("State", "Plugin state, LSPDFR, EXTERNAL, BROKEN, LIB")] State pS)
     {
-        if (ctx.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
+        if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
         {
             await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
             return;
