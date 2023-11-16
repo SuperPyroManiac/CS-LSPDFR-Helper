@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net;
 using System.Text.RegularExpressions;
 using ULSS_Helper.Objects;
@@ -8,6 +9,8 @@ public class SHVDNAnalyzer
 {
     internal static SHVDNLog Run(string attachmentUrl)
     {
+        var timer = new Stopwatch();
+        timer.Start();
         using var client = new WebClient();
         string fullFilePath = Settings.GenerateNewFilePath(FileType.SHVDN_LOG);
         client.DownloadFile(attachmentUrl, fullFilePath);
@@ -26,8 +29,12 @@ public class SHVDNAnalyzer
             log.MissingDepends.Add(match.Groups[3].Value);
         }
         
+        timer.Stop();
+        log.ElapsedTime = timer.ElapsedMilliseconds.ToString();
+        
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("SHVDN Log Processed...");
+        Console.WriteLine($"Time: {log.ElapsedTime}MS");
         Console.WriteLine("");
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine($"Missing: {log.MissingDepends.Count}");

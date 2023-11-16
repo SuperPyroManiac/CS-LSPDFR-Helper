@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
+using System.Net;
 using System.Text.RegularExpressions;
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
@@ -10,6 +11,8 @@ public class RPHAnalyzer
 {
     internal static RPHLog Run(string attachmentUrl)
     {
+        var timer = new Stopwatch();
+        timer.Start();
         using var client = new WebClient();
         string fullFilePath = Settings.GenerateNewFilePath(FileType.RPH_LOG);
         client.DownloadFile(attachmentUrl, fullFilePath);
@@ -168,9 +171,13 @@ public class RPHAnalyzer
             }
         }
         log.Errors = log.Errors.OrderBy(x => x.Level).ToList();
+        
+        timer.Stop();
+        log.ElapsedTime = timer.ElapsedMilliseconds.ToString();
 
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("RPH Log Processed...");
+        Console.WriteLine($"Time: {log.ElapsedTime}MS");
         Console.WriteLine("");
         Console.WriteLine($"Current: {log.Current.Count}");
         Console.ForegroundColor = ConsoleColor.Yellow;
