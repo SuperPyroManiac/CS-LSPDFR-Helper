@@ -18,6 +18,13 @@ public class ExportErrors : ApplicationCommandModule
             await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
             return;
         }
+        if (Database.LoadTS().Any(x => x.ID.ToString() != ctx.Member.Id.ToString()))
+        {
+            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
+            Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id,
+                BasicEmbeds.Warning($"**TS attempted to export errors without permission.**"));
+            return;
+        }
         
         var errors = Database.LoadErrors().ToArray();
         var serializer = new XmlSerializer(typeof(Error[]));

@@ -306,7 +306,7 @@ internal class Database //TODO: Make strings safe
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
-            cnn.Execute($"UPDATE Error SET (Username, View, Allow) = (@Username, @View, @Allow) WHERE ID = (@ID)", ts);
+            cnn.Execute($"UPDATE TS SET (ID, Username, View, Allow) = (@ID, @Username, @View, @Allow) WHERE ID = (@ID)", ts);
         }
         catch (SQLiteException e)
         {

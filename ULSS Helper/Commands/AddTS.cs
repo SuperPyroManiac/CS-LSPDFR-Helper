@@ -17,7 +17,7 @@ public class AddTS : ApplicationCommandModule
         {
             await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
             return;
-        } 
+        }
 
         var allowint = 0;
         if (allow) allowint = 1;
