@@ -18,7 +18,7 @@ internal class ASIProcess : SharedLogInfo
         {
             Description = description,
             Color = new DiscordColor(243, 154, 18),
-            Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon },
+            Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl },
             Footer = new DiscordEmbedBuilder.EmbedFooter
             {
                 Text = $"Loaded ASIs: {log.LoadedASIFiles.Count} - Failed ASIs: {log.FailedASIFiles.Count}"
@@ -50,7 +50,7 @@ internal class ASIProcess : SharedLogInfo
             .AddComponents(
                 new DiscordComponent[]
                 {
-                    new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.AsiGetDetailedInfo, "More Info", false, new DiscordComponentEmoji(723417756938010646)),
+                    new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.AsiGetDetailedInfo, "More Info", false, new DiscordComponentEmoji(Program.Settings.Env.MoreInfoBtnEmojiId)),
                     new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.AsiQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
                 }
             );
@@ -90,14 +90,14 @@ internal class ASIProcess : SharedLogInfo
                 Title = ":green_circle:     **Loaded ASIs:**",
                 Description = LoadedASIFilesList,
                 Color = new DiscordColor(243, 154, 18),
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon }
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
             var embed3 = new DiscordEmbedBuilder
             {
                 Title = ":red_circle:     **Failed ASIs:**",
                 Description = FailedASIFilesList,
                 Color = new DiscordColor(243, 154, 18),
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon }
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
 
             var overflow = new DiscordWebhookBuilder();

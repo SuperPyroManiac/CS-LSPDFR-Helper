@@ -12,7 +12,7 @@ public class AddError : ApplicationCommandModule
     
     public async Task AddErrorCmd(InteractionContext ctx, [Option("Level", "Warning type (XTRA, WARN, SEVERE, CRITICAL)")] Level lvl)
     {
-        if (ctx.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
+        if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
         {
             await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
             return;

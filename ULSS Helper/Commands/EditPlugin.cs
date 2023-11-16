@@ -17,7 +17,7 @@ public class EditPlugin : ApplicationCommandModule
         [Option("New_State", "Plugin state, LSPDFR, EXTERNAL, BROKEN, LIB")] State? pS=null
     )
     {
-        if (ctx.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
+        if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
         {
             await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
             return;
