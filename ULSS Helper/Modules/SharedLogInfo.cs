@@ -53,11 +53,11 @@ internal class SharedLogInfo
 
     }
 
-    internal DiscordEmbedBuilder AddTsViewFields(DiscordEmbedBuilder embed, DiscordMessage originalMessage) 
+    internal DiscordEmbedBuilder AddTsViewFields(DiscordEmbedBuilder embed, DiscordMessage originalMessage, string time) 
     {
         embed.AddField("Log uploader:", $"<@{originalMessage.Author.Id}>", true);
         embed.AddField("Log message:", originalMessage.JumpLink.ToString(), true);
-        embed.AddField("\u200B", "\u200B", true); //TS View only! Always index 0 - 2.
+        embed.AddField("Elapsed time:", $"{time}MS", true); //TS View only! Always index 0 - 2.
         return embed;
     }
 

@@ -34,7 +34,7 @@ internal class SHVDNProcess : SharedLogInfo
 
         DiscordMessage targetMessage = context?.TargetMessage ?? eventArgs.Message;
         ProcessCache cache = Program.Cache.GetProcessCache(targetMessage.Id);
-        embed = AddTsViewFields(embed, cache.OriginalMessage);
+        embed = AddTsViewFields(embed, cache.OriginalMessage, log.ElapsedTime);
 
         if (log.Scripts.Count != 0) 
         {

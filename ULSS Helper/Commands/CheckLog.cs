@@ -205,7 +205,7 @@ public class CheckLog : ApplicationCommandModule
             webhookBuilder.AddEmbed(embed);
             webhookBuilder.AddComponents(new DiscordComponent[]
             {
-                new DiscordButtonComponent(ButtonStyle.Danger, "SendFeedback", "Send Feedback", false,
+                new DiscordButtonComponent(ButtonStyle.Secondary, "SendFeedback", "Send Feedback", false,
                     new DiscordComponentEmoji("📨"))
             });
             await context.EditResponseAsync(webhookBuilder);
