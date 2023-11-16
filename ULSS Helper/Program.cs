@@ -7,39 +7,46 @@ using DSharpPlus.SlashCommands;
 using ULSS_Helper.Modules;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
+using ULSS_Helper.Events;
+using ULSS_Helper.Objects;
+using Timer = ULSS_Helper.Timer;
 
 namespace ULSS_Helper;
 
 internal class Program
 {
+    internal static DiscordClient Client {get; set;}
+    internal static Settings Settings;
+    internal static Cache Cache = new Cache();
+    internal static CommandsNextExtension Commands {get; set;}
     public static string? PlugName;
     public static string? ErrId;
     public static State PlugState;
     public static Level ErrLevel;
-    internal static DiscordClient Client {get; set;}
-    internal static CommandsNextExtension Commands {get; set;}
     
     static async Task Main(string[] args)
     {
-        TimerModule.StartTimer();
+        Timer.StartTimer();
+
+        Settings = new Settings();
         
         var discordConfig = new DiscordConfiguration()
         {
             Intents = DiscordIntents.All,
-            Token = Settings.Token,
+            Token = Settings.Env.BotToken,
             TokenType = TokenType.Bot,
             AutoReconnect = true
         };
         Client = new DiscordClient(discordConfig);
-
+        
         var sCommands = Client.UseSlashCommands();
 
-        sCommands.RegisterCommands(Assembly.GetExecutingAssembly(), Settings.GetServerID());
-        sCommands.RegisterCommands<ContextManager>(Settings.GetServerID());
+        sCommands.RegisterCommands(Assembly.GetExecutingAssembly(), Settings.Env.ServerId);
+        sCommands.RegisterCommands<ContextMenu>(Settings.Env.ServerId);
 
-        Client.ModalSubmitted += ModalManager.PluginModal;
-        Client.ComponentInteractionCreated += ButtonManager.OnButtonPress;
-        Client.MessageCreated += MessageSent;
+        Client.ModalSubmitted += ModalSubmit.HandleModalSubmit;
+        Client.ComponentInteractionCreated += ComponentInteraction.HandleInteraction;
+        //Client.MessageCreated += MessageSent;
         //TODO: Client.VoiceStateUpdated += VoiceChatManager.OnMemberJoinLeaveVC;
 
         Client.UseInteractivity(new InteractivityConfiguration());
@@ -49,10 +56,16 @@ internal class Program
     }
     private static async Task MessageSent(DiscordClient s, MessageCreateEventArgs ctx)
     {
-        if (ctx.Author.Id == 478591527321337857 || ctx.Author.Id == 614191277528973428)
+        if (Settings.Env.BullyingVictims.Any(victimId => victimId == ctx.Author.Id))
         {
             var rNd = new Random().Next(4);
             if (rNd == 1) await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":tarabruh:"));
+            if (rNd == 2) await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":middle_finger:"));
+            if (rNd == 0)
+            {
+                await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":tarabruh:"));
+                await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":middle_finger:"));
+            }
         }
     }
 }
