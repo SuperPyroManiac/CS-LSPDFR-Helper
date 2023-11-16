@@ -22,6 +22,14 @@ public class EditError : ApplicationCommandModule
             await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
             return;
         }
+        var ts = Database.LoadTS().FirstOrDefault(x => x.ID.ToString() == ctx.Member.Id.ToString());
+        if (ts == null || ts.Allow == 0)
+        {
+            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
+            Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id,
+                BasicEmbeds.Warning($"**TS attempted to edit error without permission.**"));
+            return;
+        }
 
         if (!Database.LoadErrors().Any(x => x.ID.ToString() == eI))
         {
