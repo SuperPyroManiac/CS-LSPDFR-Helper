@@ -174,7 +174,10 @@ internal class RPHProcess : SharedLogInfo
         var ts = Database.LoadTS().FirstOrDefault(x => x.ID.ToString() == eventArgs.User.Id.ToString());
         foreach (var error in log.Errors)
         {
-            embed.AddField($"```{error.Level.ToString()} ID: {error.ID}``` Troubleshooting Steps:", $"> {error.Solution.Replace("\n", "\n> ")}");
+            if (ts.View == 1)
+                embed.AddField($"```{error.Level.ToString()} ID: {error.ID}``` Troubleshooting Steps:", $"> {error.Solution.Replace("\n", "\n> ")}");
+            if (ts.View == 0 && error.Level != "XTRA")
+                embed.AddField($"```{error.Level.ToString()} ID: {error.ID}``` Troubleshooting Steps:", $"> {error.Solution.Replace("\n", "\n> ")}");
         }
 
         await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
