@@ -18,7 +18,7 @@ internal class ContextMenu : ApplicationCommandModule
     public async Task OnMenuSelect(ContextMenuContext context)
     {
         //===//===//===////===//===//===////===//Permissions/===////===//===//===////===//===//===//
-        if (context.Member.Roles.All(role => role.Id != Settings.GetTSRole()))
+        if (context.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
         {
             var emb = new DiscordInteractionResponseBuilder();
             emb.IsEphemeral = true;

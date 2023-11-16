@@ -8,7 +8,6 @@ namespace ULSS_Helper.Modules;
 
 internal class SharedLogInfo
 {
-    internal const string TsIcon = "https://cdn.discordapp.com/role-icons/517568233360982017/b69077cfafb6856a0752c863e1bb87f0.webp?size=128&quality=lossless";
     internal const string OptionValueSeparator = "&";
     internal Guid Guid { get; } = Guid.NewGuid();
 

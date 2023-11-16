@@ -18,7 +18,7 @@ internal class SHVDNProcess : SharedLogInfo
         {
             Description = description,
             Color = new DiscordColor(243, 154, 18),
-            Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon },
+            Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl },
             Footer = new DiscordEmbedBuilder.EmbedFooter
             {
                 Text = $"Problems: {log.Scripts.Count}"
@@ -50,7 +50,7 @@ internal class SHVDNProcess : SharedLogInfo
             .AddComponents(
                 new DiscordComponent[]
                 {
-                    new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.ShvdnGetDetailedInfo, "More Info", false, new DiscordComponentEmoji(723417756938010646)),
+                    new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.ShvdnGetDetailedInfo, "More Info", false, new DiscordComponentEmoji(Program.Settings.Env.MoreInfoBtnEmojiId)),
                     new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.ShvdnQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
                 }
             );
@@ -90,14 +90,14 @@ internal class SHVDNProcess : SharedLogInfo
                 Title = ":orange_circle:     **Script:**",
                 Description = ScriptsList,
                 Color = new DiscordColor(243, 154, 18),
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon }
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
             var embed3 = new DiscordEmbedBuilder
             {
                 Title = ":red_circle:     **Missing Depend:**",
                 Description = MissingDependsList,
                 Color = new DiscordColor(243, 154, 18),
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon }
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
 
             var overflow = new DiscordWebhookBuilder();

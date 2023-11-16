@@ -24,11 +24,13 @@ public class CheckLog : ApplicationCommandModule
 
         //===//===//===////===//===//===////===//Check Permissions//===////===//===//===////===//===//===//
         
-        if (ctx.Member.Roles.All(role => role.Id != 1134534059771572356))
+        if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.BotBlacklistRoleId))
         {
-            if (ctx.Channel != ctx.Guild.GetChannel(672541961969729540) && ctx.Channel != ctx.Guild.GetChannel(692254906752696332))
+            List<ulong> allowedChannelIds = Program.Settings.Env.PublicUsageAllowedChannelIds;
+            if (!allowedChannelIds.Any(allowedId => ctx.Channel == ctx.Guild.GetChannel(allowedId)))
             {
-                response.AddEmbed(BasicEmbeds.Error("Invalid channel!\r\nYou may only use this in <#672541961969729540> or <#692254906752696332>!"));
+                List<string> allowedChannels = allowedChannelIds.Select(selector: channelId => $"<#{channelId}>").ToList();
+                response.AddEmbed(BasicEmbeds.Error($"Invalid channel!\r\nYou may only use this in {string.Join(" or ", allowedChannels)}!"));
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
                 return;
             }
@@ -53,7 +55,7 @@ public class CheckLog : ApplicationCommandModule
                     BasicEmbeds.Error(
                         "File is way too big!\r\nYou may not upload anything else until staff review this!"));
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
-                await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(1134534059771572356));
+                await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(Program.Settings.Env.BotBlacklistRoleId));
                 Logging.ReportPubLog(BasicEmbeds.Error(
                     $"Possible bot abuse!\r\nUser has been blacklisted from bot use! (Dunce role added!)\r\nSender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})\r\n\r\nReason denied: File way too large! (Larger than 10 MB)"));
                 Logging.SendPubLog(BasicEmbeds.Error(
@@ -80,11 +82,11 @@ public class CheckLog : ApplicationCommandModule
             {
                 response.AddEmbed(BasicEmbeds.Error("There was an error here!\r\nYou may not upload anything else until staff review this!"));
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
-                await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(1134534059771572356));
+                await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(Program.Settings.Env.BotBlacklistRoleId));
                 Logging.ReportPubLog(BasicEmbeds.Error(
-                    $"Possible bot abuse!\r\nUser has been blacklisted from bot use! (Dunce role added!)\r\nSender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})\r\n\r\nReason denied: Log caused an error! See <#1173304071084585050>"));
+                    $"Possible bot abuse!\r\nUser has been blacklisted from bot use! (Dunce role added!)\r\nSender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})\r\n\r\nReason denied: Log caused an error! See <#{Program.Settings.Env.TsBotLogChannelId}>"));
                 Logging.SendPubLog(BasicEmbeds.Error(
-                    $"Rejected upload!\r\nSender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})\r\n\r\nReason denied: Log caused an error! See <#1173304071084585050>"));
+                    $"Rejected upload!\r\nSender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})\r\n\r\nReason denied: Log caused an error! See <#{Program.Settings.Env.TsBotLogChannelId}>"));
                 Logging.ErrLog($"Public Log Error: {e}");
                 Console.WriteLine(e);
                 throw;
@@ -92,7 +94,7 @@ public class CheckLog : ApplicationCommandModule
 
             //===//===//===////===//===//===////===//Has Dunce Role//===////===//===//===////===//===//===//
             response.AddEmbed(BasicEmbeds.Error(
-                "You are blacklisted from the bot!\r\nContact server staff in <#693303741071228938> if you think this is an error!"));
+                $"You are blacklisted from the bot!\r\nContact server staff in <#{Program.Settings.Env.StaffContactChannelId}> if you think this is an error!"));
         }
     }
 
@@ -109,9 +111,9 @@ public class CheckLog : ApplicationCommandModule
         string GTAver = "X";
         string LSPDFRver = "X";
         string RPHver = "X";
-        if (Settings.GTAVer.Equals(log.GTAVersion)) GTAver = "\u2713";
-        if (Settings.LSPDFRVer.Equals(log.LSPDFRVersion)) LSPDFRver = "\u2713";
-        if (Settings.RPHVer.Equals(log.RPHVersion)) RPHver = "\u2713";
+        if (Program.Settings.Env.GtaVersion.Equals(log.GTAVersion)) GTAver = "\u2713";
+        if (Program.Settings.Env.LspdfrVersion.Equals(log.LSPDFRVersion)) LSPDFRver = "\u2713";
+        if (Program.Settings.Env.RphVersion.Equals(log.RPHVersion)) RPHver = "\u2713";
 
         var linkedOutdated = log.Outdated.Select(i => !string.IsNullOrEmpty(i?.Link)
                 ? $"[{i.DName}]({i.Link})"
@@ -147,7 +149,7 @@ public class CheckLog : ApplicationCommandModule
         {
             Description = embedDescription,
             Color = new DiscordColor(243, 154, 18),
-            Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = SharedLogInfo.TsIcon },
+            Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl },
             Footer = new DiscordEmbedBuilder.EmbedFooter
             {
                 Text = $"GTA: {GTAver} - RPH: {RPHver}" +
@@ -165,14 +167,14 @@ public class CheckLog : ApplicationCommandModule
                 Title = ":orange_circle:     **Update:**",
                 Description = "\r\n- " + outdated,
                 Color = new DiscordColor(243, 154, 18),
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = SharedLogInfo.TsIcon }
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
             var embed3 = new DiscordEmbedBuilder
             {
                 Title = ":red_circle:     **Remove:**",
                 Description = "\r\n- " + broken,
                 Color = new DiscordColor(243, 154, 18),
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = SharedLogInfo.TsIcon }
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
 
             var overflow = new DiscordWebhookBuilder();

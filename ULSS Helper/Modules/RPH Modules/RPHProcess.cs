@@ -23,15 +23,15 @@ internal class RPHProcess : SharedLogInfo
 
     private DiscordEmbedBuilder GetBaseLogInfoEmbed(string description)
     {
-        if (Settings.GTAVer.Equals(log.GTAVersion)) GTAver = "\u2713";
-        if (Settings.LSPDFRVer.Equals(log.LSPDFRVersion)) LSPDFRver = "\u2713";
-        if (Settings.RPHVer.Equals(log.RPHVersion)) RPHver = "\u2713";
+        if (Program.Settings.Env.GtaVersion.Equals(log.GTAVersion)) GTAver = "\u2713";
+        if (Program.Settings.Env.LspdfrVersion.Equals(log.LSPDFRVersion)) LSPDFRver = "\u2713";
+        if (Program.Settings.Env.RphVersion.Equals(log.RPHVersion)) RPHver = "\u2713";
 
         return new DiscordEmbedBuilder
         {
             Description = description,
             Color = new DiscordColor(243, 154, 18),
-            Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon },
+            Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl },
             Footer = new DiscordEmbedBuilder.EmbedFooter
             {
                 Text = $"GTA: {GTAver} - RPH: {RPHver}" +
@@ -107,14 +107,14 @@ internal class RPHProcess : SharedLogInfo
                 Title = ":orange_circle:     **Update:**",
                 Description = "\r\n- " + outdated,
                 Color = new DiscordColor(243, 154, 18),
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon }
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
             var embed3 = new DiscordEmbedBuilder
             {
                 Title = ":red_circle:     **Remove:**",
                 Description = "\r\n- " + broken,
                 Color = new DiscordColor(243, 154, 18),
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = TsIcon }
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
 
             var overflow = new DiscordWebhookBuilder();
@@ -144,7 +144,7 @@ internal class RPHProcess : SharedLogInfo
             webhookBuilder.AddComponents(
                 new DiscordComponent[]
                 {
-                    new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.RphGetDetailedInfo, "More Info", false, new DiscordComponentEmoji(723417756938010646)),
+                    new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.RphGetDetailedInfo, "More Info", false, new DiscordComponentEmoji(Program.Settings.Env.MoreInfoBtnEmojiId)),
                     new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.RphQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
                 }
             );
