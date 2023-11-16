@@ -1,7 +1,7 @@
-﻿using System.Diagnostics;
+using System.Globalization;
+using System.Diagnostics;
 using System.Net;
 using System.Text.RegularExpressions;
-using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
@@ -31,6 +31,9 @@ public class RPHAnalyzer
         log.Missing = new List<Plugin?>();
         log.Missmatch = new List<Plugin>();
         log.Errors = new List<Error?>();
+
+        if (reader.Length > 0)
+            log.FilePossiblyOutdated = IsPossiblyOutdatedFile(reader[0]);
 
         foreach (var lineReader in reader)
         {
@@ -228,5 +231,100 @@ public class RPHAnalyzer
         }
         
         return 0; // versions are equal
+    }
+
+    private static bool IsPossiblyOutdatedFile(string dateLine)
+    {
+        Regex? dateLineRegex = new Regex(@".+Started new log on \D*(\d+\W{1,2}\d+\W{1,2}\d+\S{0,1}|\d+\W[a-zA-Z]{3}\W\d+)\D*(\d{1,2}\W\d{1,2}\W\d{1,2})\s*\D*\.\d{1,3}");
+        Match? dateLineMatch = dateLineRegex.Match(dateLine);
+        if (!dateLineMatch.Success) 
+            return false;
+        
+        string dateString = dateLineMatch.Groups[1].Value; 
+        string timeString = dateLineMatch.Groups[2].Value;
+        string dateTimeString = dateString + " " + timeString;
+
+        Regex dateRegex1 = new Regex(@"(\d+)(\W{1,2})(\d+)(\W{1,2})(\d+)(\S{0,1})");
+        Regex dateRegex2 = new Regex(@"(\d+)(\W)([a-zA-Z]{3})(\W)(\d+)");
+        Regex timeRegex = new Regex(@"(\d{1,2})(\W)(\d{1,2})(\W)(\d{1,2})");
+
+        Match dateMatch1 = dateRegex1.Match(dateString);
+        Match dateMatch2 = dateRegex2.Match(dateString);
+        Match timeMatch = timeRegex.Match(timeString);
+
+        string timeSep1 = ":";
+        string timeSep2 = ":";
+        if (timeMatch.Success)
+        {
+            timeSep1 = timeMatch.Groups[2].Value;
+            timeSep2 = timeMatch.Groups[4].Value;
+        }
+
+        List<string> dateFormats = new();
+        if (dateMatch1.Success)
+        {
+            string sep1 = dateMatch1.Groups[2].Value ?? "";
+            string sep2 = dateMatch1.Groups[4].Value ?? "";
+            string sep3 = dateMatch1.Groups[6].Value ?? "";
+            dateFormats.Add($"d{sep1}M{sep2}yyyy{sep3} H{timeSep1}mm{timeSep2}ss");
+            dateFormats.Add($"M{sep1}d{sep2}yyyy{sep3} H{timeSep1}mm{timeSep2}ss");
+            dateFormats.Add($"yyyy{sep1}M{sep2}d{sep3} H{timeSep1}mm{timeSep2}ss");
+        }
+        else if (dateMatch2.Success)
+        {
+            string sep1 = dateMatch2.Groups[2].Value ?? "";
+            string sep2 = dateMatch2.Groups[4].Value ?? "";
+            dateFormats.Add($"d{sep1}MMM{sep2}yyyy H{timeSep1}mm{timeSep2}ss");
+            dateFormats.Add($"yyyy{sep1}MMM{sep2}d H{timeSep1}mm{timeSep2}ss");
+        }
+
+        List<DateTime> parsedDates = new();
+
+        bool success = DateTime.TryParse(dateTimeString, out DateTime parsedDate1);
+        if (success)
+            parsedDates.Add(parsedDate1);
+
+        foreach (string dateFormat in dateFormats)
+        {
+            bool successExact = DateTime.TryParseExact(dateTimeString, dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out DateTime parsedDate2);
+            if (successExact)
+                parsedDates.Add(parsedDate2);
+        }        
+        
+        DateTime currentDate = DateTime.Now;
+        DateTime currentDateWithBuffer = currentDate.AddHours(24); // add a buffer of 24h to allow for any time zone differences
+        DateTime closestDate = DateTime.MinValue;
+        TimeSpan closestDifference = TimeSpan.MaxValue;
+        bool noValidResult = true;
+
+        /*
+        The following loop determines the date in the list of parsedDates that...
+        - is not more than 24h in the future (doesn't make sense)
+        - is the closest to the currentDate (because we don't know the actual correct date format and want to assume that the correct date is the most recent one)
+
+        If no parsedDate meets the two conditions above, we can't say anything meaningful about the age of the log file (noValidResult remains true)
+        */
+        foreach (DateTime parsedDate in parsedDates)
+        {
+            if (parsedDate <= currentDateWithBuffer)
+            {
+                TimeSpan difference = currentDate - parsedDate;
+                if (difference < closestDifference)
+                {
+                    closestDifference = difference;
+                    closestDate = parsedDate;
+                    noValidResult = false;
+                }
+            }
+        }
+
+        if (noValidResult) 
+            return false; // we don't know whether the log file is too old, so we just assume it's the most recent log
+
+        TimeSpan difference2 = currentDateWithBuffer - closestDate;
+        if (difference2.TotalHours > 48)
+            return true; // the uploaded RPH log is older than 24h compared to the current dateTime (excluding the 24h buffer to allow time zone differences)
+
+        return false;
     }
 }

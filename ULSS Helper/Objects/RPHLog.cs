@@ -2,6 +2,7 @@ namespace ULSS_Helper.Objects;
 
 public class RPHLog : Log
 {
+    public bool FilePossiblyOutdated { get; set; }
     public List<Plugin?> Current { get; set; }
     public List<Plugin?> Outdated { get; set; }
     public List<Plugin?> Broken { get; set; }
