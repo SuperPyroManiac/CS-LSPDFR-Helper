@@ -266,6 +266,71 @@ internal class Database //TODO: Make strings safe
         }
     }
     
+    internal static List<TS> LoadTS()
+    {
+        try
+        {
+            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            var output = cnn.Query<TS>("select * from TS");
+            return output.ToList();
+        }
+        catch (SQLiteException e)
+        {
+            Console.WriteLine(e);
+            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            throw;
+        }
+    }
+    
+    internal static long AddTS(TS ts)
+    {
+        try
+        {
+            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            cnn.Open();
+            cnn.Execute("insert into TS (ID, Username, View, Allow) VALUES (@ID, @Username, @View, @Allow)", ts);
+            long id = ((SQLiteConnection) cnn).LastInsertRowId;
+            cnn.Close();
+            return id;    
+        }
+        catch (SQLiteException e)
+        {
+            Console.WriteLine(e);
+            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            throw;
+        }
+    }
+    
+    internal static void EditTS(TS ts)
+    {
+        try
+        {
+            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            cnn.Execute($"UPDATE Error SET (Username, View, Allow) = (@Username, @View, @Allow) WHERE ID = (@ID)", ts);
+        }
+        catch (SQLiteException e)
+        {
+            Console.WriteLine(e);
+            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            throw;
+        }
+    }
+    
+    internal static void DeleteTS(TS ts)
+    {
+        try
+        {
+            using IDbConnection cnn = new SQLiteConnection(Settings.DbLocation);
+            cnn.Execute($"delete from TS where ID = (@ID)", ts);
+        }
+        catch (SQLiteException e)
+        {
+            Console.WriteLine(e);
+            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            throw;
+        }
+    }
+    
     internal static void UpdatePluginVersions()
     {
         var webClient = new WebClient();
