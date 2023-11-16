@@ -1,4 +1,5 @@
-﻿using DSharpPlus.Entities;
+﻿using DSharpPlus;
+using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
@@ -9,18 +10,19 @@ public class RemoveTS : ApplicationCommandModule
 {
     [SlashCommand("RemoveTS", "Removes a TS from the database!")]
 
-    public async Task AddErrorCmd(InteractionContext ctx, [Option("ID", "User discord ID")] ulong id)
+    public async Task RemoveTSCmd(InteractionContext ctx, [Option("ID", "User discord ID")] string id)
     {
         if (ctx.Member.Id != 339550607847194624)
         {
             await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
             return;
         }
+        await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
         
         var isValid = false;
         foreach (var ts in Database.LoadTS())
         {
-            if (ts.ID == id)
+            if (ts.ID.ToString() == id)
             {
                 Database.DeleteTS(ts);
                 isValid = true;
