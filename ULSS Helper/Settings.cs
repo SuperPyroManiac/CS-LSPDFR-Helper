@@ -40,14 +40,6 @@ internal class Settings
         DbPath = Path.Combine(Directory.GetCurrentDirectory(), Env.DbFileName);
         DbLocation = $"Data Source={DbPath};Version=3;";
     }
-
-    private static string GetTokenFromTxtFile()
-    {
-        var tokenPath = Path.Combine(Directory.GetCurrentDirectory(), "TOKEN.txt");
-        if (File.Exists(tokenPath)) return File.ReadAllText(tokenPath);
-        File.Create(tokenPath);
-        throw new FileNotFoundException("Token file could not be found. One has been created for you. Please add your token to the file.", "TOKEN.txt");
-    }
     
     internal static string GenerateNewFilePath(FileType fileType)
     {
@@ -92,7 +84,7 @@ internal class Settings
     private static EnvironmentConfig GetDefaultEnvConfig()
     {
         return new EnvironmentConfig(
-            BotToken: GetTokenFromTxtFile(),
+            BotToken: "TOKEN",
             DbFileName: "ULSSDB.db",
             RphVersion: "1.106.1330.16514",
             LspdfrVersion: "0.4.8678.25591",
