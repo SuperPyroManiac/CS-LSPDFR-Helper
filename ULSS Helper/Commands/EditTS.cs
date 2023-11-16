@@ -44,7 +44,7 @@ public class EditTS : ApplicationCommandModule
         [Option("ID", "User ID to change!")] string id,
         [Option("Allow", "Allow access to advanced bot commands!")] bool allow)
     {
-        if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
+        if (!Program.Settings.Env.BotAdminUserIds.Any(adminId => adminId == ctx.Member.Id))
         {
             await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
             return;
