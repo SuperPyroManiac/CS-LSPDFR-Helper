@@ -171,6 +171,7 @@ internal class RPHProcess : SharedLogInfo
         
         embed = AddCommonFields(embed);
 
+        var ts = Database.LoadTS().FirstOrDefault(x => x.ID.ToString() == eventArgs.User.Id.ToString());
         foreach (var error in log.Errors)
         {
             embed.AddField($"```{error.Level.ToString()} ID: {error.ID}``` Troubleshooting Steps:", $"> {error.Solution.Replace("\n", "\n> ")}");
