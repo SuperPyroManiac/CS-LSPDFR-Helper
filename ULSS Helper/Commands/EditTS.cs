@@ -64,7 +64,5 @@ public class EditTS : ApplicationCommandModule
         Database.EditTS(ts);
         
         await ctx.CreateResponseAsync(embed: BasicEmbeds.Warning($"<@{id}>'s advanced command perms have been set to: {allow}"));
-        Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id,
-            BasicEmbeds.Warning($"**<@{id}>'s advanced command perms have been set to: {allow}**"));
     }
 }
