@@ -321,8 +321,8 @@ public class RPHAnalyzer
             return false; // we don't know whether the log file is too old, so we just assume it's the most recent log
 
         TimeSpan difference2 = currentDateWithBuffer - closestDate;
-        if (difference2.TotalHours > 48) 
-            return true; // the uploaded RPH log is older than 48h compared to the current dateTime (including the 24h buffer to allow time zone differences)
+        if (difference2.TotalHours > 48)
+            return true; // the uploaded RPH log is older than 24h compared to the current dateTime (excluding the 24h buffer to allow time zone differences)
 
         return false;
     }

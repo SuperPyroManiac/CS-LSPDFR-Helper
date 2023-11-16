@@ -137,9 +137,15 @@ public class CheckLog : ApplicationCommandModule
             rphProcess.SendUnknownPluginsLog(context.Channel.Id, context.Member.Id);
         }
 
+        string embedDescription = "## ULSS Log Reader\r\n*For detailed info, ask for help!*";
+        if (log.FilePossiblyOutdated)
+            embedDescription += "\r\n\r\n:warning: **Attention!** This log file is probably too old to determine your current RPH-related issues!";
+        if (outdated.Length > 0 || broken.Length > 0) 
+            embedDescription += "\r\n\r\nUpdate or remove the following files in `GTAV/plugins/LSPDFR`";
+
         var embed = new DiscordEmbedBuilder
         {
-            Description = "## ULSS Log Reader\r\n*For detailed info, ask for help!*",
+            Description = embedDescription,
             Color = new DiscordColor(243, 154, 18),
             Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = SharedLogInfo.TsIcon },
             Footer = new DiscordEmbedBuilder.EmbedFooter

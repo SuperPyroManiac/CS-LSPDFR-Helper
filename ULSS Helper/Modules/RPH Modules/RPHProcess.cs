@@ -85,18 +85,16 @@ internal class RPHProcess : SharedLogInfo
         missmatch = string.Join(", ", missmatchList);
         library = string.Join(", ", libraryList);
         
-        string embedDescription = "## Quick RPH.log Info";
+        string embedDescription = "## Quick RPH.log Info";        
+        if (log.FilePossiblyOutdated)
+            embedDescription += "\r\n:warning: **Attention!** This log file is probably too old to determine the current RPH-related issues of the uploader!\r\n";
 
         DiscordEmbedBuilder embed = GetBaseLogInfoEmbed(embedDescription);
 
         DiscordMessage targetMessage = context?.TargetMessage ?? eventArgs.Message;
         ProcessCache cache = Program.Cache.GetProcessCache(targetMessage.Id);
         embed = AddTsViewFields(embed, cache.OriginalMessage);
-        
-        if (log.FilePossiblyOutdated)
-        {
-            embed.AddField(":warning: Attention!", "This log file is probably too old to determine the current RPH-related issues of the uploader!");
-        }
+
 
         if (missmatch.Length > 0 || missing.Length > 0) SendUnknownPluginsLog(cache.OriginalMessage.Channel.Id, cache.OriginalMessage.Author.Id);
         
@@ -163,7 +161,11 @@ internal class RPHProcess : SharedLogInfo
 
     internal async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs eventArgs)
     {
-        var embed = GetBaseLogInfoEmbed("## Detailed RPH.log Info");
+        string embedDescription = "## Detailed RPH.log Info";
+        if (log.FilePossiblyOutdated)
+            embedDescription += "\r\n:warning: **Attention!** This log file is probably too old to determine the current RPH-related issues of the uploader!\r\n";
+        var embed = GetBaseLogInfoEmbed(embedDescription);
+
         ProcessCache cache = Program.Cache.GetProcessCache(eventArgs.Message.Id);
         embed = AddTsViewFields(embed, cache.OriginalMessage);
         
@@ -188,7 +190,7 @@ internal class RPHProcess : SharedLogInfo
         var newEmbList = new List<DiscordEmbed>();
         string embedDescription = eventArgs.Message.Embeds[0].Description;
         if (outdated.Length > 0 || broken.Length > 0) 
-            embedDescription += "\r\nUpdate or remove the following files in `GTAV/plugins/LSPDFR`.";
+            embedDescription += "\r\n\r\nUpdate or remove the following files in `GTAV/plugins/LSPDFR`";
         var newEmb = GetBaseLogInfoEmbed(embedDescription);
         
         foreach (var field in eventArgs.Message.Embeds[0].Fields)
