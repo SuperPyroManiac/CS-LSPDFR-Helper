@@ -172,12 +172,25 @@ internal class RPHProcess : SharedLogInfo
         embed = AddCommonFields(embed);
 
         var ts = Database.LoadTS().FirstOrDefault(x => x.ID.ToString() == eventArgs.User.Id.ToString());
+        var update = false;
         foreach (var error in log.Errors)
         {
-            if (ts.View == 1)
-                embed.AddField($"```{error.Level.ToString()} ID: {error.ID}``` Troubleshooting Steps:", $"> {error.Solution.Replace("\n", "\n> ")}");
-            if (ts.View == 0 && error.Level != "XTRA")
-                embed.AddField($"```{error.Level.ToString()} ID: {error.ID}``` Troubleshooting Steps:", $"> {error.Solution.Replace("\n", "\n> ")}");
+            if (error.Level == "CRITICAL") update = true;
+            if (update)
+            {
+                if (error.Level == "CRITICAL")
+                    embed.AddField($"```{error.Level.ToString()} ID: {error.ID}``` Troubleshooting Steps:", $"> {error.Solution.Replace("\n", "\n> ")}");
+            }
+            if (!update)
+            {
+                if (ts.View == 1)
+                    embed.AddField($"```{error.Level.ToString()} ID: {error.ID}``` Troubleshooting Steps:",
+                        $"> {error.Solution.Replace("\n", "\n> ")}");
+            
+                if (ts.View == 0 && error.Level != "XTRA")
+                    embed.AddField($"```{error.Level.ToString()} ID: {error.ID}``` Troubleshooting Steps:",
+                        $"> {error.Solution.Replace("\n", "\n> ")}");
+            }
         }
 
         await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
