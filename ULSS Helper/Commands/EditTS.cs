@@ -11,7 +11,7 @@ public class EditTS : ApplicationCommandModule
     [SlashCommand("ChangeErrorView", "Edits what you see in more details!")]
     public async Task EditViewCmd(
         InteractionContext ctx, 
-        [Option("View", "0 all, 1 warn+, 2 severe+, 3 crit only, 4 none")] long view)
+        [Option("View", "True shows XTRA errors, False does not.")] bool view)
     {
         if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
         {
@@ -23,14 +23,12 @@ public class EditTS : ApplicationCommandModule
             await ctx.CreateResponseAsync(embed: BasicEmbeds.Error($"You are not in the DB, please contact SuperPyroManiac!"));
             return;
         }
-        if ((int)view > 4)
-        {
-            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error($"Your input is invalid!"));
-            return;
-        }
 
+        var viewint = 1;
+        if (!view) viewint = 0;
+        
         var ts = Database.LoadTS().FirstOrDefault(x => x.ID.ToString() == ctx.Member.Id.ToString());
-        ts.View = (int)view;
+        ts.View = viewint;
         ts.Username = ctx.Guild.GetMemberAsync(ulong.Parse(ts.ID)).Result.Username;
         
         Database.EditTS(ts);
