@@ -237,12 +237,12 @@ public class RPHAnalyzer
     {
         Regex? dateLineRegex = new Regex(@".+Started new log on \D*(\d+\W{1,2}\d+\W{1,2}\d+\S{0,1}|\d+\W[a-zA-Z]{3}\W\d+)\D*(\d{1,2}\W\d{1,2}\W\d{1,2})\s*\D*\.\d{1,3}");
         Match? dateLineMatch = dateLineRegex.Match(dateLine);
+        if (!dateLineMatch.Success) 
+            return false;
+        
         string dateString = dateLineMatch.Groups[1].Value; 
         string timeString = dateLineMatch.Groups[2].Value;
         string dateTimeString = dateString + " " + timeString;
-
-        if (!dateLineMatch.Success) 
-            return false;
 
         Regex dateRegex1 = new Regex(@"(\d+)(\W{1,2})(\d+)(\W{1,2})(\d+)(\S{0,1})");
         Regex dateRegex2 = new Regex(@"(\d+)(\W)([a-zA-Z]{3})(\W)(\d+)");
@@ -260,27 +260,22 @@ public class RPHAnalyzer
             timeSep2 = timeMatch.Groups[4].Value;
         }
 
-        List<string> genericFormats = new();
+        List<string> dateFormats = new();
         if (dateMatch1.Success)
         {
             string sep1 = dateMatch1.Groups[2].Value ?? "";
             string sep2 = dateMatch1.Groups[4].Value ?? "";
             string sep3 = dateMatch1.Groups[6].Value ?? "";
-            genericFormats.Add($"dd{sep1}MM{sep2}yyyy{sep3} HH{timeSep1}mm{timeSep2}ss");
-            genericFormats.Add($"d{sep1}M{sep2}yyyy{sep3} H{timeSep1}mm{timeSep2}ss");
-            genericFormats.Add($"MM{sep1}dd{sep2}yyyy{sep3} HH{timeSep1}mm{timeSep2}ss");
-            genericFormats.Add($"M{sep1}d{sep2}yyyy{sep3} H{timeSep1}mm{timeSep2}ss");
-            genericFormats.Add($"yyyy{sep1}MM{sep2}dd{sep3} HH{timeSep1}mm{timeSep2}ss");
-            genericFormats.Add($"yyyy{sep1}M{sep2}d{sep3} H{timeSep1}mm{timeSep2}ss");
+            dateFormats.Add($"d{sep1}M{sep2}yyyy{sep3} H{timeSep1}mm{timeSep2}ss");
+            dateFormats.Add($"M{sep1}d{sep2}yyyy{sep3} H{timeSep1}mm{timeSep2}ss");
+            dateFormats.Add($"yyyy{sep1}M{sep2}d{sep3} H{timeSep1}mm{timeSep2}ss");
         }
         else if (dateMatch2.Success)
         {
             string sep1 = dateMatch2.Groups[2].Value ?? "";
             string sep2 = dateMatch2.Groups[4].Value ?? "";
-            genericFormats.Add($"dd{sep1}MMM{sep2}yyyy HH{timeSep1}mm{timeSep2}ss");
-            genericFormats.Add($"d{sep1}MMM{sep2}yyyy H{timeSep1}mm{timeSep2}ss");
-            genericFormats.Add($"yyyy{sep1}MMM{sep2}dd HH{timeSep1}mm{timeSep2}ss");
-            genericFormats.Add($"yyyy{sep1}MMM{sep2}d H{timeSep1}mm{timeSep2}ss");
+            dateFormats.Add($"d{sep1}MMM{sep2}yyyy H{timeSep1}mm{timeSep2}ss");
+            dateFormats.Add($"yyyy{sep1}MMM{sep2}d H{timeSep1}mm{timeSep2}ss");
         }
 
         List<DateTime> parsedDates = new();
@@ -289,15 +284,15 @@ public class RPHAnalyzer
         if (success)
             parsedDates.Add(parsedDate1);
 
-        foreach (string genericFormat in genericFormats)
+        foreach (string dateFormat in dateFormats)
         {
-            bool successExact = DateTime.TryParseExact(dateTimeString, genericFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out DateTime parsedDate2);
+            bool successExact = DateTime.TryParseExact(dateTimeString, dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out DateTime parsedDate2);
             if (successExact)
                 parsedDates.Add(parsedDate2);
         }        
         
         DateTime currentDate = DateTime.Now;
-        DateTime currentDateWithBuffer = currentDate.AddHours(24); // add a buffer of 14h to allow for any time zone differences
+        DateTime currentDateWithBuffer = currentDate.AddHours(24); // add a buffer of 24h to allow for any time zone differences
         DateTime closestDate = DateTime.MinValue;
         TimeSpan closestDifference = TimeSpan.MaxValue;
         bool noValidResult = true;
@@ -314,7 +309,6 @@ public class RPHAnalyzer
             if (parsedDate <= currentDateWithBuffer)
             {
                 TimeSpan difference = currentDate - parsedDate;
-                
                 if (difference < closestDifference)
                 {
                     closestDifference = difference;
