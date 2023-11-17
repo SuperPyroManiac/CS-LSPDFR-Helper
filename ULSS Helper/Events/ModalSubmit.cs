@@ -40,6 +40,7 @@ public class ModalSubmit
             {
                 Regex = e.Values["errReg"],
                 Solution = e.Values["errSol"],
+                Description = e.Values["errDesc"],
                 Level = Program.ErrLevel.ToString().ToUpper()
             };
             
@@ -83,14 +84,12 @@ public class ModalSubmit
         
         if (e.Interaction.Data.CustomId == "edit-error")
         {
-            var errReg = e.Values["errReg"];
-            var errSol = e.Values["errSol"];
-
             var err = new Error()
             {
                 ID = Program.ErrId,
-                Regex = errReg,
-                Solution = errSol,
+                Regex = e.Values["errReg"],
+                Solution = e.Values["errSol"],
+                Description = e.Values["errDesc"],
                 Level = Program.ErrLevel.ToString()
             };
 

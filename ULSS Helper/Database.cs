@@ -193,7 +193,7 @@ internal class Database //TODO: Make strings safe
         {
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             cnn.Open();
-            cnn.Execute("insert into Error (Regex, Solution, Level) VALUES (@Regex, @Solution, @Level)", error);
+            cnn.Execute("insert into Error (Regex, Solution, Info, Level) VALUES (@Regex, @Solution, @Description, @Level)", error);
             long id = ((SQLiteConnection) cnn).LastInsertRowId;
             cnn.Close();
             return id;    
@@ -226,7 +226,7 @@ internal class Database //TODO: Make strings safe
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
-            cnn.Execute($"UPDATE Error SET (Regex, Solution, Level) = (@Regex, @Solution, @Level) WHERE ID = (@ID)", error);
+            cnn.Execute($"UPDATE Error SET (Regex, Solution, Info, Level) = (@Regex, @Solution, @Description, @Level) WHERE ID = (@ID)", error);
         }
         catch (SQLiteException e)
         {
