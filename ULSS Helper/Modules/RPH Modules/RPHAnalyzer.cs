@@ -199,7 +199,7 @@ public class RPHAnalyzer
             var libErr = new Error();
             libErr.ID = "1";
             libErr.Level = "SEVERE";
-            libErr.Solution = $"**Install the following missing files**:\r\n- {linkedLibstring}";
+            libErr.Solution = $"**You are missing these required files**:\r\n- {linkedLibstring}";
             
             log.Errors.Add(libErr);
         }
