@@ -1,5 +1,6 @@
 ﻿using ULSS_Helper.Objects;
 using System.Text.Json;
+using System.Text.Encodings.Web;
 
 namespace ULSS_Helper;
 
@@ -64,8 +65,9 @@ internal class Settings
         // if file doesn't exist, create one with the default config (including a placeholder for the token)
         if (!File.Exists(jsonFilePath))
         {
-            FileStream newFile = File.Create(jsonFilePath);
-            JsonSerializer.Serialize(newFile, GetDefaultEnvConfig(), options: new JsonSerializerOptions() { WriteIndented = true });
+            var options = new JsonSerializerOptions() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
+            using (FileStream newFile = File.Create(jsonFilePath))
+                JsonSerializer.Serialize(newFile, GetDefaultEnvConfig(), options: options);
             throw new FileNotFoundException($"Environment config file could not be found. One has been created for you. Please add your bot token to the file!", jsonFilePath);
         }
         
