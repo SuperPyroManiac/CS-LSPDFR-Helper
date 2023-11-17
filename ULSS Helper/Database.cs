@@ -129,7 +129,7 @@ internal class Database //TODO: Make strings safe
         }
     }
 
-    internal static List<Error> FindErrors(string? ID, string? Regex, string? Solution, Level? Level, bool? exactMatch=false)
+    internal static List<Error> FindErrors(string? ID, string? Regex, string? Solution, string? Description, Level? Level, bool? exactMatch=false)
     {
         try
         {
@@ -146,6 +146,7 @@ internal class Database //TODO: Make strings safe
             if (ID != null) conditions.Add("ID" + comparisonOperator + ID.ToString() + endOfComparison);
             if (Regex != null) conditions.Add("Regex" + comparisonOperator + Regex + endOfComparison);
             if (Solution != null) conditions.Add("Solution" + comparisonOperator + Solution + endOfComparison);
+            if (Description != null) conditions.Add("Info" + comparisonOperator + Description + endOfComparison);
             if (Level != null) conditions.Add("Level" + comparisonOperator + Level.ToString() + endOfComparison);
             
             if (conditions.Count == 0) throw new InvalidDataException("At least one of the input parameters has to have a non-null value!");

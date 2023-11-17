@@ -44,7 +44,7 @@ public class FindErrors : ApplicationCommandModule
             );
             Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info(searchParamsListForLog));
             
-            List<Error> errorsFound = Database.FindErrors(errId, regex, solution, level, exactMatch);
+            List<Error> errorsFound = Database.FindErrors(errId, regex, solution, description, level, exactMatch);
             
             if (errorsFound.Count > 0) 
             {
@@ -69,6 +69,7 @@ public class FindErrors : ApplicationCommandModule
                         + $"> **__Error ID {error.ID}__**\r\n"
                         + $"> **Regex:**\r\n> `{error.Regex.Replace("\n", "`\n> `") ?? " "}`\r\n> \r\n" 
                         + $"> **Solution:**\r\n> {error.Solution.Replace("\n", "\n> ") ?? " "}\r\n> \r\n"
+                        + $"> **Description:**\r\n> {error.Description.Replace("\n", "\n> ") ?? " "}\r\n> \r\n"
                         + $"> **Level:**\r\n> {error.Level}";
                     currentResultsPerPage++;
                     if (currentResultsPerPage == resultsPerPage || i == errorsFound.Count-1) {

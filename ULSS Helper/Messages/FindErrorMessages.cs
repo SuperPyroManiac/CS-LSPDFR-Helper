@@ -32,7 +32,7 @@ internal class FindErrorMessages : FindBaseMessages
         string errorSolution = $"**Solution:**\r\n```\n{newError.Solution}\n```\r\n";
         string errorDescription = $"**Description:**\r\n```\n{newError.Description}\n```\r\n";
         string errorLevel = $"**Level:** {newError.Level}";
-        string errorPropsList = errorRegex + errorSolution + errorLevel;
+        string errorPropsList = errorRegex + errorSolution + errorDescription + errorLevel;
 
         DiscordEmbedBuilder? embed = null;
         switch (operation)
