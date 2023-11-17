@@ -171,8 +171,8 @@ internal class RPHProcess : SharedLogInfo
         
         embed = AddCommonFields(embed);
 
-        var ts = Database.LoadTS().FirstOrDefault(x => x.ID.ToString() == eventArgs.User.Id.ToString());
-        var update = false;
+        TS? ts = Database.LoadTS().FirstOrDefault(ts => ts.ID.ToString().Equals(eventArgs.User.Id.ToString()));
+        bool update = false;
         foreach (var error in log.Errors)
         {
             if (error.Level == "CRITICAL") update = true;
@@ -183,11 +183,11 @@ internal class RPHProcess : SharedLogInfo
             }
             if (!update)
             {
-                if (ts.View == 1)
+                if (ts == null || ts.View == 1)
                     embed.AddField($"```{error.Level.ToString()} ID: {error.ID}``` Troubleshooting Steps:",
                         $"> {error.Solution.Replace("\n", "\n> ")}");
             
-                if (ts.View == 0 && error.Level != "XTRA")
+                if (ts != null && ts.View == 0 && error.Level != "XTRA")
                     embed.AddField($"```{error.Level.ToString()} ID: {error.ID}``` Troubleshooting Steps:",
                         $"> {error.Solution.Replace("\n", "\n> ")}");
             }
