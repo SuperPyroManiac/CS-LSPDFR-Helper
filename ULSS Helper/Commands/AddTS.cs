@@ -19,6 +19,12 @@ public class AddTS : ApplicationCommandModule
             return;
         }
 
+        if (Database.LoadTS().Any(ts => ts.ID == id))
+        {
+            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("This TS already exists in the database!"));
+            return;
+        }
+
         var allowint = 0;
         if (allow) allowint = 1;
         var ts = new TS();
