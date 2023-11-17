@@ -43,9 +43,9 @@ public class FindErrors : ApplicationCommandModule
                 exactMatch
             );
             Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info(searchParamsListForLog));
-            
+
             List<Error> errorsFound = Database.FindErrors(errId, regex, solution, description, level, exactMatch);
-            
+
             if (errorsFound.Count > 0) 
             {
                 int resultsPerPage = 3;
@@ -69,7 +69,7 @@ public class FindErrors : ApplicationCommandModule
                         + $"> **__Error ID {error.ID}__**\r\n"
                         + $"> **Regex:**\r\n> `{error.Regex.Replace("\n", "`\n> `") ?? " "}`\r\n> \r\n" 
                         + $"> **Solution:**\r\n> {error.Solution.Replace("\n", "\n> ") ?? " "}\r\n> \r\n"
-                        + $"> **Description:**\r\n> {error.Description.Replace("\n", "\n> ") ?? " "}\r\n> \r\n"
+                        + $"> **Description:**\r\n> {error.Description}\r\n> \r\n"
                         + $"> **Level:**\r\n> {error.Level}";
                     currentResultsPerPage++;
                     if (currentResultsPerPage == resultsPerPage || i == errorsFound.Count-1) {
@@ -84,7 +84,7 @@ public class FindErrors : ApplicationCommandModule
                         currentResultsPerPage = 0;
                     }
                 }
-                
+
                 await ctx.Interaction.SendPaginatedResponseAsync(true, ctx.User, pages, asEditResponse: true);
                 return;
             }
