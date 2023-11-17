@@ -1,42 +1,19 @@
 ﻿using ULSS_Helper.Objects;
 using System.Text.Json;
+using System.Text.Encodings.Web;
 
 namespace ULSS_Helper;
 
 internal class Settings
 {
+    private const string ConfigFileName = "environment-config.json";
     internal string DbPath { get; }
     internal string DbLocation  { get; }
     internal EnvironmentConfig Env { get; }
 
     internal Settings()
     {
-        string configFileName = "environment-config.json";
-        try 
-        {
-            string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), configFileName);
-            string jsonContent = File.ReadAllText(jsonFilePath);
-
-            EnvironmentConfig? parsedEnvJson = JsonSerializer.Deserialize<EnvironmentConfig>(jsonContent);
-            if (parsedEnvJson != null) 
-            {
-                Env = parsedEnvJson;
-                Console.WriteLine($"Successfully loaded environment config from '{configFileName}'!");
-            }
-            else throw new Exception("parsedEnvJson is null!");
-        }
-        catch (Exception e)
-        {     
-            Console.WriteLine($"Warning: The '{configFileName}' could not be parsed.");
-            Console.WriteLine(e);
-            Console.WriteLine("Using the default config instead...");
-            Env = GetDefaultEnvConfig();
-        }
-
-        List<ulong> serverIdWhitelist = new(){449706194140135444, 1166534357792600155};
-        if (!serverIdWhitelist.Any(whitelistId => whitelistId == Env.ServerId))
-            throw new InvalidDataException($"Error in Environment Config: You are not allowed to use this bot on the Discord server with ID '{Env.ServerId}'!");
-        
+        Env = LoadEnvConfigFile();
         DbPath = Path.Combine(Directory.GetCurrentDirectory(), Env.DbFileName);
         DbLocation = $"Data Source={DbPath};Version=3;";
     }
@@ -81,10 +58,41 @@ internal class Settings
         return path;
     }
 
+    private static EnvironmentConfig LoadEnvConfigFile()
+    {
+        string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), ConfigFileName);
+
+        // if file doesn't exist, create one with the default config (including a placeholder for the token)
+        if (!File.Exists(jsonFilePath))
+        {
+            var options = new JsonSerializerOptions() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
+            using (FileStream newFile = File.Create(jsonFilePath))
+                JsonSerializer.Serialize(newFile, GetDefaultEnvConfig(), options: options);
+            throw new FileNotFoundException($"Environment config file could not be found. One has been created for you. Please add your bot token to the file!", jsonFilePath);
+        }
+        
+        string jsonContent = File.ReadAllText(jsonFilePath);
+        EnvironmentConfig? env = JsonSerializer.Deserialize<EnvironmentConfig>(jsonContent);
+        if (env == null) 
+            throw new FileLoadException("Environment config file could not be loaded or parsed. If you delete the current config file and restart the bot, it will generate a new default config file with a placeholder value.", jsonFilePath);
+
+        // check if the token placeholder was replaced
+        if (env.BotToken.Equals(GetDefaultEnvConfig().BotToken))
+            throw new InvalidDataException($"Error in Environment Config: Please replace the token placeholder '{GetDefaultEnvConfig().BotToken}' in the {ConfigFileName} with an actual Discord bot token!");
+
+        // only allow this bot on specific Discord servers
+        List<ulong> serverIdWhitelist = new(){449706194140135444, 1166534357792600155};
+        if (!serverIdWhitelist.Any(whitelistId => whitelistId == env.ServerId))
+            throw new InvalidDataException($"Error in Environment Config: You are not allowed to use this bot on the Discord server with ID '{env.ServerId}'!");
+        
+        Console.WriteLine($"Successfully loaded environment config from '{ConfigFileName}'!");
+        return env;
+    }
+
     private static EnvironmentConfig GetDefaultEnvConfig()
     {
         return new EnvironmentConfig(
-            BotToken: "TOKEN",
+            BotToken: "INSERT_BOT_TOKEN_HERE",
             DbFileName: "ULSSDB.db",
             RphVersion: "1.106.1330.16514",
             LspdfrVersion: "0.4.8678.25591",
