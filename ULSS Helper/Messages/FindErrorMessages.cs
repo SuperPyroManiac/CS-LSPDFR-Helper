@@ -7,7 +7,7 @@ namespace ULSS_Helper.Messages;
 
 internal class FindErrorMessages : FindBaseMessages
 {    
-    internal static string GetSearchParamsList(string title, string? errId, string? regex, string? solution, Level? level, bool? exactMatch) 
+    internal static string GetSearchParamsList(string title, string? errId, string? regex, string? solution, string? description, Level? level, bool? exactMatch) 
     {
         string searchParamsList = $"**{title}**\r\n";
         if (errId != null)
@@ -16,6 +16,8 @@ internal class FindErrorMessages : FindBaseMessages
             searchParamsList += $"- **Regex:**\n```\n{regex}\n```\r\n";
         if (solution != null)
             searchParamsList += $"- **Solution:**\n```\n{solution}\n```\r\n";
+        if (description != null)
+            searchParamsList += $"- **Description:**\n```\n{description}\n```\r\n";
         if (level != null)
             searchParamsList += $"- **Level:** *{level}*\r\n";
         if (exactMatch != null)
@@ -28,6 +30,7 @@ internal class FindErrorMessages : FindBaseMessages
     {
         string errorRegex = $"**Regex:**\r\n```\n{newError.Regex}\n```\r\n";
         string errorSolution = $"**Solution:**\r\n```\n{newError.Solution}\n```\r\n";
+        string errorDescription = $"**Description:**\r\n```\n{newError.Description}\n```\r\n";
         string errorLevel = $"**Level:** {newError.Level}";
         string errorPropsList = errorRegex + errorSolution + errorLevel;
 
@@ -46,6 +49,7 @@ internal class FindErrorMessages : FindBaseMessages
                 {
                     new ModifiedProperty("Regex", oldError.Regex, newError.Regex, errorRegex),
                     new ModifiedProperty("Solution", oldError.Solution, newError.Solution, errorSolution),
+                    new ModifiedProperty("Description", oldError.Description, newError.Description, errorDescription),
                     new ModifiedProperty("Level", oldError.Level, newError.Level, errorLevel),
                 };
                 try 

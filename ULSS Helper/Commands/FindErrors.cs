@@ -17,6 +17,7 @@ public class FindErrors : ApplicationCommandModule
         [Option("ID", "The error id in the bot's database.")] string? errId=null,
         [Option("Regex", "Regex for detecting the error.")] string? regex=null,
         [Option("Solution", "Solution for the error.")] string? solution=null,
+        [Option("Description", "Description for the error.")] string? description=null,
         [Option("Level", $"Error level (WARN, SEVERE, CRITICAL).")] Level? level=null,
         [Option("Strict_Search", "true = enabled, false = disabled (approximate search)")] bool? exactMatch=false
         )
@@ -37,6 +38,7 @@ public class FindErrors : ApplicationCommandModule
                 errId,
                 regex,
                 solution,
+                description,
                 level,
                 exactMatch
             );
@@ -54,6 +56,7 @@ public class FindErrors : ApplicationCommandModule
                     errId,
                     regex,
                     solution,
+                    description,
                     level,
                     exactMatch
                 ) + "\r\nSearch results:";
@@ -89,7 +92,7 @@ public class FindErrors : ApplicationCommandModule
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder()
                     .AddEmbed(
                         BasicEmbeds.Warning(
-                            FindErrorMessages.GetSearchParamsList("No errors found with the following search parameters:", errId, regex, solution, level, exactMatch)
+                            FindErrorMessages.GetSearchParamsList("No errors found with the following search parameters:", errId, regex, solution, description, level, exactMatch)
                         )
                     )
                 );
