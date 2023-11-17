@@ -7,7 +7,7 @@ namespace ULSS_Helper.Messages;
 
 internal class FindPluginMessages : FindBaseMessages
 {
-    internal static string GetSearchParamsList(string title, string? plugName, string? plugDName, string? plugId, State? plugState, bool? exactMatch)
+    internal static string GetSearchParamsList(string title, string? plugName, string? plugDName, string? plugId, State? plugState, string? plugDescription, bool? exactMatch)
     {
         string searchParamsList = $"**{title}**\r\n";
         if (plugName != null)
@@ -16,6 +16,8 @@ internal class FindPluginMessages : FindBaseMessages
             searchParamsList += $"- **Display Name:** *{plugDName}*\r\n";
         if (plugId != null)
             searchParamsList += $"- **ID (on lcpdfr.com):** *{plugId}*\r\n";
+        if (plugDescription != null)
+            searchParamsList += $"- **Description:** *{plugDescription}*\r\n";
         if (plugState != null)
             searchParamsList += $"- **State:** *{plugState}*\r\n";
         if (exactMatch != null)
@@ -31,9 +33,10 @@ internal class FindPluginMessages : FindBaseMessages
         string pluginVersion = $"**Version:** {newPlugin.Version}\r\n";
         string pluginEaVersion = $"**Early Access Version:** {newPlugin.EAVersion}\r\n";
         string pluginId = $"**ID (on lcpdfr.com):** {newPlugin.ID}\r\n";
+        string pluginDescription = $"**Description:** {newPlugin.Description}\r\n";
         string pluginLink = $"**Link:** {newPlugin.Link}\r\n";
         string pluginState = $"**State:** {newPlugin.State}";
-        string pluginPropsList = pluginDbRowId + pluginDName + pluginVersion + pluginEaVersion + pluginId + pluginLink + pluginState;
+        string pluginPropsList = pluginDbRowId + pluginDName + pluginVersion + pluginEaVersion + pluginId + pluginDescription + pluginLink + pluginState;
         
         DiscordEmbedBuilder? embed = null;
         switch (operation)
@@ -53,6 +56,7 @@ internal class FindPluginMessages : FindBaseMessages
                     new ModifiedProperty("Version", oldPlugin.Version, newPlugin.Version, pluginVersion),
                     new ModifiedProperty("Early Access Version", oldPlugin.EAVersion, newPlugin.EAVersion, pluginEaVersion),
                     new ModifiedProperty("ID (on lcpdfr.com)", oldPlugin.ID, newPlugin.ID, pluginId),
+                    new ModifiedProperty("Description)", oldPlugin.Description, newPlugin.Description, pluginDescription),
                     new ModifiedProperty("Link", oldPlugin.Link, newPlugin.Link, pluginLink),
                     new ModifiedProperty("State", oldPlugin.State, newPlugin.State, pluginState),
                 };

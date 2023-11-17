@@ -18,6 +18,7 @@ public class FindPlugins : ApplicationCommandModule
         [Option("DName", "The plugin's display name.")] string? plugDName=null,
         [Option("ID", "The plugin's id on lcpdfr.com.")] string? plugId=null,
         [Option("State", "The plugin's state (LSPDFR, EXTERNAL, BROKEN, LIB).")] State? plugState=null,
+        [Option("Description", "The plugin's description.")] string? plugDescription=null,
         [Option("Strict_Search", "true = enabled, false = disabled (approximate search)")] bool? exactMatch=false
         )
     {
@@ -43,11 +44,12 @@ public class FindPlugins : ApplicationCommandModule
                 plugDName, 
                 plugId, 
                 plugState, 
+                plugDescription,
                 exactMatch
             );
             Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info(searchParamsListForLog));
             
-            List<Plugin> pluginsFound = Database.FindPlugins(plugName, plugDName, plugId, plugState, exactMatch);
+            List<Plugin> pluginsFound = Database.FindPlugins(plugName, plugDName, plugId, plugState, plugDescription, exactMatch);
 
             if (pluginsFound.Count > 0) 
             {
@@ -60,6 +62,7 @@ public class FindPlugins : ApplicationCommandModule
                     plugDName, 
                     plugId, 
                     plugState, 
+                    plugDescription,
                     exactMatch
                 ) + "\r\nSearch results:";
 
@@ -73,6 +76,7 @@ public class FindPlugins : ApplicationCommandModule
                         + $"> **Version:** {plugin.Version}\r\n"
                         + $"> **Early Access Version:** {plugin.EAVersion}\r\n"
                         + $"> **ID (on lcpdfr.com):** {plugin.ID}\r\n"
+                        + $"> **Description:** {plugin.Description}\r\n" 
                         + $"> **Link:** {plugin.Link}\r\n"
                         + $"> **State:** {plugin.State}";
                     currentResultsPerPage++;
@@ -96,7 +100,7 @@ public class FindPlugins : ApplicationCommandModule
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder()
                     .AddEmbed(
                         BasicEmbeds.Warning(
-                            FindPluginMessages.GetSearchParamsList($"No plugins found with the following search parameters:", plugName, plugDName, plugId, plugState, exactMatch)
+                            FindPluginMessages.GetSearchParamsList($"No plugins found with the following search parameters:", plugName, plugDName, plugId, plugState, plugDescription, exactMatch)
                         )
                     )
                 );
