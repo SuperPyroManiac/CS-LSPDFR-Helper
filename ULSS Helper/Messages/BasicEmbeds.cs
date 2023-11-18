@@ -34,6 +34,16 @@ internal static class BasicEmbeds
         return embed;
     }
 
+    internal static DiscordEmbedBuilder Success(string msg)
+    {
+        var embed = new DiscordEmbedBuilder
+        {
+            Description = $":yes:  {msg}",
+            Color = DiscordColor.SapGreen
+        };
+        return embed;
+    }
+
     internal static DiscordEmbedBuilder Generic(string msg, DiscordColor color)
     {
         var embed = new DiscordEmbedBuilder
