@@ -36,8 +36,8 @@ public class ExportPlugins : ApplicationCommandModule
 
         var fs = new FileStream(Path.Combine(Directory.GetCurrentDirectory(), "Exports", "PluginExport.xml"), FileMode.Open, FileAccess.Read);
         var bd = new DiscordInteractionResponseBuilder();
-        bd.AddEmbed(BasicEmbeds.Info("Exporting plugins..."));
         bd.AddFile(fs, AddFileOptions.CloseStream);
+        bd.AddEmbed(BasicEmbeds.Info("Plugins Exported.."));
         bd.IsEphemeral = true;
         await ctx.CreateResponseAsync(bd);
         Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info("Exported plugins!"));

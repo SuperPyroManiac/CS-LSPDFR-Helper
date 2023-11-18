@@ -35,9 +35,11 @@ public class ExportErrors : ApplicationCommandModule
         }
 
         var fs = new FileStream(Path.Combine(Directory.GetCurrentDirectory(), "Exports", "ErrorExport.xml"), FileMode.Open, FileAccess.Read);
-        await ctx.CreateResponseAsync(BasicEmbeds.Info("Exporting errors..."));
-        await ctx.Channel.SendMessageAsync(new DiscordMessageBuilder()
-            .AddFile(fs, AddFileOptions.CloseStream));
+        var bd = new DiscordInteractionResponseBuilder();
+        bd.AddFile(fs, AddFileOptions.CloseStream);
+        bd.AddEmbed(BasicEmbeds.Info("Errors Exported.."));
+        bd.IsEphemeral = true;
+        await ctx.CreateResponseAsync(bd);
         Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info("Exported errors!"));
     }
 }
