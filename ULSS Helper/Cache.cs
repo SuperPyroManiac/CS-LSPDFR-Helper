@@ -4,7 +4,7 @@ namespace ULSS_Helper;
 
 internal class Cache
 {
-    private Dictionary<ulong, ProcessCache> ProcessCache = new Dictionary<ulong, ProcessCache>();
+    private Dictionary<ulong, ProcessCache> ProcessCache = new();
 
     internal void SaveProcess(ulong messageId, ProcessCache processCache)
     {

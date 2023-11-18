@@ -66,8 +66,8 @@ internal class Settings
         if (!File.Exists(jsonFilePath))
         {
             var options = new JsonSerializerOptions() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
-            using (FileStream newFile = File.Create(jsonFilePath))
-                JsonSerializer.Serialize(newFile, GetDefaultEnvConfig(), options: options);
+            using FileStream newFile = File.Create(jsonFilePath);
+            JsonSerializer.Serialize(newFile, GetDefaultEnvConfig(), options: options);
             throw new FileNotFoundException($"Environment config file could not be found. One has been created for you. Please add your bot token to the file!", jsonFilePath);
         }
         
@@ -82,7 +82,7 @@ internal class Settings
 
         // only allow this bot on specific Discord servers
         List<ulong> serverIdWhitelist = new(){449706194140135444, 1166534357792600155};
-        if (!serverIdWhitelist.Any(whitelistId => whitelistId == env.ServerId))
+        if (serverIdWhitelist.All(whitelistId => whitelistId != env.ServerId))
             throw new InvalidDataException($"Error in Environment Config: You are not allowed to use this bot on the Discord server with ID '{env.ServerId}'!");
         
         Console.WriteLine($"Successfully loaded environment config from '{ConfigFileName}'!");

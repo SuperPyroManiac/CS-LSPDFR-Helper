@@ -18,21 +18,21 @@ public class ASIAnalyzer
         var log = new ASILog();
         log.DownloadLink = attachmentUrl;
         var wholeLog = File.ReadAllText(path: fullFilePath);
-        log.LoadedASIFiles = new List<string>();
-        log.FailedASIFiles = new List<string>();
+        log.LoadedAsiFiles = new List<string>();
+        log.FailedAsiFiles = new List<string>();
         
         var regexFailedASI = new Regex(@"^\s+.(.+.asi). failed to load.*", RegexOptions.Multiline);
         var matchesFailedASI = regexFailedASI.Matches(wholeLog);
         foreach (Match match in matchesFailedASI)
         {
-            log.FailedASIFiles.Add(match.Groups[1].Value);
+            log.FailedAsiFiles.Add(match.Groups[1].Value);
         }
         
         var regexLoadedASI = new Regex(@"^\s+.(.+.asi). (?!failed to load).*", RegexOptions.Multiline);
         var matchesLoadedASI = regexLoadedASI.Matches(wholeLog);
         foreach (Match match in matchesLoadedASI)
         {
-            log.LoadedASIFiles.Add(match.Groups[1].Value);
+            log.LoadedAsiFiles.Add(match.Groups[1].Value);
         }
         
         timer.Stop();
@@ -42,9 +42,9 @@ public class ASIAnalyzer
         Console.WriteLine("ASI Log Processed...");
         Console.WriteLine($"Time: {log.ElapsedTime}MS");
         Console.WriteLine("");
-        Console.WriteLine($"Loaded: {log.LoadedASIFiles.Count}");
+        Console.WriteLine($"Loaded: {log.LoadedAsiFiles.Count}");
         Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine($"Failed: {log.FailedASIFiles.Count}");
+        Console.WriteLine($"Failed: {log.FailedAsiFiles.Count}");
         Console.ForegroundColor = ConsoleColor.White;
         Console.WriteLine("");
         Console.WriteLine("");

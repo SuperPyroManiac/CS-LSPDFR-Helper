@@ -1,15 +1,12 @@
 ﻿using System.Reflection;
 using DSharpPlus;
-using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
-using ULSS_Helper.Modules;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using ULSS_Helper.Events;
 using ULSS_Helper.Objects;
-using Timer = ULSS_Helper.Timer;
 using ULSS_Helper.Messages;
 
 namespace ULSS_Helper;
@@ -18,14 +15,13 @@ internal class Program
 {
     internal static DiscordClient Client {get; set;}
     internal static Settings Settings;
-    internal static Cache Cache = new Cache();
-    internal static CommandsNextExtension Commands {get; set;}
+    internal static Cache Cache = new();
     public static string? PlugName;
     public static string? ErrId;
     public static State PlugState;
     public static Level ErrLevel;
     
-    static async Task Main(string[] args)
+    static async Task Main(string[] _)
     {
         Timer.StartTimer();
 

@@ -31,7 +31,7 @@ public class RPHAnalyzer
         log.Missing = new List<Plugin?>();
         log.Missmatch = new List<Plugin>();
         log.Errors = new List<Error?>();
-        log.MissingLib = new List<Plugin?>();
+        log.MissingDepend = new List<Plugin?>();
         var linkedLib = new List<string>();
 
         if (reader.Length > 0)
@@ -180,20 +180,24 @@ public class RPHAnalyzer
         var libmatch = libregex.Matches(wholeLog);
         foreach (Match match in libmatch)
         {
-            if (!log.MissingLib.Any(x => x.Name.Equals(match.Groups[2].Value)))
+            if (!log.MissingDepend.Any(x => x.Name.Equals(match.Groups[2].Value)))
             {
                 var newLib = new Plugin
                 { Name = match.Groups[2].Value, State = "LIB" };
-                foreach (var plugin in pluginData.Where(plugin => plugin.Name.Equals(newLib.Name))) newLib.Link = plugin.Link;
-                log.MissingLib.Add(newLib);
+                foreach (var plugin in pluginData.Where(plugin => plugin.Name.Equals(newLib.Name)))
+                {
+                    newLib.DName = plugin.DName;
+                    newLib.Link = plugin.Link;
+                }
+                log.MissingDepend.Add(newLib);
             }
         }
-        if (log.MissingLib.Any())
+        if (log.MissingDepend.Any())
         {
-            linkedLib = log.MissingLib.Select(
+            linkedLib = log.MissingDepend.Select(
                 plugin => (plugin?.Link != null && plugin.Link.StartsWith("https://"))
-                    ? $"[{plugin.Name}]({plugin.Link})"
-                    : $"[{plugin?.Name}](https://www.google.com/search?q=lspdfr+{plugin.Name.Replace(" ", "+")})"
+                    ? $"[{plugin.DName}]({plugin.Link})"
+                    : $"[{plugin?.DName}](https://www.google.com/search?q=lspdfr+{plugin.Name.Replace(" ", "+")})"
             ).ToList();
             var linkedLibstring = string.Join("\r\n- ", linkedLib);
             var libErr = new Error();
@@ -218,7 +222,7 @@ public class RPHAnalyzer
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine($"Broken: {log.Broken.Count}");
         Console.WriteLine($"Incorrect Library: {log.Library.Count}");
-        Console.WriteLine($"Missing Library: {log.MissingLib.Count}");
+        Console.WriteLine($"Missing Library: {log.MissingDepend.Count}");
         Console.ForegroundColor = ConsoleColor.Blue;
         Console.WriteLine($"Missing: {log.Missing.Count}");
         Console.WriteLine($"Newer: {log.Missmatch.Count}");
