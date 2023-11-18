@@ -29,7 +29,7 @@ public class ExportPlugins : ApplicationCommandModule
         
         var plugins = Database.LoadPlugins().ToArray();
         var serializer = new XmlSerializer(typeof(Plugin[]));
-        await using (var writer = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "Exports", "PluginExport.xml")))
+        await using (var writer = new StreamWriter(Path.Combine(Settings.GetOrCreateFolder( "Exports"), "PluginExport.xml")))
         {
             serializer.Serialize(writer, plugins);
         }

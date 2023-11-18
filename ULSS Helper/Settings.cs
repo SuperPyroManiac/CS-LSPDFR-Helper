@@ -51,7 +51,7 @@ internal class Settings
         }
     }
 
-    private static string GetOrCreateFolder(string folder)
+    internal static string GetOrCreateFolder(string folder)
     {
         string path = Path.Combine(Directory.GetCurrentDirectory(), folder);
         if (!Path.Exists(path)) Directory.CreateDirectory(path);
