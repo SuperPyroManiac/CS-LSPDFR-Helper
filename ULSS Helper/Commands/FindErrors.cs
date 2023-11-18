@@ -17,6 +17,7 @@ public class FindErrors : ApplicationCommandModule
         [Option("ID", "The error id in the bot's database.")] string? errId=null,
         [Option("Regex", "Regex for detecting the error.")] string? regex=null,
         [Option("Solution", "Solution for the error.")] string? solution=null,
+        [Option("Description", "Description for the error.")] string? description=null,
         [Option("Level", $"Error level (WARN, SEVERE, CRITICAL).")] Level? level=null,
         [Option("Strict_Search", "true = enabled, false = disabled (approximate search)")] bool? exactMatch=false
         )
@@ -37,13 +38,14 @@ public class FindErrors : ApplicationCommandModule
                 errId,
                 regex,
                 solution,
+                description,
                 level,
                 exactMatch
             );
             Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info(searchParamsListForLog));
-            
-            List<Error> errorsFound = Database.FindErrors(errId, regex, solution, level, exactMatch);
-            
+
+            List<Error> errorsFound = Database.FindErrors(errId, regex, solution, description, level, exactMatch);
+
             if (errorsFound.Count > 0) 
             {
                 int resultsPerPage = 3;
@@ -54,6 +56,7 @@ public class FindErrors : ApplicationCommandModule
                     errId,
                     regex,
                     solution,
+                    description,
                     level,
                     exactMatch
                 ) + "\r\nSearch results:";
@@ -66,6 +69,7 @@ public class FindErrors : ApplicationCommandModule
                         + $"> **__Error ID {error.ID}__**\r\n"
                         + $"> **Regex:**\r\n> `{error.Regex.Replace("\n", "`\n> `") ?? " "}`\r\n> \r\n" 
                         + $"> **Solution:**\r\n> {error.Solution.Replace("\n", "\n> ") ?? " "}\r\n> \r\n"
+                        + $"> **Description:**\r\n> {error.Description}\r\n> \r\n"
                         + $"> **Level:**\r\n> {error.Level}";
                     currentResultsPerPage++;
                     if (currentResultsPerPage == resultsPerPage || i == errorsFound.Count-1) {
@@ -80,7 +84,7 @@ public class FindErrors : ApplicationCommandModule
                         currentResultsPerPage = 0;
                     }
                 }
-                
+
                 await ctx.Interaction.SendPaginatedResponseAsync(true, ctx.User, pages, asEditResponse: true);
                 return;
             }
@@ -89,7 +93,7 @@ public class FindErrors : ApplicationCommandModule
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder()
                     .AddEmbed(
                         BasicEmbeds.Warning(
-                            FindErrorMessages.GetSearchParamsList("No errors found with the following search parameters:", errId, regex, solution, level, exactMatch)
+                            FindErrorMessages.GetSearchParamsList("No errors found with the following search parameters:", errId, regex, solution, description, level, exactMatch)
                         )
                     )
                 );

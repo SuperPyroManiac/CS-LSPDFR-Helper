@@ -56,6 +56,7 @@ public class EditError : ApplicationCommandModule
         modal.WithTitle($"Editing error ID: {Program.ErrId}!").WithCustomId("edit-error").AddComponents(
             new TextInputComponent("Error Regex:", "errReg", required: true, style: TextInputStyle.Paragraph, value: error.Regex));
         modal.AddComponents(new TextInputComponent("Error Solution:", "errSol", required: true, style: TextInputStyle.Paragraph, value: error.Solution));
+        modal.AddComponents(new TextInputComponent("Error Description:", "errDesc", required: true, style: TextInputStyle.Paragraph, value: error.Description));
         
         await ctx.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
     }

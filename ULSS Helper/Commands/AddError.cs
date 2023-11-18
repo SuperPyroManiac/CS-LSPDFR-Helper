@@ -32,6 +32,7 @@ public class AddError : ApplicationCommandModule
         modal.WithTitle($"Adding new {lvl.ToString()} error!").WithCustomId("add-error").AddComponents(
             new TextInputComponent("Error Regex:", "errReg", required: true, style: TextInputStyle.Paragraph));
         modal.AddComponents(new TextInputComponent("Error Solution:", "errSol", required: true, style: TextInputStyle.Paragraph));
+        modal.AddComponents(new TextInputComponent("Error Description:", "errDesc", required: true, style: TextInputStyle.Paragraph));
         
         await ctx.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
     }

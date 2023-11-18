@@ -31,6 +31,8 @@ public class RPHAnalyzer
         log.Missing = new List<Plugin?>();
         log.Missmatch = new List<Plugin>();
         log.Errors = new List<Error?>();
+        log.MissingLib = new List<Plugin?>();
+        var linkedLib = new List<string>();
 
         if (reader.Length > 0)
             log.FilePossiblyOutdated = IsPossiblyOutdatedFile(reader[0]);
@@ -173,6 +175,34 @@ public class RPHAnalyzer
                 if (!log.Errors.Any(x => x.Solution == newError.Solution)) log.Errors.Add(newError);
             }
         }
+        
+        var libregex = new Regex(@"\](?! ERROR: Could not load plugin from| SuperEvents: Registering event -| Error while loading plugin).+: (?!Creating|Starting dependency check for|Type .SlimDX.+)(.+)\s* \W(?!ScriptHookVDotNet3|LemonUI\.SHVDN3|ERROR\] there was an error while trying to access plugin:)(.+), Version=.+, Culture=.+PublicKeyToken=");
+        var libmatch = libregex.Matches(wholeLog);
+        foreach (Match match in libmatch)
+        {
+            if (!log.MissingLib.Any(x => x.Name.Equals(match.Groups[2].Value)))
+            {
+                var newLib = new Plugin
+                { Name = match.Groups[2].Value, State = "LIB" };
+                foreach (var plugin in pluginData.Where(plugin => plugin.Name.Equals(newLib.Name))) newLib.Link = plugin.Link;
+                log.MissingLib.Add(newLib);
+            }
+        }
+        if (log.MissingLib.Any())
+        {
+            linkedLib = log.MissingLib.Select(
+                plugin => (plugin?.Link != null && plugin.Link.StartsWith("https://"))
+                    ? $"[{plugin.Name}]({plugin.Link})"
+                    : $"[{plugin?.Name}](https://www.google.com/search?q=lspdfr+{plugin.Name.Replace(" ", "+")})"
+            ).ToList();
+            var linkedLibstring = string.Join("\r\n- ", linkedLib);
+            var libErr = new Error();
+            libErr.ID = "1";
+            libErr.Level = "SEVERE";
+            libErr.Solution = $"**You are missing these required files**:\r\n- {linkedLibstring}";
+            
+            log.Errors.Add(libErr);
+        }
         log.Errors = log.Errors.OrderBy(x => x.Level).ToList();
         
         timer.Stop();
@@ -187,7 +217,8 @@ public class RPHAnalyzer
         Console.WriteLine($"Outdated: {log.Outdated.Count}");
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine($"Broken: {log.Broken.Count}");
-        Console.WriteLine($"Library: {log.Library.Count}");
+        Console.WriteLine($"Incorrect Library: {log.Library.Count}");
+        Console.WriteLine($"Missing Library: {log.MissingLib.Count}");
         Console.ForegroundColor = ConsoleColor.Blue;
         Console.WriteLine($"Missing: {log.Missing.Count}");
         Console.WriteLine($"Newer: {log.Missmatch.Count}");

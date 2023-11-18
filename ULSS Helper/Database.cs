@@ -49,7 +49,7 @@ internal class Database //TODO: Make strings safe
         }
     }
     
-    internal static List<Plugin> FindPlugins(string? Name=null, string? DName=null, string? ID=null, State? State=null, bool? exactMatch=false)
+    internal static List<Plugin> FindPlugins(string? Name=null, string? DName=null, string? ID=null, State? State=null, string? Description=null, bool? exactMatch=false)
     {
         try
         {
@@ -67,6 +67,7 @@ internal class Database //TODO: Make strings safe
             if (DName != null) conditions.Add("DName" + comparisonOperator + DName + endOfComparison);
             if (ID != null) conditions.Add("ID" + comparisonOperator + ID + endOfComparison);
             if (State != null) conditions.Add("State" + comparisonOperator + State.ToString() + endOfComparison);
+            if (Description != null) conditions.Add("Description" + comparisonOperator + Description + endOfComparison);
 
             if (conditions.Count == 0) throw new InvalidDataException("At least one of the input parameters has to have a non-null value!");
             string conditionsString = string.Join(" and ", conditions);
@@ -129,7 +130,7 @@ internal class Database //TODO: Make strings safe
         }
     }
 
-    internal static List<Error> FindErrors(string? ID, string? Regex, string? Solution, Level? Level, bool? exactMatch=false)
+    internal static List<Error> FindErrors(string? ID, string? Regex, string? Solution, string? Description, Level? Level, bool? exactMatch=false)
     {
         try
         {
@@ -146,6 +147,7 @@ internal class Database //TODO: Make strings safe
             if (ID != null) conditions.Add("ID" + comparisonOperator + ID.ToString() + endOfComparison);
             if (Regex != null) conditions.Add("Regex" + comparisonOperator + Regex + endOfComparison);
             if (Solution != null) conditions.Add("Solution" + comparisonOperator + Solution + endOfComparison);
+            if (Description != null) conditions.Add("Description" + comparisonOperator + Description + endOfComparison);
             if (Level != null) conditions.Add("Level" + comparisonOperator + Level.ToString() + endOfComparison);
             
             if (conditions.Count == 0) throw new InvalidDataException("At least one of the input parameters has to have a non-null value!");
@@ -174,7 +176,7 @@ internal class Database //TODO: Make strings safe
         {
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             cnn.Open();
-            cnn.Execute("insert into Plugin (Name, DName, Version, EAVersion, ID, State, Link) VALUES (@Name, @DName, @Version, @EAVersion, @ID, @State, @Link)", plugin);
+            cnn.Execute("insert into Plugin (Name, DName, Version, EAVersion, ID, State, Description, Link) VALUES (@Name, @DName, @Version, @EAVersion, @ID, @State, @Description, @Link)", plugin);
             long id = ((SQLiteConnection) cnn).LastInsertRowId;
             cnn.Close();
             return id;
@@ -193,7 +195,7 @@ internal class Database //TODO: Make strings safe
         {
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             cnn.Open();
-            cnn.Execute("insert into Error (Regex, Solution, Level) VALUES (@Regex, @Solution, @Level)", error);
+            cnn.Execute("insert into Error (Regex, Solution, Description, Level) VALUES (@Regex, @Solution, @Description, @Level)", error);
             long id = ((SQLiteConnection) cnn).LastInsertRowId;
             cnn.Close();
             return id;    
@@ -211,7 +213,7 @@ internal class Database //TODO: Make strings safe
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
-            cnn.Execute($"UPDATE Plugin SET (Name, DName, Version, EAVersion, ID, State, Link) = (@Name, @DName, @Version, @EAVersion, @ID, @State, @Link) WHERE Name = (@Name)", plugin);
+            cnn.Execute($"UPDATE Plugin SET (Name, DName, Version, EAVersion, ID, State, Description, Link) = (@Name, @DName, @Version, @EAVersion, @ID, @State, @Description, @Link) WHERE Name = (@Name)", plugin);
         }
         catch (SQLiteException e)
         {
@@ -226,7 +228,7 @@ internal class Database //TODO: Make strings safe
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
-            cnn.Execute($"UPDATE Error SET (Regex, Solution, Level) = (@Regex, @Solution, @Level) WHERE ID = (@ID)", error);
+            cnn.Execute($"UPDATE Error SET (Regex, Solution, Description, Level) = (@Regex, @Solution, @Description, @Level) WHERE ID = (@ID)", error);
         }
         catch (SQLiteException e)
         {
