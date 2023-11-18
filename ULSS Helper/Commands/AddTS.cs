@@ -13,15 +13,17 @@ public class AddTS : ApplicationCommandModule
     public async Task AddTSCmd(InteractionContext ctx, [Option("ID", "User discord ID")] string id,
         [Option("Allow", "Allow access to the bot commands!")] bool allow)
     {
+        var bd = new DiscordInteractionResponseBuilder();
+        bd.IsEphemeral = true;
         if (!Program.Settings.Env.BotAdminUserIds.Any(adminId => adminId == ctx.Member.Id))
         {
-            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             return;
         }
 
         if (Database.LoadTS().Any(ts => ts.ID == id))
         {
-            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("This TS already exists in the database!"));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("This TS already exists in the database!")));
             return;
         }
 
@@ -33,7 +35,7 @@ public class AddTS : ApplicationCommandModule
         ts.View = 0;
         ts.Allow = allowint;
         Database.AddTS(ts);
-        await ctx.CreateResponseAsync(BasicEmbeds.Warning($"**Added new TS {ts.Username} with user ID: {ts.ID}**"));
+        await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Warning($"**Added new TS {ts.Username} with user ID: {ts.ID}**")));
         Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id,
             BasicEmbeds.Warning($"**Added new TS {ts.Username} with user ID: {ts.ID}**"));
     }
