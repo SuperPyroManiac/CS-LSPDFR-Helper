@@ -35,11 +35,11 @@ public class ExportPlugins : ApplicationCommandModule
         }
 
         var fs = new FileStream(Path.Combine(Directory.GetCurrentDirectory(), "Exports", "PluginExport.xml"), FileMode.Open, FileAccess.Read);
-        //await ctx.CreateResponseAsync(BasicEmbeds.Info("Exporting plugins..."));
-        var bd = new DiscordMessageBuilder();
+        var bd = new DiscordInteractionResponseBuilder();
         bd.AddEmbed(BasicEmbeds.Info("Exporting plugins..."));
         bd.AddFile(fs, AddFileOptions.CloseStream);
-        await ctx.Channel.SendMessageAsync(bd);
+        bd.IsEphemeral = true;
+        await ctx.CreateResponseAsync(bd);
         Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info("Exported plugins!"));
     }
 }
