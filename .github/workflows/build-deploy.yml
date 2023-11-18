@@ -23,9 +23,9 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore
+      run: sudo dotnet build --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: sudo dotnet test --no-build --verbosity normal
 
   deploy:
     if: github.ref == 'refs/heads/main' # this prevents that the "deploy" job is executed during Pull Request checks
@@ -38,7 +38,7 @@ jobs:
     
     steps:
     - name: Publish
-      run: dotnet publish -c Release -o /home/ULSS # replace "/opt/ULSS_Helper" with the actual path to the bot's working directory
+      run: sudo dotnet publish -c Release -o /home/ULSS # replace "/opt/ULSS_Helper" with the actual path to the bot's working directory
 
     - name: Restart app
-      run: pm2 restart 1 # replace "ULSS_Helper" with the actual pm2 process name
+      run: sudo pm2 restart 1 # replace "ULSS_Helper" with the actual pm2 process name
