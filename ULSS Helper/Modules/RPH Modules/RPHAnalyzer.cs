@@ -180,11 +180,11 @@ public class RPHAnalyzer
         var libmatch = libregex.Matches(wholeLog);
         foreach (Match match in libmatch)
         {
-            if (!log.MissingLib.Any(x => x.Name.Contains(match.Groups[2].Value)))
+            if (!log.MissingLib.Any(x => x.Name.Equals(match.Groups[2].Value)))
             {
                 var newLib = new Plugin
                 { Name = match.Groups[2].Value, State = "LIB" };
-                foreach (var plugin in pluginData.Where(plugin => plugin.Name.Contains(newLib.Name))) newLib.Link = plugin.Link;
+                foreach (var plugin in pluginData.Where(plugin => plugin.Name.Equals(newLib.Name))) newLib.Link = plugin.Link;
                 log.MissingLib.Add(newLib);
             }
         }
