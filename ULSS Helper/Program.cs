@@ -10,6 +10,7 @@ using DSharpPlus.Interactivity.Extensions;
 using ULSS_Helper.Events;
 using ULSS_Helper.Objects;
 using Timer = ULSS_Helper.Timer;
+using ULSS_Helper.Messages;
 
 namespace ULSS_Helper;
 
@@ -52,6 +53,7 @@ internal class Program
         Client.UseInteractivity(new InteractivityConfiguration());
 
         await Client.ConnectAsync();
+        StatusMessages.SendStartupMessage();
         await Task.Delay(-1);
     }
     private static async Task MessageSent(DiscordClient s, MessageCreateEventArgs ctx)
