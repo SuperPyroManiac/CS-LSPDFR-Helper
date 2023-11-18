@@ -183,7 +183,7 @@ public class RPHAnalyzer
             if (!log.MissingDepend.Any(x => x.Name.Equals(match.Groups[2].Value)))
             {
                 var newLib = new Plugin
-                { Name = match.Groups[2].Value, State = "LIB" };
+                { Name = match.Groups[2].Value, State = "LIB", DName = match.Groups[2].Value};
                 foreach (var plugin in pluginData.Where(plugin => plugin.Name.Equals(newLib.Name)))
                 {
                     newLib.DName = plugin.DName;
