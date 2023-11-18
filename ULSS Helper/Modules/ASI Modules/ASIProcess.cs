@@ -21,7 +21,7 @@ internal class ASIProcess : SharedLogInfo
             Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl },
             Footer = new DiscordEmbedBuilder.EmbedFooter
             {
-                Text = $"Loaded ASIs: {log.LoadedASIFiles.Count} - Failed ASIs: {log.FailedASIFiles.Count}"
+                Text = $"Loaded ASIs: {log.LoadedAsiFiles.Count} - Failed ASIs: {log.FailedAsiFiles.Count}"
             }
         };
     }
@@ -36,7 +36,7 @@ internal class ASIProcess : SharedLogInfo
         ProcessCache cache = Program.Cache.GetProcessCache(targetMessage.Id);
         embed = AddTsViewFields(embed, cache.OriginalMessage, log.ElapsedTime);
 
-        if (log.FailedASIFiles.Count != 0) 
+        if (log.FailedAsiFiles.Count != 0) 
         {
             embed.AddField($":red_circle:     Some ASIs failed to load!", "Select `More Info` for details!");
         }
@@ -66,8 +66,8 @@ internal class ASIProcess : SharedLogInfo
     
     internal async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs eventArgs)
     {
-        var LoadedASIFilesList = "\r\n- " + string.Join("\r\n- ", log.LoadedASIFiles);
-        var FailedASIFilesList = "\r\n- " + string.Join("\r\n- ", log.FailedASIFiles);
+        var LoadedASIFilesList = "\r\n- " + string.Join("\r\n- ", log.LoadedAsiFiles);
+        var FailedASIFilesList = "\r\n- " + string.Join("\r\n- ", log.FailedAsiFiles);
         ProcessCache cache = Program.Cache.GetProcessCache(eventArgs.Message.Id);
         
         DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Detailed ASI.log Info");
@@ -114,10 +114,10 @@ internal class ASIProcess : SharedLogInfo
             return;
         }
         
-        if (log.LoadedASIFiles.Count > 0)
+        if (log.LoadedAsiFiles.Count > 0)
             embed.AddField(":green_circle:     Loaded ASIs:", LoadedASIFilesList, true);
         
-        if (log.FailedASIFiles.Count > 0) 
+        if (log.FailedAsiFiles.Count > 0) 
             embed.AddField(":red_circle:     Failed ASIs:", FailedASIFilesList, true);
             
         await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,new DiscordInteractionResponseBuilder().AddEmbed(embed).AddComponents(new DiscordComponent[]

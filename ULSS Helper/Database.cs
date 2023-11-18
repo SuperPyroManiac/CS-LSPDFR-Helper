@@ -6,7 +6,7 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper;
 
-internal class Database //TODO: Make strings safe
+internal class Database
 {
     internal static List<Plugin> LoadPlugins()
     {
