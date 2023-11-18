@@ -17,15 +17,17 @@ public class EditError : ApplicationCommandModule
         [Option("New_Level", "Warning type (XTRA, WARN, SEVERE, CRITICAL)")] Level? lvl=null
     )
     {
+        var bd = new DiscordInteractionResponseBuilder();
+        bd.IsEphemeral = true;
         if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
         {
-            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             return;
         }
         var ts = Database.LoadTS().FirstOrDefault(x => x.ID.ToString() == ctx.Member.Id.ToString());
         if (ts == null || ts.Allow == 0)
         {
-            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id,
                 BasicEmbeds.Warning($"**TS attempted to edit error without permission.**"));
             return;
@@ -33,7 +35,7 @@ public class EditError : ApplicationCommandModule
 
         if (!Database.LoadErrors().Any(x => x.ID.ToString() == eI))
         {
-            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error($"No error found with ID: {eI}"));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error($"No error found with ID: {eI}")));
             return;
         }
 

@@ -13,15 +13,17 @@ public class ExportErrors : ApplicationCommandModule
 
     public async Task ExportErrorsCmd(InteractionContext ctx)
     {
+        var bd = new DiscordInteractionResponseBuilder();
+        bd.IsEphemeral = true;
         if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
         {
-            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             return;
         }
         var ts = Database.LoadTS().FirstOrDefault(x => x.ID.ToString() == ctx.Member.Id.ToString());
         if (ts == null || ts.Allow == 0)
         {
-            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id,
                 BasicEmbeds.Warning($"**TS attempted to export errors without permission.**"));
             return;
@@ -35,10 +37,8 @@ public class ExportErrors : ApplicationCommandModule
         }
 
         var fs = new FileStream(Path.Combine(Directory.GetCurrentDirectory(), "Exports", "ErrorExport.xml"), FileMode.Open, FileAccess.Read);
-        var bd = new DiscordInteractionResponseBuilder();
         bd.AddFile(fs, AddFileOptions.CloseStream);
         bd.AddEmbed(BasicEmbeds.Info("Errors Exported.."));
-        bd.IsEphemeral = true;
         await ctx.CreateResponseAsync(bd);
         Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info("Exported errors!"));
     }

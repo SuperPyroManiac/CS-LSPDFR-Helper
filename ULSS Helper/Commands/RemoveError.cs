@@ -13,17 +13,17 @@ public class RemoveError : ApplicationCommandModule
     public async Task RemoveErrorCmd(InteractionContext ctx,
         [Option("ID", "Must match an existing error id!")] string errId)
     {
-        await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
-        
+        var bd = new DiscordInteractionResponseBuilder();
+        bd.IsEphemeral = true;
         if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
         {
-            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             return;
         }
         var ts = Database.LoadTS().FirstOrDefault(x => x.ID.ToString() == ctx.Member.Id.ToString());
         if (ts == null || ts.Allow == 0)
         {
-            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id,
                 BasicEmbeds.Warning($"**TS attempted to remove error without permission.**"));
             return;
@@ -36,14 +36,14 @@ public class RemoveError : ApplicationCommandModule
             {
                 Database.DeleteError(error);
                 isValid = true;
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Warning($"**Removed error with id: {errId}**")));
+                await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Warning($"**Removed error with id: {errId}**")));
                 Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Warning($"Removed error: {errId}!"));
                 return;
             }
         }
         if (!isValid)
         {
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Error($"**No error found with id: {errId}!**")));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error($"**No error found with id: {errId}!**")));
             return;
         }
     }

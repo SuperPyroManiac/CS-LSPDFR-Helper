@@ -12,9 +12,11 @@ public class RemoveTS : ApplicationCommandModule
 
     public async Task RemoveTSCmd(InteractionContext ctx, [Option("ID", "User discord ID")] string id)
     {
+        var bd = new DiscordInteractionResponseBuilder();
+        bd.IsEphemeral = true;
         if (!Program.Settings.Env.BotAdminUserIds.Any(adminId => adminId == ctx.Member.Id))
         {
-            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             return;
         }
         await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);

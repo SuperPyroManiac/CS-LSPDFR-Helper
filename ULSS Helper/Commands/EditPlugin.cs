@@ -17,15 +17,17 @@ public class EditPlugin : ApplicationCommandModule
         [Option("New_State", "Plugin state, LSPDFR, EXTERNAL, BROKEN, LIB")] State? pS=null
     )
     {
+        var bd = new DiscordInteractionResponseBuilder();
+        bd.IsEphemeral = true;
         if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
         {
-            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             return;
         }
         var ts = Database.LoadTS().FirstOrDefault(x => x.ID.ToString() == ctx.Member.Id.ToString());
         if (ts == null || ts.Allow == 0)
         {
-            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id,
                 BasicEmbeds.Warning($"**TS attempted to edit plugin without permission.**"));
             return;
@@ -33,7 +35,7 @@ public class EditPlugin : ApplicationCommandModule
 
         if (!Database.LoadPlugins().Any(x => x.Name == pN))
         {
-            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error($"No plugin found with name {pN}"));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error($"No plugin found with name {pN}")));
             return;
         }
 
