@@ -38,7 +38,7 @@ jobs:
     
     steps:
     - name: Publish
-      run: dotnet publish -c Release -o /opt/ULSS_Helper # replace "/opt/ULSS_Helper" with the actual path to the bot's working directory
+      run: dotnet publish -c Release -o /home/ULSS # replace "/opt/ULSS_Helper" with the actual path to the bot's working directory
 
     - name: Restart app
       run: pm2 restart 1 # replace "ULSS_Helper" with the actual pm2 process name
