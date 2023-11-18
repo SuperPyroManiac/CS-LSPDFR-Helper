@@ -38,7 +38,7 @@ internal static class BasicEmbeds
     {
         var embed = new DiscordEmbedBuilder
         {
-            Description = $":heavy_check_mark:  {msg}",
+            Description = $"{DiscordEmoji.FromName(Program.Client, ":yes:")}  {msg}",
             Color = DiscordColor.SapGreen
         };
         return embed;
