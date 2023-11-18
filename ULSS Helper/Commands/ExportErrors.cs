@@ -29,7 +29,7 @@ public class ExportErrors : ApplicationCommandModule
         
         var errors = Database.LoadErrors().ToArray();
         var serializer = new XmlSerializer(typeof(Error[]));
-        await using (var writer = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "Exports", "ErrorExport.xml")))
+        await using (var writer = new StreamWriter(Path.Combine(Settings.GetOrCreateFolder( "Exports"), "ErrorExport.xml")))
         {
             serializer.Serialize(writer, errors);
         }
