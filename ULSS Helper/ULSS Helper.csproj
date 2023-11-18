@@ -8,6 +8,7 @@
         <LangVersion>default</LangVersion>
         <OutputType>Exe</OutputType>
         <Company>SuperPyroManiac ULSS</Company>
+        <AssemblyName>ULSSHelper</AssemblyName>
     </PropertyGroup>
 
 
