@@ -44,6 +44,8 @@ jobs:
     
     steps:
     - name: Publish
+      env: 
+        version: 1
       run: dotnet publish -c Release -o /home/ULSS
 
     - name: Store build info in file
