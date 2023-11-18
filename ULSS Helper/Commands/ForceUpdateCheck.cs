@@ -12,17 +12,18 @@ public class ForceUpdateCheck : ApplicationCommandModule
 
     public async Task ForceUpdateCmd(InteractionContext ctx)
     {
-        await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
+        var bd = new DiscordInteractionResponseBuilder();
+        bd.IsEphemeral = true;
         
         if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
         {
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             return;
         }
         var ts = Database.LoadTS().FirstOrDefault(x => x.ID.ToString() == ctx.Member.Id.ToString());
         if (ts == null || ts.Allow == 0)
         {
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id,
                 BasicEmbeds.Warning($"**TS attempted to force updates without permission.**"));
             return;
@@ -31,7 +32,7 @@ public class ForceUpdateCheck : ApplicationCommandModule
         var th = new Thread(Database.UpdatePluginVersions);
         th.Start();
         
-        await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Info("All plugin versions will be updated!")));
+        await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("Started DB updater thread!\r\nPlease allow up to 2 minutes for everything to update!")));
         Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info("Forced DB updater to run!"));
     }
 }

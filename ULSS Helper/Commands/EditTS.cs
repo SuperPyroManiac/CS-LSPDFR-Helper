@@ -13,9 +13,11 @@ public class EditTS : ApplicationCommandModule
         InteractionContext ctx, 
         [Option("View", "True shows XTRA errors, False does not.")] bool view)
     {
+        var bd = new DiscordInteractionResponseBuilder();
+        bd.IsEphemeral = true;
         if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
         {
-            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             return;
         }
         if (Database.LoadTS().All(x => x.ID.ToString() != ctx.Member.Id.ToString()))
@@ -44,9 +46,11 @@ public class EditTS : ApplicationCommandModule
         [Option("ID", "User ID to change!")] string id,
         [Option("Allow", "Allow access to advanced bot commands!")] bool allow)
     {
+        var bd = new DiscordInteractionResponseBuilder();
+        bd.IsEphemeral = true;
         if (!Program.Settings.Env.BotAdminUserIds.Any(adminId => adminId == ctx.Member.Id))
         {
-            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             return;
         }
         if (Database.LoadTS().All(x => x.ID.ToString() != id))

@@ -13,15 +13,17 @@ public class ExportPlugins : ApplicationCommandModule
 
     public async Task ExportPluginsCmd(InteractionContext ctx)
     {
+        var bd = new DiscordInteractionResponseBuilder();
+        bd.IsEphemeral = true;
         if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
         {
-            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             return;
         }
         var ts = Database.LoadTS().FirstOrDefault(x => x.ID.ToString() == ctx.Member.Id.ToString());
         if (ts == null || ts.Allow == 0)
         {
-            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You do not have permission for this!"));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id,
                 BasicEmbeds.Warning($"**TS attempted to export plugins without permission.**"));
             return;
@@ -35,9 +37,9 @@ public class ExportPlugins : ApplicationCommandModule
         }
 
         var fs = new FileStream(Path.Combine(Directory.GetCurrentDirectory(), "Exports", "PluginExport.xml"), FileMode.Open, FileAccess.Read);
-        await ctx.CreateResponseAsync(BasicEmbeds.Info("Exporting plugins..."));
-        await ctx.Channel.SendMessageAsync(new DiscordMessageBuilder()
-            .AddFile(fs, AddFileOptions.CloseStream));
+        bd.AddFile(fs, AddFileOptions.CloseStream);
+        bd.AddEmbed(BasicEmbeds.Info("Plugins Exported.."));
+        await ctx.CreateResponseAsync(bd);
         Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info("Exported plugins!"));
     }
 }
