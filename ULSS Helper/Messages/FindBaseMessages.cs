@@ -4,8 +4,7 @@ namespace ULSS_Helper.Messages;
 
 internal class FindBaseMessages
 {
-    static internal int ChangesCount = 0;
-    internal const string SHOULD_BE_SKIPPED = "should_be_skipped";
+    internal static int ChangesCount;
     
     internal static string GetModifiedPropertiesList(List<ModifiedProperty> properties)
     {
@@ -30,8 +29,8 @@ internal class FindBaseMessages
                 int countChangedLines = 0;
                 for (int lineIdx=0; lineIdx < maxLines; lineIdx++)
                 {
-                    string? oldLine = lineIdx <= oldLines.Length-1 ? oldLines[lineIdx] : null;
-                    string? newLine = lineIdx <= newLines.Length-1 ? newLines[lineIdx] : null;
+                    string oldLine = lineIdx <= oldLines.Length-1 ? oldLines[lineIdx] : null;
+                    string newLine = lineIdx <= newLines.Length-1 ? newLines[lineIdx] : null;
 
                     if (oldLine != null && oldLine.Equals(newLine))
                     {
@@ -47,7 +46,8 @@ internal class FindBaseMessages
                     }
                     if (newLine != null)
                     {
-                        diffText += $"- {oldLine}\n";
+	                    // ReSharper disable ExpressionIsAlwaysNull
+	                    diffText += $"- {oldLine}\n";
                         countChangedLines++;
                         continue;
                     }
@@ -55,13 +55,12 @@ internal class FindBaseMessages
                     {
                         diffText += $"+ {newLine}\n";
                         countChangedLines++;
-                        continue;
                     }
                 }
                 if (countChangedLines == maxLines)
                 {
-                    diffText = "- " + prop.OldValue.Replace("\n", $"\n- ");
-                    diffText += "\r\n+ " + prop.NewValue.Replace("\n", $"\n+ ");
+                    diffText = "- " + prop.OldValue.Replace("\n", "\n- ");
+                    diffText += "\r\n+ " + prop.NewValue.Replace("\n", "\n+ ");
                 }
                 text += diffText + "```\r\n";
                 ChangesCount++;

@@ -11,7 +11,7 @@ internal class StatusMessages
         string commitHashShort = "";
         try 
         {
-            string? infoFilePath = Path.Combine(Directory.GetCurrentDirectory(), "build_info.txt");
+            string infoFilePath = Path.Combine(Directory.GetCurrentDirectory(), "build_info.txt");
             if (File.Exists(infoFilePath)) 
             {
                 string buildInfo = File.ReadAllText(infoFilePath);
@@ -30,8 +30,8 @@ internal class StatusMessages
             msgText += $"Build is based on commit with hash [`{commitHashShort}`](https://github.com/SuperPyroManiac/ULSS-Helper/commit/{commitHash}) (branch: `{branchName}`)\n";
         
         DiscordEmbedBuilder embed = BasicEmbeds.Success(msgText);
-        var msg = new DiscordMessageBuilder()
-            .WithEmbed(embed)
-            .SendAsync(Program.Client.GetChannelAsync(Program.Settings.Env.TsBotLogChannelId).Result);
+        new DiscordMessageBuilder()
+	        .WithEmbed(embed)
+	        .SendAsync(Program.Client.GetChannelAsync(Program.Settings.Env.TsBotLogChannelId).Result);
     }
 }

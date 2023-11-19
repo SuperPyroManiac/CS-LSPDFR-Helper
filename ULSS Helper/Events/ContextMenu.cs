@@ -12,9 +12,10 @@ namespace ULSS_Helper.Events;
 
 internal class ContextMenu : ApplicationCommandModule
 {
-    private static DiscordAttachment? _attachmentForAnalysis;
+    private static DiscordAttachment _attachmentForAnalysis;
     
     [ContextMenu(ApplicationCommandType.MessageContextMenu, "Analyze Log")]
+    // ReSharper disable once UnusedMember.Global
     public async Task OnMenuSelect(ContextMenuContext context)
     {
         //===//===//===////===//===//===////===//Permissions/===////===//===//===////===//===//===//
@@ -29,7 +30,7 @@ internal class ContextMenu : ApplicationCommandModule
 
         //===//===//===////===//===//===////===//Attachment Checks/===////===//===//===////===//===//===//
         _attachmentForAnalysis = null;
-        List<string> acceptedFileNames = new(new string[]{ "RagePluginHook", "ELS", "asiloader", "ScriptHookVDotNet" });
+        List<string> acceptedFileNames = new(new[]{ "RagePluginHook", "ELS", "asiloader", "ScriptHookVDotNet" });
         string acceptedFileNamesString = string.Join(" or ", acceptedFileNames);
         string acceptedLogFileNamesString = "`" + string.Join(".log` or `", acceptedFileNames) + ".log`";
         SharedLogInfo sharedLogInfo = new();
@@ -57,7 +58,7 @@ internal class ContextMenu : ApplicationCommandModule
                         await sharedLogInfo.SendAttachmentErrorMessage(context, $"There is no file named {acceptedLogFileNamesString} attached!");
                         return;
                     }
-                    else if (acceptedAttachments.Count == 1) 
+                    if (acceptedAttachments.Count == 1)
                         _attachmentForAnalysis = acceptedAttachments[0];
                     else if (acceptedAttachments.Count > 1)
                     {
@@ -81,27 +82,27 @@ internal class ContextMenu : ApplicationCommandModule
             //===//===//===////===//===//===////===//Process Attachments/===////===//===//===////===//===//===//
             if (_attachmentForAnalysis.FileName.Contains("RagePluginHook"))
             {
-                var th = new Thread(() => RPHThread(context, _attachmentForAnalysis));
-                th.Start();
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+	            var th = new Thread(() => RphThread(context, _attachmentForAnalysis));
+	            th.Start();
                 return;
             }
             if (_attachmentForAnalysis.FileName.Contains("ELS"))
             {
-                var th = new Thread(() => ELSThread(context, _attachmentForAnalysis));
+                var th = new Thread(() => ElsThread(context, _attachmentForAnalysis));
                 th.Start();
                 return;
             }
             if (_attachmentForAnalysis.FileName.Contains("asiloader"))
             {
-                var th = new Thread(() => ASIThread(context, _attachmentForAnalysis));
+                var th = new Thread(() => AsiThread(context, _attachmentForAnalysis));
                 th.Start();
                 return;
             }
             if (_attachmentForAnalysis.FileName.Contains("ScriptHookVDotNet"))
             {
-                var th = new Thread(() => SHVDNThread(context, _attachmentForAnalysis));
+                var th = new Thread(() => ShvdnThread(context, _attachmentForAnalysis));
                 th.Start();
-                return;
             }
         }
         catch (Exception exception)
@@ -112,36 +113,40 @@ internal class ContextMenu : ApplicationCommandModule
         }
     }
     
-    private async Task RPHThread(ContextMenuContext context, DiscordAttachment attachmentForAnalysis)
+    private async Task RphThread(ContextMenuContext context, DiscordAttachment attachmentForAnalysis)
     {
         await context.DeferAsync(true);
+        // ReSharper disable UseObjectOrCollectionInitializer
         RPHProcess rphProcess = new RPHProcess();
         rphProcess.log = RPHAnalyzer.Run(attachmentForAnalysis.Url);
         rphProcess.log.MsgId = context.TargetMessage.Id;
         Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, rphProcess));
         await rphProcess.SendQuickLogInfoMessage(context);
     }
-    private async Task ELSThread(ContextMenuContext context, DiscordAttachment attachmentForAnalysis)
+    private async Task ElsThread(ContextMenuContext context, DiscordAttachment attachmentForAnalysis)
     {
         await context.DeferAsync(true);
+        // ReSharper disable UseObjectOrCollectionInitializer
         ELSProcess elsProcess = new ELSProcess();
         elsProcess.log = ELSAnalyzer.Run(attachmentForAnalysis.Url);
         elsProcess.log.MsgId = context.TargetMessage.Id;
         Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, elsProcess));
         await elsProcess.SendQuickLogInfoMessage(context);
     }
-    private async Task ASIThread(ContextMenuContext context, DiscordAttachment attachmentForAnalysis)
+    private async Task AsiThread(ContextMenuContext context, DiscordAttachment attachmentForAnalysis)
     {
         await context.DeferAsync(true);
+        // ReSharper disable UseObjectOrCollectionInitializer
         ASIProcess asiProcess = new ASIProcess();
         asiProcess.log = ASIAnalyzer.Run(attachmentForAnalysis.Url);
         asiProcess.log.MsgId = context.TargetMessage.Id;
         Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, asiProcess));
         await asiProcess.SendQuickLogInfoMessage(context);
     }
-    private async Task SHVDNThread(ContextMenuContext context, DiscordAttachment attachmentForAnalysis)
+    private async Task ShvdnThread(ContextMenuContext context, DiscordAttachment attachmentForAnalysis)
     {
         await context.DeferAsync(true);
+        // ReSharper disable UseObjectOrCollectionInitializer
         SHVDNProcess shvdnProcess = new SHVDNProcess();
         shvdnProcess.log = SHVDNAnalyzer.Run(attachmentForAnalysis.Url);
         shvdnProcess.log.MsgId = context.TargetMessage.Id;

@@ -9,8 +9,8 @@ namespace ULSS_Helper.Modules;
 internal class SharedLogInfo
 {
     internal const string OptionValueSeparator = "&";
-    internal Guid Guid { get; } = Guid.NewGuid();
 
+    // ReSharper disable once ReplaceAsyncWithTaskReturn
     internal async Task SendAttachmentErrorMessage(ContextMenuContext context, string message)
     {
         var response = new DiscordInteractionResponseBuilder
@@ -19,7 +19,6 @@ internal class SharedLogInfo
         };
         response.AddEmbed(BasicEmbeds.Error(message));
         await context.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
-        return;
     }
     
     internal async Task SendSelectFileForAnalysisMessage(ContextMenuContext context, List<DiscordAttachment> acceptedAttachments)
@@ -29,15 +28,16 @@ internal class SharedLogInfo
         List<DiscordSelectComponentOption> selectOptions = new List<DiscordSelectComponentOption>();
         foreach(DiscordAttachment acceptedAttachment in acceptedAttachments)
         {
-            string value = context.TargetMessage.Id + OptionValueSeparator + acceptedAttachment.Id.ToString();
-            DiscordSelectComponentOption? option = new DiscordSelectComponentOption(acceptedAttachment.FileName, value);
+            string value = context.TargetMessage.Id + OptionValueSeparator + acceptedAttachment.Id;
+            DiscordSelectComponentOption option = new DiscordSelectComponentOption(acceptedAttachment.FileName, value);
             selectOptions.Add(option);
         }
 
         DiscordWebhookBuilder webhookBuilder = new DiscordWebhookBuilder()
             .AddEmbed(embed)
             .AddComponents(
-                new DiscordComponent[]
+	            // ReSharper disable once RedundantExplicitParamsArrayCreation
+	            new DiscordComponent[]
                 {
                     new DiscordSelectComponent(
                         customId: ComponentInteraction.SelectAttachmentForAnalysis,

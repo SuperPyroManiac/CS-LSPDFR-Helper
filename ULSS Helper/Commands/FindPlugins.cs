@@ -3,7 +3,6 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
-using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
@@ -14,11 +13,11 @@ public class FindPlugins : ApplicationCommandModule
     [SlashCommand("FindPlugins", "Returns a list of all plugins in the database that match the search parameters!")]
 
     public static async Task FindPluginsCmd(InteractionContext ctx,
-        [Option("Name", "The plugin's name.")] string? plugName=null,
-        [Option("DName", "The plugin's display name.")] string? plugDName=null,
-        [Option("ID", "The plugin's id on lcpdfr.com.")] string? plugId=null,
+        [Option("Name", "The plugin's name.")] string plugName=null,
+        [Option("DName", "The plugin's display name.")] string plugDName=null,
+        [Option("ID", "The plugin's id on lcpdfr.com.")] string plugId=null,
         [Option("State", "The plugin's state (LSPDFR, EXTERNAL, BROKEN, LIB).")] State? plugState=null,
-        [Option("Description", "The plugin's description.")] string? plugDescription=null,
+        [Option("Description", "The plugin's description.")] string plugDescription=null,
         [Option("Strict_Search", "true = enabled, false = disabled (approximate search)")] bool? exactMatch=false
         )
     {
@@ -95,24 +94,21 @@ public class FindPlugins : ApplicationCommandModule
                     }
                 }
                 await ctx.Interaction.SendPaginatedResponseAsync(true, ctx.User, pages, asEditResponse: true);
-                return;
             }
             else 
             {
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder()
                     .AddEmbed(
                         BasicEmbeds.Warning(
-                            FindPluginMessages.GetSearchParamsList($"No plugins found with the following search parameters:", plugName, plugDName, plugId, plugState, plugDescription, exactMatch)
+                            FindPluginMessages.GetSearchParamsList("No plugins found with the following search parameters:", plugName, plugDName, plugId, plugState, plugDescription, exactMatch)
                         )
                     )
                 );
-                return;
             }
         }
         catch (InvalidDataException e)
         {
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Error(e.Message)));
-            return;
         }
     }
 }

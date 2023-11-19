@@ -7,7 +7,7 @@ namespace ULSS_Helper.Messages;
 
 internal class FindPluginMessages : FindBaseMessages
 {
-    internal static string GetSearchParamsList(string title, string? plugName, string? plugDName, string? plugId, State? plugState, string? plugDescription, bool? exactMatch)
+    internal static string GetSearchParamsList(string title, string plugName, string plugDName, string plugId, State? plugState, string plugDescription, bool? exactMatch)
     {
         string searchParamsList = $"**{title}**\r\n";
         if (plugName != null)
@@ -21,12 +21,12 @@ internal class FindPluginMessages : FindBaseMessages
         if (plugState != null)
             searchParamsList += $"- **State:** *{plugState}*\r\n";
         if (exactMatch != null)
-            searchParamsList += $"- **Strict search enabled:** *{exactMatch}*\r\n";;
+            searchParamsList += $"- **Strict search enabled:** *{exactMatch}*\r\n";
 
         return searchParamsList;
     }
 
-    internal static async Task SendDbOperationConfirmation(Plugin newPlugin, DbOperation operation, Plugin? oldPlugin=null, ModalSubmitEventArgs? e=null)
+    internal static async Task SendDbOperationConfirmation(Plugin newPlugin, DbOperation operation, Plugin oldPlugin=null, ModalSubmitEventArgs e=null)
     {
         string pluginDbRowId = $"**DB ID:** {newPlugin.DbRowId}\r\n";
         string pluginDName = $"**Display Name:** {newPlugin.DName}\r\n";
@@ -38,7 +38,7 @@ internal class FindPluginMessages : FindBaseMessages
         string pluginState = $"**State:** {newPlugin.State}";
         string pluginPropsList = pluginDbRowId + pluginDName + pluginVersion + pluginEaVersion + pluginId + pluginDescription + pluginLink + pluginState;
         
-        DiscordEmbedBuilder? embed = null;
+        DiscordEmbedBuilder embed = null;
         switch (operation)
         {
             case DbOperation.CREATE:
@@ -51,14 +51,14 @@ internal class FindPluginMessages : FindBaseMessages
 
                 List<ModifiedProperty> properties = new()
                 {
-                    new ModifiedProperty("DB ID", oldPlugin.DbRowId.ToString(), oldPlugin.DbRowId.ToString(), pluginDbRowId),
+                    new ModifiedProperty("DB ID", oldPlugin!.DbRowId.ToString(), oldPlugin.DbRowId.ToString(), pluginDbRowId),
                     new ModifiedProperty("Display Name", oldPlugin.DName, newPlugin.DName, pluginDName),
                     new ModifiedProperty("Version", oldPlugin.Version, newPlugin.Version, pluginVersion),
                     new ModifiedProperty("Early Access Version", oldPlugin.EAVersion, newPlugin.EAVersion, pluginEaVersion),
                     new ModifiedProperty("ID (on lcpdfr.com)", oldPlugin.ID, newPlugin.ID, pluginId),
                     new ModifiedProperty("Description)", oldPlugin.Description, newPlugin.Description, pluginDescription),
                     new ModifiedProperty("Link", oldPlugin.Link, newPlugin.Link, pluginLink),
-                    new ModifiedProperty("State", oldPlugin.State, newPlugin.State, pluginState),
+                    new ModifiedProperty("State", oldPlugin.State, newPlugin.State, pluginState)
                 };
                 try 
                 {
@@ -85,7 +85,6 @@ internal class FindPluginMessages : FindBaseMessages
             new DiscordInteractionResponseBuilder().AddEmbed(embed)
             );
             Logging.SendLog(e.Interaction.Channel.Id, e.Interaction.User.Id, embed);
-            return;
         }
         else 
             throw new NotImplementedException("This SendDbOperationConfirmation branch is not implemented yet.");

@@ -1,7 +1,5 @@
-using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 
 namespace ULSS_Helper.Commands;
@@ -21,12 +19,12 @@ public class RemovePlugin : ApplicationCommandModule
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             return;
         }
-        var ts = Database.LoadTS().FirstOrDefault(x => x.ID.ToString() == ctx.Member.Id.ToString());
+        var ts = Database.LoadTs().FirstOrDefault(x => x.ID.ToString() == ctx.Member.Id.ToString());
         if (ts == null || ts.Allow == 0)
         {
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id,
-                BasicEmbeds.Warning($"**TS attempted to remove plugin without permission.**"));
+                BasicEmbeds.Warning("**TS attempted to remove plugin without permission.**"));
             return;
         }
         
@@ -42,10 +40,10 @@ public class RemovePlugin : ApplicationCommandModule
                 return;
             }
         }
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalse
         if (!isValid)
         {
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error($"**No plugin found with name: {plugName}!**")));
-            return;
         }
     }
 }

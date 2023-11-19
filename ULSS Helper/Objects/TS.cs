@@ -1,5 +1,6 @@
 ﻿namespace ULSS_Helper.Objects;
 
+// ReSharper disable InconsistentNaming
 public class TS
 {
     public string ID { get; set; }

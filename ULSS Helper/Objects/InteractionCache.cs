@@ -10,10 +10,10 @@ internal class ProcessCache
 {
     internal DiscordInteraction Interaction { get; }
     internal DiscordMessage OriginalMessage { get; }
-    internal ELSProcess? ElsProcess { get; }
-    internal RPHProcess? RphProcess { get; }
-    internal ASIProcess? AsiProcess { get; }
-    internal SHVDNProcess? ShvdnProcess { get; }
+    internal ELSProcess ElsProcess { get; }
+    internal RPHProcess RphProcess { get; }
+    internal ASIProcess AsiProcess { get; }
+    internal SHVDNProcess ShvdnProcess { get; }
 
     internal ProcessCache(DiscordInteraction interaction, DiscordMessage originalMessage, ELSProcess elsProcess)
     {

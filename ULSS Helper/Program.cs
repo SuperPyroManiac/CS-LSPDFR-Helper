@@ -1,7 +1,5 @@
 ﻿using System.Reflection;
 using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
@@ -16,18 +14,18 @@ internal class Program
     internal static DiscordClient Client {get; set;}
     internal static Settings Settings;
     internal static Cache Cache = new();
-    public static string? PlugName;
-    public static string? ErrId;
+    public static string PlugName;
+    public static string ErrId;
     public static State PlugState;
     public static Level ErrLevel;
     
-    static async Task Main(string[] _)
+    static async Task Main()
     {
         Timer.StartTimer();
 
         Settings = new Settings();
         
-        var discordConfig = new DiscordConfiguration()
+        var discordConfig = new DiscordConfiguration
         {
             Intents = DiscordIntents.All,
             Token = Settings.Env.BotToken,
@@ -43,8 +41,8 @@ internal class Program
 
         Client.ModalSubmitted += ModalSubmit.HandleModalSubmit;
         Client.ComponentInteractionCreated += ComponentInteraction.HandleInteraction;
-        //TODO: Client.MessageCreated += MessageSent;
-        //TODO: Client.VoiceStateUpdated += VoiceChatManager.OnMemberJoinLeaveVC;
+        //Client.MessageCreated += MessageSent;
+        //Client.VoiceStateUpdated += VoiceChatManager.OnMemberJoinLeaveVC;
 
         Client.UseInteractivity(new InteractivityConfiguration());
 
@@ -52,18 +50,18 @@ internal class Program
         StatusMessages.SendStartupMessage();
         await Task.Delay(-1);
     }
-    private static async Task MessageSent(DiscordClient s, MessageCreateEventArgs ctx)
-    {
-        if (Settings.Env.BullyingVictims.Any(victimId => victimId == ctx.Author.Id))
-        {
-            var rNd = new Random().Next(4);
-            if (rNd == 1) await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":tarabruh:"));
-            if (rNd == 2) await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":middle_finger:"));
-            if (rNd == 0)
-            {
-                await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":tarabruh:"));
-                await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":middle_finger:"));
-            }
-        }
-    }
+//    private static async Task MessageSent(DiscordClient s, MessageCreateEventArgs ctx)
+//    {
+//        if (Settings.Env.BullyingVictims.Any(victimId => victimId == ctx.Author.Id))
+//        {
+//            var rNd = new Random().Next(4);
+//            if (rNd == 1) await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":tarabruh:"));
+//            if (rNd == 2) await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":middle_finger:"));
+//            if (rNd == 0)
+//            {
+//                await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":tarabruh:"));
+//                await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":middle_finger:"));
+//            }
+//        }
+//    }
 }

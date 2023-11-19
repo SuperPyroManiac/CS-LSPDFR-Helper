@@ -4,17 +4,17 @@ namespace ULSS_Helper;
 
 internal class Cache
 {
-    private Dictionary<ulong, ProcessCache> ProcessCache = new();
+    private readonly Dictionary<ulong, ProcessCache> _processCache = new();
 
     internal void SaveProcess(ulong messageId, ProcessCache processCache)
     {
-        if (ProcessCache.Any(cache => cache.Key == messageId))
-            ProcessCache.Remove(messageId);
-        ProcessCache.Add(messageId, processCache);
+        if (_processCache.Any(cache => cache.Key == messageId))
+            _processCache.Remove(messageId);
+        _processCache.Add(messageId, processCache);
     }
 
     internal ProcessCache GetProcessCache(ulong messageId)
     {
-        return ProcessCache[messageId];
+        return _processCache[messageId];
     }
 }

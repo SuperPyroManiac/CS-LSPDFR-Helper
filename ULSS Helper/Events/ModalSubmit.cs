@@ -18,7 +18,7 @@ public class ModalSubmit
             var plugId = e.Values["plugID"];
             var plugLink = e.Values["plugLink"];
 
-            var plug = new Plugin()
+            var plug = new Plugin
             {
                 Name = Program.PlugName,
                 DName = plugDName,
@@ -36,7 +36,7 @@ public class ModalSubmit
         
         if (e.Interaction.Data.CustomId == "add-error")
         {
-            var err = new Error()
+            var err = new Error
             {
                 Regex = e.Values["errReg"],
                 Solution = e.Values["errSol"],
@@ -64,7 +64,7 @@ public class ModalSubmit
             var plugId = e.Values["plugID"];
             var plugLink = e.Values["plugLink"];
 
-            var plug = new Plugin()
+            var plug = new Plugin
             {
                 Name = Program.PlugName,
                 DName = plugDName,
@@ -75,7 +75,7 @@ public class ModalSubmit
                 Link = plugLink
             };
 
-            Plugin? oldPlugin = Database.GetPlugin(plug.Name);
+            Plugin oldPlugin = Database.GetPlugin(plug.Name);
 
             Database.EditPlugin(plug);
 
@@ -84,7 +84,7 @@ public class ModalSubmit
         
         if (e.Interaction.Data.CustomId == "edit-error")
         {
-            var err = new Error()
+            var err = new Error
             {
                 ID = Program.ErrId,
                 Regex = e.Values["errReg"],
@@ -93,7 +93,7 @@ public class ModalSubmit
                 Level = Program.ErrLevel.ToString()
             };
 
-            Error? previousError = Database.GetError(err.ID);
+            Error previousError = Database.GetError(err.ID);
 
             Database.EditError(err);
 

@@ -13,6 +13,7 @@ public class RPHAnalyzer
     {
         var timer = new Stopwatch();
         timer.Start();
+#pragma warning disable SYSLIB0014
         using var client = new WebClient();
         string fullFilePath = Settings.GenerateNewFilePath(FileType.RPH_LOG);
         client.DownloadFile(attachmentUrl, fullFilePath);
@@ -24,15 +25,14 @@ public class RPHAnalyzer
         var wholeLog = File.ReadAllText(fullFilePath);
         var reader = File.ReadAllLines(fullFilePath);
 
-        log.Current = new List<Plugin?>();
-        log.Outdated = new List<Plugin?>();
-        log.Broken = new List<Plugin?>();
-        log.Library = new List<Plugin?>();
-        log.Missing = new List<Plugin?>();
+        log.Current = new List<Plugin>();
+        log.Outdated = new List<Plugin>();
+        log.Broken = new List<Plugin>();
+        log.Library = new List<Plugin>();
+        log.Missing = new List<Plugin>();
         log.Missmatch = new List<Plugin>();
-        log.Errors = new List<Error?>();
-        log.MissingDepend = new List<Plugin?>();
-        var linkedLib = new List<string>();
+        log.Errors = new List<Error>();
+        log.MissingDepend = new List<Plugin>();
 
         if (reader.Length > 0)
             log.FilePossiblyOutdated = IsPossiblyOutdatedFile(reader[0]);
@@ -53,8 +53,6 @@ public class RPHAnalyzer
                             if (match.Success)
                             {
                                 string logVersion = match.Groups[1].Value;
-                                var version = $"{plugin.Name}, Version={plugin.Version}";
-                                var eaversion = $"{plugin.Name}, Version={plugin.EAVersion}";
                                 if (!string.IsNullOrEmpty(plugin.Version))
                                 {
                                     var result = CompareVersions(logVersion, plugin.Version);
@@ -66,12 +64,13 @@ public class RPHAnalyzer
                                     {
                                         if (!string.IsNullOrEmpty(plugin.EAVersion)) 
                                         {
-                                            var resultEA = CompareVersions(logVersion, plugin.EAVersion);
-                                            if (resultEA < 0) // plugin version in log is older than Early Access version in DB
+                                            var resultEa = CompareVersions(logVersion, plugin.EAVersion);
+                                            if (resultEa < 0) // plugin version in log is older than Early Access version in DB
                                             {
-                                                if (!log.Outdated.Any(x => x.Name == plugin.Name)) log.Outdated.Add(plugin);
+	                                            // ReSharper disable SimplifyLinqExpressionUseAll
+	                                            if (!log.Outdated.Any(x => x.Name == plugin.Name)) log.Outdated.Add(plugin);
                                             }
-                                            else if (resultEA > 0) // plugin version in log is newer than Early Access version in DB
+                                            else if (resultEa > 0) // plugin version in log is newer than Early Access version in DB
                                             {
                                                 plugin.EAVersion = logVersion; // save logVersion in log.Missmatch so we can access it later when building bot responses
                                                 if (!log.Missmatch.Any(x => x.Name == plugin.Name)) log.Missmatch.Add(plugin);
@@ -194,17 +193,19 @@ public class RPHAnalyzer
         }
         if (log.MissingDepend.Any())
         {
-            linkedLib = log.MissingDepend.Select(
-                plugin => (plugin?.Link != null && plugin.Link.StartsWith("https://"))
-                    ? $"[{plugin.DName}]({plugin.Link})"
-                    : $"[{plugin?.DName}](https://www.google.com/search?q=lspdfr+{plugin.Name.Replace(" ", "+")})"
+            var linkedLib = log.MissingDepend.Select(
+	            plugin => plugin?.Link != null && plugin.Link.StartsWith("https://")
+		            ? $"[{plugin.DName}]({plugin.Link})"
+		            : $"[{plugin?.DName}](https://www.google.com/search?q=lspdfr+{plugin.Name.Replace(" ", "+")})"
             ).ToList();
             var linkedLibstring = string.Join("\r\n- ", linkedLib);
-            var libErr = new Error();
-            libErr.ID = "1";
-            libErr.Level = "SEVERE";
-            libErr.Solution = $"**You are missing these required files**:\r\n- {linkedLibstring}";
-            
+            var libErr = new Error
+            {
+	            ID = "1",
+	            Level = "SEVERE",
+	            Solution = $"**You are missing these required files**:\r\n- {linkedLibstring}"
+            };
+
             log.Errors.Add(libErr);
         }
         log.Errors = log.Errors.OrderBy(x => x.Level).ToList();

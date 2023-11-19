@@ -1,7 +1,6 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
@@ -24,16 +23,16 @@ public class EditPlugin : ApplicationCommandModule
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             return;
         }
-        var ts = Database.LoadTS().FirstOrDefault(x => x.ID.ToString() == ctx.Member.Id.ToString());
+        var ts = Database.LoadTs().FirstOrDefault(x => x.ID.ToString() == ctx.Member.Id.ToString());
         if (ts == null || ts.Allow == 0)
         {
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id,
-                BasicEmbeds.Warning($"**TS attempted to edit plugin without permission.**"));
+                BasicEmbeds.Warning("**TS attempted to edit plugin without permission.**"));
             return;
         }
 
-        if (!Database.LoadPlugins().Any(x => x.Name == pN))
+        if (Database.LoadPlugins().All(x => x.Name != pN))
         {
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error($"No plugin found with name {pN}")));
             return;
@@ -41,7 +40,7 @@ public class EditPlugin : ApplicationCommandModule
 
         var plugin = Database.LoadPlugins().FirstOrDefault(x => x.Name == pN);
 
-        Program.PlugName = plugin.Name;
+        Program.PlugName = plugin!.Name;
         if (pS != null)
         {
             Program.PlugState = (State) pS;
@@ -50,7 +49,7 @@ public class EditPlugin : ApplicationCommandModule
         {
             if (Enum.TryParse(plugin.State, out State newState))
             {
-                Program.PlugState = (State) newState;
+                Program.PlugState = newState;
             }
         }
         

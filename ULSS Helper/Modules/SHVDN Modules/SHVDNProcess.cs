@@ -8,6 +8,7 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Modules.SHVDN_Modules;
 
+// ReSharper disable once InconsistentNaming
 internal class SHVDNProcess : SharedLogInfo
 {
         internal SHVDNLog log;
@@ -25,7 +26,7 @@ internal class SHVDNProcess : SharedLogInfo
             }
         };
     }
-    internal async Task SendQuickLogInfoMessage(ContextMenuContext? context=null, ComponentInteractionCreateEventArgs? eventArgs=null)
+    internal async Task SendQuickLogInfoMessage(ContextMenuContext context=null, ComponentInteractionCreateEventArgs eventArgs=null)
     {
         if (context == null && eventArgs == null)
             throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
@@ -38,24 +39,25 @@ internal class SHVDNProcess : SharedLogInfo
 
         if (log.Scripts.Count != 0) 
         {
-            embed.AddField($":red_circle:     Some scripts have issues!", "Select `More Info` for details!");
+            embed.AddField(":red_circle:     Some scripts have issues!", "Select `More Info` for details!");
         }
         else 
         {
-            embed.AddField($":orange_circle:     No faulty script files detected!", "Seems like everything loaded fine.");
+            embed.AddField(":orange_circle:     No faulty script files detected!", "Seems like everything loaded fine.");
         }
 
         DiscordWebhookBuilder message = new DiscordWebhookBuilder()
             .AddEmbed(embed)
             .AddComponents(
-                new DiscordComponent[]
+	            // ReSharper disable RedundantExplicitParamsArrayCreation
+	            new DiscordComponent[]
                 {
                     new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.ShvdnGetDetailedInfo, "More Info", false, new DiscordComponentEmoji(Program.Settings.Env.MoreInfoBtnEmojiId)),
                     new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.ShvdnQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
                 }
             );
 
-        DiscordMessage? sentMessage;
+        DiscordMessage sentMessage;
         if (context != null)
             sentMessage = await context.EditResponseAsync(message);
         else
@@ -66,8 +68,8 @@ internal class SHVDNProcess : SharedLogInfo
     
     internal async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs eventArgs)
     {
-        var ScriptsList = "\r\n- " + string.Join("\r\n- ", log.Scripts);
-        var MissingDependsList = "\r\n- " + string.Join("\r\n- ", log.MissingDepends);
+        var scriptsList = "\r\n- " + string.Join("\r\n- ", log.Scripts);
+        var missingDependsList = "\r\n- " + string.Join("\r\n- ", log.MissingDepends);
         ProcessCache cache = Program.Cache.GetProcessCache(eventArgs.Message.Id);
         
         DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Detailed SHVDN.log Info");
@@ -80,7 +82,7 @@ internal class SHVDNProcess : SharedLogInfo
             }
         }
         
-        if (ScriptsList.Length >= 1024 || MissingDependsList.Length >= 1024)
+        if (scriptsList.Length >= 1024 || missingDependsList.Length >= 1024)
         {
             await eventArgs.Interaction.DeferAsync(true);
             embed.AddField(":warning:     **Message Too Big**", "\r\nToo many Scripts to display in a single message.", true);
@@ -88,37 +90,38 @@ internal class SHVDNProcess : SharedLogInfo
             var embed2 = new DiscordEmbedBuilder
             {
                 Title = ":orange_circle:     **Script:**",
-                Description = ScriptsList,
+                Description = scriptsList,
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
             var embed3 = new DiscordEmbedBuilder
             {
                 Title = ":red_circle:     **Missing Depend:**",
-                Description = MissingDependsList,
+                Description = missingDependsList,
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
 
             var overflow = new DiscordWebhookBuilder();
             overflow.AddEmbed(embed);
-            if (ScriptsList.Length != 0) overflow.AddEmbed(embed2);
-            if (MissingDependsList.Length != 0) overflow.AddEmbed(embed3);
+            if (scriptsList.Length != 0) overflow.AddEmbed(embed2);
+            if (missingDependsList.Length != 0) overflow.AddEmbed(embed3);
+            // ReSharper disable RedundantExplicitParamsArrayCreation
             overflow.AddComponents(new DiscordComponent[]
             {
                 new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.ShvdnDetailedSendToUser, "Send To User", false,
                     new DiscordComponentEmoji("📨"))
             });
-            DiscordMessage? sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflow);
+            DiscordMessage sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflow);
             Program.Cache.SaveProcess(sentOverflowMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
             return;
         }
         
         if (log.Scripts.Count > 0)
-            embed.AddField(":orange_circle:     Script:", ScriptsList, true);
+            embed.AddField(":orange_circle:     Script:", scriptsList, true);
         
         if (log.MissingDepends.Count > 0) 
-            embed.AddField(":red_circle:     Missing Depend:", MissingDependsList, true);
+            embed.AddField(":red_circle:     Missing Depend:", missingDependsList, true);
             
         await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,new DiscordInteractionResponseBuilder().AddEmbed(embed).AddComponents(new DiscordComponent[]
         {

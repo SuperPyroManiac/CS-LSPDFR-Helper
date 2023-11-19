@@ -5,16 +5,19 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Modules.SHVDN_Modules;
 
+// ReSharper disable once InconsistentNaming
 public class SHVDNAnalyzer
 {
     internal static SHVDNLog Run(string attachmentUrl)
     {
         var timer = new Stopwatch();
         timer.Start();
+#pragma warning disable SYSLIB0014
         using var client = new WebClient();
         string fullFilePath = Settings.GenerateNewFilePath(FileType.SHVDN_LOG);
         client.DownloadFile(attachmentUrl, fullFilePath);
 
+        // ReSharper disable once UseObjectOrCollectionInitializer
         var log = new SHVDNLog();
         log.DownloadLink = attachmentUrl;
         var wholeLog = File.ReadAllText(fullFilePath);

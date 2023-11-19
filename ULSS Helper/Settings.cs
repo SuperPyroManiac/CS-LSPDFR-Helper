@@ -65,14 +65,14 @@ internal class Settings
         // if file doesn't exist, create one with the default config (including a placeholder for the token)
         if (!File.Exists(jsonFilePath))
         {
-            var options = new JsonSerializerOptions() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
+            var options = new JsonSerializerOptions { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
             using FileStream newFile = File.Create(jsonFilePath);
             JsonSerializer.Serialize(newFile, GetDefaultEnvConfig(), options: options);
-            throw new FileNotFoundException($"Environment config file could not be found. One has been created for you. Please add your bot token to the file!", jsonFilePath);
+            throw new FileNotFoundException("Environment config file could not be found. One has been created for you. Please add your bot token to the file!", jsonFilePath);
         }
         
         string jsonContent = File.ReadAllText(jsonFilePath);
-        EnvironmentConfig? env = JsonSerializer.Deserialize<EnvironmentConfig>(jsonContent);
+        EnvironmentConfig env = JsonSerializer.Deserialize<EnvironmentConfig>(jsonContent);
         if (env == null) 
             throw new FileLoadException("Environment config file could not be loaded or parsed. If you delete the current config file and restart the bot, it will generate a new default config file with a placeholder value.", jsonFilePath);
 

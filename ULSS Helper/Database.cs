@@ -24,7 +24,7 @@ internal class Database
         }
     }
 
-    internal static Plugin? GetPlugin(string pluginName)
+    internal static Plugin GetPlugin(string pluginName)
     {
         try
         {
@@ -49,7 +49,7 @@ internal class Database
         }
     }
     
-    internal static List<Plugin> FindPlugins(string? Name=null, string? DName=null, string? ID=null, State? State=null, string? Description=null, bool? exactMatch=false)
+    internal static List<Plugin> FindPlugins(string name=null, string dName=null, string id=null, State? state=null, string description=null, bool? exactMatch=false)
     {
         try
         {
@@ -63,11 +63,11 @@ internal class Database
                 endOfComparison = "%'";
             }
 
-            if (Name != null) conditions.Add("Name" + comparisonOperator + Name + endOfComparison);
-            if (DName != null) conditions.Add("DName" + comparisonOperator + DName + endOfComparison);
-            if (ID != null) conditions.Add("ID" + comparisonOperator + ID + endOfComparison);
-            if (State != null) conditions.Add("State" + comparisonOperator + State.ToString() + endOfComparison);
-            if (Description != null) conditions.Add("Description" + comparisonOperator + Description + endOfComparison);
+            if (name != null) conditions.Add("Name" + comparisonOperator + name + endOfComparison);
+            if (dName != null) conditions.Add("DName" + comparisonOperator + dName + endOfComparison);
+            if (id != null) conditions.Add("ID" + comparisonOperator + id + endOfComparison);
+            if (state != null) conditions.Add("State" + comparisonOperator + state + endOfComparison);
+            if (description != null) conditions.Add("Description" + comparisonOperator + description + endOfComparison);
 
             if (conditions.Count == 0) throw new InvalidDataException("At least one of the input parameters has to have a non-null value!");
             string conditionsString = string.Join(" and ", conditions);
@@ -105,7 +105,7 @@ internal class Database
         }
     }
 
-    internal static Error? GetError(string errorId)
+    internal static Error GetError(string errorId)
     {
         try
         {
@@ -130,7 +130,7 @@ internal class Database
         }
     }
 
-    internal static List<Error> FindErrors(string? ID, string? Regex, string? Solution, string? Description, Level? Level, bool? exactMatch=false)
+    internal static List<Error> FindErrors(string id, string regex, string solution, string description, Level? level, bool? exactMatch=false)
     {
         try
         {
@@ -144,11 +144,11 @@ internal class Database
                 endOfComparison = "%'";
             }
 
-            if (ID != null) conditions.Add("ID" + comparisonOperator + ID.ToString() + endOfComparison);
-            if (Regex != null) conditions.Add("Regex" + comparisonOperator + Regex + endOfComparison);
-            if (Solution != null) conditions.Add("Solution" + comparisonOperator + Solution + endOfComparison);
-            if (Description != null) conditions.Add("Description" + comparisonOperator + Description + endOfComparison);
-            if (Level != null) conditions.Add("Level" + comparisonOperator + Level.ToString() + endOfComparison);
+            if (id != null) conditions.Add("ID" + comparisonOperator + id + endOfComparison);
+            if (regex != null) conditions.Add("Regex" + comparisonOperator + regex + endOfComparison);
+            if (solution != null) conditions.Add("Solution" + comparisonOperator + solution + endOfComparison);
+            if (description != null) conditions.Add("Description" + comparisonOperator + description + endOfComparison);
+            conditions.Add("Level" + comparisonOperator + level + endOfComparison);
             
             if (conditions.Count == 0) throw new InvalidDataException("At least one of the input parameters has to have a non-null value!");
             string conditionsString = string.Join(" and ", conditions);
@@ -213,7 +213,7 @@ internal class Database
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
-            cnn.Execute($"UPDATE Plugin SET (Name, DName, Version, EAVersion, ID, State, Description, Link) = (@Name, @DName, @Version, @EAVersion, @ID, @State, @Description, @Link) WHERE Name = (@Name)", plugin);
+            cnn.Execute("UPDATE Plugin SET (Name, DName, Version, EAVersion, ID, State, Description, Link) = (@Name, @DName, @Version, @EAVersion, @ID, @State, @Description, @Link) WHERE Name = (@Name)", plugin);
         }
         catch (SQLiteException e)
         {
@@ -228,7 +228,7 @@ internal class Database
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
-            cnn.Execute($"UPDATE Error SET (Regex, Solution, Description, Level) = (@Regex, @Solution, @Description, @Level) WHERE ID = (@ID)", error);
+            cnn.Execute("UPDATE Error SET (Regex, Solution, Description, Level) = (@Regex, @Solution, @Description, @Level) WHERE ID = (@ID)", error);
         }
         catch (SQLiteException e)
         {
@@ -243,7 +243,7 @@ internal class Database
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
-            cnn.Execute($"delete from Plugin where Name = (@Name)", plugin);
+            cnn.Execute("delete from Plugin where Name = (@Name)", plugin);
         }
         catch (SQLiteException e)
         {
@@ -258,7 +258,7 @@ internal class Database
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
-            cnn.Execute($"delete from Error where ID = (@ID)", error);
+            cnn.Execute("delete from Error where ID = (@ID)", error);
         }
         catch (SQLiteException e)
         {
@@ -268,7 +268,7 @@ internal class Database
         }
     }
     
-    internal static List<TS> LoadTS()
+    internal static List<TS> LoadTs()
     {
         try
         {
@@ -284,7 +284,7 @@ internal class Database
         }
     }
     
-    internal static long AddTS(TS ts)
+    internal static long AddTs(TS ts)
     {
         try
         {
@@ -303,12 +303,12 @@ internal class Database
         }
     }
     
-    internal static void EditTS(TS ts)
+    internal static void EditTs(TS ts)
     {
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
-            cnn.Execute($"UPDATE TS SET (ID, Username, View, Allow) = (@ID, @Username, @View, @Allow) WHERE ID = (@ID)", ts);
+            cnn.Execute("UPDATE TS SET (ID, Username, View, Allow) = (@ID, @Username, @View, @Allow) WHERE ID = (@ID)", ts);
         }
         catch (SQLiteException e)
         {
@@ -318,12 +318,12 @@ internal class Database
         }
     }
     
-    internal static void DeleteTS(TS ts)
+    internal static void DeleteTs(TS ts)
     {
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
-            cnn.Execute($"delete from TS where ID = (@ID)", ts);
+            cnn.Execute("delete from TS where ID = (@ID)", ts);
         }
         catch (SQLiteException e)
         {
@@ -335,8 +335,9 @@ internal class Database
     
     internal static void UpdatePluginVersions()
     {
-        var webClient = new WebClient();
-        var plugins = LoadPlugins();
+#pragma warning disable SYSLIB0014
+	    var webClient = new WebClient();
+	    var plugins = LoadPlugins();
         foreach (var plugin in plugins)
         {
             Thread.Sleep(250);
@@ -344,7 +345,6 @@ internal class Database
             {
                 if (plugin.State == "LSPDFR" && plugin.ID != null)
                 {
-                    var plugincheck = plugin.Name + ", Version=" + plugin.Version;
                     var url =
                         "https://www.lcpdfr.com/applications/downloadsng/interface/api.php?do=checkForUpdates&fileId=" +
                         plugin.ID + "&textOnly=1";
@@ -359,8 +359,8 @@ internal class Database
                     };
                     foreach (var c in characters) onlineVersion = onlineVersion.Replace(c, string.Empty).Trim();
                     var onlineVersionSplit = onlineVersion.Split(".");
-                    if (onlineVersionSplit.Length == 2) onlineVersion = onlineVersion + ".0.0";
-                    if (onlineVersionSplit.Length == 3) onlineVersion = onlineVersion + ".0";
+                    if (onlineVersionSplit.Length == 2) onlineVersion += ".0.0";
+                    if (onlineVersionSplit.Length == 3) onlineVersion += ".0";
                     
                     try
                     {
