@@ -21,15 +21,13 @@ public class FindErrors : ApplicationCommandModule
         [Option("Strict_Search", "true = enabled, false = disabled (approximate search)")] bool? exactMatch=false
         )
     {
-        var bd = new DiscordInteractionResponseBuilder();
-        bd.IsEphemeral = true;
         await ctx.CreateResponseAsync(
             InteractionResponseType.DeferredChannelMessageWithSource,
             new DiscordInteractionResponseBuilder { IsEphemeral = true });
         
         if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
         {
-            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             return;
         }
         try 
