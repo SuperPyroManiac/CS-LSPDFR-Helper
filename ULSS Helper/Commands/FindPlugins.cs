@@ -75,7 +75,7 @@ public class FindPlugins : ApplicationCommandModule
                         + $"> **Version:** {plugin.Version}\r\n"
                         + $"> **Early Access Version:** {plugin.EAVersion}\r\n"
                         + $"> **ID (on lcpdfr.com):** {plugin.ID}\r\n"
-                        + $"> **Description:** {plugin.Description}\r\n" 
+                        + $"> **Description:**\r\n```\n{plugin.Description}\n```\r\n"
                         + $"> **Link:** {plugin.Link}\r\n"
                         + $"> **State:** {plugin.State}";
                     currentResultsPerPage++;
