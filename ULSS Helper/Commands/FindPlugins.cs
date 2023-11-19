@@ -77,7 +77,7 @@ public class FindPlugins : ApplicationCommandModule
                         + $"> **ID (on lcpdfr.com):** {plugin.ID}\r\n"
                         + $"> **Link:** {plugin.Link}\r\n"
                         + $"> **State:** {plugin.State}\r\n"
-                        + $"> **Description:**\r\n```{plugin.Description}```\r\n";
+                        + $"> **Description:**\r\n```{plugin.Description}```";
                     currentResultsPerPage++;
                     if (currentResultsPerPage == resultsPerPage || i == pluginsFound.Count-1) {
                         var embed = BasicEmbeds.Generic(currentPageContent, DiscordColor.DarkBlue);
