@@ -41,6 +41,7 @@ internal class ELSProcess : SharedLogInfo
         if (log.FaultyVcfFile != null) 
         {
             embed.AddField(":red_circle:     Faulty VCF found!", $"Remove `{log.FaultyVcfFile}` from `{log.VcfContainer}`");
+            log.ValidElsVcfFiles.Add("\r\nA Faulty VCF prevented all of these from loading!");
         }
         else 
         {
