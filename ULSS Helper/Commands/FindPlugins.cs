@@ -68,7 +68,9 @@ public class FindPlugins : ApplicationCommandModule
                 string currentPageContent = searchResultsHeader;
                 for(int i=0; i < pluginsFound.Count; i++)
                 {
-                    Plugin plugin = pluginsFound[i];
+                    var plugin = pluginsFound[i];
+                    var plugDesc = "N/A";
+                    if (!string.IsNullOrEmpty(plugin.Description)) plugDesc = plugin.Description;
                     currentPageContent += "\r\n\r\n"
                         + $"> **Plugin {plugin.Name}**\r\n"
                         + $"> **Display Name:** {plugin.DName}\r\n" 
@@ -77,7 +79,7 @@ public class FindPlugins : ApplicationCommandModule
                         + $"> **ID (on lcpdfr.com):** {plugin.ID}\r\n"
                         + $"> **Link:** {plugin.Link}\r\n"
                         + $"> **State:** {plugin.State}\r\n"
-                        + $"> **Description:**\r\n```{plugin.Description}```";
+                        + $"> **Description:**\r\n```{plugDesc}```";
                     currentResultsPerPage++;
                     if (currentResultsPerPage == resultsPerPage || i == pluginsFound.Count-1) {
                         var embed = BasicEmbeds.Generic(currentPageContent, DiscordColor.DarkBlue);
