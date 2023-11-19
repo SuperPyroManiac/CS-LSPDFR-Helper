@@ -1,7 +1,6 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
@@ -12,7 +11,7 @@ public class AddPlugin : ApplicationCommandModule
     [SlashCommand("AddPlugin", "Adds a plugin to the database!")]
     
     public async Task AddPluginCmd(InteractionContext ctx, 
-        [Option("Name", "Plugins name as shown in the log!")] string? pN, 
+        [Option("Name", "Plugins name as shown in the log!")] string pN, 
         [Option("State", "Plugin state, LSPDFR, EXTERNAL, BROKEN, LIB")] State pS)
     {
         var bd = new DiscordInteractionResponseBuilder();
@@ -22,12 +21,12 @@ public class AddPlugin : ApplicationCommandModule
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             return;
         }
-        var ts = Database.LoadTS().FirstOrDefault(x => x.ID.ToString() == ctx.Member.Id.ToString());
+        var ts = Database.LoadTs().FirstOrDefault(x => x.ID.ToString() == ctx.Member.Id.ToString());
         if (ts == null || ts.Allow == 0)
         {
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id,
-                BasicEmbeds.Warning($"**TS attempted to add plugin without permission.**"));
+                BasicEmbeds.Warning("**TS attempted to add plugin without permission.**"));
             return;
         }
 

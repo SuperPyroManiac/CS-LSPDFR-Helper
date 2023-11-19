@@ -1,7 +1,6 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
@@ -24,16 +23,16 @@ public class EditError : ApplicationCommandModule
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             return;
         }
-        var ts = Database.LoadTS().FirstOrDefault(x => x.ID.ToString() == ctx.Member.Id.ToString());
+        var ts = Database.LoadTs().FirstOrDefault(x => x.ID.ToString() == ctx.Member.Id.ToString());
         if (ts == null || ts.Allow == 0)
         {
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id,
-                BasicEmbeds.Warning($"**TS attempted to edit error without permission.**"));
+                BasicEmbeds.Warning("**TS attempted to edit error without permission.**"));
             return;
         }
 
-        if (!Database.LoadErrors().Any(x => x.ID.ToString() == eI))
+        if (Database.LoadErrors().All(x => x.ID.ToString() != eI))
         {
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error($"No error found with ID: {eI}")));
             return;
@@ -48,7 +47,7 @@ public class EditError : ApplicationCommandModule
         }
         else
         {
-            if (Enum.TryParse(error.Level, out Level newLvl))
+            if (Enum.TryParse(error!.Level, out Level newLvl))
             {
                 Program.ErrLevel = newLvl;
             }
@@ -56,7 +55,7 @@ public class EditError : ApplicationCommandModule
         
         DiscordInteractionResponseBuilder modal = new();
         modal.WithTitle($"Editing error ID: {Program.ErrId}!").WithCustomId("edit-error").AddComponents(
-            new TextInputComponent("Error Regex:", "errReg", required: true, style: TextInputStyle.Paragraph, value: error.Regex));
+            new TextInputComponent("Error Regex:", "errReg", required: true, style: TextInputStyle.Paragraph, value: error!.Regex));
         modal.AddComponents(new TextInputComponent("Error Solution:", "errSol", required: true, style: TextInputStyle.Paragraph, value: error.Solution));
         modal.AddComponents(new TextInputComponent("Error Description:", "errDesc", required: true, style: TextInputStyle.Paragraph, value: error.Description));
         

@@ -7,7 +7,7 @@ namespace ULSS_Helper.Messages;
 
 internal class FindErrorMessages : FindBaseMessages
 {    
-    internal static string GetSearchParamsList(string title, string? errId, string? regex, string? solution, string? description, Level? level, bool? exactMatch) 
+    internal static string GetSearchParamsList(string title, string errId, string regex, string solution, string description, Level? level, bool? exactMatch)
     {
         string searchParamsList = $"**{title}**\r\n";
         if (errId != null)
@@ -26,7 +26,7 @@ internal class FindErrorMessages : FindBaseMessages
         return searchParamsList;
     }
 
-    internal static async Task SendDbOperationConfirmation(Error newError, DbOperation operation, Error? oldError=null, ModalSubmitEventArgs? e=null)
+    internal static async Task SendDbOperationConfirmation(Error newError, DbOperation operation, Error oldError=null, ModalSubmitEventArgs e=null)
     {
         string errorRegex = $"**Regex:**\r\n```\n{newError.Regex}\n```\r\n";
         string errorSolution = $"**Solution:**\r\n```\n{newError.Solution}\n```\r\n";
@@ -34,7 +34,7 @@ internal class FindErrorMessages : FindBaseMessages
         string errorLevel = $"**Level:** {newError.Level}";
         string errorPropsList = errorRegex + errorSolution + errorDescription + errorLevel;
 
-        DiscordEmbedBuilder? embed = null;
+        DiscordEmbedBuilder embed = null;
         switch (operation)
         {
             case DbOperation.CREATE:
@@ -47,10 +47,10 @@ internal class FindErrorMessages : FindBaseMessages
 
                 List<ModifiedProperty> properties = new()
                 {
-                    new ModifiedProperty("Regex", oldError.Regex, newError.Regex, errorRegex),
+                    new ModifiedProperty("Regex", oldError!.Regex, newError.Regex, errorRegex),
                     new ModifiedProperty("Solution", oldError.Solution, newError.Solution, errorSolution),
                     new ModifiedProperty("Description", oldError.Description, newError.Description, errorDescription),
-                    new ModifiedProperty("Level", oldError.Level, newError.Level, errorLevel),
+                    new ModifiedProperty("Level", oldError.Level, newError.Level, errorLevel)
                 };
                 try 
                 {
@@ -78,7 +78,6 @@ internal class FindErrorMessages : FindBaseMessages
             new DiscordInteractionResponseBuilder().AddEmbed(embed)
             );
             Logging.SendLog(e.Interaction.Channel.Id, e.Interaction.User.Id, embed);
-            return;
         }
         else 
             throw new NotImplementedException("This SendDbOperationConfirmation branch is not implemented yet.");

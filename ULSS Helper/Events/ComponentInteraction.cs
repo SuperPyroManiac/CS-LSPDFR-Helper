@@ -53,16 +53,17 @@ public class ComponentInteraction
 
                 if (eventArgs.Id.Equals(SelectAttachmentForAnalysis))
                 {
-                    string? selectedValue = eventArgs.Values.FirstOrDefault();
-                    string[]? ids = selectedValue.Split(SharedLogInfo.OptionValueSeparator);
+                    string selectedValue = eventArgs.Values.FirstOrDefault();
+                    string[] ids = selectedValue!.Split(SharedLogInfo.OptionValueSeparator);
                     ulong messageId = ulong.Parse(ids[0]);
                     ulong targetAttachmentId = ulong.Parse(ids[1]);
-                    DiscordMessage? message = await eventArgs.Channel.GetMessageAsync(messageId);
-                    DiscordAttachment? targetAttachment = message.Attachments.FirstOrDefault(attachment => attachment.Id == targetAttachmentId);
+                    DiscordMessage message = await eventArgs.Channel.GetMessageAsync(messageId);
+                    DiscordAttachment targetAttachment = message.Attachments.FirstOrDefault(attachment => attachment.Id == targetAttachmentId);
 
-                    if (targetAttachment.FileName.Contains("RagePluginHook"))
+                    if (targetAttachment!.FileName.Contains("RagePluginHook"))
                     {
                         await eventArgs.Interaction.DeferAsync(true);
+                        // ReSharper disable once UseObjectOrCollectionInitializer
                         RPHProcess rphProcess = new RPHProcess();
                         rphProcess.log = RPHAnalyzer.Run(targetAttachment.Url);
                         rphProcess.log.MsgId = cache.OriginalMessage.Id;
@@ -73,6 +74,7 @@ public class ComponentInteraction
                     if (targetAttachment.FileName.Contains("ELS"))
                     {
                         await eventArgs.Interaction.DeferAsync(true);
+                        // ReSharper disable once UseObjectOrCollectionInitializer
                         ELSProcess elsProcess = new ELSProcess();
                         elsProcess.log = ELSAnalyzer.Run(targetAttachment.Url);
                         elsProcess.log.MsgId = cache.OriginalMessage.Id;
@@ -83,6 +85,7 @@ public class ComponentInteraction
                     if (targetAttachment.FileName.Contains("asiloader"))
                     {
                         await eventArgs.Interaction.DeferAsync(true);
+                        // ReSharper disable once UseObjectOrCollectionInitializer
                         ASIProcess asiProcess = new ASIProcess();
                         asiProcess.log = ASIAnalyzer.Run(targetAttachment.Url);
                         asiProcess.log.MsgId = cache.OriginalMessage.Id;
@@ -93,6 +96,7 @@ public class ComponentInteraction
                     if (targetAttachment.FileName.Contains("ScriptHookVDotNet"))
                     {
                         await eventArgs.Interaction.DeferAsync(true);
+                        // ReSharper disable once UseObjectOrCollectionInitializer
                         SHVDNProcess shvdnProcess = new SHVDNProcess();
                         shvdnProcess.log = SHVDNAnalyzer.Run(targetAttachment.Url);
                         shvdnProcess.log.MsgId = cache.OriginalMessage.Id;
@@ -135,7 +139,7 @@ public class ComponentInteraction
             if (eventArgs.Id == "SendFeedback")
             {
                 DiscordInteractionResponseBuilder modal = new();
-                modal.WithTitle($"Send Feedback").WithCustomId("SendFeedback").AddComponents(
+                modal.WithTitle("Send Feedback").WithCustomId("SendFeedback").AddComponents(
                     new TextInputComponent("Feedback:", "feedback", required: true, style: TextInputStyle.Paragraph));
                 Console.Write("We got here");
                 await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);

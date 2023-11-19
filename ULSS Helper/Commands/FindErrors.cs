@@ -3,7 +3,6 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
-using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
@@ -14,23 +13,21 @@ public class FindErrors : ApplicationCommandModule
     [SlashCommand("FindErrors", "Returns a list of all errors in the database that match the search parameters!")]
 
     public static async Task FindErrorsCmd(InteractionContext ctx,
-        [Option("ID", "The error id in the bot's database.")] string? errId=null,
-        [Option("Regex", "Regex for detecting the error.")] string? regex=null,
-        [Option("Solution", "Solution for the error.")] string? solution=null,
-        [Option("Description", "Description for the error.")] string? description=null,
-        [Option("Level", $"Error level (WARN, SEVERE, CRITICAL).")] Level? level=null,
+        [Option("ID", "The error id in the bot's database.")] string errId=null,
+        [Option("Regex", "Regex for detecting the error.")] string regex=null,
+        [Option("Solution", "Solution for the error.")] string solution=null,
+        [Option("Description", "Description for the error.")] string description=null,
+        [Option("Level", "Error level (WARN, SEVERE, CRITICAL).")] Level? level=null,
         [Option("Strict_Search", "true = enabled, false = disabled (approximate search)")] bool? exactMatch=false
         )
     {
-        var bd = new DiscordInteractionResponseBuilder();
-        bd.IsEphemeral = true;
         await ctx.CreateResponseAsync(
             InteractionResponseType.DeferredChannelMessageWithSource,
             new DiscordInteractionResponseBuilder { IsEphemeral = true });
         
         if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
         {
-            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             return;
         }
         try 
@@ -69,8 +66,8 @@ public class FindErrors : ApplicationCommandModule
                     Error error = errorsFound[i];
                     currentPageContent += "\r\n\r\n"
                         + $"> **__Error ID {error.ID}__**\r\n"
-                        + $"> **Regex:**\r\n> `{error.Regex.Replace("\n", "`\n> `") ?? " "}`\r\n> \r\n" 
-                        + $"> **Solution:**\r\n> {error.Solution.Replace("\n", "\n> ") ?? " "}\r\n> \r\n"
+                        + $"> **Regex:**\r\n> `{error.Regex.Replace("\n", "`\n> `")}`\r\n> \r\n" 
+                        + $"> **Solution:**\r\n> {error.Solution.Replace("\n", "\n> ")}\r\n> \r\n"
                         + $"> **Description:**\r\n> {error.Description}\r\n> \r\n"
                         + $"> **Level:**\r\n> {error.Level}";
                     currentResultsPerPage++;
@@ -88,7 +85,6 @@ public class FindErrors : ApplicationCommandModule
                 }
 
                 await ctx.Interaction.SendPaginatedResponseAsync(true, ctx.User, pages, asEditResponse: true);
-                return;
             }
             else 
             {
@@ -99,13 +95,11 @@ public class FindErrors : ApplicationCommandModule
                         )
                     )
                 );
-                return;
             }
         } 
         catch (InvalidDataException e)
         {
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Error(e.Message)));
-            return;
         }
     }
 }

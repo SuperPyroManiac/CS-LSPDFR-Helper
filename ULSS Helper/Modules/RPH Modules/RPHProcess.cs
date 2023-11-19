@@ -7,25 +7,27 @@ using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Modules.RPH_Modules;
+
+// ReSharper disable InconsistentNaming
 internal class RPHProcess : SharedLogInfo
 {
     internal string current;
-    private List<string?> currentList;
+    private List<string> _currentList;
     internal string outdated;
     internal string broken;
     internal string missing;
     internal string library;
     internal string missmatch;
     internal RPHLog log;
-    internal string GTAver = "X";
-    internal string LSPDFRver = "X";
-    internal string RPHver = "X";
+    internal string GtAver = "X";
+    internal string LspdfRver = "X";
+    internal string RpHver = "X";
 
     private DiscordEmbedBuilder GetBaseLogInfoEmbed(string description)
     {
-        if (Program.Settings.Env.GtaVersion.Equals(log.GTAVersion)) GTAver = "\u2713";
-        if (Program.Settings.Env.LspdfrVersion.Equals(log.LSPDFRVersion)) LSPDFRver = "\u2713";
-        if (Program.Settings.Env.RphVersion.Equals(log.RPHVersion)) RPHver = "\u2713";
+        if (Program.Settings.Env.GtaVersion.Equals(log.GTAVersion)) GtAver = "\u2713";
+        if (Program.Settings.Env.LspdfrVersion.Equals(log.LSPDFRVersion)) LspdfRver = "\u2713";
+        if (Program.Settings.Env.RphVersion.Equals(log.RPHVersion)) RpHver = "\u2713";
 
         return new DiscordEmbedBuilder
         {
@@ -34,8 +36,8 @@ internal class RPHProcess : SharedLogInfo
             Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl },
             Footer = new DiscordEmbedBuilder.EmbedFooter
             {
-                Text = $"GTA: {GTAver} - RPH: {RPHver}" +
-                       $" - LSPDFR: {LSPDFRver} - Notes: {log.Errors.Count}"
+                Text = $"GTA: {GtAver} - RPH: {RpHver}" +
+                       $" - LSPDFR: {LspdfRver} - Notes: {log.Errors.Count}"
             }
         };
     }
@@ -61,24 +63,24 @@ internal class RPHProcess : SharedLogInfo
         return embed;
     }
 
-    internal async Task SendQuickLogInfoMessage(ContextMenuContext? context=null, ComponentInteractionCreateEventArgs? eventArgs=null)
+    internal async Task SendQuickLogInfoMessage(ContextMenuContext context=null, ComponentInteractionCreateEventArgs eventArgs=null)
     {
         if (context == null && eventArgs == null)
             throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
         
         var linkedOutdated = log.Outdated.Select(
-            plugin => (plugin?.Link != null && plugin.Link.StartsWith("https://"))
+            plugin => plugin.Link != null && plugin.Link.StartsWith("https://")
                 ? $"[{plugin.DName}]({plugin.Link})"
-                : $"[{plugin?.DName}](https://www.google.com/search?q=lspdfr+{plugin.DName.Replace(" ", "+")})"
+                : $"[{plugin.DName}](https://www.google.com/search?q=lspdfr+{plugin.DName.Replace(" ", "+")})"
         ).ToList();
         
-        currentList = log.Current.Select(plugin => plugin?.DName).ToList();
+        _currentList = log.Current.Select(plugin => plugin?.DName).ToList();
         var brokenList = log.Broken.Select(plugin => plugin?.DName).ToList();
         var missingList = log.Missing.Select(plugin => $"{plugin?.Name} ({plugin?.Version})").ToList();
         var missmatchList = log.Missmatch.Select(plugin => $"{plugin?.Name} ({plugin?.EAVersion})").ToList();
         var libraryList = log.Library.Select(plugin => plugin?.DName).ToList();
         brokenList.AddRange(libraryList);
-        current = string.Join("\r\n- ", currentList);
+        current = string.Join("\r\n- ", _currentList);
         outdated = string.Join("\r\n- ", linkedOutdated);
         broken = string.Join("\r\n- ", brokenList);
         missing = string.Join(", ", missingList);
@@ -101,7 +103,7 @@ internal class RPHProcess : SharedLogInfo
         if (outdated.Length >= 1024 || broken.Length >= 1024)
         {
             embed.AddField(":warning:     **Message Too Big**", "\r\nToo many plugins to display in a single message.\r\nFor detailed info, first fix the plugins!", true);
-            if (missing.Length > 0) embed.AddField(":bangbang:  **Plugins not recognized:**", missing, false);
+            if (missing.Length > 0) embed.AddField(":bangbang:  **Plugins not recognized:**", missing);
             var embed2 = new DiscordEmbedBuilder
             {
                 Title = ":orange_circle:     **Update:**",
@@ -121,13 +123,14 @@ internal class RPHProcess : SharedLogInfo
             overflow.AddEmbed(embed);
             if (outdated.Length != 0) overflow.AddEmbed(embed2);
             if (broken.Length != 0) overflow.AddEmbed(embed3);
+            // ReSharper disable RedundantExplicitParamsArrayCreation
             overflow.AddComponents(new DiscordComponent[]
             {
                 new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.RphQuickSendToUser, "Send To User", false,
                     new DiscordComponentEmoji("📨"))
             });
             
-            DiscordMessage? sentOverflowMessage;
+            DiscordMessage sentOverflowMessage;
             if (context != null)
                 sentOverflowMessage = await context.EditResponseAsync(overflow);
             else
@@ -149,7 +152,7 @@ internal class RPHProcess : SharedLogInfo
                 }
             );
 
-            DiscordMessage? sentMessage;
+            DiscordMessage sentMessage;
             if (context != null)
                 sentMessage = await context.EditResponseAsync(webhookBuilder);
             else
@@ -171,7 +174,7 @@ internal class RPHProcess : SharedLogInfo
         
         embed = AddCommonFields(embed);
 
-        TS? ts = Database.LoadTS().FirstOrDefault(ts => ts.ID.ToString().Equals(eventArgs.User.Id.ToString()));
+        TS ts = Database.LoadTs().FirstOrDefault(ts => ts.ID.ToString().Equals(eventArgs.User.Id.ToString()));
         bool update = false;
         foreach (var error in log.Errors)
         {
@@ -179,16 +182,17 @@ internal class RPHProcess : SharedLogInfo
             if (update)
             {
                 if (error.Level == "CRITICAL")
-                    embed.AddField($"```{error.Level.ToString()} ID: {error.ID}``` Troubleshooting Steps:", $"> {error.Solution.Replace("\n", "\n> ")}");
+                    embed.AddField($"```{error.Level} ID: {error.ID}``` Troubleshooting Steps:", $"> {error.Solution.Replace("\n", "\n> ")}");
             }
             if (!update)
             {
                 if (ts == null || ts.View == 1)
-                    embed.AddField($"```{error.Level.ToString()} ID: {error.ID}``` Troubleshooting Steps:",
+                    embed.AddField($"```{error.Level} ID: {error.ID}``` Troubleshooting Steps:",
                         $"> {error.Solution.Replace("\n", "\n> ")}");
             
+                // ReSharper disable MergeIntoPattern
                 if (ts != null && ts.View == 0 && error.Level != "XTRA")
-                    embed.AddField($"```{error.Level.ToString()} ID: {error.ID}``` Troubleshooting Steps:",
+                    embed.AddField($"```{error.Level} ID: {error.ID}``` Troubleshooting Steps:",
                         $"> {error.Solution.Replace("\n", "\n> ")}");
             }
         }
@@ -232,7 +236,7 @@ internal class RPHProcess : SharedLogInfo
     internal void SendUnknownPluginsLog(ulong originalMsgChannelId, ulong originalMsgUserId)
     {
         string embedDescription = "**Unknown plugins or plugin versions!**\r\n\r\n";
-        string rphLogLink = (log.DownloadLink != null && log.DownloadLink.StartsWith("http")) 
+        string rphLogLink = log.DownloadLink != null && log.DownloadLink.StartsWith("http")
             ? $"[RagePluginHook.log]({log.DownloadLink})" 
             : "RagePluginHook.log";
         embedDescription += $"There was a {rphLogLink} uploaded that has plugins or plugin versions that are unknown to the bot's DB!\r\n\r\n";

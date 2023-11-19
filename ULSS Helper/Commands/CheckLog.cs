@@ -1,14 +1,8 @@
-using System.Data.SqlTypes;
-using System.Diagnostics;
 using DSharpPlus;
 using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
-using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
-using ULSS_Helper.Modules;
 using ULSS_Helper.Modules.RPH_Modules;
-using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Commands;
 
@@ -27,7 +21,7 @@ public class CheckLog : ApplicationCommandModule
         if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.BotBlacklistRoleId))
         {
             List<ulong> allowedChannelIds = Program.Settings.Env.PublicUsageAllowedChannelIds;
-            if (!allowedChannelIds.Any(allowedId => ctx.Channel == ctx.Guild.GetChannel(allowedId)))
+            if (allowedChannelIds.All(allowedId => ctx.Channel != ctx.Guild.GetChannel(allowedId)))
             {
                 List<string> allowedChannels = allowedChannelIds.Select(selector: channelId => $"<#{channelId}>").ToList();
                 response.AddEmbed(BasicEmbeds.Error($"Invalid channel!\r\nYou may only use this in {string.Join(" or ", allowedChannels)}!"));
@@ -75,8 +69,9 @@ public class CheckLog : ApplicationCommandModule
             //===//===//===////===//===//===////===//Process Attachment//===////===//===//===////===//===//===//
             try
             {
-                var th = new Thread(() => CheckLogMessage(ctx, attach));
-                th.Start();
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+	            var th = new Thread(() => CheckLogMessage(ctx, attach));
+	            th.Start();
             }
             catch (Exception e)
             {
@@ -98,43 +93,32 @@ public class CheckLog : ApplicationCommandModule
         }
     }
 
-    private async Task CheckLogMessage(InteractionContext? context, DiscordAttachment attach)
+    private async Task CheckLogMessage(InteractionContext context, DiscordAttachment attach)
     {
         var log = RPHAnalyzer.Run(attach.Url);
-        string current;
-        List<string?> currentList;
-        string outdated;
-        string broken;
-        string missing;
-        string library;
-        string missmatch;
-        string GTAver = "X";
-        string LSPDFRver = "X";
-        string RPHver = "X";
-        if (Program.Settings.Env.GtaVersion.Equals(log.GTAVersion)) GTAver = "\u2713";
-        if (Program.Settings.Env.LspdfrVersion.Equals(log.LSPDFRVersion)) LSPDFRver = "\u2713";
-        if (Program.Settings.Env.RphVersion.Equals(log.RPHVersion)) RPHver = "\u2713";
+        string gtAver = "X";
+        string lspdfRver = "X";
+        string rpHver = "X";
+        if (Program.Settings.Env.GtaVersion.Equals(log.GTAVersion)) gtAver = "\u2713";
+        if (Program.Settings.Env.LspdfrVersion.Equals(log.LSPDFRVersion)) lspdfRver = "\u2713";
+        if (Program.Settings.Env.RphVersion.Equals(log.RPHVersion)) rpHver = "\u2713";
 
         var linkedOutdated = log.Outdated.Select(i => !string.IsNullOrEmpty(i?.Link)
                 ? $"[{i.DName}]({i.Link})"
-                : $"[{i?.DName}](https://www.google.com/search?q=lspdfr+{i.DName.Replace(" ", "+")})")
+                : $"[{i?.DName}](https://www.google.com/search?q=lspdfr+{i!.DName.Replace(" ", "+")})")
                 .ToList();
-        currentList = log.Current.Select(i => i?.DName).ToList();
+        var currentList = log.Current.Select(i => i?.DName).ToList();
         var brokenList = log.Broken.Select(i => i?.DName).ToList();
-        var missingList = log.Missing.Select(i => i?.Name).ToList();
-        var missmatchList = log.Missmatch.Select(i => i?.Name).ToList();
         var libraryList = log.Library.Select(i => i?.DName).ToList();
         brokenList.AddRange(libraryList);
-        current = string.Join("\r\n- ", currentList);
-        outdated = string.Join("\r\n- ", linkedOutdated);
-        broken = string.Join("\r\n- ", brokenList);
-        missing = string.Join(", ", missingList);
-        missmatch = string.Join(", ", missmatchList);
-        library = string.Join(", ", libraryList);
+        var current = string.Join("\r\n- ", currentList);
+        var outdated = string.Join("\r\n- ", linkedOutdated);
+        var broken = string.Join("\r\n- ", brokenList);
 
         if (log.Missing.Count > 0 || log.Missmatch.Count > 0) 
         {
-            RPHProcess rphProcess = new RPHProcess();
+	        // ReSharper disable once UseObjectOrCollectionInitializer
+	        RPHProcess rphProcess = new RPHProcess();
             rphProcess.log = log;
             rphProcess.SendUnknownPluginsLog(context.Channel.Id, context.Member.Id);
         }
@@ -152,8 +136,8 @@ public class CheckLog : ApplicationCommandModule
             Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl },
             Footer = new DiscordEmbedBuilder.EmbedFooter
             {
-                Text = $"GTA: {GTAver} - RPH: {RPHver}" +
-                       $" - LSPDFR: {LSPDFRver} - Generated in discord.gg/ulss"
+                Text = $"GTA: {gtAver} - RPH: {rpHver}" +
+                       $" - LSPDFR: {lspdfRver} - Generated in discord.gg/ulss"
             }
         };
 
@@ -205,6 +189,7 @@ public class CheckLog : ApplicationCommandModule
                 
             DiscordWebhookBuilder webhookBuilder = new();
             webhookBuilder.AddEmbed(embed);
+            // ReSharper disable once RedundantExplicitParamsArrayCreation
             webhookBuilder.AddComponents(new DiscordComponent[]
             {
                 new DiscordButtonComponent(ButtonStyle.Secondary, "SendFeedback", "Send Feedback", false,
@@ -213,7 +198,6 @@ public class CheckLog : ApplicationCommandModule
             await context.EditResponseAsync(webhookBuilder);
                     
             Logging.SendPubLog(BasicEmbeds.Info($"Successful upload!\r\nSender: <@{context.Member.Id}> ({context.Member.Username})\r\nChannel: <#{context.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})"));
-            return;
         }
     }
 }

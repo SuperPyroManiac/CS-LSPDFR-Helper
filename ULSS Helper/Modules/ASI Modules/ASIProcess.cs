@@ -8,6 +8,7 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Modules.ASI_Modules;
 
+// ReSharper disable InconsistentNaming
 internal class ASIProcess : SharedLogInfo
 {
     internal ASILog log;
@@ -25,7 +26,7 @@ internal class ASIProcess : SharedLogInfo
             }
         };
     }
-    internal async Task SendQuickLogInfoMessage(ContextMenuContext? context=null, ComponentInteractionCreateEventArgs? eventArgs=null)
+    internal async Task SendQuickLogInfoMessage(ContextMenuContext context=null, ComponentInteractionCreateEventArgs eventArgs=null)
     {
         if (context == null && eventArgs == null)
             throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
@@ -38,24 +39,25 @@ internal class ASIProcess : SharedLogInfo
 
         if (log.FailedAsiFiles.Count != 0) 
         {
-            embed.AddField($":red_circle:     Some ASIs failed to load!", "Select `More Info` for details!");
+            embed.AddField(":red_circle:     Some ASIs failed to load!", "Select `More Info` for details!");
         }
         else 
         {
-            embed.AddField($":green_circle:     No faulty ASI files detected!", "Seems like everything loaded fine.");
+            embed.AddField(":green_circle:     No faulty ASI files detected!", "Seems like everything loaded fine.");
         }
 
         DiscordWebhookBuilder message = new DiscordWebhookBuilder()
             .AddEmbed(embed)
             .AddComponents(
-                new DiscordComponent[]
+	            // ReSharper disable RedundantExplicitParamsArrayCreation
+	            new DiscordComponent[]
                 {
                     new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.AsiGetDetailedInfo, "More Info", false, new DiscordComponentEmoji(Program.Settings.Env.MoreInfoBtnEmojiId)),
                     new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.AsiQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
                 }
             );
 
-        DiscordMessage? sentMessage;
+        DiscordMessage sentMessage;
         if (context != null)
             sentMessage = await context.EditResponseAsync(message);
         else
@@ -66,8 +68,8 @@ internal class ASIProcess : SharedLogInfo
     
     internal async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs eventArgs)
     {
-        var LoadedASIFilesList = "\r\n- " + string.Join("\r\n- ", log.LoadedAsiFiles);
-        var FailedASIFilesList = "\r\n- " + string.Join("\r\n- ", log.FailedAsiFiles);
+        var loadedAsiFilesList = "\r\n- " + string.Join("\r\n- ", log.LoadedAsiFiles);
+        var failedAsiFilesList = "\r\n- " + string.Join("\r\n- ", log.FailedAsiFiles);
         ProcessCache cache = Program.Cache.GetProcessCache(eventArgs.Message.Id);
         
         DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Detailed ASI.log Info");
@@ -80,7 +82,7 @@ internal class ASIProcess : SharedLogInfo
             }
         }
         
-        if (LoadedASIFilesList.Length >= 1024 || FailedASIFilesList.Length >= 1024)
+        if (loadedAsiFilesList.Length >= 1024 || failedAsiFilesList.Length >= 1024)
         {
             await eventArgs.Interaction.DeferAsync(true);
             embed.AddField(":warning:     **Message Too Big**", "\r\nToo many ASIs to display in a single message.", true);
@@ -88,37 +90,37 @@ internal class ASIProcess : SharedLogInfo
             var embed2 = new DiscordEmbedBuilder
             {
                 Title = ":green_circle:     **Loaded ASIs:**",
-                Description = LoadedASIFilesList,
+                Description = loadedAsiFilesList,
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
             var embed3 = new DiscordEmbedBuilder
             {
                 Title = ":red_circle:     **Failed ASIs:**",
-                Description = FailedASIFilesList,
+                Description = failedAsiFilesList,
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
 
             var overflow = new DiscordWebhookBuilder();
             overflow.AddEmbed(embed);
-            if (LoadedASIFilesList.Length != 0) overflow.AddEmbed(embed2);
-            if (FailedASIFilesList.Length != 0) overflow.AddEmbed(embed3);
+            if (loadedAsiFilesList.Length != 0) overflow.AddEmbed(embed2);
+            if (failedAsiFilesList.Length != 0) overflow.AddEmbed(embed3);
             overflow.AddComponents(new DiscordComponent[]
             {
                 new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.AsiDetailedSendToUser, "Send To User", false,
                     new DiscordComponentEmoji("📨"))
             });
-            DiscordMessage? sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflow);
+            DiscordMessage sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflow);
             Program.Cache.SaveProcess(sentOverflowMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
             return;
         }
         
         if (log.LoadedAsiFiles.Count > 0)
-            embed.AddField(":green_circle:     Loaded ASIs:", LoadedASIFilesList, true);
+            embed.AddField(":green_circle:     Loaded ASIs:", loadedAsiFilesList, true);
         
         if (log.FailedAsiFiles.Count > 0) 
-            embed.AddField(":red_circle:     Failed ASIs:", FailedASIFilesList, true);
+            embed.AddField(":red_circle:     Failed ASIs:", failedAsiFilesList, true);
             
         await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,new DiscordInteractionResponseBuilder().AddEmbed(embed).AddComponents(new DiscordComponent[]
         {

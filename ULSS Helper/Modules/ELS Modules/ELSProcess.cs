@@ -8,6 +8,7 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Modules.ELS_Modules;
 
+// ReSharper disable InconsistentNaming
 internal class ELSProcess : SharedLogInfo
 {
     internal ELSLog log;
@@ -26,7 +27,7 @@ internal class ELSProcess : SharedLogInfo
         };
     }
 
-    internal async Task SendQuickLogInfoMessage(ContextMenuContext? context=null, ComponentInteractionCreateEventArgs? eventArgs=null)
+    internal async Task SendQuickLogInfoMessage(ContextMenuContext context=null, ComponentInteractionCreateEventArgs eventArgs=null)
     {
         if (context == null && eventArgs == null)
             throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
@@ -39,27 +40,28 @@ internal class ELSProcess : SharedLogInfo
 
         if (log.FaultyVcfFile != null) 
         {
-            embed.AddField($":red_circle:     Faulty VCF found!", $"Remove `{log.FaultyVcfFile}` from `{log.VcfContainer}`");
+            embed.AddField(":red_circle:     Faulty VCF found!", $"Remove `{log.FaultyVcfFile}` from `{log.VcfContainer}`");
         }
         else 
         {
-            embed.AddField($":green_circle:     No faulty VCF files detected!", "Seems like ELS loaded fine. If ELS still is not working correctly, make sure to check the asiloader.log as well!");
+            embed.AddField(":green_circle:     No faulty VCF files detected!", "Seems like ELS loaded fine. If ELS still is not working correctly, make sure to check the asiloader.log as well!");
         }
 
         if (log.TotalAmountElsModels != null) 
-            embed.AddField("Total amount of ELS-enabled models:", log.TotalAmountElsModels.ToString() ?? "0");
+            embed.AddField("Total amount of ELS-enabled models:", log.TotalAmountElsModels.ToString());
 
         DiscordWebhookBuilder message = new DiscordWebhookBuilder()
             .AddEmbed(embed)
             .AddComponents(
-                new DiscordComponent[]
+	            // ReSharper disable RedundantExplicitParamsArrayCreation
+	            new DiscordComponent[]
                 {
                     new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.ElsGetDetailedInfo, "More Info", false, new DiscordComponentEmoji(Program.Settings.Env.MoreInfoBtnEmojiId)),
                     new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.ElsQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
                 }
             );
 
-        DiscordMessage? sentMessage;
+        DiscordMessage sentMessage;
         if (context != null)
             sentMessage = await context.EditResponseAsync(message);
         else
@@ -106,12 +108,13 @@ internal class ELSProcess : SharedLogInfo
             overflow.AddEmbed(embed);
             if (validVcFiles.Length != 0) overflow.AddEmbed(embed2);
             if (invalidVcFiles.Length != 0) overflow.AddEmbed(embed3);
+            // ReSharper disable RedundantExplicitParamsArrayCreation
             overflow.AddComponents(new DiscordComponent[]
             {
                 new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.ElsDetailedSendToUser, "Send To User", false,
                     new DiscordComponentEmoji("📨"))
             });
-            DiscordMessage? sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflow);
+            DiscordMessage sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflow);
             Program.Cache.SaveProcess(sentOverflowMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
             return;
         }
