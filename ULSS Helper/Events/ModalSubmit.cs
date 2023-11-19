@@ -82,6 +82,16 @@ public class ModalSubmit
             await FindPluginMessages.SendDbOperationConfirmation(newPlugin: plug, operation: DbOperation.UPDATE, oldPlugin: oldPlugin, e: e);
         }
         
+        if (e.Interaction.Data.CustomId == "edit-pluginnotes")
+        {
+            var plug = Program.plugin;
+            plug.Description = e.Values["plugnotes"];
+
+            Database.EditPlugin(plug);
+
+            await FindPluginMessages.SendDbOperationConfirmation(newPlugin: plug, operation: DbOperation.UPDATE, oldPlugin: Program.plugin, e: e);
+        }
+
         if (e.Interaction.Data.CustomId == "edit-error")
         {
             var err = new Error

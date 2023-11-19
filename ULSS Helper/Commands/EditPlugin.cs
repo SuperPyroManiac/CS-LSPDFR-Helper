@@ -10,7 +10,7 @@ public class EditPlugin : ApplicationCommandModule
 {
     [SlashCommand("EditPlugin", "Edits a plugin in the database!")]
 
-    public async Task Cmd(
+    public async Task EditPluginCmd(
         InteractionContext ctx, 
         [Option("Name", "Plugins name as shown in the log!")] string pN, 
         [Option("New_State", "Plugin state, LSPDFR, EXTERNAL, BROKEN, LIB")] State? pS=null

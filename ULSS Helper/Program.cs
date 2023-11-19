@@ -14,6 +14,7 @@ internal class Program
     internal static DiscordClient Client {get; set;}
     internal static Settings Settings;
     internal static Cache Cache = new();
+    public static Plugin plugin;
     public static string PlugName;
     public static string ErrId;
     public static State PlugState;
