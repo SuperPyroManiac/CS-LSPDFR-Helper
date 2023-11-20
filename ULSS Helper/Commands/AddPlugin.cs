@@ -9,7 +9,7 @@ namespace ULSS_Helper.Commands;
 public class AddPlugin : ApplicationCommandModule
 {
     [SlashCommand("AddPlugin", "Adds a plugin to the database!")]
-    
+    [RequireAdvancedTsRole()]
     public async Task AddPluginCmd(InteractionContext ctx, 
         [Option("Name", "Plugins name as shown in the log!")] string pN, 
         [Option("State", "Plugin state, LSPDFR, EXTERNAL, BROKEN, LIB")] State pS)

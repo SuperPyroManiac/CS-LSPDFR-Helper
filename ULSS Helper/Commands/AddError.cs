@@ -9,7 +9,7 @@ namespace ULSS_Helper.Commands;
 public class AddError : ApplicationCommandModule
 {
     [SlashCommand("AddError", "Adds an error to the database!")]
-    
+    [RequireAdvancedTsRole()]
     public async Task AddErrorCmd(InteractionContext ctx, [Option("Level", "Warning type (XTRA, WARN, SEVERE, CRITICAL)")] Level lvl)
     {
         var bd = new DiscordInteractionResponseBuilder();
