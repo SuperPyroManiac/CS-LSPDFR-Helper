@@ -90,6 +90,7 @@ public class CheckLog : ApplicationCommandModule
             //===//===//===////===//===//===////===//Has Dunce Role//===////===//===//===////===//===//===//
             response.AddEmbed(BasicEmbeds.Error(
                 $"You are blacklisted from the bot!\r\nContact server staff in <#{Program.Settings.Env.StaffContactChannelId}> if you think this is an error!"));
+            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
         }
     }
 
