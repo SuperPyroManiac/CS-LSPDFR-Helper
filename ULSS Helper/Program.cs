@@ -45,8 +45,6 @@ internal class Program
         Client.ComponentInteractionCreated += ComponentInteraction.HandleInteraction;
         //Client.MessageCreated += MessageSent;
         //Client.VoiceStateUpdated += VoiceChatManager.OnMemberJoinLeaveVC;
-        Client.Guilds[Settings.Env.ServerId].EditApplicationCommandPermissionsAsync(Client.Guilds[Settings.Env.ServerId].GetApplicationCommandAsync("Analyze Log").Result, new List<DiscordApplicationCommandPermission>(){new DiscordApplicationCommandPermission(Client.Guilds[Settings.Env.ServerId].EveryoneRole, false)});
-
 
         Client.UseInteractivity(new InteractivityConfiguration());
 
