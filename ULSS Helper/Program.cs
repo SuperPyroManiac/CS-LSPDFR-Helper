@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using DSharpPlus;
+using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
@@ -44,6 +45,8 @@ internal class Program
         Client.ComponentInteractionCreated += ComponentInteraction.HandleInteraction;
         //Client.MessageCreated += MessageSent;
         //Client.VoiceStateUpdated += VoiceChatManager.OnMemberJoinLeaveVC;
+        await Client.Guilds[Settings.Env.ServerId].EditApplicationCommandPermissionsAsync(Client.Guilds[Settings.Env.ServerId].GetApplicationCommandAsync("Analyze Log").Result, new List<DiscordApplicationCommandPermission>(){new DiscordApplicationCommandPermission(Client.Guilds[Settings.Env.ServerId].EveryoneRole, false)});
+
 
         Client.UseInteractivity(new InteractivityConfiguration());
 
