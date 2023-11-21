@@ -15,7 +15,8 @@ internal class ContextMenu : ApplicationCommandModule
 {
     private static DiscordAttachment _attachmentForAnalysis;
     
-    [ContextMenu(ApplicationCommandType.MessageContextMenu, "Analyze Log"), RequireRoles(RoleCheckMode.All, 517568233360982017)]
+    [ContextMenu(ApplicationCommandType.MessageContextMenu, "Analyze Log")]
+    [RequireRoles(RoleCheckMode.All, 517568233360982017)]
     // ReSharper disable once UnusedMember.Global
     public async Task OnMenuSelect(ContextMenuContext context)
     {
