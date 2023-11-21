@@ -1,4 +1,5 @@
 ﻿using DSharpPlus;
+using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
@@ -14,7 +15,7 @@ internal class ContextMenu : ApplicationCommandModule
 {
     private static DiscordAttachment _attachmentForAnalysis;
     
-    [ContextMenu(ApplicationCommandType.MessageContextMenu, "Analyze Log")]
+    [ContextMenu(ApplicationCommandType.MessageContextMenu, "Analyze Log"), RequireRoles(RoleCheckMode.All, 517568233360982017)]
     // ReSharper disable once UnusedMember.Global
     public async Task OnMenuSelect(ContextMenuContext context)
     {
