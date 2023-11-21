@@ -34,10 +34,10 @@ public class PluginNotes : ApplicationCommandModule
 		}
 
 		var plugin = Database.LoadPlugins().FirstOrDefault(x => x.Name == pN);
-		Program.plugin = plugin;
+		Program.Cache.SaveInteraction(ctx.Interaction.Id, new(ctx.Interaction, plugin));
 
 		DiscordInteractionResponseBuilder modal = new();
-		modal.WithTitle($"Editing {Program.PlugName}'s notes!").WithCustomId("edit-pluginnotes").AddComponents(
+		modal.WithTitle($"Editing {plugin.Name}'s notes!").WithCustomId("edit-pluginnotes").AddComponents(
 			new TextInputComponent("Notes:", "plugnotes", required: true, style: TextInputStyle.Paragraph, value: plugin.Description));
 
 		await ctx.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);

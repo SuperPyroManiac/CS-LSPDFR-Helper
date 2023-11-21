@@ -34,7 +34,7 @@ internal class ASIProcess : SharedLogInfo
         DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Quick ASI.log Info");
 
         DiscordMessage targetMessage = context?.TargetMessage ?? eventArgs.Message;
-        ProcessCache cache = Program.Cache.GetProcessCache(targetMessage.Id);
+        ProcessCache cache = Program.Cache.GetProcess(targetMessage.Id);
         embed = AddTsViewFields(embed, cache.OriginalMessage, log.ElapsedTime);
 
         if (log.FailedAsiFiles.Count != 0) 
@@ -70,7 +70,7 @@ internal class ASIProcess : SharedLogInfo
     {
         var loadedAsiFilesList = "\r\n- " + string.Join("\r\n- ", log.LoadedAsiFiles);
         var failedAsiFilesList = "\r\n- " + string.Join("\r\n- ", log.FailedAsiFiles);
-        ProcessCache cache = Program.Cache.GetProcessCache(eventArgs.Message.Id);
+        ProcessCache cache = Program.Cache.GetProcess(eventArgs.Message.Id);
         
         DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Detailed ASI.log Info");
         

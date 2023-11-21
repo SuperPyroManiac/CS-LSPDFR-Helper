@@ -35,7 +35,7 @@ internal class ELSProcess : SharedLogInfo
         DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Quick ELS.log Info");
 
         DiscordMessage targetMessage = context?.TargetMessage ?? eventArgs.Message;
-        ProcessCache cache = Program.Cache.GetProcessCache(targetMessage.Id);
+        ProcessCache cache = Program.Cache.GetProcess(targetMessage.Id);
         embed = AddTsViewFields(embed, cache.OriginalMessage, log.ElapsedTime);
 
         if (log.FaultyVcfFile != null) 
@@ -76,7 +76,7 @@ internal class ELSProcess : SharedLogInfo
     {
         string validVcFiles = "\r\n- " + string.Join(", ", log.ValidElsVcfFiles);
         string invalidVcFiles = "\r\n- " + string.Join("\r\n- ", log.InvalidElsVcfFiles);
-        ProcessCache cache = Program.Cache.GetProcessCache(eventArgs.Message.Id);
+        ProcessCache cache = Program.Cache.GetProcess(eventArgs.Message.Id);
         
         DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Detailed ELS.log Info");
         

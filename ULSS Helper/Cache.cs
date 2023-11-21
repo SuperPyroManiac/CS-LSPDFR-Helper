@@ -4,17 +4,36 @@ namespace ULSS_Helper;
 
 internal class Cache
 {
-    private readonly Dictionary<ulong, ProcessCache> _processCache = new();
+    private readonly Dictionary<ulong, ProcessCache> _processCacheDict = new();
+    private readonly Dictionary<ulong, InteractionCache> _interactionCacheDict = new();
 
-    internal void SaveProcess(ulong messageId, ProcessCache processCache)
+    internal void SaveProcess(ulong messageId, ProcessCache newCache)
     {
-        if (_processCache.Any(cache => cache.Key == messageId))
-            _processCache.Remove(messageId);
-        _processCache.Add(messageId, processCache);
+        if (_processCacheDict.Any(cache => cache.Key == messageId))
+        {
+            ProcessCache currentCache = GetProcess(messageId);
+            _processCacheDict[messageId] = currentCache.Update(newCache);
+            Console.WriteLine("Updated cache");
+        }
+        else
+            _processCacheDict.Add(messageId, newCache);
     }
 
-    internal ProcessCache GetProcessCache(ulong messageId)
+    internal ProcessCache GetProcess(ulong messageId)
     {
-        return _processCache[messageId];
+        return _processCacheDict[messageId];
+    }
+
+    internal void SaveInteraction(ulong interactionId, InteractionCache newCache)
+    {
+        if (_interactionCacheDict.Any(cache => cache.Key == interactionId))
+            _interactionCacheDict[interactionId] = newCache;
+        else
+            _interactionCacheDict.Add(interactionId, newCache);
+    }
+
+    internal InteractionCache GetInteraction(ulong interactionId)
+    {
+        return _interactionCacheDict[interactionId];
     }
 }

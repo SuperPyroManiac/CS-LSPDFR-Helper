@@ -49,7 +49,7 @@ public class ComponentInteraction
         {
             if (cacheEventIds.Any(eventId => eventId == eventArgs.Id))
             {
-                ProcessCache cache = Program.Cache.GetProcessCache(eventArgs.Message.Id);
+                ProcessCache cache = Program.Cache.GetProcess(eventArgs.Message.Id);
 
                 if (eventArgs.Id.Equals(SelectAttachmentForAnalysis))
                 {

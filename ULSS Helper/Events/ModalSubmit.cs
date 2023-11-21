@@ -84,12 +84,14 @@ public class ModalSubmit
         
         if (e.Interaction.Data.CustomId == "edit-pluginnotes")
         {
-            var plug = Program.plugin;
+            InteractionCache cache = Program.Cache.GetInteraction(e.Interaction.Id);
+            var plug = cache.Plugin;
             plug.Description = e.Values["plugnotes"];
 
+            Plugin oldPlugin = Database.GetPlugin(plug.Name);
             Database.EditPlugin(plug);
 
-            await FindPluginMessages.SendDbOperationConfirmation(newPlugin: plug, operation: DbOperation.UPDATE, oldPlugin: Program.plugin, e: e);
+            await FindPluginMessages.SendDbOperationConfirmation(newPlugin: plug, operation: DbOperation.UPDATE, oldPlugin: oldPlugin, e: e);
         }
 
         if (e.Interaction.Data.CustomId == "edit-error")
