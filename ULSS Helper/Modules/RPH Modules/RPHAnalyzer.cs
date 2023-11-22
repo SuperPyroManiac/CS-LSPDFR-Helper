@@ -187,8 +187,8 @@ public class RPHAnalyzer
                 {
                     newLib.DName = plugin.DName;
                     newLib.Link = plugin.Link;
+                    log.MissingDepend.Add(newLib);
                 }
-                log.MissingDepend.Add(newLib);
             }
         }
         if (log.MissingDepend.Any())
