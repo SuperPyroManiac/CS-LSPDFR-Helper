@@ -199,7 +199,7 @@ public class RPHAnalyzer
         {
             foreach (var plugg in pluginData)
             {
-                if (match.Value.Contains(plugg.Name + ","))
+                if (plugg.Name.Equals(match.Groups[2].Value))
                 {
                     if (!log.MissingDepend.Any(plugin => plugin.Name.Equals(match.Groups[2].Value)))
                     {
@@ -228,7 +228,7 @@ public class RPHAnalyzer
             {
 	            ID = "1",
 	            Level = "SEVERE",
-	            Solution = $"**You are missing these required files**:\r\n- {linkedLibstring}"
+	            Solution = $"**You are either missing these required files entirely or their installation is incomplete**:\r\n- {linkedLibstring}"
             };
 
             log.Errors.Add(libErr);
