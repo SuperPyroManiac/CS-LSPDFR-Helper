@@ -175,7 +175,7 @@ public class RPHAnalyzer
             }
         }
         
-        var libregex = new Regex(@"(?:\[.+\]) (?!ERROR: Could not load plugin from|SuperEvents: Registering event -|Error while loading plugin|SuperEvents: Loading (?:\w+\s+)+)(?!.*(Grammar|Assembly: |CalloutInterface: \[ERROR\]))(?:.+:) (?!Creating|Starting dependency check for|Type .SlimDX)(?:\w+\s+)+(?:'|"")?(?!ScriptHookVDotNet3|LemonUI\.SHVDN3|ERROR\] there was an error while trying to access plugin:)*(.+), Version=.+, Culture=.+PublicKeyToken=");
+        var libregex = new Regex(@"(?:\[.+\]) (?!ERROR: Could not load plugin from|SuperEvents: Registering event -|Error while loading plugin)(?!.*(Grammar)).+: (?!Creating|Starting dependency check for|Type .SlimDX.+)(?:.+)\s* \W?(?!ScriptHookVDotNet3|LemonUI\.SHVDN3|ERROR\] there was an error while trying to access plugin:)(.+), Version=.+, Culture=.+PublicKeyToken=");
         var libmatch = libregex.Matches(wholeLog);
         foreach (Match match in libmatch)
         {
