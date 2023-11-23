@@ -4,7 +4,6 @@ using System.Net;
 using System.Text.RegularExpressions;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
-using System.Reflection.Metadata.Ecma335;
 
 namespace ULSS_Helper.Modules.RPH_Modules;
 
@@ -176,46 +175,20 @@ public class RPHAnalyzer
             }
         }
         
-        List<Plugin> libs = Database.FindPlugins(state: State.LIB);
-        libs.Add(new Plugin(){ Name = "Traffic Policer" });
-        libs.Add(new Plugin(){ Name = "CalloutInterface" });
-        libs.Add(new Plugin(){ Name = "GrammarPolice" });
-        libs.Add(new Plugin(){ Name = "Spotlight" });
-        libs.Add(new Plugin(){ Name = "ImmersiveAmbientEvents" });
-        libs.Add(new Plugin(){ Name = "RansomAmbience" });
-        libs.Add(new Plugin(){ Name = "UltimateBackup" });
-        libs.Add(new Plugin(){ Name = "StopThePed" });
-        libs.Add(new Plugin(){ Name = "ProwlerRadar" });
-        libs.Add(new Plugin(){ Name = "SpeedRadar" });
-        libs.Add(new Plugin(){ Name = "Arrest Manager" });
-        libs.Add(new Plugin(){ Name = "dlGlobal" });
-
-        IEnumerable<string> libNames = libs.Select(lib => lib.Name);
-        string libsString = string.Join("|", libNames);
-        var libregex = new Regex($@"(?:\[.+\]) (?!ERROR: Could not load plugin from|SuperEvents: Registering event -|Error while loading plugin|SuperEvents: Loading (?:\w+\s+)+)(?!.*(Grammar|Assembly: |CalloutInterface: \[ERROR\]))(?:.+:) ?(?!Creating|Starting dependency check for|Type .SlimDX)(?:\s*\w+.\s+)+(?:(?:\s?.+|'.*|"".*))?(?!ScriptHookVDotNet3|LemonUI\.SHVDN3|ERROR\] there was an error while trying to access plugin:)*({libsString}), Version=.+");
-        //var libregex = new Regex(@"(?:\[.+\]) (?!ERROR: Could not load plugin from|SuperEvents: Registering event -|Error while loading plugin|SuperEvents: Loading (?:\w+\s+)+)(?!.*(Grammar|Assembly: |CalloutInterface: \[ERROR\]))(?:.+:) ?(?!Creating|Starting dependency check for|Type .SlimDX)(?:\s*\w+.\s+)+(?:(?:\s?.+|'.*|"".*))?(?!ScriptHookVDotNet3|LemonUI\.SHVDN3|ERROR\] there was an error while trying to access plugin:)*(CalloutInterfaceAPI|RawCanvasUI|RAGENativeUI|PyroCommon|Albo1125\.Common|IPT\.Common|Koma\.Extensions|Khorio\.Common|ParksTools|InputManager|DamageTrackerLib|XSerializer|Stealth\.Common|Traffic Policer|NAudio|CalloutInterface|GrammarPolice|Spotlight|ImmersiveAmbientEvents|RansomAmbience|UltimateBackup|StopThePed|Newtonsoft\.Json|EasyHook|ProwlerRadar|SpeedRadar|Arrest Manager|dlGlobal), Version=.+");
-        MatchCollection libmatch = libregex.Matches(wholeLog);
+        var libregex = new Regex(@"(?:\[.+\]) (?!ERROR: Could not load plugin from|SuperEvents: Registering event -|Error while loading plugin|SuperEvents: Loading)(?!.*(Grammar|Assembly: |CalloutInterface: \[ERROR\])).+: (?!Creating|Starting dependency check for|Type .SlimDX.+)(?:.+)\s* \W?(?!ScriptHookVDotNet3|LemonUI\.SHVDN3|ERROR\] there was an error while trying to access plugin:)(.+), Version=.+, Culture=.+PublicKeyToken=.+");
+        var libmatch = libregex.Matches(wholeLog);
         foreach (Match match in libmatch)
         {
             foreach (var plugg in pluginData)
             {
-                if (match.Value.Contains(plugg.Name + ","))
-                {
-                    if (!log.MissingDepend.Any(plugin => plugin.Name.Equals(match.Groups[2].Value)))
-                    {
-                        var newLib = new Plugin
-                            { Name = match.Groups[2].Value, State = "LIB", DName = match.Groups[2].Value };
-                        foreach (var plugin in pluginData.Where(plugin => plugin.Name.Equals(newLib.Name)))
-                        {
-                            newLib.DName = plugin.DName;
-                            newLib.Link = plugin.Link;
-                            log.MissingDepend.Add(newLib);
-                        }
-                    }
-                }
+                if (!match.Value.Contains($"{plugg.Name},") 
+                    || plugg.Name == "Callouts" 
+                    || plugg.Name == "Pullover" 
+                    || log.MissingDepend.Any(x => x.Name.Equals(plugg.Name))) continue;
+                log.MissingDepend.Add(plugg);
             }
         }
-        if (log.MissingDepend.Any())
+        if (log.MissingDepend.Count != 0)
         {
             var linkedLib = log.MissingDepend.Select(
 	            plugin => plugin?.Link != null && plugin.Link.StartsWith("https://")
