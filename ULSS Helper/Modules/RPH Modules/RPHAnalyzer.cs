@@ -161,6 +161,7 @@ public class RPHAnalyzer
 
         foreach (var error in errorData)
         {
+            if (error.ID == "1") continue;
             var errregex = new Regex(error.Regex);
             var errmatch = errregex.Matches(wholeLog);
             foreach (Match match in errmatch)
@@ -175,38 +176,26 @@ public class RPHAnalyzer
             }
         }
         
-        var libregex = new Regex(@"(?:\[.+\]) (?!ERROR: Could not load plugin from|SuperEvents: Registering event -|Error while loading plugin)(?!.*(Grammar)).+: (?!Creating|Starting dependency check for|Type .SlimDX.+)(?:.+)\s* \W?(?!ScriptHookVDotNet3|LemonUI\.SHVDN3|ERROR\] there was an error while trying to access plugin:)(.+), Version=.+, Culture=.+PublicKeyToken=");
-        var libmatch = libregex.Matches(wholeLog);
-        foreach (Match match in libmatch)
+        var dependregex = new Regex(errorData[0].Regex);
+        var dependmatch = dependregex.Matches(wholeLog);
+        foreach (Match match in dependmatch)
         {
-            if (!log.MissingDepend.Any(x => x.Name.Equals(match.Groups[2].Value)))
-            {
-                var newLib = new Plugin
-                { Name = match.Groups[2].Value, State = "LIB", DName = match.Groups[2].Value};
-                foreach (var plugin in pluginData.Where(plugin => plugin.Name.Equals(newLib.Name)))
-                {
-                    newLib.DName = plugin.DName;
-                    newLib.Link = plugin.Link;
-                }
-                log.MissingDepend.Add(newLib);
-            }
+            if (log.MissingDepend.Any(x => x.Name.Equals(match.Groups[2].Value))) continue;
+            var newDepend = new Plugin { Name = match.Groups[2].Value, State = "LIB", DName = match.Groups[2].Value};
+            foreach (var plugin in pluginData.Where(plugin => plugin.Name.Equals(newDepend.Name)))
+            {newDepend.DName = plugin.DName; newDepend.Link = plugin.Link; log.MissingDepend.Add(newDepend);}
         }
-        if (log.MissingDepend.Any())
+        if (log.MissingDepend.Count != 0)
         {
-            var linkedLib = log.MissingDepend.Select(
+            var linkedDepend = log.MissingDepend.Select(
 	            plugin => plugin?.Link != null && plugin.Link.StartsWith("https://")
 		            ? $"[{plugin.DName}]({plugin.Link})"
 		            : $"[{plugin?.DName}](https://www.google.com/search?q=lspdfr+{plugin.Name.Replace(" ", "+")})"
             ).ToList();
-            var linkedLibstring = string.Join("\r\n- ", linkedLib);
-            var libErr = new Error
-            {
-	            ID = "1",
-	            Level = "SEVERE",
-	            Solution = $"**You are missing these required files**:\r\n- {linkedLibstring}"
-            };
-
-            log.Errors.Add(libErr);
+            var linkedDependstring = string.Join("\r\n- ", linkedDepend);
+            var dependErr = errorData[0];
+            dependErr.Solution = $"{errorData[0].Solution}\r\n- {linkedDependstring}";
+            log.Errors.Add(dependErr);
         }
         log.Errors = log.Errors.OrderBy(x => x.Level).ToList();
         
