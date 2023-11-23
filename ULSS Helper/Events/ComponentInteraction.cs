@@ -26,6 +26,7 @@ public class ComponentInteraction
     public const string ShvdnGetDetailedInfo = "ShvdnGetDetailedInfo";
     public const string ShvdnQuickSendToUser = "ShvdnQuickInfoSendToUser";
     public const string ShvdnDetailedSendToUser = "ShvdnDetailedSendToUser";
+    public const string SendFeedback = "SendFeedback";
 
     internal static async Task HandleInteraction(DiscordClient s, ComponentInteractionCreateEventArgs eventArgs)
     {
@@ -136,10 +137,10 @@ public class ComponentInteraction
             }
             
             //===//===//===////===//===//===////===//Send Feedback Button//===////===//===//===////===//===//===//
-            if (eventArgs.Id == "SendFeedback")
+            if (eventArgs.Id == SendFeedback)
             {
                 DiscordInteractionResponseBuilder modal = new();
-                modal.WithTitle("Send Feedback").WithCustomId("SendFeedback").AddComponents(
+                modal.WithTitle("Send Feedback").WithCustomId(SendFeedback).AddComponents(
                     new TextInputComponent("Feedback:", "feedback", required: true, style: TextInputStyle.Paragraph));
                 Console.Write("We got here");
                 await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);

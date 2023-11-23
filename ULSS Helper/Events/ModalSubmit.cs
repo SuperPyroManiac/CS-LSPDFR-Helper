@@ -12,6 +12,7 @@ public class ModalSubmit
     {
         if (e.Interaction.Data.CustomId == "add-plugin")
         {
+            UserActionCache cache = Program.Cache.GetUserAction(e.Interaction.User.Id, e.Interaction.Data.CustomId);
             var plugDName = e.Values["plugDName"];
             var plugVersion = e.Values["plugVersion"];
             var plugEaVersion = e.Values["plugEAVersion"];
@@ -20,12 +21,12 @@ public class ModalSubmit
 
             var plug = new Plugin
             {
-                Name = Program.PlugName,
+                Name = cache.Plugin.Name,
                 DName = plugDName,
                 Version = plugVersion,
                 EAVersion = plugEaVersion,
                 ID = plugId,
-                State = Program.PlugState.ToString().ToUpper(),
+                State = cache.Plugin.State,
                 Link = plugLink
             };
 
@@ -36,12 +37,13 @@ public class ModalSubmit
         
         if (e.Interaction.Data.CustomId == "add-error")
         {
+            UserActionCache cache = Program.Cache.GetUserAction(e.Interaction.User.Id, e.Interaction.Data.CustomId);
             var err = new Error
             {
                 Regex = e.Values["errReg"],
                 Solution = e.Values["errSol"],
                 Description = e.Values["errDesc"],
-                Level = Program.ErrLevel.ToString().ToUpper()
+                Level = cache.Error.Level
             };
             
             if (Database.LoadErrors().Any(error => error.Regex == err.Regex))
@@ -58,6 +60,7 @@ public class ModalSubmit
         
         if (e.Interaction.Data.CustomId == "edit-plugin")
         {
+            UserActionCache cache = Program.Cache.GetUserAction(e.Interaction.User.Id, e.Interaction.Data.CustomId);
             var plugDName = e.Values["plugDName"];
             var plugVersion = e.Values["plugVersion"];
             var plugEaVersion = e.Values["plugEAVersion"];
@@ -66,12 +69,12 @@ public class ModalSubmit
 
             var plug = new Plugin
             {
-                Name = Program.PlugName,
+                Name = cache.Plugin.Name,
                 DName = plugDName,
                 Version = plugVersion,
                 EAVersion = plugEaVersion,
                 ID = plugId,
-                State = Program.PlugState.ToString().ToUpper(),
+                State = cache.Plugin.State,
                 Link = plugLink
             };
 
@@ -84,41 +87,50 @@ public class ModalSubmit
         
         if (e.Interaction.Data.CustomId == "edit-pluginnotes")
         {
-            InteractionCache cache = Program.Cache.GetInteraction(e.Interaction.Id);
-            var plug = cache.Plugin;
-            plug.Description = e.Values["plugnotes"];
+            UserActionCache cache = Program.Cache.GetUserAction(e.Interaction.User.Id, e.Interaction.Data.CustomId);
+            cache.Plugin.Description = e.Values["plugnotes"];
 
-            Plugin oldPlugin = Database.GetPlugin(plug.Name);
-            Database.EditPlugin(plug);
+            Plugin oldPlugin = Database.GetPlugin(cache.Plugin.Name);
 
-            await FindPluginMessages.SendDbOperationConfirmation(newPlugin: plug, operation: DbOperation.UPDATE, oldPlugin: oldPlugin, e: e);
+            Database.EditPlugin(cache.Plugin);
+
+            await FindPluginMessages.SendDbOperationConfirmation(newPlugin: cache.Plugin, operation: DbOperation.UPDATE, oldPlugin: oldPlugin, e: e);
         }
 
         if (e.Interaction.Data.CustomId == "edit-error")
         {
+            UserActionCache cache = Program.Cache.GetUserAction(e.Interaction.User.Id, e.Interaction.Data.CustomId);
             var err = new Error
             {
-                ID = Program.ErrId,
+                ID = cache.Error.ID,
                 Regex = e.Values["errReg"],
                 Solution = e.Values["errSol"],
                 Description = e.Values["errDesc"],
-                Level = Program.ErrLevel.ToString()
+                Level = cache.Error.Level
             };
 
-            Error previousError = Database.GetError(err.ID);
+            Error oldError = Database.GetError(err.ID);
 
             Database.EditError(err);
 
-            await FindErrorMessages.SendDbOperationConfirmation(newError: err, operation: DbOperation.UPDATE, oldError: previousError, e: e);
+            await FindErrorMessages.SendDbOperationConfirmation(newError: err, operation: DbOperation.UPDATE, oldError: oldError, e: e);
         }
         
-        if (e.Interaction.Data.CustomId == "SendFeedback")
+        if (e.Interaction.Data.CustomId == ComponentInteraction.SendFeedback)
         {
             var feedback = e.Values["feedback"];
-            var embed = BasicEmbeds.Generic($"Feedback received!\r\n\r\n```{feedback}```\r\n\r\nSent By:\r\n<@{e.Interaction.User.Id}> ({e.Interaction.User.Username}) in: <#{e.Interaction.ChannelId}>", DiscordColor.PhthaloGreen);
+            var embed = BasicEmbeds.Generic(
+                $"Feedback received!\r\n\r\n"
+                    + $"```{feedback}```\r\n\r\n"
+                    + $"Sent By:\r\n"
+                    + $"<@{e.Interaction.User.Id}> ({e.Interaction.User.Username}) in: <#{e.Interaction.ChannelId}>", 
+                DiscordColor.PhthaloGreen
+            );
             Logging.SendPubLog(embed);
-            await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
-                new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Feedback sent!")));
+            await e.Interaction.CreateResponseAsync(
+                InteractionResponseType.UpdateMessage,
+                new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Feedback sent!"))
+            );
         }
     }
 }

@@ -18,9 +18,10 @@ public class EditTs : ApplicationCommandModule
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             return;
         }
-        if (Database.LoadTs().All(x => x.ID.ToString() != ctx.Member.Id.ToString()))
+        if (Database.LoadTs().All(ts => ts.ID.ToString() != ctx.Member.Id.ToString()))
         {
-            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("You are not in the DB, please contact SuperPyroManiac!"));
+            List<string> botAdminMentions = Program.Settings.Env.BotAdminUserIds.Select(botAdminId => $"<@{botAdminId}>").ToList();
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error($"You are not in the DB, please contact {string.Join(" or ", botAdminMentions)}!")));
             return;
         }
 
@@ -33,15 +34,15 @@ public class EditTs : ApplicationCommandModule
         
         Database.EditTs(ts);
         
-        await ctx.CreateResponseAsync(embed: BasicEmbeds.Info($"<@{ctx.Member.Id.ToString()}>: You have changed your view type to: {view}"));
+        await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Success($"<@{ctx.Member.Id.ToString()}>: You have changed your view type to: {(view ? "Show XTRA errors" : "Hide XTRA errors")}")));
         Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id,
-            BasicEmbeds.Info($"**<@{ctx.Member.Id.ToString()}> You has changed their view type to: {view}**"));
+            BasicEmbeds.Info($"**<@{ctx.Member.Id.ToString()}> has changed their view type to: {(view ? "Show XTRA errors" : "Hide XTRA errors")}**"));
     }
     
     [SlashCommand("AllowPerms", "Allows a TS to use commands!")]
     public async Task EditAllowCmd(
         InteractionContext ctx, 
-        [Option("ID", "User ID to change!")] string id,
+        [Option("ID", "User ID to change!")] string userId,
         [Option("Allow", "Allow access to advanced bot commands!")] bool allow)
     {
         var bd = new DiscordInteractionResponseBuilder();
@@ -51,20 +52,21 @@ public class EditTs : ApplicationCommandModule
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             return;
         }
-        if (Database.LoadTs().All(x => x.ID.ToString() != id))
+        if (Database.LoadTs().All(x => x.ID.ToString() != userId))
         {
-            await ctx.CreateResponseAsync(embed: BasicEmbeds.Error("User is not in the DB!"));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("User is not in the DB!")));
             return;
         }
         var allowint = 0;
         if (allow) allowint = 1;
 
-        var ts = Database.LoadTs().FirstOrDefault(x => x.ID.ToString() == id);
+        var ts = Database.LoadTs().FirstOrDefault(x => x.ID.ToString() == userId);
         ts!.Allow = allowint;
         ts.Username = ctx.Guild.GetMemberAsync(ulong.Parse(ts.ID)).Result.Username;
         
         Database.EditTs(ts);
         
-        await ctx.CreateResponseAsync(embed: BasicEmbeds.Warning($"<@{id}>'s advanced command perms have been set to: {allow}"));
+        await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Success($"<@{userId}>'s advanced command perms have been set to: {allow}")));
+        Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info($"<@{userId}>'s advanced command perms have been set to: {allow}"));
     }
 }

@@ -9,7 +9,7 @@ public class PluginNotes : ApplicationCommandModule
 {
 	[SlashCommand("PluginNotes", "Views / Edits plugin notes!")]
 
-	public async Task PluginNotesCmd(InteractionContext ctx, [Option("Name", "Plugins name as shown in the log!")] string pN)
+	public async Task PluginNotesCmd(InteractionContext ctx, [Option("Name", "Plugins name as shown in the log!")] string pluginName)
 	{
 		var bd = new DiscordInteractionResponseBuilder();
 		bd.IsEphemeral = true;
@@ -27,19 +27,26 @@ public class PluginNotes : ApplicationCommandModule
 			return;
 		}
 
-		if (Database.LoadPlugins().All(x => x.Name != pN))
+		if (Database.LoadPlugins().All(plugin => plugin.Name != pluginName))
 		{
-			await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error($"No plugin found with name {pN}")));
+			await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error($"No plugin found with name {pluginName}")));
 			return;
 		}
 
-		var plugin = Database.LoadPlugins().FirstOrDefault(x => x.Name == pN);
-		Program.Cache.SaveInteraction(ctx.Interaction.Id, new(ctx.Interaction, plugin));
+		var plugin = Database.LoadPlugins().FirstOrDefault(x => x.Name == pluginName);
 
 		DiscordInteractionResponseBuilder modal = new();
-		modal.WithTitle($"Editing {plugin.Name}'s notes!").WithCustomId("edit-pluginnotes").AddComponents(
-			new TextInputComponent("Notes:", "plugnotes", required: true, style: TextInputStyle.Paragraph, value: plugin.Description));
+		modal.WithCustomId("edit-pluginnotes");
+		modal.WithTitle($"Editing {plugin.Name}'s notes!");
+		modal.AddComponents(new TextInputComponent(
+			label: "Notes:", 
+			customId: "plugnotes", 
+			required: true, 
+			style: TextInputStyle.Paragraph, 
+			value: plugin.Description
+		));
 
-		await ctx.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
+		Program.Cache.SaveUserAction(ctx.Interaction.User.Id, modal.CustomId, new(ctx.Interaction, plugin));	
+		await ctx.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);	
 	}
 }

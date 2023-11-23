@@ -30,7 +30,7 @@ public class ForceUpdateCheck : ApplicationCommandModule
         var th = new Thread(Database.UpdatePluginVersions);
         th.Start();
         
-        await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("Started DB updater thread!\r\nPlease allow up to 2 minutes for everything to update!")));
+        await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Success("Started DB updater thread!\r\nPlease allow up to 2 minutes for everything to update!")));
         Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info("Forced DB updater to run!"));
     }
 }

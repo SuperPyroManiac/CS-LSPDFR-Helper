@@ -6,6 +6,9 @@ using ULSS_Helper.Modules.SHVDN_Modules;
 
 namespace ULSS_Helper.Objects;
 
+/// <summary>
+/// Used to store information during a log analysis process for a specific DiscordMessage. This allows accessing the Process object instances in the (possible) following chain of bot responses related to the same OriginalMessage.
+/// </summary>
 internal class ProcessCache
 {
     internal DiscordInteraction Interaction { get; private set; }

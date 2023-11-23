@@ -11,8 +11,8 @@ public class AddPlugin : ApplicationCommandModule
     [SlashCommand("AddPlugin", "Adds a plugin to the database!")]
     
     public async Task AddPluginCmd(InteractionContext ctx, 
-        [Option("Name", "Plugins name as shown in the log!")] string pN, 
-        [Option("State", "Plugin state, LSPDFR, EXTERNAL, BROKEN, LIB")] State pS)
+        [Option("Name", "Plugins name as shown in the log!")] string pluginName, 
+        [Option("State", "Plugin state, LSPDFR, EXTERNAL, BROKEN, LIB")] State pluginState)
     {
         var bd = new DiscordInteractionResponseBuilder();
         bd.IsEphemeral = true;
@@ -21,7 +21,7 @@ public class AddPlugin : ApplicationCommandModule
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             return;
         }
-        var ts = Database.LoadTs().FirstOrDefault(x => x.ID.ToString() == ctx.Member.Id.ToString());
+        var ts = Database.LoadTs().FirstOrDefault(plugin => plugin.ID.ToString() == ctx.Member.Id.ToString());
         if (ts == null || ts.Allow == 0)
         {
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
@@ -30,25 +30,54 @@ public class AddPlugin : ApplicationCommandModule
             return;
         }
 
-        if (Database.LoadPlugins().Any(plugin => plugin.Name == pN))
+        if (Database.LoadPlugins().Any(plugin => plugin.Name == pluginName))
         {
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("This plugin already exists in the database!\r\nConsider using /EditPlugin <Name> <State>")));
             return;
         }
 
-        Program.PlugName = pN;
-        Program.PlugState = pS;
+        Plugin plugin = new()
+        {
+            Name = pluginName,
+            State = pluginState.ToString().ToUpper()
+        };
         
         DiscordInteractionResponseBuilder modal = new();
-        modal.WithTitle($"Adding {Program.PlugName} as {Program.PlugState.ToString()}").WithCustomId("add-plugin").AddComponents(
-            new TextInputComponent("Display Name:", "plugDName", required: true, style: TextInputStyle.Short, value: Program.PlugName));
-        modal.AddComponents(new TextInputComponent("Version:", "plugVersion", required: false,
-            style: TextInputStyle.Short));
-        modal.AddComponents(new TextInputComponent("Early Access Version:", "plugEAVersion", required: false,
-            style: TextInputStyle.Short));
-        modal.AddComponents(new TextInputComponent("ID (on lcpdfr.com):", "plugID", required: false, style: TextInputStyle.Short));
-        modal.AddComponents(new TextInputComponent("Link:", "plugLink", required: false, style: TextInputStyle.Short));
+        modal.WithCustomId("add-plugin");
+        modal.WithTitle($"Adding {plugin.Name} as {plugin.State}");
+        modal.AddComponents(new TextInputComponent(
+            label: "Display Name:", 
+            customId: "plugDName", 
+            required: true, 
+            style: TextInputStyle.Short, 
+            value: Program.PlugName
+        ));
+        modal.AddComponents(new TextInputComponent(
+            label: "Version:",
+            customId: "plugVersion",
+            required: false,
+            style: TextInputStyle.Short
+        ));
+        modal.AddComponents(new TextInputComponent(
+            label: "Early Access Version:",
+            customId: "plugEAVersion",
+            required: false,
+            style: TextInputStyle.Short
+        ));
+        modal.AddComponents(new TextInputComponent(
+            label: "ID (on lcpdfr.com):",
+            customId: "plugID",
+            required: false,
+            style: TextInputStyle.Short
+        ));
+        modal.AddComponents(new TextInputComponent(
+            label: "Link:",
+            customId: "plugLink",
+            required: false,
+            style: TextInputStyle.Short
+        ));
         
+		Program.Cache.SaveUserAction(ctx.Interaction.User.Id, modal.CustomId, new UserActionCache(ctx.Interaction, plugin));
         await ctx.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
     }
 }

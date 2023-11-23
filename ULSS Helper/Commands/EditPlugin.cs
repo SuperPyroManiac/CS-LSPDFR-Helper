@@ -12,8 +12,8 @@ public class EditPlugin : ApplicationCommandModule
 
     public async Task EditPluginCmd(
         InteractionContext ctx, 
-        [Option("Name", "Plugins name as shown in the log!")] string pN, 
-        [Option("New_State", "Plugin state, LSPDFR, EXTERNAL, BROKEN, LIB")] State? pS=null
+        [Option("Name", "Plugins name as shown in the log!")] string pluginName, 
+        [Option("New_State", "Plugin state, LSPDFR, EXTERNAL, BROKEN, LIB")] State? newState=null
     )
     {
         var bd = new DiscordInteractionResponseBuilder();
@@ -32,37 +32,59 @@ public class EditPlugin : ApplicationCommandModule
             return;
         }
 
-        if (Database.LoadPlugins().All(x => x.Name != pN))
+        if (Database.LoadPlugins().All(x => x.Name != pluginName))
         {
-            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error($"No plugin found with name {pN}")));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error($"No plugin found with name {pluginName}")));
             return;
         }
 
-        var plugin = Database.LoadPlugins().FirstOrDefault(x => x.Name == pN);
+        var plugin = Database.GetPlugin(pluginName);
 
-        Program.PlugName = plugin!.Name;
-        if (pS != null)
+        if (newState != null)
         {
-            Program.PlugState = (State) pS;
-        }
-        else
-        {
-            if (Enum.TryParse(plugin.State, out State newState))
-            {
-                Program.PlugState = newState;
-            }
+            plugin.State = newState.ToString().ToUpper();
         }
         
         DiscordInteractionResponseBuilder modal = new();
-        modal.WithTitle($"Editing {Program.PlugName} as {Program.PlugState.ToString()}").WithCustomId("edit-plugin").AddComponents(
-            new TextInputComponent("Display Name:", "plugDName", required: true, style: TextInputStyle.Short, value: plugin.DName));
-        modal.AddComponents(new TextInputComponent("Version:", "plugVersion", required: false,
-            style: TextInputStyle.Short, value: plugin.Version));
-        modal.AddComponents(new TextInputComponent("Early Access Version:", "plugEAVersion", required: false,
-            style: TextInputStyle.Short, value: plugin.EAVersion));
-        modal.AddComponents(new TextInputComponent("ID (on lcpdfr.com):", "plugID", required: false, style: TextInputStyle.Short, value: plugin.ID));
-        modal.AddComponents(new TextInputComponent("Link:", "plugLink", required: false, style: TextInputStyle.Short, value: plugin.Link));
+        modal.WithCustomId("edit-plugin");
+        modal.WithTitle($"Editing {plugin.Name} as {plugin.State}");
+        modal.AddComponents(new TextInputComponent(
+            label: "Display Name:", 
+            customId: "plugDName", 
+            required: true, 
+            style: TextInputStyle.Short, 
+            value: plugin.DName
+        ));
+        modal.AddComponents(new TextInputComponent(
+            label: "Version:", 
+            customId: "plugVersion", 
+            required: false,
+            style: TextInputStyle.Short, 
+            value: plugin.Version
+        ));
+        modal.AddComponents(new TextInputComponent(
+            label: "Early Access Version:", 
+            customId: "plugEAVersion", 
+            required: false,
+            style: TextInputStyle.Short, 
+            value: plugin.EAVersion
+        ));
+        modal.AddComponents(new TextInputComponent(
+            label: "ID (on lcpdfr.com):", 
+            customId: "plugID", 
+            required: false, 
+            style: TextInputStyle.Short, 
+            value: plugin.ID
+        ));
+        modal.AddComponents(new TextInputComponent(
+            label: "Link:", 
+            customId: "plugLink", 
+            required: false, 
+            style: TextInputStyle.Short, 
+            value: plugin.Link
+        ));
         
+		Program.Cache.SaveUserAction(ctx.Interaction.User.Id, modal.CustomId, new UserActionCache(ctx.Interaction, plugin));
         await ctx.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
     }
 }
