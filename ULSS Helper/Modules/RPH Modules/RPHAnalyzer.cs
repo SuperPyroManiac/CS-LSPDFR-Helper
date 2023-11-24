@@ -176,12 +176,11 @@ public class RPHAnalyzer
             }
         }
         
-        var dependregex = new Regex(errorData[0].Regex);
-        var dependmatch = dependregex.Matches(wholeLog);
+        var dependmatch = new Regex(errorData[0].Regex).Matches(wholeLog);
         foreach (Match match in dependmatch)
         {
             if (log.MissingDepend.Any(x => x.Name.Equals(match.Groups[2].Value))) continue;
-            var newDepend = new Plugin { Name = match.Groups[2].Value, State = "LIB", DName = match.Groups[2].Value};
+            var newDepend = new Plugin { Name = match.Groups[2].Value, DName = match.Groups[2].Value};
             foreach (var plugin in pluginData.Where(plugin => plugin.Name.Equals(newDepend.Name)))
             {newDepend.DName = plugin.DName; newDepend.Link = plugin.Link; log.MissingDepend.Add(newDepend);}
         }
