@@ -50,7 +50,7 @@ public class AddPlugin : ApplicationCommandModule
             customId: "plugDName", 
             required: true, 
             style: TextInputStyle.Short, 
-            value: Program.PlugName
+            value: plugin.Name
         ));
         modal.AddComponents(new TextInputComponent(
             label: "Version:",
