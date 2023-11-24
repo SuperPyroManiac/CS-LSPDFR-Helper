@@ -124,7 +124,7 @@ public class RPHAnalyzer
                 }
             }
             
-            var allrounder = new Regex(".+LSPD First Response: (\\W*\\w*\\W*\\w*\\W*), Version=([0-9]+\\..+), Culture=\\w+, PublicKeyToken=\\w+");
+            var allrounder = new Regex(@".+LSPD First Response: (\W*\w*\W*\w*\W*), Version=([0-9]+\..+), Culture=\w+, PublicKeyToken=\w+");
             var allmatch = allrounder.Match(line);
             if (allmatch.Success)
             {
