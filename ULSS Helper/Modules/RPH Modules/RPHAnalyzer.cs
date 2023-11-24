@@ -176,27 +176,27 @@ public class RPHAnalyzer
             }
         }
         
-//        var dependregex = new Regex(errorData[0].Regex);
-//        var dependmatch = dependregex.Matches(wholeLog);
-//        foreach (Match match in dependmatch)
-//        {
-//            if (log.MissingDepend.Any(x => x.Name.Equals(match.Groups[2].Value))) continue;
-//            var newDepend = new Plugin { Name = match.Groups[2].Value, State = "LIB", DName = match.Groups[2].Value};
-//            foreach (var plugin in pluginData.Where(plugin => plugin.Name.Equals(newDepend.Name)))
-//            {newDepend.DName = plugin.DName; newDepend.Link = plugin.Link; log.MissingDepend.Add(newDepend);}
-//        }
-//        if (log.MissingDepend.Count != 0)
-//        {
-//            var linkedDepend = log.MissingDepend.Select(
-//	            plugin => plugin?.Link != null && plugin.Link.StartsWith("https://")
-//		            ? $"[{plugin.DName}]({plugin.Link})"
-//		            : $"[{plugin?.DName}](https://www.google.com/search?q=lspdfr+{plugin.Name.Replace(" ", "+")})"
-//            ).ToList();
-//            var linkedDependstring = string.Join("\r\n- ", linkedDepend);
-//            var dependErr = errorData[0];
-//            dependErr.Solution = $"{errorData[0].Solution}\r\n- {linkedDependstring}";
-//            log.Errors.Add(dependErr);
-//        }
+        var dependmatch = new Regex(errorData[0].Regex).Matches(wholeLog);
+        foreach (Match match in dependmatch)
+        {
+            if (log.MissingDepend.Any(x => x.Name.Equals(match.Groups[2].Value))) continue;
+            var newDepend = new Plugin { Name = match.Groups[2].Value, DName = match.Groups[2].Value};
+            foreach (var plugin in pluginData.Where(plugin => plugin.Name.Equals(newDepend.Name)))
+            {newDepend.DName = plugin.DName; newDepend.Link = plugin.Link; log.MissingDepend.Add(newDepend);}
+        }
+        if (log.MissingDepend.Count != 0)
+        {
+            var linkedDepend = log.MissingDepend.Select(
+	            plugin => plugin?.Link != null && plugin.Link.StartsWith("https://")
+		            ? $"[{plugin.DName}]({plugin.Link})"
+		            : $"[{plugin?.DName}](https://www.google.com/search?q=lspdfr+{plugin.Name.Replace(" ", "+")})"
+            ).ToList();
+            var linkedDependstring = string.Join("\r\n- ", linkedDepend);
+            var dependErr = errorData[0];
+            dependErr.Solution = $"{errorData[0].Solution}\r\n- {linkedDependstring}";
+            log.Errors.Add(dependErr);
+        }
+      
         log.Errors = log.Errors.OrderBy(x => x.Level).ToList();
         
         timer.Stop();
