@@ -55,4 +55,30 @@ internal class Cache
     {
         return userId.ToString() + "&" + actionId;
     }
+
+    // Removes all cache entries from the dictionaries that are older than 3 hours.
+    internal void RemoveExpiredCacheEntries()
+    {
+        TimeSpan maxCacheAge = TimeSpan.FromTicks(TimeSpan.TicksPerHour * 3); // = 3 hours
+
+        List<ulong> expiredProcessKeys = _processCacheDict
+            .Where(cache => (DateTime.Now - cache.Value.ModifiedAt) > maxCacheAge)
+            .Select(cache => cache.Key)
+            .ToList();
+
+        foreach (ulong key in expiredProcessKeys)
+        {
+            _processCacheDict.Remove(key);
+        }
+
+        List<string> expiredUserActionKeys = _userActionCacheDict
+            .Where(cache => (DateTime.Now - cache.Value.ModifiedAt) > maxCacheAge)
+            .Select(cache => cache.Key)
+            .ToList();
+
+        foreach (string key in expiredUserActionKeys)
+        {
+            _userActionCacheDict.Remove(key);
+        }
+    }
 }

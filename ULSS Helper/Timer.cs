@@ -19,5 +19,8 @@ internal class Timer
         
         //Backup DB
         File.Copy(Program.Settings.DbPath, Settings.GenerateNewFilePath(FileType.DB_BACKUP));
+
+        //Clean Cache
+        Task.Run(Program.Cache.RemoveExpiredCacheEntries);
     }
 }
