@@ -196,6 +196,7 @@ public class RPHAnalyzer
             dependErr.Solution = $"{errorData[0].Solution}\r\n- {linkedDependstring}";
             log.Errors.Add(dependErr);
         }
+      
         log.Errors = log.Errors.OrderBy(x => x.Level).ToList();
         
         timer.Stop();
