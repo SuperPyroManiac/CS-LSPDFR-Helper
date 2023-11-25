@@ -33,6 +33,9 @@ public class RPHAnalyzer
         log.Missmatch = new List<Plugin>();
         log.Errors = new List<Error>();
         log.MissingDepend = new List<Plugin>();
+        log.IncorrectScripts = new List<string>();
+        log.IncorrectPlugins = new List<string>();
+        log.IncorrectLibs = new List<string>();
 
         if (reader.Length > 0)
             log.FilePossiblyOutdated = IsPossiblyOutdatedFile(reader[0]);
@@ -124,7 +127,7 @@ public class RPHAnalyzer
                 }
             }
             
-            var allrounder = new Regex(".+LSPD First Response: (\\W*\\w*\\W*\\w*\\W*), Version=([0-9]+\\..+), Culture=\\w+, PublicKeyToken=\\w+");
+            var allrounder = new Regex(@".+LSPD First Response: (\W*\w*\W*\w*\W*), Version=([0-9]+\..+), Culture=\w+, PublicKeyToken=\w+");
             var allmatch = allrounder.Match(line);
             if (allmatch.Success)
             {
@@ -161,7 +164,7 @@ public class RPHAnalyzer
 
         foreach (var error in errorData)
         {
-            if (error.ID == "1") continue;
+            if (error.ID is "1" or "97" or "98" or "99") continue;
             var errregex = new Regex(error.Regex);
             var errmatch = errregex.Matches(wholeLog);
             foreach (Match match in errmatch)
@@ -195,6 +198,42 @@ public class RPHAnalyzer
             var dependErr = errorData[0];
             dependErr.Solution = $"{errorData[0].Solution}\r\n- {linkedDependstring}";
             log.Errors.Add(dependErr);
+        }
+        var libErr = errorData.Find(x => x.ID == "97");
+        var libssmatch = new Regex(libErr.Regex).Matches(wholeLog);
+        foreach (Match match in libssmatch)
+        {
+            if (log.IncorrectLibs.Any(x => x.Equals(match.Groups[1].Value))) continue;
+            log.IncorrectLibs.Add(match.Groups[1].Value);
+        }
+        if (log.IncorrectLibs.Count != 0)
+        {
+            libErr.Solution = $"{libErr.Solution}\r\n- {string.Join("\r\n- ", log.IncorrectLibs)}";
+            log.Errors.Add(libErr);
+        }
+        var scriptErr = errorData.Find(x => x.ID == "98");
+        var scriptsmatch = new Regex(scriptErr.Regex).Matches(wholeLog);
+        foreach (Match match in scriptsmatch)
+        {
+            if (log.IncorrectScripts.Any(x => x.Equals(match.Groups[1].Value))) continue;
+            log.IncorrectScripts.Add(match.Groups[1].Value);
+        }
+        if (log.IncorrectScripts.Count != 0)
+        {
+            scriptErr.Solution = $"{scriptErr.Solution}\r\n- {string.Join("\r\n- ", log.IncorrectScripts)}";
+            log.Errors.Add(scriptErr);
+        }
+        var plugErr = errorData.Find(x => x.ID == "99");
+        var plugssmatch = new Regex(plugErr.Regex).Matches(wholeLog);
+        foreach (Match match in plugssmatch)
+        {
+            if (log.IncorrectPlugins.Any(x => x.Equals(match.Groups[1].Value))) continue;
+            log.IncorrectPlugins.Add(match.Groups[1].Value);
+        }
+        if (log.IncorrectPlugins.Count != 0)
+        {
+            plugErr.Solution = $"{plugErr.Solution}\r\n- {string.Join("\r\n- ", log.IncorrectPlugins)}";
+            log.Errors.Add(plugErr);
         }
       
         log.Errors = log.Errors.OrderBy(x => x.Level).ToList();
