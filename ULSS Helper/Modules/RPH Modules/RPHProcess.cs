@@ -94,7 +94,7 @@ internal class RPHProcess : SharedLogInfo
         DiscordEmbedBuilder embed = GetBaseLogInfoEmbed(embedDescription);
 
         DiscordMessage targetMessage = context?.TargetMessage ?? eventArgs.Message;
-        ProcessCache cache = Program.Cache.GetProcessCache(targetMessage.Id);
+        ProcessCache cache = Program.Cache.GetProcess(targetMessage.Id);
         embed = AddTsViewFields(embed, cache.OriginalMessage, log.ElapsedTime);
 
 
@@ -169,7 +169,7 @@ internal class RPHProcess : SharedLogInfo
             embedDescription += "\r\n:warning: **Attention!** This log file is probably too old to determine the current RPH-related issues of the uploader!\r\n";
         var embed = GetBaseLogInfoEmbed(embedDescription);
 
-        ProcessCache cache = Program.Cache.GetProcessCache(eventArgs.Message.Id);
+        ProcessCache cache = Program.Cache.GetProcess(eventArgs.Message.Id);
         embed = AddTsViewFields(embed, cache.OriginalMessage, log.ElapsedTime);
         
         embed = AddCommonFields(embed);

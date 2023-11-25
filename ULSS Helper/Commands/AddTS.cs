@@ -8,7 +8,7 @@ namespace ULSS_Helper.Commands;
 public class AddTs : ApplicationCommandModule
 {
     [SlashCommand("AddTS", "Adds a TS to the database!")]
-    public async Task AddTsCmd(InteractionContext ctx, [Option("ID", "User discord ID")] string id,
+    public async Task AddTsCmd(InteractionContext ctx, [Option("ID", "User discord ID")] string userId,
         [Option("Allow", "Allow access to the bot commands!")] bool allow)
     {
         var bd = new DiscordInteractionResponseBuilder();
@@ -19,7 +19,7 @@ public class AddTs : ApplicationCommandModule
             return;
         }
 
-        if (Database.LoadTs().Any(ts => ts.ID == id))
+        if (Database.LoadTs().Any(ts => ts.ID == userId))
         {
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("This TS already exists in the database!")));
             return;
@@ -29,14 +29,17 @@ public class AddTs : ApplicationCommandModule
         if (allow) allowint = 1;
         var ts = new TS
         {
-	        ID = id,
-	        Username = ctx.Guild.GetMemberAsync(ulong.Parse(id)).Result.Username,
+	        ID = userId,
+	        Username = ctx.Guild.GetMemberAsync(ulong.Parse(userId)).Result.Username,
 	        View = 0,
 	        Allow = allowint
         };
         Database.AddTs(ts);
-        await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Warning($"**Added new TS {ts.Username} with user ID: {ts.ID}**")));
-        Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id,
-            BasicEmbeds.Warning($"**Added new TS {ts.Username} with user ID: {ts.ID}**"));
+        await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Success($"**Added new TS {ts.Username} with user ID: {ts.ID}**")));
+        Logging.SendLog(
+            ctx.Interaction.Channel.Id, 
+            ctx.Interaction.User.Id, 
+            BasicEmbeds.Warning($"**Added new TS {ts.Username} with user ID: {ts.ID}**")
+        );
     }
 }
