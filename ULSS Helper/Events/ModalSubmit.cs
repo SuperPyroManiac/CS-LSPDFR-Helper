@@ -10,9 +10,10 @@ public class ModalSubmit
 {
     public static async Task HandleModalSubmit(DiscordClient s, ModalSubmitEventArgs e)
     {
+        var cache = Program.Cache.GetUserAction(e.Interaction.User.Id, e.Interaction.Data.CustomId);
+        
         if (e.Interaction.Data.CustomId == "add-plugin")
         {
-            UserActionCache cache = Program.Cache.GetUserAction(e.Interaction.User.Id, e.Interaction.Data.CustomId);
             var plugDName = e.Values["plugDName"];
             var plugVersion = e.Values["plugVersion"];
             var plugEaVersion = e.Values["plugEAVersion"];
@@ -26,18 +27,16 @@ public class ModalSubmit
                 Version = plugVersion,
                 EAVersion = plugEaVersion,
                 ID = plugId,
+                Description = "N/A",
                 State = cache.Plugin.State,
                 Link = plugLink
             };
-
-            plug.DbRowId = Database.AddPlugin(plug);
-
+            
             await FindPluginMessages.SendDbOperationConfirmation(newPlugin: plug, operation: DbOperation.CREATE, e: e);
         }
         
         if (e.Interaction.Data.CustomId == "add-error")
         {
-            UserActionCache cache = Program.Cache.GetUserAction(e.Interaction.User.Id, e.Interaction.Data.CustomId);
             var err = new Error
             {
                 Regex = e.Values["errReg"],
@@ -60,7 +59,6 @@ public class ModalSubmit
         
         if (e.Interaction.Data.CustomId == "edit-plugin")
         {
-            UserActionCache cache = Program.Cache.GetUserAction(e.Interaction.User.Id, e.Interaction.Data.CustomId);
             var plugDName = e.Values["plugDName"];
             var plugVersion = e.Values["plugVersion"];
             var plugEaVersion = e.Values["plugEAVersion"];
@@ -74,6 +72,7 @@ public class ModalSubmit
                 Version = plugVersion,
                 EAVersion = plugEaVersion,
                 ID = plugId,
+                Description = cache.Plugin.Description,
                 State = cache.Plugin.State,
                 Link = plugLink
             };
@@ -87,7 +86,6 @@ public class ModalSubmit
         
         if (e.Interaction.Data.CustomId == "edit-pluginnotes")
         {
-            UserActionCache cache = Program.Cache.GetUserAction(e.Interaction.User.Id, e.Interaction.Data.CustomId);
             cache.Plugin.Description = e.Values["plugnotes"];
 
             Plugin oldPlugin = Database.GetPlugin(cache.Plugin.Name);
@@ -99,7 +97,6 @@ public class ModalSubmit
 
         if (e.Interaction.Data.CustomId == "edit-error")
         {
-            UserActionCache cache = Program.Cache.GetUserAction(e.Interaction.User.Id, e.Interaction.Data.CustomId);
             var err = new Error
             {
                 ID = cache.Error.ID,

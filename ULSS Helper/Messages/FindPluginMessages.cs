@@ -28,15 +28,14 @@ internal class FindPluginMessages : FindBaseMessages
 
     internal static async Task SendDbOperationConfirmation(Plugin newPlugin, DbOperation operation, Plugin oldPlugin=null, ModalSubmitEventArgs e=null)
     {
-        string pluginDbRowId = $"**DB ID:** {newPlugin.DbRowId}\r\n";
         string pluginDName = $"**Display Name:** {newPlugin.DName}\r\n";
         string pluginVersion = $"**Version:** {newPlugin.Version}\r\n";
         string pluginEaVersion = $"**Early Access Version:** {newPlugin.EAVersion}\r\n";
         string pluginId = $"**ID (on lcpdfr.com):** {newPlugin.ID}\r\n";
-        string pluginDescription = $"**Description:**\r\n```\n{newPlugin.Description}\n```\r\n";
+        string pluginDescription = $"**Notes:**\r\n```\n{newPlugin.Description}\n```\r\n";
         string pluginLink = $"**Link:** {newPlugin.Link}\r\n";
         string pluginState = $"**State:** {newPlugin.State}";
-        string pluginPropsList = pluginDbRowId + pluginDName + pluginVersion + pluginEaVersion + pluginId + pluginDescription + pluginLink + pluginState;
+        string pluginPropsList = pluginDName + pluginVersion + pluginEaVersion + pluginId + pluginDescription + pluginLink + pluginState;
         
         DiscordEmbedBuilder embed = null;
         switch (operation)
@@ -51,12 +50,11 @@ internal class FindPluginMessages : FindBaseMessages
 
                 List<ModifiedProperty> properties = new()
                 {
-                    new ModifiedProperty("DB ID", oldPlugin!.DbRowId.ToString(), oldPlugin.DbRowId.ToString(), pluginDbRowId),
                     new ModifiedProperty("Display Name", oldPlugin.DName, newPlugin.DName, pluginDName),
                     new ModifiedProperty("Version", oldPlugin.Version, newPlugin.Version, pluginVersion),
                     new ModifiedProperty("Early Access Version", oldPlugin.EAVersion, newPlugin.EAVersion, pluginEaVersion),
                     new ModifiedProperty("ID (on lcpdfr.com)", oldPlugin.ID, newPlugin.ID, pluginId),
-                    new ModifiedProperty("Description)", oldPlugin.Description, newPlugin.Description, pluginDescription),
+                    new ModifiedProperty("Notes", oldPlugin.Description, newPlugin.Description, pluginDescription),
                     new ModifiedProperty("Link", oldPlugin.Link, newPlugin.Link, pluginLink),
                     new ModifiedProperty("State", oldPlugin.State, newPlugin.State, pluginState)
                 };
