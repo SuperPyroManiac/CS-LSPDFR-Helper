@@ -197,6 +197,7 @@ public class RPHAnalyzer
             var linkedDependstring = string.Join("\r\n- ", linkedDepend);
             var dependErr = errorData[0];
             dependErr.Solution = $"{errorData[0].Solution}\r\n- {linkedDependstring}";
+            if (dependErr.Solution.Length >= 1024) dependErr.Solution = "Too many to show! God damn!";
             log.Errors.Add(dependErr);
         }
         var libErr = errorData.Find(x => x.ID == "97");
@@ -209,6 +210,7 @@ public class RPHAnalyzer
         if (log.IncorrectLibs.Count != 0)
         {
             libErr.Solution = $"{libErr.Solution}\r\n- {string.Join("\r\n- ", log.IncorrectLibs)}";
+            if (libErr.Solution.Length >= 1024) libErr.Solution = "Too many to show! God damn!";
             log.Errors.Add(libErr);
         }
         var scriptErr = errorData.Find(x => x.ID == "98");
@@ -221,6 +223,7 @@ public class RPHAnalyzer
         if (log.IncorrectScripts.Count != 0)
         {
             scriptErr.Solution = $"{scriptErr.Solution}\r\n- {string.Join("\r\n- ", log.IncorrectScripts)}";
+            if (scriptErr.Solution.Length >= 1024) scriptErr.Solution = "Too many to show! God damn!";
             log.Errors.Add(scriptErr);
         }
         var plugErr = errorData.Find(x => x.ID == "99");
@@ -233,6 +236,7 @@ public class RPHAnalyzer
         if (log.IncorrectPlugins.Count != 0)
         {
             plugErr.Solution = $"{plugErr.Solution}\r\n- {string.Join("\r\n- ", log.IncorrectPlugins)}";
+            if (plugErr.Solution.Length >= 1024) plugErr.Solution = "Too many to show! God damn!";
             log.Errors.Add(plugErr);
         }
       
