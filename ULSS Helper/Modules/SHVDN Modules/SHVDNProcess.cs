@@ -34,7 +34,7 @@ internal class SHVDNProcess : SharedLogInfo
         DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Quick SHVDN.log Info");
 
         DiscordMessage targetMessage = context?.TargetMessage ?? eventArgs.Message;
-        ProcessCache cache = Program.Cache.GetProcessCache(targetMessage.Id);
+        ProcessCache cache = Program.Cache.GetProcess(targetMessage.Id);
         embed = AddTsViewFields(embed, cache.OriginalMessage, log.ElapsedTime);
 
         if (log.Scripts.Count != 0) 
@@ -70,7 +70,7 @@ internal class SHVDNProcess : SharedLogInfo
     {
         var scriptsList = "\r\n- " + string.Join("\r\n- ", log.Scripts);
         var missingDependsList = "\r\n- " + string.Join("\r\n- ", log.MissingDepends);
-        ProcessCache cache = Program.Cache.GetProcessCache(eventArgs.Message.Id);
+        ProcessCache cache = Program.Cache.GetProcess(eventArgs.Message.Id);
         
         DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Detailed SHVDN.log Info");
         

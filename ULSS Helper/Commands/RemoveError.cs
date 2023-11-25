@@ -9,7 +9,7 @@ public class RemoveError : ApplicationCommandModule
     [SlashCommand("RemoveError", "Removes an error from the database!")]
 
     public async Task RemoveErrorCmd(InteractionContext ctx,
-        [Option("ID", "Must match an existing error id!")] string errId)
+        [Option("ID", "Must match an existing error id!")] string errorId)
     {
         var bd = new DiscordInteractionResponseBuilder();
         bd.IsEphemeral = true;
@@ -30,19 +30,19 @@ public class RemoveError : ApplicationCommandModule
         var isValid = false;
         foreach (var error in Database.LoadErrors())
         {
-            if (error.ID == errId)
+            if (error.ID == errorId)
             {
                 Database.DeleteError(error);
                 isValid = true;
-                await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Warning($"**Removed error with id: {errId}**")));
-                Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Warning($"Removed error: {errId}!"));
+                await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Success($"**Removed error with id: {errorId}**")));
+                Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Warning($"Removed error: {errorId}!"));
                 return;
             }
         }
         // ReSharper disable once ConditionIsAlwaysTrueOrFalse
         if (!isValid)
         {
-            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error($"**No error found with id: {errId}!**")));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error($"**No error found with id: {errorId}!**")));
         }
     }
 }

@@ -27,7 +27,7 @@ public class RemoveTs : ApplicationCommandModule
             {
                 Database.DeleteTs(ts);
                 isValid = true;
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Warning($"**Removed TS {ts.Username} with user ID: {ts.ID}**")));
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Success($"**Removed TS {ts.Username} with user ID: {ts.ID}**")));
                 Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Warning($"**Removed TS {ts.Username} with user ID: {ts.ID}**"));
                 return;
             }

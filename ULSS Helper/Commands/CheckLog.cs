@@ -11,7 +11,7 @@ public class CheckLog : ApplicationCommandModule
     [SlashCommand("CheckLog", "Analyzes the uploaded log. 3MB limit!")]
     public async Task CheckLogCmd(InteractionContext ctx,
         [Option("LogFile", "RagePluginHook.log")]
-        DiscordAttachment attach)
+        DiscordAttachment attachment)
     {
         var response = new DiscordInteractionResponseBuilder();
         response.IsEphemeral = true;
@@ -28,40 +28,72 @@ public class CheckLog : ApplicationCommandModule
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
                 return;
             }
-            if (string.IsNullOrEmpty(attach.Url))
+            if (string.IsNullOrEmpty(attachment.Url))
             {
                 response.AddEmbed(BasicEmbeds.Error("There was an error here!\r\nPlease wait a minute and try again!"));
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
                 Logging.SendPubLog(BasicEmbeds.Error(
-                    $"Failed upload!\r\nSender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\nChannel: <#{ctx.Channel.Id}>\r\n\r\nReason denied: Failed to acquire log!"));
+                    $"Failed upload!\r\n"
+                    + $"Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
+                    + $"Channel: <#{ctx.Channel.Id}>\r\n\r\n"
+                    + $"Reason denied: Failed to acquire log!"
+                ));
                 return;
             }
-            if (attach.FileName != "RagePluginHook.log")
+            if (attachment.FileName != "RagePluginHook.log")
             {
                 response.AddEmbed(BasicEmbeds.Error("Incorrect file name.\r\nPlease make sure your file is called `RagePluginHook.log`!"));
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
-                Logging.SendPubLog(BasicEmbeds.Warning($"Rejected upload!\r\nSender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize/1000}KB\r\n[Download Here]({attach.Url})\r\n\r\nReason denied: Incorrect name"));
+                Logging.SendPubLog(BasicEmbeds.Warning(
+                    $"Rejected upload!\r\n"
+                    + $"Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
+                    + $"Channel: <#{ctx.Channel.Id}>\r\n"
+                    + $"File name: {attachment.FileName}\r\n"
+                    + $"Size: {attachment.FileSize/1000}KB\r\n"
+                    + $"[Download Here]({attachment.Url})\r\n\r\n"
+                    + $"Reason denied: Incorrect name"
+                ));
                 return;
             }
-            if (attach.FileSize > 10000000)
+            if (attachment.FileSize > 10000000)
             {
-                response.AddEmbed(
-                    BasicEmbeds.Error(
-                        "File is way too big!\r\nYou may not upload anything else until staff review this!"));
+                response.AddEmbed(BasicEmbeds.Error("File is way too big!\r\nYou may not upload anything else until staff review this!"));
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
                 await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(Program.Settings.Env.BotBlacklistRoleId));
                 Logging.ReportPubLog(BasicEmbeds.Error(
-                    $"Possible bot abuse!\r\nUser has been blacklisted from bot use! (Dunce role added!)\r\nSender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})\r\n\r\nReason denied: File way too large! (Larger than 10 MB)"));
+                    $"Possible bot abuse!\r\n"
+                    + $"User has been blacklisted from bot use! (Dunce role added!)\r\n"
+                    + $"Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
+                    + $"Channel: <#{ctx.Channel.Id}>\r\n"
+                    + $"File name: {attachment.FileName}\r\n"
+                    + $"Size: {attachment.FileSize / 1000}KB\r\n"
+                    + $"[Download Here]({attachment.Url})\r\n\r\n"
+                    + $"Reason denied: File way too large! (Larger than 10 MB)"
+                ));
                 Logging.SendPubLog(BasicEmbeds.Error(
-                    $"Rejected upload!\r\nSender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})\r\n\r\nReason denied: File way too large! (Larger than 10 MB)"));
+                    $"Rejected upload!\r\n"
+                    + $"Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
+                    + $"Channel: <#{ctx.Channel.Id}>\r\n"
+                    + $"File name: {attachment.FileName}\r\n"
+                    + $"Size: {attachment.FileSize / 1000}KB\r\n"
+                    + $"[Download Here]({attachment.Url})\r\n\r\n"
+                    + $"Reason denied: File way too large! (Larger than 10 MB)"
+                ));
                 return;
             }
-            if (attach.FileSize > 3000000)
+            if (attachment.FileSize > 3000000)
             {
                 response.AddEmbed(BasicEmbeds.Error("File is too big!\r\nAsk our TS to check this log!"));
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
                 Logging.SendPubLog(BasicEmbeds.Warning(
-                    $"Rejected upload!\r\nSender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})\r\n\r\nReason denied: File too large!"));
+                    $"Rejected upload!\r\n"
+                    + $"Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
+                    + $"Channel: <#{ctx.Channel.Id}>\r\n"
+                    + $"File name: {attachment.FileName}\r\n"
+                    + $"Size: {attachment.FileSize / 1000}KB\r\n"
+                    + $"[Download Here]({attachment.Url})\r\n\r\n"
+                    + $"Reason denied: File too large!"
+                ));
                 return;
             }
             await ctx.DeferAsync(true);
@@ -70,7 +102,7 @@ public class CheckLog : ApplicationCommandModule
             try
             {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-	            var th = new Thread(() => CheckLogMessage(ctx, attach));
+	            var th = new Thread(() => CheckLogMessage(ctx, attachment));
 	            th.Start();
             }
             catch (Exception e)
@@ -79,9 +111,24 @@ public class CheckLog : ApplicationCommandModule
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
                 await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(Program.Settings.Env.BotBlacklistRoleId));
                 Logging.ReportPubLog(BasicEmbeds.Error(
-                    $"Possible bot abuse!\r\nUser has been blacklisted from bot use! (Dunce role added!)\r\nSender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})\r\n\r\nReason denied: Log caused an error! See <#{Program.Settings.Env.TsBotLogChannelId}>"));
+                    $"Possible bot abuse!\r\n"
+                    + $"User has been blacklisted from bot use! (Dunce role added!)\r\n"
+                    + $"Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
+                    + $"Channel: <#{ctx.Channel.Id}>\r\n"
+                    + $"File name: {attachment.FileName}\r\n"
+                    + $"Size: {attachment.FileSize / 1000}KB\r\n"
+                    + $"[Download Here]({attachment.Url})\r\n\r\n"
+                    + $"Reason denied: Log caused an error! See <#{Program.Settings.Env.TsBotLogChannelId}>"
+                ));
                 Logging.SendPubLog(BasicEmbeds.Error(
-                    $"Rejected upload!\r\nSender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\nChannel: <#{ctx.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})\r\n\r\nReason denied: Log caused an error! See <#{Program.Settings.Env.TsBotLogChannelId}>"));
+                    $"Rejected upload!\r\n"
+                    + $"Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
+                    + $"Channel: <#{ctx.Channel.Id}>\r\n"
+                    + $"File name: {attachment.FileName}\r\n"
+                    + $"Size: {attachment.FileSize / 1000}KB\r\n"
+                    + $"[Download Here]({attachment.Url})\r\n\r\n"
+                    + $"Reason denied: Log caused an error! See <#{Program.Settings.Env.TsBotLogChannelId}>"
+                ));
                 Logging.ErrLog($"Public Log Error: {e}");
                 Console.WriteLine(e);
                 throw;
@@ -185,7 +232,7 @@ public class CheckLog : ApplicationCommandModule
             if (current.Length == 0 && outdated.Length == 0 && broken.Length == 0)
                 embed.AddField(":green_circle:     **No loaded plugins!**", "- No plugins detected from this log.");
                     
-            if (log.Errors.Any(x => x.Level == "CRITICAL") || log.Errors.Any(x => x.Level == "SEVERE"))
+            if (log.Errors.Any(error => error.Level == "CRITICAL" || error.Level == "SEVERE"))
                 embed.AddField(":bangbang:     **Serious Error Detected!**", "- You should post this log for our TS to check!");
                 
             DiscordWebhookBuilder webhookBuilder = new();
@@ -198,7 +245,14 @@ public class CheckLog : ApplicationCommandModule
             });
             await context.EditResponseAsync(webhookBuilder);
                     
-            Logging.SendPubLog(BasicEmbeds.Info($"Successful upload!\r\nSender: <@{context.Member.Id}> ({context.Member.Username})\r\nChannel: <#{context.Channel.Id}>\r\nFile name: {attach.FileName}\r\nSize: {attach.FileSize / 1000}KB\r\n[Download Here]({attach.Url})"));
+            Logging.SendPubLog(BasicEmbeds.Info(
+                $"Successful upload!\r\n"
+                + $"Sender: <@{context.Member.Id}> ({context.Member.Username})\r\n"
+                + $"Channel: <#{context.Channel.Id}>\r\n"
+                + $"File name: {attach.FileName}\r\n"
+                + $"Size: {attach.FileSize / 1000}KB\r\n"
+                + $"[Download Here]({attach.Url})"
+            ));
         }
     }
 }

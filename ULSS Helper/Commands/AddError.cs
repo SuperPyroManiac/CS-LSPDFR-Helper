@@ -10,7 +10,7 @@ public class AddError : ApplicationCommandModule
 {
     [SlashCommand("AddError", "Adds an error to the database!")]
     
-    public async Task AddErrorCmd(InteractionContext ctx, [Option("Level", "Warning type (XTRA, WARN, SEVERE, CRITICAL)")] Level lvl)
+    public async Task AddErrorCmd(InteractionContext ctx, [Option("Level", "Warning type (XTRA, WARN, SEVERE, CRITICAL)")] Level level)
     {
         var bd = new DiscordInteractionResponseBuilder();
         bd.IsEphemeral = true;
@@ -19,7 +19,7 @@ public class AddError : ApplicationCommandModule
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             return;
         }
-        var ts = Database.LoadTs().FirstOrDefault(x => x.ID.ToString() == ctx.Member.Id.ToString());
+        var ts = Database.LoadTs().FirstOrDefault(ts => ts.ID.ToString() == ctx.Member.Id.ToString());
         if (ts == null || ts.Allow == 0)
         {
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
@@ -28,14 +28,34 @@ public class AddError : ApplicationCommandModule
             return;
         }
 
-        Program.ErrLevel = lvl;
+        Error error = new Error()
+        {
+            Level = level.ToString().ToUpper()
+        };
         
         DiscordInteractionResponseBuilder modal = new();
-        modal.WithTitle($"Adding new {lvl.ToString()} error!").WithCustomId("add-error").AddComponents(
-            new TextInputComponent("Error Regex:", "errReg", required: true, style: TextInputStyle.Paragraph));
-        modal.AddComponents(new TextInputComponent("Error Solution:", "errSol", required: true, style: TextInputStyle.Paragraph));
-        modal.AddComponents(new TextInputComponent("Error Description:", "errDesc", required: true, style: TextInputStyle.Paragraph));
+        modal.WithCustomId("add-error");
+        modal.WithTitle($"Adding new {error.Level} error!");
+        modal.AddComponents(new TextInputComponent(
+            label: "Error Regex:",
+            customId: "errReg",
+            required: true,
+            style: TextInputStyle.Paragraph
+        ));
+        modal.AddComponents(new TextInputComponent(
+            label: "Error Solution:",
+            customId: "errSol",
+            required: true,
+            style: TextInputStyle.Paragraph
+        ));
+        modal.AddComponents(new TextInputComponent(
+            label: "Error Description:",
+            customId: "errDesc",
+            required: true,
+            style: TextInputStyle.Paragraph
+        ));
         
+		Program.Cache.SaveUserAction(ctx.Interaction.User.Id, modal.CustomId, new UserActionCache(ctx.Interaction, error));
         await ctx.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
     }
 }
