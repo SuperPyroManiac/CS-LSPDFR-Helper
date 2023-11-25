@@ -34,9 +34,12 @@ public class EditTs : ApplicationCommandModule
         
         Database.EditTs(ts);
         
-        await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Success($"<@{ctx.Member.Id.ToString()}>: You have changed your view type to: {(view ? "Show XTRA errors" : "Hide XTRA errors")}")));
-        Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id,
-            BasicEmbeds.Info($"**<@{ctx.Member.Id.ToString()}> has changed their view type to: {(view ? "Show XTRA errors" : "Hide XTRA errors")}**"));
+        await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Success($"<@{ctx.Member.Id.ToString()}>: You have changed your view type to: {(view ? "Show XTRA Errors" : "Hide XTRA Errors")}")));
+        Logging.SendLog(
+            ctx.Interaction.Channel.Id, 
+            ctx.Interaction.User.Id,
+            BasicEmbeds.Info($"**<@{ctx.Member.Id.ToString()}> has changed their view type to: {(view ? "Show XTRA errors" : "Hide XTRA Errors")}**")
+        );
     }
     
     [SlashCommand("AllowPerms", "Allows a TS to use commands!")]
@@ -66,7 +69,7 @@ public class EditTs : ApplicationCommandModule
         
         Database.EditTs(ts);
         
-        await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Success($"<@{userId}>'s advanced command perms have been set to: {allow}")));
-        Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info($"<@{userId}>'s advanced command perms have been set to: {allow}"));
+        await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Success($"<@{userId}>'s advanced command perms have been set to: {(allow ? "Allow" : "Deny")}")));
+        Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info($"<@{userId}>'s advanced command perms have been set to: {(allow ? "Allow" : "Deny")}"));
     }
 }

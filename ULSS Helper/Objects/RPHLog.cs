@@ -12,6 +12,9 @@ public class RPHLog : Log
     public List<Plugin> Missmatch { get; set; }
     public List<Error> Errors { get; set; }
     public List<Plugin> MissingDepend { get; set; }
+    public List<string> IncorrectScripts { get; set; }
+    public List<string> IncorrectPlugins { get; set; }
+    public List<string> IncorrectLibs { get; set; }
     public string GTAVersion { get; set; }
     public string RPHVersion { get; set; }
     public string LSPDFRVersion { get; set; }
