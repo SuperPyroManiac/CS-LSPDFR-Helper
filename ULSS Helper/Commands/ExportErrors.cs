@@ -37,7 +37,7 @@ public class ExportErrors : ApplicationCommandModule
 
         var fs = new FileStream(Path.Combine(Directory.GetCurrentDirectory(), "Exports", "ErrorExport.xml"), FileMode.Open, FileAccess.Read);
         bd.AddFile(fs, AddFileOptions.CloseStream);
-        bd.AddEmbed(BasicEmbeds.Info("Errors Exported.."));
+        bd.AddEmbed(BasicEmbeds.Success("Errors Exported.."));
         await ctx.CreateResponseAsync(bd);
         Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info("Exported errors!"));
     }

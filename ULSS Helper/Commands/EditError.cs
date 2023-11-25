@@ -12,8 +12,8 @@ public class EditError : ApplicationCommandModule
 
     public async Task EditErrorCmd(
         InteractionContext ctx, 
-        [Option("ID", "Errors ID!")] string eI, 
-        [Option("New_Level", "Warning type (XTRA, WARN, SEVERE, CRITICAL)")] Level? lvl=null
+        [Option("ID", "Errors ID!")] string errorId, 
+        [Option("New_Level", "Warning type (XTRA, WARN, SEVERE, CRITICAL)")] Level? newLevel=null
     )
     {
         var bd = new DiscordInteractionResponseBuilder();
@@ -23,7 +23,7 @@ public class EditError : ApplicationCommandModule
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
             return;
         }
-        var ts = Database.LoadTs().FirstOrDefault(x => x.ID.ToString() == ctx.Member.Id.ToString());
+        var ts = Database.LoadTs().FirstOrDefault(ts => ts.ID.ToString() == ctx.Member.Id.ToString());
         if (ts == null || ts.Allow == 0)
         {
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
@@ -32,33 +32,45 @@ public class EditError : ApplicationCommandModule
             return;
         }
 
-        if (Database.LoadErrors().All(x => x.ID.ToString() != eI))
+        if (Database.LoadErrors().All(ts => ts.ID.ToString() != errorId))
         {
-            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error($"No error found with ID: {eI}")));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error($"No error found with ID: {errorId}")));
             return;
         }
 
-        var error = Database.LoadErrors().FirstOrDefault(x => x.ID.ToString() == eI);
+        var error = Database.GetError(errorId);
 
-        Program.ErrId = eI;
-        if (lvl != null)
+        if (newLevel != null)
         {
-            Program.ErrLevel = (Level) lvl;
-        }
-        else
-        {
-            if (Enum.TryParse(error!.Level, out Level newLvl))
-            {
-                Program.ErrLevel = newLvl;
-            }
+            error.Level = newLevel.ToString().ToUpper();
         }
         
         DiscordInteractionResponseBuilder modal = new();
-        modal.WithTitle($"Editing error ID: {Program.ErrId}!").WithCustomId("edit-error").AddComponents(
-            new TextInputComponent("Error Regex:", "errReg", required: true, style: TextInputStyle.Paragraph, value: error!.Regex));
-        modal.AddComponents(new TextInputComponent("Error Solution:", "errSol", required: true, style: TextInputStyle.Paragraph, value: error.Solution));
-        modal.AddComponents(new TextInputComponent("Error Description:", "errDesc", required: true, style: TextInputStyle.Paragraph, value: error.Description));
+        modal.WithCustomId("edit-error");
+        modal.WithTitle($"Editing error ID: {error.ID}!");
+        modal.AddComponents(new TextInputComponent(
+            label: "Error Regex:", 
+            customId: "errReg", 
+            required: true, 
+            style: TextInputStyle.Paragraph, 
+            value: error!.Regex
+        ));
+        modal.AddComponents(new TextInputComponent(
+            label: "Error Solution:", 
+            customId: "errSol", 
+            required: true, 
+            style: TextInputStyle.Paragraph, 
+            value: error.Solution
+        ));
+        modal.AddComponents(new TextInputComponent(
+            label: "Error Description:", 
+            customId: "errDesc", 
+            required: true, 
+            style: TextInputStyle.Paragraph, 
+            value: error.Description
+        ));
         
+		Program.Cache.SaveUserAction(ctx.Interaction.User.Id, modal.CustomId, new UserActionCache(ctx.Interaction, error));
         await ctx.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
     }
 }

@@ -1,6 +1,8 @@
 ﻿using DSharpPlus;
+using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
+using DSharpPlus.SlashCommands.Attributes;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Modules;
 using ULSS_Helper.Modules.ASI_Modules;

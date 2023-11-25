@@ -37,7 +37,7 @@ public class ExportPlugins : ApplicationCommandModule
 
         var fs = new FileStream(Path.Combine(Directory.GetCurrentDirectory(), "Exports", "PluginExport.xml"), FileMode.Open, FileAccess.Read);
         bd.AddFile(fs, AddFileOptions.CloseStream);
-        bd.AddEmbed(BasicEmbeds.Info("Plugins Exported.."));
+        bd.AddEmbed(BasicEmbeds.Success("Plugins Exported.."));
         await ctx.CreateResponseAsync(bd);
         Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info("Exported plugins!"));
     }

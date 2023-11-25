@@ -33,6 +33,9 @@ public class RPHAnalyzer
         log.Missmatch = new List<Plugin>();
         log.Errors = new List<Error>();
         log.MissingDepend = new List<Plugin>();
+        log.IncorrectScripts = new List<string>();
+        log.IncorrectPlugins = new List<string>();
+        log.IncorrectLibs = new List<string>();
 
         if (reader.Length > 0)
             log.FilePossiblyOutdated = IsPossiblyOutdatedFile(reader[0]);
@@ -124,7 +127,7 @@ public class RPHAnalyzer
                 }
             }
             
-            var allrounder = new Regex(".+LSPD First Response: (\\W*\\w*\\W*\\w*\\W*), Version=([0-9]+\\..+), Culture=\\w+, PublicKeyToken=\\w+");
+            var allrounder = new Regex(@".+LSPD First Response: (\W*\w*\W*\w*\W*), Version=([0-9]+\..+), Culture=\w+, PublicKeyToken=\w+");
             var allmatch = allrounder.Match(line);
             if (allmatch.Success)
             {
@@ -161,6 +164,7 @@ public class RPHAnalyzer
 
         foreach (var error in errorData)
         {
+            if (error.ID is "1" or "97" or "98" or "99") continue;
             var errregex = new Regex(error.Regex);
             var errmatch = errregex.Matches(wholeLog);
             foreach (Match match in errmatch)
@@ -175,39 +179,67 @@ public class RPHAnalyzer
             }
         }
         
-        var libregex = new Regex(@"(?:\[.+\]) (?!ERROR: Could not load plugin from|SuperEvents: Registering event -|Error while loading plugin)(?!.*(Grammar)).+: (?!Creating|Starting dependency check for|Type .SlimDX.+)(?:.+)\s* \W?(?!ScriptHookVDotNet3|LemonUI\.SHVDN3|ERROR\] there was an error while trying to access plugin:)(.+), Version=.+, Culture=.+PublicKeyToken=");
-        var libmatch = libregex.Matches(wholeLog);
-        foreach (Match match in libmatch)
+        var dependmatch = new Regex(errorData[0].Regex).Matches(wholeLog);
+        foreach (Match match in dependmatch)
         {
-            if (!log.MissingDepend.Any(x => x.Name.Equals(match.Groups[2].Value)))
-            {
-                var newLib = new Plugin
-                { Name = match.Groups[2].Value, State = "LIB", DName = match.Groups[2].Value};
-                foreach (var plugin in pluginData.Where(plugin => plugin.Name.Equals(newLib.Name)))
-                {
-                    newLib.DName = plugin.DName;
-                    newLib.Link = plugin.Link;
-                }
-                log.MissingDepend.Add(newLib);
-            }
+            if (log.MissingDepend.Any(x => x.Name.Equals(match.Groups[2].Value))) continue;
+            var newDepend = new Plugin { Name = match.Groups[2].Value, DName = match.Groups[2].Value};
+            foreach (var plugin in pluginData.Where(plugin => plugin.Name.Equals(newDepend.Name)))
+            {newDepend.DName = plugin.DName; newDepend.Link = plugin.Link; log.MissingDepend.Add(newDepend);}
         }
-        if (log.MissingDepend.Any())
+        if (log.MissingDepend.Count != 0)
         {
-            var linkedLib = log.MissingDepend.Select(
+            var linkedDepend = log.MissingDepend.Select(
 	            plugin => plugin?.Link != null && plugin.Link.StartsWith("https://")
 		            ? $"[{plugin.DName}]({plugin.Link})"
 		            : $"[{plugin?.DName}](https://www.google.com/search?q=lspdfr+{plugin.Name.Replace(" ", "+")})"
             ).ToList();
-            var linkedLibstring = string.Join("\r\n- ", linkedLib);
-            var libErr = new Error
-            {
-	            ID = "1",
-	            Level = "SEVERE",
-	            Solution = $"**You are missing these required files**:\r\n- {linkedLibstring}"
-            };
-
+            var linkedDependstring = string.Join("\r\n- ", linkedDepend);
+            var dependErr = errorData[0];
+            dependErr.Solution = $"{errorData[0].Solution}\r\n- {linkedDependstring}";
+            if (dependErr.Solution.Length >= 1024) dependErr.Solution = "Too many to show! God damn!";
+            log.Errors.Add(dependErr);
+        }
+        var libErr = errorData.Find(x => x.ID == "97");
+        var libssmatch = new Regex(libErr.Regex).Matches(wholeLog);
+        foreach (Match match in libssmatch)
+        {
+            if (log.IncorrectLibs.Any(x => x.Equals(match.Groups[1].Value))) continue;
+            log.IncorrectLibs.Add(match.Groups[1].Value);
+        }
+        if (log.IncorrectLibs.Count != 0)
+        {
+            libErr.Solution = $"{libErr.Solution}\r\n- {string.Join("\r\n- ", log.IncorrectLibs)}";
+            if (libErr.Solution.Length >= 1024) libErr.Solution = "Too many to show! God damn!";
             log.Errors.Add(libErr);
         }
+        var scriptErr = errorData.Find(x => x.ID == "98");
+        var scriptsmatch = new Regex(scriptErr.Regex).Matches(wholeLog);
+        foreach (Match match in scriptsmatch)
+        {
+            if (log.IncorrectScripts.Any(x => x.Equals(match.Groups[1].Value))) continue;
+            log.IncorrectScripts.Add(match.Groups[1].Value);
+        }
+        if (log.IncorrectScripts.Count != 0)
+        {
+            scriptErr.Solution = $"{scriptErr.Solution}\r\n- {string.Join("\r\n- ", log.IncorrectScripts)}";
+            if (scriptErr.Solution.Length >= 1024) scriptErr.Solution = "Too many to show! God damn!";
+            log.Errors.Add(scriptErr);
+        }
+        var plugErr = errorData.Find(x => x.ID == "99");
+        var plugssmatch = new Regex(plugErr.Regex).Matches(wholeLog);
+        foreach (Match match in plugssmatch)
+        {
+            if (log.IncorrectPlugins.Any(x => x.Equals(match.Groups[1].Value))) continue;
+            log.IncorrectPlugins.Add(match.Groups[1].Value);
+        }
+        if (log.IncorrectPlugins.Count != 0)
+        {
+            plugErr.Solution = $"{plugErr.Solution}\r\n- {string.Join("\r\n- ", log.IncorrectPlugins)}";
+            if (plugErr.Solution.Length >= 1024) plugErr.Solution = "Too many to show! God damn!";
+            log.Errors.Add(plugErr);
+        }
+      
         log.Errors = log.Errors.OrderBy(x => x.Level).ToList();
         
         timer.Stop();

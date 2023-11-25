@@ -9,7 +9,7 @@ public class RemovePlugin : ApplicationCommandModule
     [SlashCommand("RemovePlugin", "Removes a plugin from the database!")]
 
     public async Task RemovePluginCmd(InteractionContext ctx,
-        [Option("Name", "Must match an existing plugin name!")] string plugName)
+        [Option("Name", "Must match an existing plugin name!")] string pluginName)
     {
         var bd = new DiscordInteractionResponseBuilder();
         bd.IsEphemeral = true;
@@ -31,19 +31,19 @@ public class RemovePlugin : ApplicationCommandModule
         var isValid = false;
         foreach (var plugin in Database.LoadPlugins())
         {
-            if (plugin.Name == plugName)
+            if (plugin.Name == pluginName)
             {
                 Database.DeletePlugin(plugin);
                 isValid = true;
-                await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Warning($"**Removed: {plugName}**")));
-                Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Warning($"Removed plugin: {plugName}!"));
+                await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Success($"**Removed: {pluginName}**")));
+                Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Warning($"Removed plugin: {pluginName}!"));
                 return;
             }
         }
         // ReSharper disable once ConditionIsAlwaysTrueOrFalse
         if (!isValid)
         {
-            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error($"**No plugin found with name: {plugName}!**")));
+            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error($"**No plugin found with name: {pluginName}!**")));
         }
     }
 }
