@@ -5,9 +5,10 @@ namespace ULSS_Helper;
 
 internal class Timer
 {
+    public const int HourInterval = 3;
     internal static void StartTimer()
     {
-        var aTimer = new System.Timers.Timer(60 * 60 * 3000); //3 hours
+        var aTimer = new System.Timers.Timer(60 * 60 * 1000 * HourInterval); //3 hours
         aTimer.Elapsed += OnTimedEvent;
         aTimer.Start();
     }
@@ -21,6 +22,6 @@ internal class Timer
         File.Copy(Program.Settings.DbPath, Settings.GenerateNewFilePath(FileType.DB_BACKUP));
 
         //Clean Cache
-        Task.Run(Program.Cache.RemoveExpiredCacheEntries);
+        Task.Run(() => Program.Cache.RemoveExpiredCacheEntries(TimeSpan.FromTicks(TimeSpan.TicksPerHour * HourInterval)));
     }
 }
