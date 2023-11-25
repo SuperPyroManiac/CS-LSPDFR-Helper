@@ -32,6 +32,14 @@ public class ModalSubmit
                 Link = plugLink
             };
             
+            if (Database.LoadPlugins().Any(plugin => plugin.Name == plug.Name))
+            {
+                await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Error("This plugin already exists in the database!\r\nConsider using /EditPlugin <Name>")));
+                return;
+            }
+
+            Database.AddPlugin(plug);
+            
             await FindPluginMessages.SendDbOperationConfirmation(newPlugin: plug, operation: DbOperation.CREATE, e: e);
         }
         
