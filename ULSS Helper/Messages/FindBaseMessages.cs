@@ -1,3 +1,5 @@
+using System.Text;
+using System.Text.RegularExpressions;
 using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Messages;
@@ -8,64 +10,82 @@ internal class FindBaseMessages
     
     internal static string GetModifiedPropertiesList(List<ModifiedProperty> properties)
     {
-        string text = "";
+        StringBuilder output = new StringBuilder();
         foreach (ModifiedProperty prop in properties)
         {
-            if (prop.OldValue == null || prop.NewValue == null)
-                continue;
-            
             if (prop.OldValue.Equals(prop.NewValue))
             {
-                text += prop.DefaultOutput;
+                output.Append(prop.DefaultOutput);
             }
             else 
             {
-                text += $"**{prop.Label}:**\r\n```diff\r\n";
-                string diffText = "";
-
-                var oldLines = prop.OldValue.Split("\n");
-                var newLines = prop.NewValue.Split("\n");
-                int maxLines = Math.Max(oldLines.Length, newLines.Length);
-                int countChangedLines = 0;
-                for (int lineIdx=0; lineIdx < maxLines; lineIdx++)
-                {
-                    string oldLine = lineIdx <= oldLines.Length-1 ? oldLines[lineIdx] : null;
-                    string newLine = lineIdx <= newLines.Length-1 ? newLines[lineIdx] : null;
-
-                    if (oldLine != null && oldLine.Equals(newLine))
-                    {
-                        diffText += $"{oldLine}\n";
-                        continue;
-                    }
-                    if (oldLine != null && newLine != null)
-                    {
-                        diffText += $"- {oldLine}\n";
-                        diffText += $"+ {newLine}\n";
-                        countChangedLines++;
-                        continue;
-                    }
-                    if (newLine != null)
-                    {
-	                    // ReSharper disable ExpressionIsAlwaysNull
-	                    diffText += $"- {oldLine}\n";
-                        countChangedLines++;
-                        continue;
-                    }
-                    if (oldLine != null)
-                    {
-                        diffText += $"+ {newLine}\n";
-                        countChangedLines++;
-                    }
-                }
-                if (countChangedLines == maxLines)
-                {
-                    diffText = "- " + prop.OldValue.Replace("\n", "\n- ");
-                    diffText += "\r\n+ " + prop.NewValue.Replace("\n", "\n+ ");
-                }
-                text += diffText + "```\r\n";
+                output.Append($"**{prop.Label}:**\r\n```diff\r\n");
+                string diffText = GenerateDiff(prop.OldValue, prop.NewValue);
+                output.Append(diffText + "```\r\n");
                 ChangesCount++;
             }
         }
-        return text;
+        return output.ToString();
+    }
+
+    private static string GenerateDiff(string oldText, string newText)
+    {
+        string[] oldLines = oldText.Split('\n');
+        string[] newLines = newText.Split('\n');
+        int maxLines = Math.Max(oldLines.Length, newLines.Length);
+
+        StringBuilder diffText = new StringBuilder();
+        int countChangedLines = 0;
+
+        for (int lineIdx = 0; lineIdx < maxLines; lineIdx++)
+        {
+            string oldLine = lineIdx < oldLines.Length ? oldLines[lineIdx] : string.Empty;
+            string newLine = lineIdx < newLines.Length ? newLines[lineIdx] : string.Empty;
+            
+            if (oldLine.Equals(newLine))
+            {
+                oldLine = ReplaceDiffChars(oldLine);
+                diffText.AppendLine($"{oldLine}");
+            }
+            else if (oldLine.Equals(string.Empty))
+            {
+                newLine = ReplaceDiffChars(newLine);
+                diffText.AppendLine($"+ {newLine}");
+                countChangedLines++;
+            }
+            else if (newLine.Equals(string.Empty))
+            {
+                oldLine = ReplaceDiffChars(oldLine);
+                diffText.AppendLine($"- {oldLine}");
+                countChangedLines++;
+            }
+            else
+            {
+                oldLine = ReplaceDiffChars(oldLine);
+                newLine = ReplaceDiffChars(newLine);
+                diffText.AppendLine($"- {oldLine}");
+                diffText.AppendLine($"+ {newLine}");
+                countChangedLines++;
+            }
+        }
+        if (countChangedLines == maxLines)
+        {
+            string cleanedOld = ReplaceDiffChars(oldText, multiline: true);
+            string cleanedNew = ReplaceDiffChars(newText, multiline: true);
+            diffText = new StringBuilder();
+            diffText.Append("- " + cleanedOld.Replace("\n", "\n- "));
+            diffText.Append("\r\n+ " + cleanedNew.Replace("\n", "\n+ "));
+        }
+        return diffText.ToString();
+    }
+
+    private static string ReplaceDiffChars(string input, bool multiline=false)
+    {
+        RegexOptions option = multiline ? RegexOptions.Multiline : RegexOptions.None;
+        Regex regexDash = new Regex("^- ", options: option);
+        string output = multiline ? regexDash.Replace(input, " - ") : regexDash.Replace(input, " - ", count: 1);
+        Regex regexPlus = new Regex("^+ ", options: option);
+        output = multiline ? regexPlus.Replace(output, " + ") : regexDash.Replace(input, " - ", count: 1);
+        return output;
     }
 }
