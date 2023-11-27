@@ -39,21 +39,21 @@ internal class FindBaseMessages
 
         for (int lineIdx = 0; lineIdx < maxLines; lineIdx++)
         {
-            string oldLine = lineIdx < oldLines.Length ? oldLines[lineIdx] : string.Empty;
-            string newLine = lineIdx < newLines.Length ? newLines[lineIdx] : string.Empty;
+            string oldLine = lineIdx < oldLines.Length ? oldLines[lineIdx] : null;
+            string newLine = lineIdx < newLines.Length ? newLines[lineIdx] : null;
             
-            if (oldLine.Equals(newLine))
+            if (oldLine == newLine || (oldLine != null && oldLine.Equals(newLine)))
             {
                 oldLine = ReplaceDiffChars(oldLine);
                 diffText.AppendLine($"{oldLine}");
             }
-            else if (oldLine.Equals(string.Empty))
+            else if (oldLine == null)
             {
                 newLine = ReplaceDiffChars(newLine);
                 diffText.AppendLine($"+ {newLine}");
                 countChangedLines++;
             }
-            else if (newLine.Equals(string.Empty))
+            else if (newLine == null)
             {
                 oldLine = ReplaceDiffChars(oldLine);
                 diffText.AppendLine($"- {oldLine}");
