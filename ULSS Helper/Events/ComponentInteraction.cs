@@ -1,3 +1,4 @@
+using Dapper;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
@@ -14,6 +15,7 @@ namespace ULSS_Helper.Events;
 public class ComponentInteraction
 {
     public const string SelectAttachmentForAnalysis = "SelectAttachmentForAnalysis";
+    public const string SelectIdForRemoval = "SelectIdForRemoval";
     public const string RphGetDetailedInfo = "RphGetDetailedInfo";
     public const string RphQuickSendToUser = "RphQuickInfoSendToUser";
     public const string RphDetailedSendToUser = "RphDetailedSendToUser";
@@ -33,6 +35,7 @@ public class ComponentInteraction
         List<string> cacheEventIds = new()
         {
             SelectAttachmentForAnalysis,
+            SelectIdForRemoval,
             RphGetDetailedInfo,
             RphQuickSendToUser,
             RphDetailedSendToUser,
@@ -105,6 +108,39 @@ public class ComponentInteraction
                         await shvdnProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                         return;
                     }
+                }
+                if (eventArgs.Id.Equals(SelectIdForRemoval))
+                {
+                    var selectComp = (DiscordSelectComponent) eventArgs.Message.Components.AsList()[1].Components.AsList()[0];
+                    var options = new List<DiscordSelectComponentOption>();
+                    options.AddRange(selectComp.Options);
+                    foreach (var option in selectComp.Options.Where(option => option.Value.Equals(eventArgs.Values.FirstOrDefault()))) options.Remove(option);
+                    var db = new DiscordInteractionResponseBuilder();
+                    db.AddComponents(eventArgs.Message.Components.AsList()[1]);
+                    if (options.Count > 0)
+                        db.AddComponents(new DiscordSelectComponent(
+                            customId: ComponentInteraction.SelectIdForRemoval,
+                            placeholder: "Remove Error",
+                            options: options
+                        ));
+                    var originEmbed = eventArgs.Message.Embeds.FirstOrDefault();
+                    var embed = new DiscordEmbedBuilder()
+                    {
+                        Color = originEmbed!.Color,
+                        Title = originEmbed.Title,
+                        Description = originEmbed.Description,
+                        Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl },
+                        Footer = new DiscordEmbedBuilder.EmbedFooter { Text = originEmbed.Footer.Text },
+                    };
+                    foreach (var field in eventArgs.Message.Embeds.FirstOrDefault()?.Fields!)
+                    {
+                        if (!field.Name.Contains(eventArgs.Values.FirstOrDefault()!.ToString()))
+                        {
+                            embed.AddField(field.Name, field.Value, field.Inline);
+                        }
+                    }
+                    
+                    await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, db.AddEmbed(embed));
                 }
                     
                 //===//===//===////===//===//===////===//RPH Buttons//===////===//===//===////===//===//===//
