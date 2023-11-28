@@ -1,13 +1,14 @@
 ﻿using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
+using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Commands;
 
 public class EditTs : ApplicationCommandModule
 {
     [SlashCommand("ChangeErrorView", "Edits what you see in more details!")]
-    [RequireTsRole()]
+    [RequireTsRole]
     public async Task EditViewCmd(
         InteractionContext ctx, 
         [Option("View", "True shows XTRA errors, False does not.")] bool view)
@@ -39,7 +40,7 @@ public class EditTs : ApplicationCommandModule
     }
     
     [SlashCommand("AllowPerms", "Allows a TS to use commands!")]
-    [RequireBotAdmin()]
+    [RequireBotAdmin]
     public async Task EditAllowCmd(
         InteractionContext ctx, 
         [Option("ID", "User ID to change!")] string userId,

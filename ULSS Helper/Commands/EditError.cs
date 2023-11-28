@@ -9,7 +9,7 @@ namespace ULSS_Helper.Commands;
 public class EditError : ApplicationCommandModule
 {
     [SlashCommand("EditError", "Edits an error in the database!")]
-    [RequireAdvancedTsRole()]
+    [RequireAdvancedTsRole]
     public async Task EditErrorCmd
     (
         InteractionContext ctx, 

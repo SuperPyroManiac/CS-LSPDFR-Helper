@@ -9,7 +9,7 @@ namespace ULSS_Helper.Commands;
 public class EditPlugin : ApplicationCommandModule
 {
     [SlashCommand("EditPlugin", "Edits a plugin in the database!")]
-    [RequireAdvancedTsRole()]
+    [RequireAdvancedTsRole]
     public async Task EditPluginCmd
     (
         InteractionContext ctx, 

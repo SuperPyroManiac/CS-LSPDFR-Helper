@@ -2,13 +2,14 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
+using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Commands;
 
 public class PluginNotes : ApplicationCommandModule
 {
 	[SlashCommand("PluginNotes", "Views / Edits plugin notes!")]
-	[RequireAdvancedTsRole()]
+	[RequireAdvancedTsRole]
 	public async Task PluginNotesCmd
 	(
 		InteractionContext ctx, 

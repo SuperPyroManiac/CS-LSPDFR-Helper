@@ -9,7 +9,7 @@ namespace ULSS_Helper.Commands;
 public class ExportPlugins : ApplicationCommandModule
 {
     [SlashCommand("ExportPlugins", "Exports all plugins as an xml!")]
-    [RequireAdvancedTsRole()]
+    [RequireAdvancedTsRole]
     public async Task ExportPluginsCmd(InteractionContext ctx)
     {
         var bd = new DiscordInteractionResponseBuilder();

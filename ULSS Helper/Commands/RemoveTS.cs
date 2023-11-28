@@ -2,13 +2,14 @@
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
+using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Commands;
 
 public class RemoveTs : ApplicationCommandModule
 {
     [SlashCommand("RemoveTS", "Removes a TS from the database!")]
-    [RequireBotAdmin()]
+    [RequireBotAdmin]
     public async Task RemoveTsCmd(InteractionContext ctx, [Option("ID", "User discord ID")] string id)
     {
         var bd = new DiscordInteractionResponseBuilder();

@@ -3,12 +3,14 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.Attributes;
+using ULSS_Helper.Commands;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Modules;
 using ULSS_Helper.Modules.ASI_Modules;
 using ULSS_Helper.Modules.ELS_Modules;
 using ULSS_Helper.Modules.RPH_Modules;
 using ULSS_Helper.Modules.SHVDN_Modules;
+using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Events;
 
@@ -17,19 +19,10 @@ internal class ContextMenu : ApplicationCommandModule
     private static DiscordAttachment _attachmentForAnalysis;
     
     [ContextMenu(ApplicationCommandType.MessageContextMenu, "Analyze Log")]
+    [RequireTsRole]
     // ReSharper disable once UnusedMember.Global
     public async Task OnMenuSelect(ContextMenuContext context)
     {
-        //===//===//===////===//===//===////===//Permissions/===////===//===//===////===//===//===//
-        if (context.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
-        {
-            var emb = new DiscordInteractionResponseBuilder();
-            emb.IsEphemeral = true;
-            emb.AddEmbed(BasicEmbeds.Error("You do not have permission for this!"));
-            await context.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb);
-            return;
-        }
-
         //===//===//===////===//===//===////===//Attachment Checks/===////===//===//===////===//===//===//
         _attachmentForAnalysis = null;
         List<string> acceptedFileNames = new(new[]{ "RagePluginHook", "ELS", "asiloader", "ScriptHookVDotNet" });

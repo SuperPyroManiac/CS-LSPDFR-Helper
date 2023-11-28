@@ -8,7 +8,7 @@ namespace ULSS_Helper.Commands;
 public class AddTs : ApplicationCommandModule
 {
     [SlashCommand("AddTS", "Adds a TS to the database!")]
-    [RequireBotAdmin()]
+    [RequireBotAdmin]
     public async Task AddTsCmd
     (
         InteractionContext ctx, 

@@ -1,9 +1,8 @@
-
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
 
-namespace ULSS_Helper.Commands;
+namespace ULSS_Helper.Objects;
 
 internal static class PermissionMessages
 {

@@ -1,13 +1,14 @@
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
+using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Commands;
 
 public class RemovePlugin : ApplicationCommandModule
 {
     [SlashCommand("RemovePlugin", "Removes a plugin from the database!")]
-    [RequireAdvancedTsRole()]
+    [RequireAdvancedTsRole]
     public async Task RemovePluginCmd(InteractionContext ctx,
         [Option("Name", "Must match an existing plugin name!")] string pluginName)
     {

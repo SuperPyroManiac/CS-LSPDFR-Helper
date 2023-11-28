@@ -9,7 +9,7 @@ namespace ULSS_Helper.Commands;
 public class ExportErrors : ApplicationCommandModule
 {
     [SlashCommand("ExportErrors", "Exports all errors as an xml!")]
-    [RequireAdvancedTsRole()]
+    [RequireAdvancedTsRole]
     public async Task ExportErrorsCmd(InteractionContext ctx)
     {
         var bd = new DiscordInteractionResponseBuilder();

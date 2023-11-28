@@ -1,13 +1,14 @@
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
+using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Commands;
 
 public class ForceUpdateCheck : ApplicationCommandModule
 {
     [SlashCommand("ForceUpdateCheck", "Forced the database to update!")]
-    [RequireAdvancedTsRole()]
+    [RequireAdvancedTsRole]
     public async Task ForceUpdateCmd(InteractionContext ctx)
     {
         var bd = new DiscordInteractionResponseBuilder();
