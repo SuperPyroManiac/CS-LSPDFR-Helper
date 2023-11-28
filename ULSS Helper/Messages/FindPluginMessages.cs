@@ -7,21 +7,21 @@ namespace ULSS_Helper.Messages;
 
 internal class FindPluginMessages : FindBaseMessages
 {
-    internal static string GetSearchParamsList(string title, string plugName, string plugDName, string plugId, State? plugState, string plugDescription, bool? exactMatch)
+    internal static string GetSearchParamsList(string title, string plugName, string plugDName, string plugId, State? plugState, string plugDescription, bool exactMatch)
     {
         string searchParamsList = $"**{title}**\r\n";
         if (plugName != null)
-            searchParamsList += $"- **Name:** *{plugName}*\r\n";
+            searchParamsList += $"- **Name:** {plugName}\r\n";
         if (plugDName != null)
-            searchParamsList += $"- **Display Name:** *{plugDName}*\r\n";
+            searchParamsList += $"- **Display Name:** {plugDName}\r\n";
         if (plugId != null)
-            searchParamsList += $"- **ID (on lcpdfr.com):** *{plugId}*\r\n";
-        if (plugDescription != null)
-            searchParamsList += $"- **Description:**\r\n```\n{plugDescription}\n```\r\n";
+            searchParamsList += $"- **ID (on lcpdfr.com):** {plugId}\r\n";
         if (plugState != null)
-            searchParamsList += $"- **State:** *{plugState}*\r\n";
-        if (exactMatch != null)
-            searchParamsList += $"- **Strict search enabled:** *{exactMatch}*\r\n";
+            searchParamsList += $"- **State:**\r\n {plugState}\r\n";
+        if (plugDescription != null)
+            searchParamsList += $"- **Notes:** \r\n> {plugDescription.Replace("\n", "\n> ")}\r\n";
+        if (exactMatch)
+            searchParamsList += $"- **Strict search:** enabled\r\n";
 
         return searchParamsList;
     }
@@ -32,9 +32,9 @@ internal class FindPluginMessages : FindBaseMessages
         string pluginVersion = $"**Version:** {newPlugin.Version}\r\n";
         string pluginEaVersion = $"**Early Access Version:** {newPlugin.EAVersion}\r\n";
         string pluginId = $"**ID (on lcpdfr.com):** {newPlugin.ID}\r\n";
-        string pluginDescription = $"**Notes:**\r\n```\n{newPlugin.Description}\n```\r\n";
         string pluginLink = $"**Link:** {newPlugin.Link}\r\n";
-        string pluginState = $"**State:** {newPlugin.State}";
+        string pluginState = $"**State:** {newPlugin.State}\r\n";
+        string pluginDescription = $"**Notes:** \r\n> {newPlugin.Description.Replace("\n", "\n> ")}\r\n";
         string pluginPropsList = pluginDName + pluginVersion + pluginEaVersion + pluginId + pluginDescription + pluginLink + pluginState;
         
         DiscordEmbedBuilder embed = null;
@@ -54,9 +54,9 @@ internal class FindPluginMessages : FindBaseMessages
                     new ModifiedProperty("Version", oldPlugin.Version, newPlugin.Version, pluginVersion),
                     new ModifiedProperty("Early Access Version", oldPlugin.EAVersion, newPlugin.EAVersion, pluginEaVersion),
                     new ModifiedProperty("ID (on lcpdfr.com)", oldPlugin.ID, newPlugin.ID, pluginId),
-                    new ModifiedProperty("Notes", oldPlugin.Description, newPlugin.Description, pluginDescription),
                     new ModifiedProperty("Link", oldPlugin.Link, newPlugin.Link, pluginLink),
-                    new ModifiedProperty("State", oldPlugin.State, newPlugin.State, pluginState)
+                    new ModifiedProperty("State", oldPlugin.State, newPlugin.State, pluginState),
+                    new ModifiedProperty("Notes", oldPlugin.Description, newPlugin.Description, pluginDescription),
                 };
                 try 
                 {
