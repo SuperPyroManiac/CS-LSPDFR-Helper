@@ -127,18 +127,9 @@ public class ComponentInteraction
                             ComponentInteraction.RphDetailedSendToUser,
                             "Send To User", false,
                             new DiscordComponentEmoji("📨"))});
-                    var originEmbed = eventArgs.Message.Embeds.FirstOrDefault();
-                    var embed = new DiscordEmbedBuilder()
-                    {
-                        Color = originEmbed!.Color,
-                        Title = originEmbed.Title,
-                        Description = originEmbed.Description,
-                        Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl },
-                        Footer = new DiscordEmbedBuilder.EmbedFooter { Text = originEmbed.Footer.Text },
-                    };
-                    foreach (var field in eventArgs.Message.Embeds.FirstOrDefault()?.Fields!) 
-                        if (!field.Name.Contains(eventArgs.Values.FirstOrDefault()!)) 
-                            embed.AddField(field.Name, field.Value, field.Inline);
+                    var embed = new DiscordEmbedBuilder(eventArgs.Message.Embeds.FirstOrDefault()!);
+                    for (int i = 0; i < embed.Fields.Count; i++) 
+                        if (embed.Fields[i].Name.Contains(eventArgs.Values.FirstOrDefault()!)) embed.RemoveFieldAt(i);
                     
                     await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, db.AddEmbed(embed));
                 }
