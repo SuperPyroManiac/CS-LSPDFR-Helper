@@ -55,18 +55,18 @@ internal class ContextMenu : ApplicationCommandModule
                             acceptedAttachments.Add(attachment);
                         }
                     }
-                    if (acceptedAttachments.Count == 0)
+                    switch (acceptedAttachments.Count)
                     {
-                        await sharedLogInfo.SendAttachmentErrorMessage(context, $"There is no file named {acceptedLogFileNamesString} attached!");
-                        return;
-                    }
-                    if (acceptedAttachments.Count == 1)
-                        _attachmentForAnalysis = acceptedAttachments[0];
-                    else if (acceptedAttachments.Count > 1)
-                    {
-                        await context.DeferAsync(true);
-                        await sharedLogInfo.SendSelectFileForAnalysisMessage(context, acceptedAttachments);
-                        return;
+                        case 0:
+                            await sharedLogInfo.SendAttachmentErrorMessage(context, $"There is no file named {acceptedLogFileNamesString} attached!");
+                            return;
+                        case 1:
+                            _attachmentForAnalysis = acceptedAttachments[0];
+                            break;
+                        case > 1:
+                            await context.DeferAsync(true);
+                            await sharedLogInfo.SendSelectFileForAnalysisMessage(context, acceptedAttachments);
+                            return;
                     }
                     break;
             }

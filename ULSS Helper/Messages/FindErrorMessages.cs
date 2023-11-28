@@ -73,10 +73,9 @@ internal class FindErrorMessages : FindBaseMessages
         }
         if (e != null && embed != null) 
         {
-            await e.Interaction.CreateResponseAsync(
-            InteractionResponseType.ChannelMessageWithSource,
-            new DiscordInteractionResponseBuilder().AddEmbed(embed)
-            );
+            var bd = new DiscordInteractionResponseBuilder();
+            bd.IsEphemeral = true;
+            await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, bd.AddEmbed(embed));
             Logging.SendLog(e.Interaction.Channel.Id, e.Interaction.User.Id, embed);
         }
         else 
