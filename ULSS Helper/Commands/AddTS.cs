@@ -13,7 +13,7 @@ public class AddTs : ApplicationCommandModule
     (
         InteractionContext ctx, 
         [Option("ID", "User discord ID")] string userId,
-        [Option("Allow", "Allow access to the bot commands!")] bool allow
+        [Option("Allow", "Allow access to the advanced bot commands!")] bool allow
     )
     {
         var bd = new DiscordInteractionResponseBuilder();

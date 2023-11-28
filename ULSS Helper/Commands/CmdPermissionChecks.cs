@@ -15,12 +15,14 @@ internal static class PermissionMessages
     }
 }
 
-// Checks whether the user has the TS role.
+/// <summary>
+/// Checks whether the user has the TS role.
+/// </summary>
 public class RequireTsRoleAttribute : SlashCheckBaseAttribute
 {
     public override async Task<bool> ExecuteChecksAsync(InteractionContext ctx)
     {
-        if (ctx.Member.Roles.All(role => role.Id == Program.Settings.Env.TsRoleId))
+        if (ctx.Member.Roles.Any(role => role.Id == Program.Settings.Env.TsRoleId))
             return true;
         else 
             await PermissionMessages.SendNoPermissionError(ctx);
@@ -28,23 +30,25 @@ public class RequireTsRoleAttribute : SlashCheckBaseAttribute
     }
 }
 
-// Checks whether the user has the TS role and is allowed to use advanced commands according to our DB.
+/// <summary>
+/// Checks whether the user has the TS role and is allowed to use advanced commands according to our DB.
+/// </summary>
 public class RequireAdvancedTsRoleAttribute : SlashCheckBaseAttribute
 {
     public override async Task<bool> ExecuteChecksAsync(InteractionContext ctx)
     {
-        bool hasTsRole = ctx.Member.Roles.All(role => role.Id == Program.Settings.Env.TsRoleId);
+        bool hasTsRole = ctx.Member.Roles.Any(role => role.Id == Program.Settings.Env.TsRoleId);
         bool IsWhitelistedForCommands = false;
 
         var ts = Database.LoadTs().FirstOrDefault(ts => ts.ID.ToString() == ctx.Member.Id.ToString());
-        if (ts == null || ts.Allow == 0)
+        if (ts != null && ts.Allow == 0)
             Logging.SendLog(
                 ctx.Interaction.Channel.Id, 
                 ctx.Interaction.User.Id,
-                BasicEmbeds.Warning($"**TS attempted to use an advanced command without permission: {ctx.CommandName}**")
+                BasicEmbeds.Warning($"**TS attempted to use an advanced command without permission!**\r\nCommand name: {ctx.CommandName}")
             );
         else 
-            IsWhitelistedForCommands = true;
+            IsWhitelistedForCommands = ts == null ? false : true;
         
         if (hasTsRole && IsWhitelistedForCommands)
             return true;
@@ -54,7 +58,9 @@ public class RequireAdvancedTsRoleAttribute : SlashCheckBaseAttribute
     }
 }
 
-// Checks whether the user is part of the list of bot admins.
+/// <summary>
+/// Checks whether the user is part of the list of bot admins.
+/// </summary>
 public class RequireBotAdminAttribute : SlashCheckBaseAttribute
 {
     public override async Task<bool> ExecuteChecksAsync(InteractionContext ctx)
