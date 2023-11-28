@@ -203,21 +203,18 @@ internal class RPHProcess : SharedLogInfo
         }
 
         var eb = new DiscordInteractionResponseBuilder().AddEmbed(embed);
+        if (errorIds.Count > 0 && !update) eb.AddComponents(new DiscordComponent[] 
+        { new DiscordSelectComponent(
+            customId: ComponentInteraction.SelectIdForRemoval, 
+            placeholder: "Remove Error", 
+            options: errorIds)});
         eb.AddComponents(new DiscordComponent[]
         {
             new DiscordButtonComponent(
                 ButtonStyle.Danger,
                 ComponentInteraction.RphDetailedSendToUser,
                 "Send To User", false,
-                new DiscordComponentEmoji("📨"))
-        });
-        if (errorIds.Count > 0 && !update) eb.AddComponents(new DiscordComponent[] 
-        { 
-            new DiscordSelectComponent(
-                customId: ComponentInteraction.SelectIdForRemoval, 
-                placeholder: "Remove Error", 
-                options: errorIds
-        )});
+                new DiscordComponentEmoji("📨"))});
 
         await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, eb);
         var sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
