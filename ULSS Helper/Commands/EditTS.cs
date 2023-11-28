@@ -7,17 +7,13 @@ namespace ULSS_Helper.Commands;
 public class EditTs : ApplicationCommandModule
 {
     [SlashCommand("ChangeErrorView", "Edits what you see in more details!")]
+    [RequireTsRole()]
     public async Task EditViewCmd(
         InteractionContext ctx, 
         [Option("View", "True shows XTRA errors, False does not.")] bool view)
     {
         var bd = new DiscordInteractionResponseBuilder();
         bd.IsEphemeral = true;
-        if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
-        {
-            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
-            return;
-        }
         if (Database.LoadTs().All(ts => ts.ID.ToString() != ctx.Member.Id.ToString()))
         {
             List<string> botAdminMentions = Program.Settings.Env.BotAdminUserIds.Select(botAdminId => $"<@{botAdminId}>").ToList();
@@ -43,6 +39,7 @@ public class EditTs : ApplicationCommandModule
     }
     
     [SlashCommand("AllowPerms", "Allows a TS to use commands!")]
+    [RequireBotAdmin()]
     public async Task EditAllowCmd(
         InteractionContext ctx, 
         [Option("ID", "User ID to change!")] string userId,
@@ -50,11 +47,6 @@ public class EditTs : ApplicationCommandModule
     {
         var bd = new DiscordInteractionResponseBuilder();
         bd.IsEphemeral = true;
-        if (Program.Settings.Env.BotAdminUserIds.All(adminId => adminId != ctx.Member.Id))
-        {
-            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
-            return;
-        }
         if (Database.LoadTs().All(x => x.ID.ToString() != userId))
         {
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("User is not in the DB!")));

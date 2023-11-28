@@ -36,12 +36,12 @@ public class RequireAdvancedTsRoleAttribute : SlashCheckBaseAttribute
         bool hasTsRole = ctx.Member.Roles.All(role => role.Id == Program.Settings.Env.TsRoleId);
         bool IsWhitelistedForCommands = false;
 
-        var ts = Database.LoadTs().FirstOrDefault(x => x.ID.ToString() == ctx.Member.Id.ToString());
+        var ts = Database.LoadTs().FirstOrDefault(ts => ts.ID.ToString() == ctx.Member.Id.ToString());
         if (ts == null || ts.Allow == 0)
             Logging.SendLog(
                 ctx.Interaction.Channel.Id, 
                 ctx.Interaction.User.Id,
-                BasicEmbeds.Warning($"**TS attempted to add error without permission.**")
+                BasicEmbeds.Warning($"**TS attempted to use an advanced command without permission: {ctx.CommandName}**")
             );
         else 
             IsWhitelistedForCommands = true;
