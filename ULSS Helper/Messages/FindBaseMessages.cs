@@ -42,24 +42,24 @@ internal class FindBaseMessages
             string oldLine = lineIdx < oldLines.Length ? oldLines[lineIdx] : null;
             string newLine = lineIdx < newLines.Length ? newLines[lineIdx] : null;
             
-            if (oldLine == newLine || (oldLine != null && oldLine.Equals(newLine)))
+            if (oldLine == newLine || (oldLine != null && oldLine.Equals(newLine))) // line wasn't changed
             {
                 oldLine = ReplaceDiffChars(oldLine);
                 diffText.AppendLine($"{oldLine}");
             }
-            else if (oldLine == null)
+            else if (oldLine == null) // if oldLine doesn't exist, only show the added newLine (highlighted in green)
             {
                 newLine = ReplaceDiffChars(newLine);
                 diffText.AppendLine($"+ {newLine}");
                 countChangedLines++;
             }
-            else if (newLine == null)
+            else if (newLine == null) // if newLine doesn't exist, only show removed oldLine (highlighted in red)
             {
                 oldLine = ReplaceDiffChars(oldLine);
                 diffText.AppendLine($"- {oldLine}");
                 countChangedLines++;
             }
-            else
+            else // an existing line was modified, show the oldLine and newLine one after the other to allow an easy comparison
             {
                 oldLine = ReplaceDiffChars(oldLine);
                 newLine = ReplaceDiffChars(newLine);
@@ -68,7 +68,7 @@ internal class FindBaseMessages
                 countChangedLines++;
             }
         }
-        if (countChangedLines == maxLines)
+        if (countChangedLines == maxLines) // if all lines have been changed, first show all removed lines, then show all new lines
         {
             string cleanedOld = ReplaceDiffChars(oldText, multiline: true);
             string cleanedNew = ReplaceDiffChars(newText, multiline: true);
@@ -79,6 +79,12 @@ internal class FindBaseMessages
         return diffText.ToString();
     }
 
+    /// <summary>
+    /// Replaces any occurrences of "+ " or "- " at the start of lines in the input text. These characters would otherwise be interpreted as "added line" or "removed line" in the diff view.
+    /// </summary>
+    /// <param name="input">The input text that should be scanned and converted.</param>
+    /// <param name="multiline">Whether the input text should be handled as a multiline text (line breaks) or not.</param>
+    /// <returns>The changed input text where the characters are replaced.</returns>
     private static string ReplaceDiffChars(string input, bool multiline=false)
     {
         RegexOptions option = multiline ? RegexOptions.Multiline : RegexOptions.None;
