@@ -18,7 +18,7 @@ public class FindPlugins : ApplicationCommandModule
         [Option("ID", "The plugin's id on lcpdfr.com.")] string plugId=null,
         [Option("State", "The plugin's state (LSPDFR, EXTERNAL, BROKEN, LIB).")] State? plugState=null,
         [Option("Description", "The plugin's description.")] string plugDescription=null,
-        [Option("Strict_Search", "true = enabled, false = disabled (approximate search)")] bool? exactMatch=false
+        [Option("Strict_Search", "true = enabled, false = disabled (approximate search)")] bool exactMatch=false
         )
     {
         await ctx.CreateResponseAsync(

@@ -20,7 +20,7 @@ public class FindErrors : ApplicationCommandModule
         [Option("Solution", "Solution for the error.")] string solution=null,
         [Option("Description", "Description for the error.")] string description=null,
         [Option("Level", "Error level (WARN, SEVERE, CRITICAL).")] Level? level=null,
-        [Option("Strict_Search", "true = enabled, false = disabled (approximate search)")] bool? exactMatch=false
+        [Option("Strict_Search", "true = enabled, false = disabled (approximate search)")] bool exactMatch=false
     )
     {
         await ctx.CreateResponseAsync(

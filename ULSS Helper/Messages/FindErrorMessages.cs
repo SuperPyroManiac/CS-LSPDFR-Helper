@@ -7,7 +7,7 @@ namespace ULSS_Helper.Messages;
 
 internal class FindErrorMessages : FindBaseMessages
 {    
-    internal static string GetSearchParamsList(string title, string errId, string regex, string solution, string description, Level? level, bool? exactMatch)
+    internal static string GetSearchParamsList(string title, string errId, string regex, string solution, string description, Level? level, bool exactMatch)
     {
         string searchParamsList = $"**{title}**\r\n";
         if (errId != null)
@@ -15,13 +15,13 @@ internal class FindErrorMessages : FindBaseMessages
         if (regex != null)
             searchParamsList += $"- **Regex:**\n```\n{regex}\n```\r\n";
         if (solution != null)
-            searchParamsList += $"- **Solution:**\n```\n{solution}\n```\r\n";
+            searchParamsList += $"- **Solution:** {solution}\r\n";
         if (description != null)
             searchParamsList += $"- **Description:** {description}\r\n";
         if (level != null)
             searchParamsList += $"- **Level:** {level}\r\n";
-        if (exactMatch != null)
-            searchParamsList += $"- **Strict search enabled:** {exactMatch}\r\n";
+        if (exactMatch)
+            searchParamsList += $"- **Strict search:** enabled\r\n";
 
         return searchParamsList;
     }
@@ -29,8 +29,8 @@ internal class FindErrorMessages : FindBaseMessages
     internal static async Task SendDbOperationConfirmation(Error newError, DbOperation operation, Error oldError=null, ModalSubmitEventArgs e=null)
     {
         string errorRegex = $"**Regex:**\r\n```\n{newError.Regex}\n```\r\n";
-        string errorSolution = $"**Solution:**\r\n```\n{newError.Solution}\n```\r\n";
-        string errorDescription = $"**Description:** {newError.Description}\r\n";
+        string errorSolution = $"**Solution:**\n{newError.Solution}\r\n\r\n";
+        string errorDescription = $"**Description:**\n{newError.Description}\r\n\r\n";
         string errorLevel = $"**Level:** {newError.Level}";
         string errorPropsList = errorRegex + errorSolution + errorDescription + errorLevel;
 
