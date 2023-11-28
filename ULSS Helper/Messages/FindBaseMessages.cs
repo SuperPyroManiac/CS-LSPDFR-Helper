@@ -42,27 +42,29 @@ internal class FindBaseMessages
             string oldLine = lineIdx < oldLines.Length ? oldLines[lineIdx] : null;
             string newLine = lineIdx < newLines.Length ? newLines[lineIdx] : null;
             
-            string oldLineCleaned = ReplaceDiffChars(oldLine);
-            string newLineCleaned = ReplaceDiffChars(newLine);
-
             if (oldLine == newLine || (oldLine != null && oldLine.Equals(newLine)))
             {
-                diffText.AppendLine($"{oldLineCleaned}");
+                oldLine = ReplaceDiffChars(oldLine);
+                diffText.AppendLine($"{oldLine}");
             }
             else if (oldLine == null)
             {
-                diffText.AppendLine($"+ {newLineCleaned}");
+                newLine = ReplaceDiffChars(newLine);
+                diffText.AppendLine($"+ {newLine}");
                 countChangedLines++;
             }
             else if (newLine == null)
             {
-                diffText.AppendLine($"- {oldLineCleaned}");
+                oldLine = ReplaceDiffChars(oldLine);
+                diffText.AppendLine($"- {oldLine}");
                 countChangedLines++;
             }
             else
             {
-                diffText.AppendLine($"- {oldLineCleaned}");
-                diffText.AppendLine($"+ {newLineCleaned}");
+                oldLine = ReplaceDiffChars(oldLine);
+                newLine = ReplaceDiffChars(newLine);
+                diffText.AppendLine($"- {oldLine}");
+                diffText.AppendLine($"+ {newLine}");
                 countChangedLines++;
             }
         }
