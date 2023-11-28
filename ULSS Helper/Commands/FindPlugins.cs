@@ -63,14 +63,14 @@ public class FindPlugins : ApplicationCommandModule
                     var plugDesc = "N/A";
                     if (!string.IsNullOrEmpty(plugin.Description)) plugDesc = plugin.Description;
                     currentPageContent += "\r\n\r\n"
-                        + $"> **Plugin {plugin.Name}**\r\n"
+                        + $"> ### __Plugin: {plugin.Name}__\r\n"
                         + $"> **Display Name:** {plugin.DName}\r\n" 
                         + $"> **Version:** {plugin.Version}\r\n"
                         + $"> **Early Access Version:** {plugin.EAVersion}\r\n"
                         + $"> **ID (on lcpdfr.com):** {plugin.ID}\r\n"
                         + $"> **Link:** {plugin.Link}\r\n"
                         + $"> **State:** {plugin.State}\r\n"
-                        + $"> **Description:** {plugDesc.Replace("\n", "\n> ")}";
+                        + $"> **Notes:** \r\n> {plugDesc.Replace("\n", "\n> ")}";
                     currentResultsPerPage++;
                     if (currentResultsPerPage == resultsPerPage || i == pluginsFound.Count-1) {
                         var embed = BasicEmbeds.Generic(currentPageContent, DiscordColor.DarkBlue);

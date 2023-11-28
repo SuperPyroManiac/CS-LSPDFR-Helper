@@ -17,9 +17,9 @@ internal class FindPluginMessages : FindBaseMessages
         if (plugId != null)
             searchParamsList += $"- **ID (on lcpdfr.com):** {plugId}\r\n";
         if (plugState != null)
-            searchParamsList += $"- **State:** {plugState}\r\n";
+            searchParamsList += $"- **State:**\r\n {plugState}\r\n";
         if (plugDescription != null)
-            searchParamsList += $"- **Description:** {plugDescription}\r\n";
+            searchParamsList += $"- **Notes:** \r\n> {plugDescription.Replace("\n", "\n> ")}\r\n";
         if (exactMatch)
             searchParamsList += $"- **Strict search:** enabled\r\n";
 
@@ -33,8 +33,8 @@ internal class FindPluginMessages : FindBaseMessages
         string pluginEaVersion = $"**Early Access Version:** {newPlugin.EAVersion}\r\n";
         string pluginId = $"**ID (on lcpdfr.com):** {newPlugin.ID}\r\n";
         string pluginLink = $"**Link:** {newPlugin.Link}\r\n";
-        string pluginState = $"**State:** {newPlugin.State}";
-        string pluginDescription = $"**Notes:** {newPlugin.Description}\r\n";
+        string pluginState = $"**State:** {newPlugin.State}\r\n";
+        string pluginDescription = $"**Notes:** \r\n> {newPlugin.Description.Replace("\n", "\n> ")}\r\n";
         string pluginPropsList = pluginDName + pluginVersion + pluginEaVersion + pluginId + pluginDescription + pluginLink + pluginState;
         
         DiscordEmbedBuilder embed = null;
