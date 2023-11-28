@@ -11,25 +11,23 @@ namespace ULSS_Helper.Commands;
 public class FindErrors : ApplicationCommandModule
 {
     [SlashCommand("FindErrors", "Returns a list of all errors in the database that match the search parameters!")]
-
-    public static async Task FindErrorsCmd(InteractionContext ctx,
+    [RequireTsRole]
+    public static async Task FindErrorsCmd
+    (
+        InteractionContext ctx,
         [Option("ID", "The error id in the bot's database.")] string errId=null,
         [Option("Regex", "Regex for detecting the error.")] string regex=null,
         [Option("Solution", "Solution for the error.")] string solution=null,
         [Option("Description", "Description for the error.")] string description=null,
         [Option("Level", "Error level (WARN, SEVERE, CRITICAL).")] Level? level=null,
         [Option("Strict_Search", "true = enabled, false = disabled (approximate search)")] bool? exactMatch=false
-        )
+    )
     {
         await ctx.CreateResponseAsync(
             InteractionResponseType.DeferredChannelMessageWithSource,
-            new DiscordInteractionResponseBuilder { IsEphemeral = true });
+            new DiscordInteractionResponseBuilder { IsEphemeral = true }
+        );
         
-        if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
-        {
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
-            return;
-        }
         try 
         {
             string searchParamsListForLog = FindErrorMessages.GetSearchParamsList(

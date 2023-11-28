@@ -9,8 +9,9 @@ namespace ULSS_Helper.Commands;
 public class EditError : ApplicationCommandModule
 {
     [SlashCommand("EditError", "Edits an error in the database!")]
-
-    public async Task EditErrorCmd(
+    [RequireAdvancedTsRole]
+    public async Task EditErrorCmd
+    (
         InteractionContext ctx, 
         [Option("ID", "Errors ID!")] string errorId, 
         [Option("New_Level", "Warning type (XTRA, WARN, SEVERE, CRITICAL)")] Level? newLevel=null
@@ -18,19 +19,6 @@ public class EditError : ApplicationCommandModule
     {
         var bd = new DiscordInteractionResponseBuilder();
         bd.IsEphemeral = true;
-        if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
-        {
-            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
-            return;
-        }
-        var ts = Database.LoadTs().FirstOrDefault(ts => ts.ID.ToString() == ctx.Member.Id.ToString());
-        if (ts == null || ts.Allow == 0)
-        {
-            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
-            Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id,
-                BasicEmbeds.Warning("**TS attempted to edit error without permission.**"));
-            return;
-        }
 
         if (Database.LoadErrors().All(ts => ts.ID.ToString() != errorId))
         {
