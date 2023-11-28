@@ -1,6 +1,8 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
+using DSharpPlus.SlashCommands.Attributes;
+using ULSS_Helper.Commands;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Modules;
 using ULSS_Helper.Modules.ASI_Modules;
@@ -14,19 +16,10 @@ namespace ULSS_Helper.Events;
 internal class ContextMenu : ApplicationCommandModule
 {    
     [ContextMenu(ApplicationCommandType.MessageContextMenu, "Analyze Log")]
+    [RequireTsRole]
     // ReSharper disable once UnusedMember.Global
     public async Task OnMenuSelect(ContextMenuContext context)
     {
-        //===//===//===////===//===//===////===//Permissions/===////===//===//===////===//===//===//
-        if (context.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
-        {
-            var emb = new DiscordInteractionResponseBuilder();
-            emb.IsEphemeral = true;
-            emb.AddEmbed(BasicEmbeds.Error("You do not have permission for this!"));
-            await context.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, emb);
-            return;
-        }
-
         //===//===//===////===//===//===////===//Attachment Checks/===////===//===//===////===//===//===//
         DiscordAttachment attachmentForAnalysis = null;
         List<string> acceptedFileNames = new(new[]{ "RagePluginHook", "ELS", "asiloader", "ScriptHookVDotNet" });
@@ -52,18 +45,18 @@ internal class ContextMenu : ApplicationCommandModule
                             acceptedAttachments.Add(attachment);
                         }
                     }
-                    if (acceptedAttachments.Count == 0)
+                    switch (acceptedAttachments.Count)
                     {
-                        await sharedLogInfo.SendAttachmentErrorMessage(context, $"There is no file named {acceptedLogFileNamesString} attached!");
-                        return;
-                    }
-                    if (acceptedAttachments.Count == 1)
-                        attachmentForAnalysis = acceptedAttachments[0];
-                    else if (acceptedAttachments.Count > 1)
-                    {
-                        await context.DeferAsync(true);
-                        await sharedLogInfo.SendSelectFileForAnalysisMessage(context, acceptedAttachments);
-                        return;
+                        case 0:
+                            await sharedLogInfo.SendAttachmentErrorMessage(context, $"There is no file named {acceptedLogFileNamesString} attached!");
+                            return;
+                        case 1:
+                            attachmentForAnalysis = acceptedAttachments[0];
+                            break;
+                        case > 1:
+                            await context.DeferAsync(true);
+                            await sharedLogInfo.SendSelectFileForAnalysisMessage(context, acceptedAttachments);
+                            return;
                     }
                     break;
             }

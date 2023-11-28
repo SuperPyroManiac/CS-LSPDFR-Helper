@@ -8,16 +8,16 @@ namespace ULSS_Helper.Commands;
 public class AddTs : ApplicationCommandModule
 {
     [SlashCommand("AddTS", "Adds a TS to the database!")]
-    public async Task AddTsCmd(InteractionContext ctx, [Option("ID", "User discord ID")] string userId,
-        [Option("Allow", "Allow access to the bot commands!")] bool allow)
+    [RequireBotAdmin]
+    public async Task AddTsCmd
+    (
+        InteractionContext ctx, 
+        [Option("ID", "User discord ID")] string userId,
+        [Option("Allow", "Allow access to the advanced bot commands!")] bool allow
+    )
     {
         var bd = new DiscordInteractionResponseBuilder();
         bd.IsEphemeral = true;
-        if (Program.Settings.Env.BotAdminUserIds.All(adminId => adminId != ctx.Member.Id))
-        {
-            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
-            return;
-        }
 
         if (Database.LoadTs().Any(ts => ts.ID == userId))
         {

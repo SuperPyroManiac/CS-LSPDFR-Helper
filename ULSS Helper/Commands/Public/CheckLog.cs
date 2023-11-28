@@ -4,7 +4,7 @@ using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Modules.RPH_Modules;
 
-namespace ULSS_Helper.Commands;
+namespace ULSS_Helper.Commands.Public;
 
 public class CheckLog : ApplicationCommandModule
 {

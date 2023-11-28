@@ -4,7 +4,6 @@ namespace ULSS_Helper.Objects;
 public class Plugin
 {
     public string Name { get; set; }
-    public long? DbRowId { get; set; }
     public string DName { get; set; }
     public string Description { get; set; }
     public string Version { get; set; }

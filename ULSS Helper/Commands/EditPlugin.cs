@@ -9,8 +9,9 @@ namespace ULSS_Helper.Commands;
 public class EditPlugin : ApplicationCommandModule
 {
     [SlashCommand("EditPlugin", "Edits a plugin in the database!")]
-
-    public async Task EditPluginCmd(
+    [RequireAdvancedTsRole]
+    public async Task EditPluginCmd
+    (
         InteractionContext ctx, 
         [Option("Name", "Plugins name as shown in the log!")] string pluginName, 
         [Option("New_State", "Plugin state, LSPDFR, EXTERNAL, BROKEN, LIB")] State? newState=null
@@ -18,19 +19,6 @@ public class EditPlugin : ApplicationCommandModule
     {
         var bd = new DiscordInteractionResponseBuilder();
         bd.IsEphemeral = true;
-        if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.TsRoleId))
-        {
-            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
-            return;
-        }
-        var ts = Database.LoadTs().FirstOrDefault(x => x.ID.ToString() == ctx.Member.Id.ToString());
-        if (ts == null || ts.Allow == 0)
-        {
-            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
-            Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id,
-                BasicEmbeds.Warning("**TS attempted to edit plugin without permission.**"));
-            return;
-        }
 
         if (Database.LoadPlugins().All(x => x.Name != pluginName))
         {
