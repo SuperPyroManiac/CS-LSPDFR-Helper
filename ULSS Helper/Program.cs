@@ -4,6 +4,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
+using Microsoft.Extensions.Logging;
 using ULSS_Helper.Events;
 using ULSS_Helper.Objects;
 using ULSS_Helper.Messages;
@@ -27,7 +28,8 @@ internal class Program
             Intents = DiscordIntents.All,
             Token = Settings.Env.BotToken,
             TokenType = TokenType.Bot,
-            AutoReconnect = true
+            AutoReconnect = true,
+            //MinimumLogLevel = LogLevel.Trace
         };
         Client = new DiscordClient(discordConfig);
         
