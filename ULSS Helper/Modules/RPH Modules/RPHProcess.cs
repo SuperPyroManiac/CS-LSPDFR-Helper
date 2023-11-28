@@ -174,8 +174,9 @@ internal class RPHProcess : SharedLogInfo
         
         embed = AddCommonFields(embed);
 
-        TS ts = Database.LoadTs().FirstOrDefault(ts => ts.ID.ToString().Equals(eventArgs.User.Id.ToString()));
-        bool update = false;
+        var ts = Database.LoadTs().FirstOrDefault(ts => ts.ID.ToString().Equals(eventArgs.User.Id.ToString()));
+        var errorIds = new List<DiscordSelectComponentOption>();
+        var update = false;
         foreach (var error in log.Errors)
         {
             if (error.Level == "CRITICAL") update = true;
@@ -195,13 +196,27 @@ internal class RPHProcess : SharedLogInfo
                     embed.AddField($"```{error.Level} ID: {error.ID}``` Troubleshooting Steps:",
                         $"> {error.Solution.Replace("\n", "\n> ")}");
             }
+            if (error.Level != "XTRA")
+            {
+                if (errorIds.All(x => x.Value != error.ID)) errorIds.Add(new DiscordSelectComponentOption("ID: " + error.ID, error.ID));;
+            }
         }
 
-        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
-            new DiscordInteractionResponseBuilder().AddEmbed(embed).AddComponents(new DiscordComponent[]
-            {
-                new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.RphDetailedSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
-            }));
+        var eb = new DiscordInteractionResponseBuilder().AddEmbed(embed);
+        if (errorIds.Count > 0 && !update) eb.AddComponents(new DiscordComponent[] 
+        { new DiscordSelectComponent(
+            customId: ComponentInteraction.SelectIdForRemoval, 
+            placeholder: "Remove Error", 
+            options: errorIds)});
+        eb.AddComponents(new DiscordComponent[]
+        {
+            new DiscordButtonComponent(
+                ButtonStyle.Danger,
+                ComponentInteraction.RphDetailedSendToUser,
+                "Send To User", false,
+                new DiscordComponentEmoji("📨"))});
+
+        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, eb);
         var sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
         Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
     }
