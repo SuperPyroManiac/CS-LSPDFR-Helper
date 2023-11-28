@@ -11,17 +11,17 @@ internal class FindErrorMessages : FindBaseMessages
     {
         string searchParamsList = $"**{title}**\r\n";
         if (errId != null)
-            searchParamsList += $"- **ID:** *{errId}*\r\n";
+            searchParamsList += $"- **ID:** {errId}\r\n";
         if (regex != null)
             searchParamsList += $"- **Regex:**\n```\n{regex}\n```\r\n";
         if (solution != null)
             searchParamsList += $"- **Solution:**\n```\n{solution}\n```\r\n";
         if (description != null)
-            searchParamsList += $"- **Description:**\n```\n{description}\n```\r\n";
+            searchParamsList += $"- **Description:** {description}\r\n";
         if (level != null)
-            searchParamsList += $"- **Level:** *{level}*\r\n";
+            searchParamsList += $"- **Level:** {level}\r\n";
         if (exactMatch != null)
-            searchParamsList += $"- **Strict search enabled:** *{exactMatch}*\r\n";
+            searchParamsList += $"- **Strict search enabled:** {exactMatch}\r\n";
 
         return searchParamsList;
     }
@@ -30,7 +30,7 @@ internal class FindErrorMessages : FindBaseMessages
     {
         string errorRegex = $"**Regex:**\r\n```\n{newError.Regex}\n```\r\n";
         string errorSolution = $"**Solution:**\r\n```\n{newError.Solution}\n```\r\n";
-        string errorDescription = $"**Description:**\r\n```\n{newError.Description}\n```\r\n";
+        string errorDescription = $"**Description:** {newError.Description}\r\n";
         string errorLevel = $"**Level:** {newError.Level}";
         string errorPropsList = errorRegex + errorSolution + errorDescription + errorLevel;
 

@@ -11,17 +11,17 @@ internal class FindPluginMessages : FindBaseMessages
     {
         string searchParamsList = $"**{title}**\r\n";
         if (plugName != null)
-            searchParamsList += $"- **Name:** *{plugName}*\r\n";
+            searchParamsList += $"- **Name:** {plugName}\r\n";
         if (plugDName != null)
-            searchParamsList += $"- **Display Name:** *{plugDName}*\r\n";
+            searchParamsList += $"- **Display Name:** {plugDName}\r\n";
         if (plugId != null)
-            searchParamsList += $"- **ID (on lcpdfr.com):** *{plugId}*\r\n";
+            searchParamsList += $"- **ID (on lcpdfr.com):** {plugId}\r\n";
         if (plugDescription != null)
-            searchParamsList += $"- **Description:**\r\n```\n{plugDescription}\n```\r\n";
+            searchParamsList += $"- **Description:** {plugDescription}\r\n";
         if (plugState != null)
-            searchParamsList += $"- **State:** *{plugState}*\r\n";
+            searchParamsList += $"- **State:** {plugState}\r\n";
         if (exactMatch != null)
-            searchParamsList += $"- **Strict search enabled:** *{exactMatch}*\r\n";
+            searchParamsList += $"- **Strict search enabled:** {exactMatch}\r\n";
 
         return searchParamsList;
     }
@@ -32,7 +32,7 @@ internal class FindPluginMessages : FindBaseMessages
         string pluginVersion = $"**Version:** {newPlugin.Version}\r\n";
         string pluginEaVersion = $"**Early Access Version:** {newPlugin.EAVersion}\r\n";
         string pluginId = $"**ID (on lcpdfr.com):** {newPlugin.ID}\r\n";
-        string pluginDescription = $"**Notes:**\r\n```\n{newPlugin.Description}\n```\r\n";
+        string pluginDescription = $"**Notes:** {newPlugin.Description}\r\n";
         string pluginLink = $"**Link:** {newPlugin.Link}\r\n";
         string pluginState = $"**State:** {newPlugin.State}";
         string pluginPropsList = pluginDName + pluginVersion + pluginEaVersion + pluginId + pluginDescription + pluginLink + pluginState;
