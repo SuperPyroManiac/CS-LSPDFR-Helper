@@ -13,7 +13,7 @@ internal class Cache
     /// <param name="newCache">The ProcessCache object (will be merged with any existing cache objects for the same message id).</param>
     internal void SaveProcess(ulong messageId, ProcessCache newCache)
     {
-        if (_processCacheDict.Any(cache => cache.Key == messageId))
+        if (_processCacheDict.ContainsKey(messageId))
         {
             ProcessCache currentCache = GetProcess(messageId);
             _processCacheDict[messageId] = currentCache.Update(newCache);
@@ -54,10 +54,11 @@ internal class Cache
     /// <param name="newCache">The UserActionCache object.</param>
     internal void SaveUserAction(ulong userId, string actionId, UserActionCache newCache)
     {
-        if (_userActionCacheDict.Any(cache => cache.Key == GetUserActionKey(userId, actionId)))
-            _userActionCacheDict[GetUserActionKey(userId, actionId)] = newCache;
+        string key = GetUserActionKey(userId, actionId);
+        if (_userActionCacheDict.ContainsKey(key))
+            _userActionCacheDict[key] = newCache;
         else
-            _userActionCacheDict.Add(GetUserActionKey(userId, actionId), newCache);
+            _userActionCacheDict.Add(key, newCache);
     }
 
     /// <summary>Gets the UserActionCache object for the given combination of user and action.</summary>

@@ -107,6 +107,7 @@ internal class ContextMenu : ApplicationCommandModule
     
     private async Task RphThread(ContextMenuContext context, DiscordAttachment attachment)
     {
+        await context.DeferAsync(true);
         // ReSharper disable UseObjectOrCollectionInitializer
         ProcessCache cache = Program.Cache.GetProcessIfRecent(context.TargetMessage.Id);
         RPHProcess rphProcess;
@@ -125,6 +126,7 @@ internal class ContextMenu : ApplicationCommandModule
 
     private async Task ElsThread(ContextMenuContext context, DiscordAttachment attachmentForAnalysis)
     {
+        await context.DeferAsync(true);
         // ReSharper disable UseObjectOrCollectionInitializer
         ProcessCache cache = Program.Cache.GetProcessIfRecent(context.TargetMessage.Id);
         ELSProcess elsProcess;

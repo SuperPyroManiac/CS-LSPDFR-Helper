@@ -22,6 +22,6 @@ internal class Timer
         File.Copy(Program.Settings.DbPath, Settings.GenerateNewFilePath(FileType.DB_BACKUP));
 
         //Clean Cache
-        Task.Run(() => Program.Cache.RemoveExpiredCacheEntries(TimeSpan.FromTicks(TimeSpan.TicksPerHour * HourInterval)));
+        Task.Run(() => Program.Cache.RemoveExpiredCacheEntries(TimeSpan.FromHours(HourInterval)));
     }
 }

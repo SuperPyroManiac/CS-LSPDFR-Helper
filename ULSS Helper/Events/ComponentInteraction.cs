@@ -68,10 +68,17 @@ public class ComponentInteraction
                     {
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
-                        RPHProcess rphProcess = new RPHProcess();
-                        rphProcess.log = RPHAnalyzer.Run(targetAttachment.Url);
-                        rphProcess.log.MsgId = cache.OriginalMessage.Id;
-                        Program.Cache.SaveProcess(messageId: eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, rphProcess));
+                        RPHProcess rphProcess;
+                        if (cache == null || cache.RphProcess == null)
+                        {
+                            rphProcess = new RPHProcess();
+                            rphProcess.log = RPHAnalyzer.Run(targetAttachment.Url);
+                            rphProcess.log.MsgId = cache.OriginalMessage.Id;
+                            Program.Cache.SaveProcess(messageId: eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, rphProcess));
+                        }
+                        else
+                            rphProcess = cache.RphProcess;
+                        
                         await rphProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                         return;
                     }
@@ -79,10 +86,17 @@ public class ComponentInteraction
                     {
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
-                        ELSProcess elsProcess = new ELSProcess();
-                        elsProcess.log = ELSAnalyzer.Run(targetAttachment.Url);
-                        elsProcess.log.MsgId = cache.OriginalMessage.Id;
-                        Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, elsProcess));
+                        ELSProcess elsProcess;
+                        if (cache == null || cache.ElsProcess == null)
+                        {
+                            elsProcess = new ELSProcess();
+                            elsProcess.log = ELSAnalyzer.Run(targetAttachment.Url);
+                            elsProcess.log.MsgId = cache.OriginalMessage.Id;
+                            Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, elsProcess));
+                        }
+                        else
+                            elsProcess = cache.ElsProcess;
+
                         await elsProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                         return;
                     }
@@ -90,10 +104,17 @@ public class ComponentInteraction
                     {
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
-                        ASIProcess asiProcess = new ASIProcess();
-                        asiProcess.log = ASIAnalyzer.Run(targetAttachment.Url);
-                        asiProcess.log.MsgId = cache.OriginalMessage.Id;
-                        Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, asiProcess));
+                        ASIProcess asiProcess;
+                        if (cache == null || cache.AsiProcess == null)
+                        {
+                            asiProcess = new ASIProcess();
+                            asiProcess.log = ASIAnalyzer.Run(targetAttachment.Url);
+                            asiProcess.log.MsgId = cache.OriginalMessage.Id;
+                            Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, asiProcess));
+                        }
+                        else 
+                            asiProcess = cache.AsiProcess;
+                        
                         await asiProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                         return;
                     }
@@ -101,10 +122,17 @@ public class ComponentInteraction
                     {
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
-                        SHVDNProcess shvdnProcess = new SHVDNProcess();
-                        shvdnProcess.log = SHVDNAnalyzer.Run(targetAttachment.Url);
-                        shvdnProcess.log.MsgId = cache.OriginalMessage.Id;
-                        Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, shvdnProcess));
+                        SHVDNProcess shvdnProcess;
+                        if (cache == null || cache.ShvdnProcess == null)
+                        {
+                            shvdnProcess = new SHVDNProcess();
+                            shvdnProcess.log = SHVDNAnalyzer.Run(targetAttachment.Url);
+                            shvdnProcess.log.MsgId = cache.OriginalMessage.Id;
+                            Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, shvdnProcess));
+                        }
+                        else
+                            shvdnProcess = cache.ShvdnProcess;
+                        
                         await shvdnProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                         return;
                     }
@@ -115,18 +143,26 @@ public class ComponentInteraction
                     var options = new List<DiscordSelectComponentOption>(selectComp.Options);
                     foreach (var option in selectComp.Options.Where(option => option.Value.Equals(eventArgs.Values.FirstOrDefault()))) options.Remove(option);
                     var db = new DiscordInteractionResponseBuilder();
+                    
                     if (options.Count > 0)
                         db.AddComponents(new DiscordSelectComponent(
                             customId: ComponentInteraction.SelectIdForRemoval,
                             placeholder: "Remove Error",
-                            options: options));
-                    db.AddComponents(new DiscordComponent[]
-                    {
-                        new DiscordButtonComponent(
-                            ButtonStyle.Danger,
-                            ComponentInteraction.RphDetailedSendToUser,
-                            "Send To User", false,
-                            new DiscordComponentEmoji("📨"))});
+                            options: options
+                        ));
+                    
+                    db.AddComponents(
+                        new DiscordComponent[]
+                        {
+                            new DiscordButtonComponent(
+                                ButtonStyle.Danger,
+                                ComponentInteraction.RphDetailedSendToUser,
+                                "Send To User", 
+                                false,
+                                new DiscordComponentEmoji("📨")
+                            )
+                        }
+                    );
                     var originEmbed = eventArgs.Message.Embeds.FirstOrDefault();
                     var embed = new DiscordEmbedBuilder()
                     {
@@ -176,11 +212,18 @@ public class ComponentInteraction
             if (eventArgs.Id == SendFeedback)
             {
                 DiscordInteractionResponseBuilder modal = new();
-                modal.WithTitle("Send Feedback").WithCustomId(SendFeedback).AddComponents(
-                    new TextInputComponent("Feedback:", "feedback", required: true, style: TextInputStyle.Paragraph));
-                Console.Write("We got here");
+                modal.WithCustomId(SendFeedback);
+                modal.WithTitle("Send Feedback");
+                modal.AddComponents(
+                    new TextInputComponent(
+                        label: "Feedback:", 
+                        customId: "feedback", 
+                        required: true, 
+                        style: TextInputStyle.Paragraph
+                    )
+                );
+
                 await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
-                Console.Write("and its fucked");
             }
         }
         catch (Exception exception)
