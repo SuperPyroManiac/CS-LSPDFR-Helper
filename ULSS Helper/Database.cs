@@ -340,7 +340,6 @@ internal class Database
 	    var plugins = LoadPlugins();
         foreach (var plugin in plugins)
         {
-            Thread.Sleep(250);
             try
             {
                 if (plugin.State == "LSPDFR" && plugin.ID != null)
