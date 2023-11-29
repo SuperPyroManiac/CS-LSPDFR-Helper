@@ -1,6 +1,7 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
+using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
@@ -28,7 +29,7 @@ public class PluginNotes : ApplicationCommandModule
 		var plugin = Database.LoadPlugins().FirstOrDefault(x => x.Name == pluginName);
 
 		DiscordInteractionResponseBuilder modal = new();
-		modal.WithCustomId("edit-pluginnotes");
+		modal.WithCustomId(ModalSubmit.EditPluginNotes);
 		modal.WithTitle($"Editing {plugin.Name}'s notes!");
 		modal.AddComponents(new TextInputComponent(
 			label: "Notes:", 

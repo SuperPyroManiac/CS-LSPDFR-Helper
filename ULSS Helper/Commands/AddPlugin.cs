@@ -1,6 +1,7 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
+using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
@@ -31,7 +32,7 @@ public class AddPlugin : ApplicationCommandModule
         };
         
         DiscordInteractionResponseBuilder modal = new();
-        modal.WithCustomId("add-plugin");
+        modal.WithCustomId(ModalSubmit.AddPlugin);
         modal.WithTitle($"Adding {plugin.Name} as {plugin.State}");
         modal.AddComponents(new TextInputComponent(
             label: "Display Name:", 

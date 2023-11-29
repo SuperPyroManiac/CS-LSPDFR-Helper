@@ -44,6 +44,11 @@ internal class Cache
         }
         return null;
     }
+    
+    internal void RemoveProcess(ulong messageId)
+    {
+        _processCacheDict.Remove(messageId);
+    }
 
     /// <summary>
     /// Saves the object instances related to an action (command + modal form) and the performing user in the cache.
@@ -72,6 +77,11 @@ internal class Cache
     private string GetUserActionKey(ulong userId, string actionId)
     {
         return userId.ToString() + "&" + actionId;
+    }
+
+    internal void RemoveUserAction(ulong userId, string actionId)
+    {
+        _userActionCacheDict.Remove(GetUserActionKey(userId, actionId));
     }
 
     /// <summary>Removes all cache entries from the dictionaries that are older than the maxCacheAge parameter.</summary>
