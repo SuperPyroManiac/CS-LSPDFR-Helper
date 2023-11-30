@@ -169,9 +169,7 @@ public class ComponentInteraction
                 DiscordInteractionResponseBuilder modal = new();
                 modal.WithTitle("Send Feedback").WithCustomId(SendFeedback).AddComponents(
                     new TextInputComponent("Feedback:", "feedback", required: true, style: TextInputStyle.Paragraph));
-                Console.Write("We got here");
                 await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
-                Console.Write("and its fucked");
             }
         }
         catch (Exception exception)

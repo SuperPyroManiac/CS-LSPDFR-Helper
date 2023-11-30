@@ -250,24 +250,24 @@ internal class RPHProcess : SharedLogInfo
 
     internal void SendUnknownPluginsLog(ulong originalMsgChannelId, ulong originalMsgUserId)
     {
-        string embedDescription = "**Unknown plugins or plugin versions!**\r\n\r\n";
+        string embedDescription = "__Unknown plugins or plugin versions!__\r\n\r\n>>> ";
         string rphLogLink = log.DownloadLink != null && log.DownloadLink.StartsWith("http")
             ? $"[RagePluginHook.log]({log.DownloadLink})" 
             : "RagePluginHook.log";
-        embedDescription += $"There was a {rphLogLink} uploaded that has plugins or plugin versions that are unknown to the bot's DB!\r\n\r\n";
-        DiscordEmbedBuilder embed = BasicEmbeds.Warning(embedDescription);
+        embedDescription += $"There was a {rphLogLink} uploaded that has plugin versions that are unknown to the bot's DB!\r\n\r\n";
+        DiscordEmbedBuilder embed = BasicEmbeds.Warning(embedDescription, true);
 
         var missingList = log.Missing.Select(plugin => $"{plugin?.Name} {plugin?.Version}").ToList();
         var missmatchList = log.Missmatch.Select(plugin => $"{plugin?.Name} {plugin?.EAVersion}").ToList();
         
         string missingDashListStr = "- " + string.Join("\n- ", missingList) + "\n";
-        if (missingDashListStr.Length > 0 && missingDashListStr.Length < 1024) 
+        if (missingDashListStr.Length > 3 && missingDashListStr.Length < 1024)
         {
             embed.AddField(":bangbang:  **Plugins not recognized:**", missingDashListStr);
         }
 
         string missmatchDashListStr = "- " + string.Join("\n- ", missmatchList) + "\n";
-        if (missmatchDashListStr.Length > 0 && missmatchDashListStr.Length < 1024) 
+        if (missmatchDashListStr.Length > 3 && missmatchDashListStr.Length < 1024)
         {
             embed.AddField(":bangbang:  **Plugin version newer than DB:**", missmatchDashListStr);
         }
