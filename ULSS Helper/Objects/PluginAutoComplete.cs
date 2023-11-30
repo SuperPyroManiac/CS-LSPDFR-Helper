@@ -5,14 +5,14 @@ namespace ULSS_Helper.Objects;
 
 public class PluginAutoComplete : IAutocompleteProvider
 {
-	public readonly List<Plugin> DbPlugs = Database.LoadPlugins();
-	public async Task<IEnumerable<DiscordAutoCompleteChoice>> Provider(AutocompleteContext ctx)
+	public Task<IEnumerable<DiscordAutoCompleteChoice>> Provider(AutocompleteContext ctx)
 	{
 		List<DiscordAutoCompleteChoice> plugins = new();
-		foreach (var plug in DbPlugs)
+		foreach (var plug in Database.LoadPlugins())
 		{
-			if (plugins.Count < 25 && plug.Name.Contains(ctx.FocusedOption.Value.ToString()!)) plugins.Add(new DiscordAutoCompleteChoice(plug.Name, plug.Name));
+			if (plugins.Count < 25 && plug.Name.ToLower().Contains(ctx.FocusedOption.Value.ToString()!.ToLower())) plugins.Add(new DiscordAutoCompleteChoice(plug.Name, plug.Name));
+
 		}
-		return plugins;
+		return Task.FromResult<IEnumerable<DiscordAutoCompleteChoice>>(plugins);
 	}
 }
