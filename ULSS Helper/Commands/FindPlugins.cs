@@ -13,7 +13,7 @@ public class FindPlugins : ApplicationCommandModule
     [SlashCommand("FindPlugins", "Returns a list of all plugins in the database that match the search parameters!")]
     [RequireTsRole]
     public static async Task FindPluginsCmd(InteractionContext ctx,
-        [Option("Name", "The plugin's name.")] string plugName=null,
+        [Autocomplete(typeof(PluginAutoComplete)),Option("Name", "The plugin's name.")] string plugName=null,
         [Option("DName", "The plugin's display name.")] string plugDName=null,
         [Option("ID", "The plugin's id on lcpdfr.com.")] string plugId=null,
         [Option("State", "The plugin's state (LSPDFR, EXTERNAL, BROKEN, LIB).")] State? plugState=null,

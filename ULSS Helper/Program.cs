@@ -1,12 +1,11 @@
 ﻿using System.Reflection;
 using DSharpPlus;
-using DSharpPlus.Entities;
+using DSharpPlus.AsyncEvents;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
-using Microsoft.Extensions.Logging;
+using DSharpPlus.SlashCommands.EventArgs;
 using ULSS_Helper.Events;
-using ULSS_Helper.Objects;
 using ULSS_Helper.Messages;
 
 namespace ULSS_Helper;
@@ -37,6 +36,7 @@ internal class Program
 
         sCommands.RegisterCommands(Assembly.GetExecutingAssembly(), Settings.Env.ServerId);
         sCommands.RegisterCommands<ContextMenu>(Settings.Env.ServerId);
+        sCommands.AutocompleteErrored += Oops();
 
         Client.ModalSubmitted += ModalSubmit.HandleModalSubmit;
         Client.ComponentInteractionCreated += ComponentInteraction.HandleInteraction;
@@ -49,7 +49,15 @@ internal class Program
         StatusMessages.SendStartupMessage();
         await Task.Delay(-1);
     }
-//    private static async Task MessageSent(DiscordClient s, MessageCreateEventArgs ctx)
+
+    private static AsyncEventHandler<SlashCommandsExtension, AutocompleteErrorEventArgs> Oops()
+    {
+        return async (s, e) =>
+        {
+            Console.WriteLine(e.Exception);
+        };
+    }
+    //    private static async Task MessageSent(DiscordClient s, MessageCreateEventArgs ctx)
 //    {
 //        if (Settings.Env.BullyingVictims.Any(victimId => victimId == ctx.Author.Id))
 //        {

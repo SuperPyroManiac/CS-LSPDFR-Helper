@@ -10,7 +10,7 @@ public class RemovePlugin : ApplicationCommandModule
     [SlashCommand("RemovePlugin", "Removes a plugin from the database!")]
     [RequireAdvancedTsRole]
     public async Task RemovePluginCmd(InteractionContext ctx,
-        [Option("Name", "Must match an existing plugin name!")] string pluginName)
+        [Autocomplete(typeof(PluginAutoComplete)),Option("Name", "Must match an existing plugin name!")] string pluginName)
     {
         var bd = new DiscordInteractionResponseBuilder();
         bd.IsEphemeral = true;
