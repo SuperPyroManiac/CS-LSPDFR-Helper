@@ -73,3 +73,23 @@ public class RequireBotAdminAttribute : SlashCheckBaseAttribute
         }
     }
 }
+
+/// <summary>
+/// Makes sure that the user does not have the "bot blacklist (dunce)" role.
+/// </summary>
+public class RequireNotOnBotBlacklist : SlashCheckBaseAttribute
+{
+    public override async Task<bool> ExecuteChecksAsync(InteractionContext ctx)
+    {
+        if (ctx.Member.Roles.Any(role => role.Id == Program.Settings.Env.BotBlacklistRoleId))
+        {
+            var responseBuilder = new DiscordInteractionResponseBuilder { IsEphemeral = true };
+            responseBuilder.AddEmbed(BasicEmbeds.Error(
+                $"You are blacklisted from the bot!\r\nContact server staff in <#{Program.Settings.Env.StaffContactChannelId}> if you think this is an error!"
+            ));
+            await ctx.CreateResponseAsync(responseBuilder);
+            return false;
+        }
+        return true;
+    }
+}
