@@ -243,13 +243,12 @@ public class CheckLog : ApplicationCommandModule
             await context.EditResponseAsync(webhookBuilder);
                     
             Logging.SendPubLog(BasicEmbeds.Info(
-                $"Successful upload!\r\n"
-                + $"Sender: <@{context.Member.Id}> ({context.Member.Username})\r\n"
+                $"__Successful upload!__\r\n"
+                + $">>> Sender: {context.Member.Mention} ({context.Member.Username})\r\n"
                 + $"Channel: <#{context.Channel.Id}>\r\n"
                 + $"File name: {attach.FileName}\r\n"
                 + $"Size: {attach.FileSize / 1000}KB\r\n"
-                + $"[Download Here]({attach.Url})"
-            ));
+                + $"[Download Here]({attach.Url})", true));
         }
     }
 }

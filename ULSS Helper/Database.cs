@@ -12,7 +12,6 @@ internal class Database
     {
         try
         {
-            Console.WriteLine("Fuckass");
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             var output = cnn.Query<Plugin>("select * from Plugin");
             return output.ToList();
