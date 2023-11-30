@@ -128,7 +128,7 @@ public class ComponentInteraction
                             "Send To User", false,
                             new DiscordComponentEmoji("📨"))});
                     var embed = new DiscordEmbedBuilder(eventArgs.Message.Embeds.FirstOrDefault()!);
-                    for (int i = 0; i < embed.Fields.Count; i++) 
+                    for (int i = embed.Fields.Count - 1; i > 0; i--) 
                         if (embed.Fields[i].Name.Contains(eventArgs.Values.FirstOrDefault()!)) embed.RemoveFieldAt(i);
                     
                     await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, db.AddEmbed(embed));
