@@ -1,6 +1,7 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
+using ULSS_Helper.Events;
 using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Commands;
@@ -17,7 +18,7 @@ public class AddError : ApplicationCommandModule
         };
         
         DiscordInteractionResponseBuilder modal = new();
-        modal.WithCustomId("add-error");
+        modal.WithCustomId(ModalSubmit.AddError);
         modal.WithTitle($"Adding new {error.Level} error!");
         modal.AddComponents(new TextInputComponent(
             label: "Error Regex:",

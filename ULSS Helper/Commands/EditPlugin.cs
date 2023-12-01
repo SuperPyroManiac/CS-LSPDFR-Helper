@@ -1,6 +1,7 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
+using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
@@ -34,7 +35,7 @@ public class EditPlugin : ApplicationCommandModule
         }
         
         DiscordInteractionResponseBuilder modal = new();
-        modal.WithCustomId("edit-plugin");
+        modal.WithCustomId(ModalSubmit.EditPlugin);
         modal.WithTitle($"Editing {plugin.Name} as {plugin.State}");
         modal.AddComponents(new TextInputComponent(
             label: "Display Name:", 
