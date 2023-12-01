@@ -244,6 +244,7 @@ public class RPHAnalyzer
         
         timer.Stop();
         log.ElapsedTime = timer.ElapsedMilliseconds.ToString();
+        log.AnalysisCompletedAt = DateTime.Now;
 
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("RPH Log Processed...");

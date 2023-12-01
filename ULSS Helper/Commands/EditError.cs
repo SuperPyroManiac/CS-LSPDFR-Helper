@@ -1,6 +1,7 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
+using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
@@ -34,7 +35,7 @@ public class EditError : ApplicationCommandModule
         }
         
         DiscordInteractionResponseBuilder modal = new();
-        modal.WithCustomId("edit-error");
+        modal.WithCustomId(ModalSubmit.EditError);
         modal.WithTitle($"Editing error ID: {error.ID}!");
         modal.AddComponents(new TextInputComponent(
             label: "Error Regex:", 

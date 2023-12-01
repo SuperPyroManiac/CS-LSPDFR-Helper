@@ -35,7 +35,7 @@ internal class SHVDNProcess : SharedLogInfo
 
         DiscordMessage targetMessage = context?.TargetMessage ?? eventArgs.Message;
         ProcessCache cache = Program.Cache.GetProcess(targetMessage.Id);
-        embed = AddTsViewFields(embed, cache.OriginalMessage, log.ElapsedTime);
+        embed = AddTsViewFields(embed, cache, log);
 
         if (log.Scripts.Count != 0) 
         {
@@ -46,7 +46,7 @@ internal class SHVDNProcess : SharedLogInfo
             embed.AddField(":orange_circle:     No faulty script files detected!", "Seems like everything loaded fine.");
         }
 
-        DiscordWebhookBuilder message = new DiscordWebhookBuilder()
+        DiscordWebhookBuilder webhookBuilder = new DiscordWebhookBuilder()
             .AddEmbed(embed)
             .AddComponents(
 	            // ReSharper disable RedundantExplicitParamsArrayCreation
@@ -59,9 +59,15 @@ internal class SHVDNProcess : SharedLogInfo
 
         DiscordMessage sentMessage;
         if (context != null)
-            sentMessage = await context.EditResponseAsync(message);
+            sentMessage = await context.EditResponseAsync(webhookBuilder);
+        else if (eventArgs.Id == ComponentInteraction.ShvdnGetQuickInfo)
+        {
+            var responseBuilder = new DiscordInteractionResponseBuilder(webhookBuilder);
+            await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, responseBuilder);
+            sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
+        }
         else
-            sentMessage = await eventArgs.Interaction.EditOriginalResponseAsync(message);
+            sentMessage = await eventArgs.Interaction.EditOriginalResponseAsync(webhookBuilder);
             
         Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this));
     }
@@ -81,6 +87,24 @@ internal class SHVDNProcess : SharedLogInfo
                 embed.AddField(field.Name, field.Value, field.Inline);
             }
         }
+        
+        var buttonComponents = new DiscordComponent[]
+        {
+            new DiscordButtonComponent(
+                ButtonStyle.Secondary,
+                ComponentInteraction.ShvdnGetQuickInfo,
+                "Back to Quick Info", 
+                false,
+                new DiscordComponentEmoji("⬅️")
+            ),
+            new DiscordButtonComponent(
+                ButtonStyle.Danger, 
+                ComponentInteraction.ShvdnDetailedSendToUser, 
+                "Send To User", 
+                false,
+                new DiscordComponentEmoji("📨")
+            ),
+        };
         
         if (scriptsList.Length >= 1024 || missingDependsList.Length >= 1024)
         {
@@ -102,17 +126,13 @@ internal class SHVDNProcess : SharedLogInfo
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
 
-            var overflow = new DiscordWebhookBuilder();
-            overflow.AddEmbed(embed);
-            if (scriptsList.Length != 0) overflow.AddEmbed(embed2);
-            if (missingDependsList.Length != 0) overflow.AddEmbed(embed3);
+            var overflowBuilder = new DiscordWebhookBuilder();
+            overflowBuilder.AddEmbed(embed);
+            if (scriptsList.Length != 0) overflowBuilder.AddEmbed(embed2);
+            if (missingDependsList.Length != 0) overflowBuilder.AddEmbed(embed3);
             // ReSharper disable RedundantExplicitParamsArrayCreation
-            overflow.AddComponents(new DiscordComponent[]
-            {
-                new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.ShvdnDetailedSendToUser, "Send To User", false,
-                    new DiscordComponentEmoji("📨"))
-            });
-            DiscordMessage sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflow);
+            overflowBuilder.AddComponents(buttonComponents);
+            DiscordMessage sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflowBuilder);
             Program.Cache.SaveProcess(sentOverflowMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
             return;
         }
@@ -122,11 +142,11 @@ internal class SHVDNProcess : SharedLogInfo
         
         if (log.MissingDepends.Count > 0) 
             embed.AddField(":red_circle:     Missing Depend:", missingDependsList, true);
-            
-        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,new DiscordInteractionResponseBuilder().AddEmbed(embed).AddComponents(new DiscordComponent[]
-        {
-            new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.ShvdnDetailedSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
-        }));
+        
+        var responseBuilder = new DiscordInteractionResponseBuilder();
+        responseBuilder.AddEmbed(embed);
+        responseBuilder.AddComponents(buttonComponents);
+        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, responseBuilder);
         var sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
         Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
     }

@@ -36,7 +36,7 @@ internal class ELSProcess : SharedLogInfo
 
         DiscordMessage targetMessage = context?.TargetMessage ?? eventArgs.Message;
         ProcessCache cache = Program.Cache.GetProcess(targetMessage.Id);
-        embed = AddTsViewFields(embed, cache.OriginalMessage, log.ElapsedTime);
+        embed = AddTsViewFields(embed, cache, log);
 
         if (log.FaultyVcfFile != null) 
         {
@@ -51,22 +51,28 @@ internal class ELSProcess : SharedLogInfo
         if (log.TotalAmountElsModels != null) 
             embed.AddField("Total amount of ELS-enabled models:", log.TotalAmountElsModels.ToString());
 
-        DiscordWebhookBuilder message = new DiscordWebhookBuilder()
-            .AddEmbed(embed)
-            .AddComponents(
-	            // ReSharper disable RedundantExplicitParamsArrayCreation
-	            new DiscordComponent[]
-                {
-                    new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.ElsGetDetailedInfo, "More Info", false, new DiscordComponentEmoji(Program.Settings.Env.MoreInfoBtnEmojiId)),
-                    new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.ElsQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
-                }
-            );
+        DiscordWebhookBuilder webhookBuilder = new DiscordWebhookBuilder();
+        webhookBuilder.AddEmbed(embed);
+        webhookBuilder.AddComponents(
+            // ReSharper disable RedundantExplicitParamsArrayCreation
+            new DiscordComponent[]
+            {
+                new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.ElsGetDetailedInfo, "More Info", false, new DiscordComponentEmoji(Program.Settings.Env.MoreInfoBtnEmojiId)),
+                new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.ElsQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
+            }
+        );
 
         DiscordMessage sentMessage;
         if (context != null)
-            sentMessage = await context.EditResponseAsync(message);
+            sentMessage = await context.EditResponseAsync(webhookBuilder);
+        else if (eventArgs.Id == ComponentInteraction.ElsGetQuickInfo)
+        {
+            var responseBuilder = new DiscordInteractionResponseBuilder(webhookBuilder);
+            await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, responseBuilder);
+            sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
+        }
         else
-            sentMessage = await eventArgs.Interaction.EditOriginalResponseAsync(message);
+            sentMessage = await eventArgs.Interaction.EditOriginalResponseAsync(webhookBuilder);
             
         Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this));
     }
@@ -84,6 +90,24 @@ internal class ELSProcess : SharedLogInfo
         {
             embed.AddField(field.Name, field.Value, field.Inline);
         }
+
+        var buttonComponents = new DiscordComponent[]
+        {
+            new DiscordButtonComponent(
+                ButtonStyle.Secondary,
+                ComponentInteraction.ElsGetQuickInfo,
+                "Back to Quick Info", 
+                false,
+                new DiscordComponentEmoji("⬅️")
+            ),
+            new DiscordButtonComponent(
+                ButtonStyle.Danger, 
+                ComponentInteraction.ElsDetailedSendToUser, 
+                "Send To User", 
+                false,
+                new DiscordComponentEmoji("📨")
+            ),
+        };
         
         if (validVcFiles.Length >= 1024 || invalidVcFiles.Length >= 1024)
         {
@@ -105,17 +129,13 @@ internal class ELSProcess : SharedLogInfo
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
 
-            var overflow = new DiscordWebhookBuilder();
-            overflow.AddEmbed(embed);
-            if (validVcFiles.Length != 0) overflow.AddEmbed(embed2);
-            if (invalidVcFiles.Length != 0) overflow.AddEmbed(embed3);
+            var overflowBuilder = new DiscordWebhookBuilder();
+            overflowBuilder.AddEmbed(embed);
+            if (validVcFiles.Length != 0) overflowBuilder.AddEmbed(embed2);
+            if (invalidVcFiles.Length != 0) overflowBuilder.AddEmbed(embed3);
             // ReSharper disable RedundantExplicitParamsArrayCreation
-            overflow.AddComponents(new DiscordComponent[]
-            {
-                new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.ElsDetailedSendToUser, "Send To User", false,
-                    new DiscordComponentEmoji("📨"))
-            });
-            DiscordMessage sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflow);
+            overflowBuilder.AddComponents(buttonComponents);
+            DiscordMessage sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflowBuilder);
             Program.Cache.SaveProcess(sentOverflowMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
             return;
         }
@@ -128,11 +148,11 @@ internal class ELSProcess : SharedLogInfo
         
         if (log.InvalidElsVcfFiles.Count > 0) 
             embed.AddField(":orange_circle:     Invalid VCFs:", invalidVcFiles, true);
-            
-        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,new DiscordInteractionResponseBuilder().AddEmbed(embed).AddComponents(new DiscordComponent[]
-        {
-            new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.ElsDetailedSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
-        }));
+        
+        var responseBuilder = new DiscordInteractionResponseBuilder();
+        responseBuilder.AddEmbed(embed);
+        responseBuilder.AddComponents(buttonComponents);
+        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, responseBuilder);
         var sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
         Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
     }

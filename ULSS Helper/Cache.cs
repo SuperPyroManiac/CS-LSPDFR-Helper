@@ -1,18 +1,19 @@
+using ULSS_Helper.Modules;
 using ULSS_Helper.Objects;
 
 namespace ULSS_Helper;
 
 internal class Cache
 {
-    private readonly Dictionary<ulong, ProcessCache> _processCacheDict = new();
-    private readonly Dictionary<string, UserActionCache> _userActionCacheDict = new();
+    private Dictionary<ulong, ProcessCache> _processCacheDict = new();
+    private Dictionary<string, UserActionCache> _userActionCacheDict = new();
 
     /// <summary>Saves the current state of a log analysis process.</summary>
     /// <param name="messageId">The ID of the last message in the current chain of messages in response to an uploaded log.</param>
     /// <param name="newCache">The ProcessCache object (will be merged with any existing cache objects for the same message id).</param>
     internal void SaveProcess(ulong messageId, ProcessCache newCache)
     {
-        if (_processCacheDict.Any(cache => cache.Key == messageId))
+        if (_processCacheDict.ContainsKey(messageId))
         {
             ProcessCache currentCache = GetProcess(messageId);
             _processCacheDict[messageId] = currentCache.Update(newCache);
@@ -25,7 +26,15 @@ internal class Cache
     /// <param name="messageId">The ID of the last message in the current chain of messages in response to an uploaded log.</param>
     internal ProcessCache GetProcess(ulong messageId)
     {
-        return _processCacheDict[messageId];
+        if (_processCacheDict.ContainsKey(messageId))
+            return _processCacheDict[messageId]; 
+            
+        return null;
+    }
+    
+    internal void RemoveProcess(ulong messageId)
+    {
+        _processCacheDict.Remove(messageId);
     }
 
     /// <summary>
@@ -37,10 +46,11 @@ internal class Cache
     /// <param name="newCache">The UserActionCache object.</param>
     internal void SaveUserAction(ulong userId, string actionId, UserActionCache newCache)
     {
-        if (_userActionCacheDict.Any(cache => cache.Key == GetUserActionKey(userId, actionId)))
-            _userActionCacheDict[GetUserActionKey(userId, actionId)] = newCache;
+        string key = GetUserActionKey(userId, actionId);
+        if (_userActionCacheDict.ContainsKey(key))
+            _userActionCacheDict[key] = newCache;
         else
-            _userActionCacheDict.Add(GetUserActionKey(userId, actionId), newCache);
+            _userActionCacheDict.Add(key, newCache);
     }
 
     /// <summary>Gets the UserActionCache object for the given combination of user and action.</summary>
@@ -54,5 +64,34 @@ internal class Cache
     private string GetUserActionKey(ulong userId, string actionId)
     {
         return userId.ToString() + "&" + actionId;
+    }
+
+    internal void RemoveUserAction(ulong userId, string actionId)
+    {
+        _userActionCacheDict.Remove(GetUserActionKey(userId, actionId));
+    }
+
+    /// <summary>Removes all cache entries from the dictionaries that are older than the maxCacheAge parameter.</summary>
+    internal void RemoveExpiredCacheEntries(TimeSpan maxCacheAge)
+    {
+        List<ulong> expiredProcessKeys = _processCacheDict
+            .Where(cache => (DateTime.Now - cache.Value.ModifiedAt) > maxCacheAge)
+            .Select(cache => cache.Key)
+            .ToList();
+
+        foreach (ulong key in expiredProcessKeys)
+        {
+            _processCacheDict.Remove(key);
+        }
+
+        List<string> expiredUserActionKeys = _userActionCacheDict
+            .Where(cache => (DateTime.Now - cache.Value.ModifiedAt) > maxCacheAge)
+            .Select(cache => cache.Key)
+            .ToList();
+
+        foreach (string key in expiredUserActionKeys)
+        {
+            _userActionCacheDict.Remove(key);
+        }
     }
 }
