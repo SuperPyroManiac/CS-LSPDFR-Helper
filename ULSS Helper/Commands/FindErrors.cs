@@ -20,7 +20,7 @@ public class FindErrors : ApplicationCommandModule
         [Option("Solution", "Solution for the error.")] string solution=null,
         [Option("Description", "Description for the error.")] string description=null,
         [Option("Level", "Error level (WARN, SEVERE, CRITICAL).")] Level? level=null,
-        [Option("Strict_Search", "true = enabled, false = disabled (approximate search)")] bool? exactMatch=false
+        [Option("Strict_Search", "true = enabled, false = disabled (approximate search)")] bool exactMatch=false
     )
     {
         await ctx.CreateResponseAsync(
@@ -66,7 +66,7 @@ public class FindErrors : ApplicationCommandModule
                         + $"> **__Error ID {error.ID}__**\r\n"
                         + $"> **Regex:**\r\n> `{error.Regex.Replace("\n", "`\n> `")}`\r\n> \r\n" 
                         + $"> **Solution:**\r\n> {error.Solution.Replace("\n", "\n> ")}\r\n> \r\n"
-                        + $"> **Description:**\r\n> {error.Description}\r\n> \r\n"
+                        + $"> **Description:**\r\n> {error.Description.Replace("\n", "\n> ")}\r\n> \r\n"
                         + $"> **Level:**\r\n> {error.Level}";
                     currentResultsPerPage++;
                     if (currentResultsPerPage == resultsPerPage || i == errorsFound.Count-1) {

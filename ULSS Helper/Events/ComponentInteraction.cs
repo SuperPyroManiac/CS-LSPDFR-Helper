@@ -148,33 +148,17 @@ public class ComponentInteraction
                         db.AddComponents(new DiscordSelectComponent(
                             customId: ComponentInteraction.SelectIdForRemoval,
                             placeholder: "Remove Error",
-                            options: options
-                        ));
-                    
-                    db.AddComponents(
-                        new DiscordComponent[]
-                        {
-                            new DiscordButtonComponent(
-                                ButtonStyle.Danger,
-                                ComponentInteraction.RphDetailedSendToUser,
-                                "Send To User", 
-                                false,
-                                new DiscordComponentEmoji("📨")
-                            )
-                        }
-                    );
-                    var originEmbed = eventArgs.Message.Embeds.FirstOrDefault();
-                    var embed = new DiscordEmbedBuilder()
+                            options: options));
+                    db.AddComponents(new DiscordComponent[]
                     {
-                        Color = originEmbed!.Color,
-                        Title = originEmbed.Title,
-                        Description = originEmbed.Description,
-                        Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl },
-                        Footer = new DiscordEmbedBuilder.EmbedFooter { Text = originEmbed.Footer.Text },
-                    };
-                    foreach (var field in eventArgs.Message.Embeds.FirstOrDefault()?.Fields!) 
-                        if (!field.Name.Contains(eventArgs.Values.FirstOrDefault()!)) 
-                            embed.AddField(field.Name, field.Value, field.Inline);
+                        new DiscordButtonComponent(
+                            ButtonStyle.Danger,
+                            ComponentInteraction.RphDetailedSendToUser,
+                            "Send To User", false,
+                            new DiscordComponentEmoji("📨"))});
+                    var embed = new DiscordEmbedBuilder(eventArgs.Message.Embeds.FirstOrDefault()!);
+                    for (int i = embed.Fields.Count - 1; i > 0; i--) 
+                        if (embed.Fields[i].Name.Contains(eventArgs.Values.FirstOrDefault()!)) embed.RemoveFieldAt(i);
                     
                     await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, db.AddEmbed(embed));
                 }

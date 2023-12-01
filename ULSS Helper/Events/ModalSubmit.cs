@@ -138,25 +138,27 @@ public class ModalSubmit
 
                 await FindErrorMessages.SendDbOperationConfirmation(newError: err, operation: DbOperation.UPDATE, oldError: oldError, e: e);
             }
-            // delete the cached data of the action that is completed now (which means the cache isn't needed anymore)
+			// delete the cached data of the action that is completed now (which means the cache isn't needed anymore)
             Program.Cache.RemoveUserAction(e.Interaction.User.Id, e.Interaction.Data.CustomId);
         }
-            
-        if (e.Interaction.Data.CustomId == SendFeedback)
-        {
-            var feedback = e.Values["feedback"];
-            var embed = BasicEmbeds.Generic(
-                $"Feedback received!\r\n\r\n"
-                    + $"```{feedback}```\r\n\r\n"
-                    + $"Sent By:\r\n"
-                    + $"<@{e.Interaction.User.Id}> ({e.Interaction.User.Username}) in: <#{e.Interaction.ChannelId}>", 
-                DiscordColor.PhthaloGreen
-            );
-            Logging.SendPubLog(embed);
-            await e.Interaction.CreateResponseAsync(
-                InteractionResponseType.UpdateMessage,
-                new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Feedback sent!"))
-            );
-        }
+		else // modal submit events that don't require cached data
+		{
+			if (e.Interaction.Data.CustomId == SendFeedback)
+			{
+				var feedback = e.Values["feedback"];
+				var embed = BasicEmbeds.Generic(
+					$"### :grey_exclamation: __Feedback received!__\r\n"
+					+ $">>> ```{feedback}```\r\n"
+					+ $"Sent By:\r\n"
+					+ $"<@{e.Interaction.User.Id}> ({e.Interaction.User.Username}) in: <#{e.Interaction.ChannelId}>",
+					DiscordColor.SapGreen
+					);
+				Logging.SendPubLog(embed);
+				await e.Interaction.CreateResponseAsync(
+					InteractionResponseType.UpdateMessage,
+					new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Feedback sent!"))
+					);
+			}
+		}
     }
 }

@@ -14,7 +14,7 @@ public class PluginNotes : ApplicationCommandModule
 	public async Task PluginNotesCmd
 	(
 		InteractionContext ctx, 
-		[Option("Name", "Plugins name as shown in the log!")] string pluginName
+		[Autocomplete(typeof(PluginAutoComplete)),Option("Name", "Plugins name as shown in the log!")] string pluginName
 	)
 	{
 		var bd = new DiscordInteractionResponseBuilder();

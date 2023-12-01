@@ -14,7 +14,7 @@ public class EditPlugin : ApplicationCommandModule
     public async Task EditPluginCmd
     (
         InteractionContext ctx, 
-        [Option("Name", "Plugins name as shown in the log!")] string pluginName, 
+        [Autocomplete(typeof(PluginAutoComplete)),Option("Name", "Plugins name as shown in the log!")] string pluginName, 
         [Option("New_State", "Plugin state, LSPDFR, EXTERNAL, BROKEN, LIB")] State? newState=null
     )
     {

@@ -13,12 +13,12 @@ public class FindPlugins : ApplicationCommandModule
     [SlashCommand("FindPlugins", "Returns a list of all plugins in the database that match the search parameters!")]
     [RequireTsRole]
     public static async Task FindPluginsCmd(InteractionContext ctx,
-        [Option("Name", "The plugin's name.")] string plugName=null,
+        [Autocomplete(typeof(PluginAutoComplete)),Option("Name", "The plugin's name.")] string plugName=null,
         [Option("DName", "The plugin's display name.")] string plugDName=null,
         [Option("ID", "The plugin's id on lcpdfr.com.")] string plugId=null,
         [Option("State", "The plugin's state (LSPDFR, EXTERNAL, BROKEN, LIB).")] State? plugState=null,
         [Option("Description", "The plugin's description.")] string plugDescription=null,
-        [Option("Strict_Search", "true = enabled, false = disabled (approximate search)")] bool? exactMatch=false
+        [Option("Strict_Search", "true = enabled, false = disabled (approximate search)")] bool exactMatch=false
         )
     {
         await ctx.CreateResponseAsync(
@@ -63,14 +63,14 @@ public class FindPlugins : ApplicationCommandModule
                     var plugDesc = "N/A";
                     if (!string.IsNullOrEmpty(plugin.Description)) plugDesc = plugin.Description;
                     currentPageContent += "\r\n\r\n"
-                        + $"> **Plugin {plugin.Name}**\r\n"
+                        + $"> ### __Plugin: {plugin.Name}__\r\n"
                         + $"> **Display Name:** {plugin.DName}\r\n" 
                         + $"> **Version:** {plugin.Version}\r\n"
                         + $"> **Early Access Version:** {plugin.EAVersion}\r\n"
                         + $"> **ID (on lcpdfr.com):** {plugin.ID}\r\n"
                         + $"> **Link:** {plugin.Link}\r\n"
                         + $"> **State:** {plugin.State}\r\n"
-                        + $"> **Description:**\r\n```{plugDesc}```";
+                        + $"> **Notes:** \r\n> {plugDesc.Replace("\n", "\n> ")}";
                     currentResultsPerPage++;
                     if (currentResultsPerPage == resultsPerPage || i == pluginsFound.Count-1) {
                         var embed = BasicEmbeds.Generic(currentPageContent, DiscordColor.DarkBlue);

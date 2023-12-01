@@ -3,12 +3,14 @@ using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Modules.RPH_Modules;
+using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Commands.Public;
 
 public class CheckLog : ApplicationCommandModule
 {
     [SlashCommand("CheckLog", "Analyzes the uploaded log. 3MB limit!")]
+    [RequireNotOnBotBlacklist]
     public async Task CheckLogCmd(InteractionContext ctx,
         [Option("LogFile", "RagePluginHook.log")]
         DiscordAttachment attachment)
@@ -101,7 +103,7 @@ public class CheckLog : ApplicationCommandModule
             //===//===//===////===//===//===////===//Process Attachment//===////===//===//===////===//===//===//
             try
             {
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 	            var th = new Thread(() => CheckLogMessage(ctx, attachment));
 	            th.Start();
             }
@@ -133,11 +135,6 @@ public class CheckLog : ApplicationCommandModule
                 Console.WriteLine(e);
                 throw;
             }
-
-            //===//===//===////===//===//===////===//Has Dunce Role//===////===//===//===////===//===//===//
-            response.AddEmbed(BasicEmbeds.Error(
-                $"You are blacklisted from the bot!\r\nContact server staff in <#{Program.Settings.Env.StaffContactChannelId}> if you think this is an error!"));
-            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
         }
     }
 
@@ -246,13 +243,12 @@ public class CheckLog : ApplicationCommandModule
             await context.EditResponseAsync(webhookBuilder);
                     
             Logging.SendPubLog(BasicEmbeds.Info(
-                $"Successful upload!\r\n"
-                + $"Sender: <@{context.Member.Id}> ({context.Member.Username})\r\n"
+                $"__Successful upload!__\r\n"
+                + $">>> Sender: {context.Member.Mention} ({context.Member.Username})\r\n"
                 + $"Channel: <#{context.Channel.Id}>\r\n"
                 + $"File name: {attach.FileName}\r\n"
                 + $"Size: {attach.FileSize / 1000}KB\r\n"
-                + $"[Download Here]({attach.Url})"
-            ));
+                + $"[Download Here]({attach.Url})", true));
         }
     }
 }
