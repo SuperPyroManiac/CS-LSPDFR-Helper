@@ -69,7 +69,7 @@ public class ComponentInteraction
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
                         RPHProcess rphProcess;
-                        if (IsCacheUsagePossible("RagePluginHook", message.Attachments.ToList(), cache))
+                        if (ProcessCache.IsCacheUsagePossible("RagePluginHook", cache, message.Attachments.ToList()))
                             rphProcess = cache.RphProcess;
                         else
                         {
@@ -87,7 +87,7 @@ public class ComponentInteraction
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
                         ELSProcess elsProcess;
-                        if (IsCacheUsagePossible("ELS", message.Attachments.ToList(), cache))
+                        if (ProcessCache.IsCacheUsagePossible("ELS", cache, message.Attachments.ToList()))
                             elsProcess = cache.ElsProcess;
                         else
                         {
@@ -105,7 +105,7 @@ public class ComponentInteraction
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
                         ASIProcess asiProcess;
-                        if (IsCacheUsagePossible("asiloader", message.Attachments.ToList(), cache))
+                        if (ProcessCache.IsCacheUsagePossible("asiloader", cache, message.Attachments.ToList()))
                             asiProcess = cache.AsiProcess;
                         else 
                         {
@@ -123,7 +123,7 @@ public class ComponentInteraction
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
                         SHVDNProcess shvdnProcess;
-                        if (IsCacheUsagePossible("ScriptHookVDotNet", message.Attachments.ToList(), cache))
+                        if (ProcessCache.IsCacheUsagePossible("ScriptHookVDotNet", cache, message.Attachments.ToList()))
                             shvdnProcess = cache.ShvdnProcess;
                         else
                         {
@@ -216,44 +216,5 @@ public class ComponentInteraction
             Console.WriteLine(exception);
             throw;
         }
-    }
-
-    /// <summary>
-    /// Determines whether the cached data can be utilized to retrieve log analysis results for a specific log type.
-    /// </summary>
-    /// <param name="logType">The type of log to be analyzed (valid types: RagePluginHook, ELS, asiloader, ScriptHookVDotNet).</param>
-    /// <param name="attachments">The list of message attachments (checked for duplicate log types).</param>
-    /// <param name="cache">The ProcessCache object to be validated.</param>
-    /// <returns>True if the cache can be used to get the log analysis results for the specified log type; false otherwise.</returns>
-    /// <exception cref="ArgumentException">Thrown when an invalid log type is provided.</exception>
-    internal static bool IsCacheUsagePossible(string logType, List<DiscordAttachment> attachments, ProcessCache cache)
-    {
-        if (cache == null) return false;
-
-        int countOfType = attachments.Count(attachment => attachment.FileName.Contains(logType));
-        if (countOfType > 1) return false;
-
-        switch (logType)
-        {
-            case "RagePluginHook":
-                if (cache.RphProcess?.log == null || cache.RphProcess.log.AnalysisHasExpired()) 
-                    return false;
-                break;
-            case "ELS":
-                if (cache.ElsProcess?.log == null || cache.ElsProcess.log.AnalysisHasExpired()) 
-                    return false;
-                break;
-            case "asiloader":
-                if (cache.AsiProcess?.log == null || cache.AsiProcess.log.AnalysisHasExpired()) 
-                    return false;
-                break;
-            case "ScriptHookVDotNet":
-                if (cache.ShvdnProcess?.log == null || cache.ShvdnProcess.log.AnalysisHasExpired()) 
-                    return false;
-                break;
-            default:
-                throw new ArgumentException($"Invalid log type '{logType}'.");
-        }
-        return true;
     }
 }

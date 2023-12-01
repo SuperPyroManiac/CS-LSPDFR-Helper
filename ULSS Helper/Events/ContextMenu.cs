@@ -109,15 +109,15 @@ internal class ContextMenu : ApplicationCommandModule
         // ReSharper disable UseObjectOrCollectionInitializer
         ProcessCache cache = Program.Cache.GetProcess(context.TargetMessage.Id);
         RPHProcess rphProcess;
-        if (cache == null || cache.RphProcess == null || cache.RphProcess.log.AnalysisHasExpired())
+        if (ProcessCache.IsCacheUsagePossible("RagePluginHook", cache))
+            rphProcess = cache.RphProcess;
+        else 
         {
             rphProcess = new RPHProcess();
             rphProcess.log = RPHAnalyzer.Run(attachmentForAnalysis.Url);
             rphProcess.log.MsgId = context.TargetMessage.Id;
             Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, rphProcess));
         }
-        else 
-            rphProcess = cache.RphProcess;
         
         await rphProcess.SendQuickLogInfoMessage(context);
     }
@@ -128,15 +128,15 @@ internal class ContextMenu : ApplicationCommandModule
         // ReSharper disable UseObjectOrCollectionInitializer
         ProcessCache cache = Program.Cache.GetProcess(context.TargetMessage.Id);
         ELSProcess elsProcess;
-        if (cache == null || cache.ElsProcess == null || cache.ElsProcess.log.AnalysisHasExpired())
+        if (ProcessCache.IsCacheUsagePossible("ELS", cache))
+            elsProcess = cache.ElsProcess;
+        else
         {
             elsProcess = new ELSProcess();
             elsProcess.log = ELSAnalyzer.Run(attachmentForAnalysis.Url);
             elsProcess.log.MsgId = context.TargetMessage.Id;
             Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, elsProcess));
         }
-        else
-            elsProcess = cache.ElsProcess;
         
         await elsProcess.SendQuickLogInfoMessage(context);
     }
@@ -147,15 +147,15 @@ internal class ContextMenu : ApplicationCommandModule
         // ReSharper disable UseObjectOrCollectionInitializer
         ProcessCache cache = Program.Cache.GetProcess(context.TargetMessage.Id);
         ASIProcess asiProcess;
-        if (cache == null || cache.AsiProcess == null || cache.AsiProcess.log.AnalysisHasExpired())
+        if (ProcessCache.IsCacheUsagePossible("asiloader", cache))
+            asiProcess = cache.AsiProcess;
+        else 
         {
             asiProcess = new ASIProcess();
             asiProcess.log = ASIAnalyzer.Run(attachmentForAnalysis.Url);
             asiProcess.log.MsgId = context.TargetMessage.Id;
             Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, asiProcess));
         }
-        else 
-            asiProcess = cache.AsiProcess;
         
         await asiProcess.SendQuickLogInfoMessage(context);
     }
@@ -166,15 +166,15 @@ internal class ContextMenu : ApplicationCommandModule
         // ReSharper disable UseObjectOrCollectionInitializer
         ProcessCache cache = Program.Cache.GetProcess(context.TargetMessage.Id);
         SHVDNProcess shvdnProcess;
-        if (cache == null || cache.ShvdnProcess == null || cache.ShvdnProcess.log.AnalysisHasExpired())
+        if (ProcessCache.IsCacheUsagePossible("ScriptHookVDotNet", cache))
+            shvdnProcess = cache.ShvdnProcess;
+        else
         {
             shvdnProcess = new SHVDNProcess();
             shvdnProcess.log = SHVDNAnalyzer.Run(attachmentForAnalysis.Url);
             shvdnProcess.log.MsgId = context.TargetMessage.Id;
             Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, shvdnProcess));
         }
-        else
-            shvdnProcess = cache.ShvdnProcess;
 
         await shvdnProcess.SendQuickLogInfoMessage(context);
     }
