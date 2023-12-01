@@ -155,19 +155,13 @@ public class ComponentInteraction
                 }
                 if (eventArgs.Id.Equals(SelectIdForRemoval))
                 {
-                    var selectComp = (DiscordSelectComponent) eventArgs.Message.Components
-                        .Where(compRow => compRow.Components.Any(comp => comp.CustomId == SelectIdForRemoval))
-                        .FirstOrDefault()
-                        .Components
-                        .Where(comp => comp.CustomId == SelectIdForRemoval)
-                        .FirstOrDefault();
-
+	                var selectComp = (DiscordSelectComponent) (eventArgs.Message.Components
+			                .FirstOrDefault(compRow => compRow.Components.Any(comp => comp.CustomId == SelectIdForRemoval))
+			                ?.Components)!.FirstOrDefault(comp => comp.CustomId == SelectIdForRemoval);
                     var allComponentsExceptSelect = eventArgs.Message.Components
-                        .Where(compRow => !compRow.Components.Any(comp => comp.CustomId == SelectIdForRemoval))
-                        .FirstOrDefault()
-                        .Components;
+	                    .FirstOrDefault(compRow => compRow.Components.All(comp => comp.CustomId != SelectIdForRemoval))?.Components;
                     
-                    var options = new List<DiscordSelectComponentOption>(selectComp.Options);
+                    var options = new List<DiscordSelectComponentOption>(selectComp!.Options);
                     var optionsToRemove = selectComp.Options.Where(option => option.Value.Equals(eventArgs.Values.FirstOrDefault()));
                     foreach (var option in optionsToRemove)
                         options.Remove(option);
@@ -182,7 +176,7 @@ public class ComponentInteraction
                             )
                         );
                     var compRow = new List<DiscordComponent>();
-                    foreach (DiscordComponent comp in allComponentsExceptSelect)
+                    foreach (DiscordComponent comp in allComponentsExceptSelect!)
                         compRow.Add(comp);
                     db.AddComponents(compRow);
                     
