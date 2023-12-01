@@ -55,11 +55,9 @@ internal class SharedLogInfo
 
     internal DiscordEmbedBuilder AddTsViewFields(DiscordEmbedBuilder embed, ProcessCache cache, Log log) 
     {
-        DateTime analysisExpiry = log.AnalyzedAt.AddMinutes(Log.AnalysisRestartCooldown.Minutes);
-        string expiryFormatted = Formatter.Timestamp(analysisExpiry);
         embed.AddField("Log uploader:", $"<@{cache.OriginalMessage.Author.Id}>", true);
         embed.AddField("Log message:", cache.OriginalMessage.JumpLink.ToString(), true);
-        embed.AddField("Elapsed time:", $"{log.ElapsedTime}ms\r\n||Cooldown expiry: {expiryFormatted}||", true); //TS View only! Always index 0 - 2.
+        embed.AddField("Elapsed time:", $"{log.ElapsedTime}ms", true); //TS View only! Always index 0 - 2.
         return embed;
     }
 
