@@ -10,7 +10,6 @@ namespace ULSS_Helper.Modules;
 internal class SharedLogInfo
 {
     internal const string OptionValueSeparator = "&";
-    internal static TimeSpan ProcessRestartCooldown = TimeSpan.FromMinutes(1); // the minimum age for a log analysis process object before it can be overwritten by a new process for the same log (restart).
 
     // ReSharper disable once ReplaceAsyncWithTaskReturn
     internal async Task SendAttachmentErrorMessage(ContextMenuContext context, string message)
@@ -54,13 +53,13 @@ internal class SharedLogInfo
 
     }
 
-    internal DiscordEmbedBuilder AddTsViewFields(DiscordEmbedBuilder embed, ProcessCache cache, string elapsedTime) 
+    internal DiscordEmbedBuilder AddTsViewFields(DiscordEmbedBuilder embed, ProcessCache cache, Log log) 
     {
-        DateTime cacheExpiry = cache.ModifiedAt.AddMinutes(ProcessRestartCooldown.Minutes);
-        string expiryFormatted = Formatter.Timestamp(cacheExpiry);
+        DateTime analysisExpiry = log.AnalyzedAt.AddMinutes(Log.AnalysisRestartCooldown.Minutes);
+        string expiryFormatted = Formatter.Timestamp(analysisExpiry);
         embed.AddField("Log uploader:", $"<@{cache.OriginalMessage.Author.Id}>", true);
         embed.AddField("Log message:", cache.OriginalMessage.JumpLink.ToString(), true);
-        embed.AddField("Elapsed time:", $"{elapsedTime}ms\r\n||Cooldown expiry: {expiryFormatted}||", true); //TS View only! Always index 0 - 2.
+        embed.AddField("Elapsed time:", $"{log.ElapsedTime}ms\r\n||Cooldown expiry: {expiryFormatted}||", true); //TS View only! Always index 0 - 2.
         return embed;
     }
 

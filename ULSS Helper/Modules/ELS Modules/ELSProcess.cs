@@ -36,7 +36,7 @@ internal class ELSProcess : SharedLogInfo
 
         DiscordMessage targetMessage = context?.TargetMessage ?? eventArgs.Message;
         ProcessCache cache = Program.Cache.GetProcess(targetMessage.Id);
-        embed = AddTsViewFields(embed, cache, log.ElapsedTime);
+        embed = AddTsViewFields(embed, cache, log);
 
         if (log.FaultyVcfFile != null) 
         {

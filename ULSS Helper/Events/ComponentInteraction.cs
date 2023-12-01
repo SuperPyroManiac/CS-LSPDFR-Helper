@@ -69,7 +69,7 @@ public class ComponentInteraction
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
                         RPHProcess rphProcess;
-                        if (cache == null || cache.RphProcess == null)
+                        if (cache == null || cache.RphProcess == null || cache.RphProcess.log.AnalysisHasExpired())
                         {
                             rphProcess = new RPHProcess();
                             rphProcess.log = RPHAnalyzer.Run(targetAttachment.Url);
@@ -87,7 +87,7 @@ public class ComponentInteraction
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
                         ELSProcess elsProcess;
-                        if (cache == null || cache.ElsProcess == null)
+                        if (cache == null || cache.ElsProcess == null || cache.ElsProcess.log.AnalysisHasExpired())
                         {
                             elsProcess = new ELSProcess();
                             elsProcess.log = ELSAnalyzer.Run(targetAttachment.Url);
@@ -105,7 +105,7 @@ public class ComponentInteraction
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
                         ASIProcess asiProcess;
-                        if (cache == null || cache.AsiProcess == null)
+                        if (cache == null || cache.AsiProcess == null || cache.AsiProcess.log.AnalysisHasExpired())
                         {
                             asiProcess = new ASIProcess();
                             asiProcess.log = ASIAnalyzer.Run(targetAttachment.Url);
@@ -123,7 +123,7 @@ public class ComponentInteraction
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
                         SHVDNProcess shvdnProcess;
-                        if (cache == null || cache.ShvdnProcess == null)
+                        if (cache == null || cache.ShvdnProcess == null || cache.ShvdnProcess.log.AnalysisHasExpired())
                         {
                             shvdnProcess = new SHVDNProcess();
                             shvdnProcess.log = SHVDNAnalyzer.Run(targetAttachment.Url);

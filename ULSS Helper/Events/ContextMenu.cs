@@ -103,16 +103,16 @@ internal class ContextMenu : ApplicationCommandModule
         }
     }
     
-    private async Task RphThread(ContextMenuContext context, DiscordAttachment attachment)
+    private async Task RphThread(ContextMenuContext context, DiscordAttachment attachmentForAnalysis)
     {
         await context.DeferAsync(true);
         // ReSharper disable UseObjectOrCollectionInitializer
-        ProcessCache cache = Program.Cache.GetProcessIfRecent(context.TargetMessage.Id);
+        ProcessCache cache = Program.Cache.GetProcess(context.TargetMessage.Id);
         RPHProcess rphProcess;
-        if (cache == null || cache.RphProcess == null)
+        if (cache == null || cache.RphProcess == null || cache.RphProcess.log.AnalysisHasExpired())
         {
             rphProcess = new RPHProcess();
-            rphProcess.log = RPHAnalyzer.Run(attachment.Url);
+            rphProcess.log = RPHAnalyzer.Run(attachmentForAnalysis.Url);
             rphProcess.log.MsgId = context.TargetMessage.Id;
             Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, rphProcess));
         }
@@ -126,9 +126,9 @@ internal class ContextMenu : ApplicationCommandModule
     {
         await context.DeferAsync(true);
         // ReSharper disable UseObjectOrCollectionInitializer
-        ProcessCache cache = Program.Cache.GetProcessIfRecent(context.TargetMessage.Id);
+        ProcessCache cache = Program.Cache.GetProcess(context.TargetMessage.Id);
         ELSProcess elsProcess;
-        if (cache == null || cache.ElsProcess == null)
+        if (cache == null || cache.ElsProcess == null || cache.ElsProcess.log.AnalysisHasExpired())
         {
             elsProcess = new ELSProcess();
             elsProcess.log = ELSAnalyzer.Run(attachmentForAnalysis.Url);
@@ -145,9 +145,9 @@ internal class ContextMenu : ApplicationCommandModule
     {
         await context.DeferAsync(true);
         // ReSharper disable UseObjectOrCollectionInitializer
-        ProcessCache cache = Program.Cache.GetProcessIfRecent(context.TargetMessage.Id);
+        ProcessCache cache = Program.Cache.GetProcess(context.TargetMessage.Id);
         ASIProcess asiProcess;
-        if (cache == null || cache.AsiProcess == null)
+        if (cache == null || cache.AsiProcess == null || cache.AsiProcess.log.AnalysisHasExpired())
         {
             asiProcess = new ASIProcess();
             asiProcess.log = ASIAnalyzer.Run(attachmentForAnalysis.Url);
@@ -164,9 +164,9 @@ internal class ContextMenu : ApplicationCommandModule
     {
         await context.DeferAsync(true);
         // ReSharper disable UseObjectOrCollectionInitializer
-        ProcessCache cache = Program.Cache.GetProcessIfRecent(context.TargetMessage.Id);
+        ProcessCache cache = Program.Cache.GetProcess(context.TargetMessage.Id);
         SHVDNProcess shvdnProcess;
-        if (cache == null || cache.ShvdnProcess == null)
+        if (cache == null || cache.ShvdnProcess == null || cache.ShvdnProcess.log.AnalysisHasExpired())
         {
             shvdnProcess = new SHVDNProcess();
             shvdnProcess.log = SHVDNAnalyzer.Run(attachmentForAnalysis.Url);

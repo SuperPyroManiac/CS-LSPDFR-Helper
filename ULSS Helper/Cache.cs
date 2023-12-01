@@ -26,22 +26,9 @@ internal class Cache
     /// <param name="messageId">The ID of the last message in the current chain of messages in response to an uploaded log.</param>
     internal ProcessCache GetProcess(ulong messageId)
     {
-        if (!_processCacheDict.ContainsKey(messageId))
-            throw new Exception("No cached object for messageId. This is unexpected.");
-        
-        return _processCacheDict[messageId];    
-    }
-
-    /// <summary>Gets the ProcessCache object identified by a message ID and its age. If there's no cache entry that is younger than the cooldown time (defined in SharedLogInfo.cs), null will be returned.</summary>
-    /// <param name="messageId">The ID of the last message in the current chain of messages in response to an uploaded log.</param>
-    internal ProcessCache GetProcessIfRecent(ulong messageId)
-    {        
         if (_processCacheDict.ContainsKey(messageId))
-        {
-            var processCache = _processCacheDict[messageId];
-            if ((DateTime.Now - processCache.ModifiedAt) < SharedLogInfo.ProcessRestartCooldown)
-                return processCache;
-        }
+            return _processCacheDict[messageId]; 
+            
         return null;
     }
     
