@@ -63,13 +63,14 @@ public class ComponentInteraction
                     ulong targetAttachmentId = ulong.Parse(ids[1]);
                     DiscordMessage message = await eventArgs.Channel.GetMessageAsync(messageId);
                     DiscordAttachment targetAttachment = message.Attachments.FirstOrDefault(attachment => attachment.Id == targetAttachmentId);
-
+                    
                     if (targetAttachment!.FileName.Contains("RagePluginHook"))
                     {
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
+                        bool noCacheUsage = HasDuplicateLogType(message.Attachments.ToList(), "RagePluginHook") || cache == null;
                         RPHProcess rphProcess;
-                        if (cache == null || cache.RphProcess == null || cache.RphProcess.log.AnalysisHasExpired())
+                        if (noCacheUsage || cache.RphProcess == null || cache.RphProcess.log.AnalysisHasExpired())
                         {
                             rphProcess = new RPHProcess();
                             rphProcess.log = RPHAnalyzer.Run(targetAttachment.Url);
@@ -86,8 +87,9 @@ public class ComponentInteraction
                     {
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
+                        bool noCacheUsage = HasDuplicateLogType(message.Attachments.ToList(), "ELS") || cache == null;
                         ELSProcess elsProcess;
-                        if (cache == null || cache.ElsProcess == null || cache.ElsProcess.log.AnalysisHasExpired())
+                        if (noCacheUsage || cache.ElsProcess == null || cache.ElsProcess.log.AnalysisHasExpired())
                         {
                             elsProcess = new ELSProcess();
                             elsProcess.log = ELSAnalyzer.Run(targetAttachment.Url);
@@ -104,8 +106,9 @@ public class ComponentInteraction
                     {
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
+                        bool noCacheUsage = HasDuplicateLogType(message.Attachments.ToList(), "asiloader") || cache == null;
                         ASIProcess asiProcess;
-                        if (cache == null || cache.AsiProcess == null || cache.AsiProcess.log.AnalysisHasExpired())
+                        if (noCacheUsage || cache.AsiProcess == null || cache.AsiProcess.log.AnalysisHasExpired())
                         {
                             asiProcess = new ASIProcess();
                             asiProcess.log = ASIAnalyzer.Run(targetAttachment.Url);
@@ -122,8 +125,9 @@ public class ComponentInteraction
                     {
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
+                        bool noCacheUsage = HasDuplicateLogType(message.Attachments.ToList(), "ScriptHookVDotNet") || cache == null;
                         SHVDNProcess shvdnProcess;
-                        if (cache == null || cache.ShvdnProcess == null || cache.ShvdnProcess.log.AnalysisHasExpired())
+                        if (noCacheUsage || cache.ShvdnProcess == null || cache.ShvdnProcess.log.AnalysisHasExpired())
                         {
                             shvdnProcess = new SHVDNProcess();
                             shvdnProcess.log = SHVDNAnalyzer.Run(targetAttachment.Url);
@@ -216,5 +220,18 @@ public class ComponentInteraction
             Console.WriteLine(exception);
             throw;
         }
+    }
+
+    /// <summary>
+    /// Checks whether there are multiple attachments of the same log type in the passed list.
+    /// The term "log type" refers to the type of log, such as RPH, ELS, ASI, or SHVDN (the prefix of the log file name).
+    /// </summary>
+    /// <param name="attachments">The list of file attachments to be examined for duplicate log types.</param>
+    /// <param name="logType">The file type name that should be used to scan the list for duplicates.</param>
+    /// <returns>True if there is more than 1 attachment of the specified log type in the list; false otherwise.</returns>
+    internal static bool HasDuplicateLogType(List<DiscordAttachment> attachments, string logType)
+    {
+        int countType = attachments.Count(attachment => attachment.FileName.Contains(logType));
+        return countType > 1;
     }
 }
