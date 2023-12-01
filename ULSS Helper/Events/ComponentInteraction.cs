@@ -68,18 +68,17 @@ public class ComponentInteraction
                     {
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
-                        bool noCacheUsage = HasDuplicateLogType(message.Attachments.ToList(), "RagePluginHook") || cache == null;
                         RPHProcess rphProcess;
-                        if (noCacheUsage || cache.RphProcess == null || cache.RphProcess.log.AnalysisHasExpired())
+                        if (IsCacheUsagePossible("RagePluginHook", message.Attachments.ToList(), cache))
+                            rphProcess = cache.RphProcess;
+                        else
                         {
                             rphProcess = new RPHProcess();
                             rphProcess.log = RPHAnalyzer.Run(targetAttachment.Url);
                             rphProcess.log.MsgId = cache.OriginalMessage.Id;
                             Program.Cache.SaveProcess(messageId: eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, rphProcess));
                         }
-                        else
-                            rphProcess = cache.RphProcess;
-                        
+
                         await rphProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                         return;
                     }
@@ -87,17 +86,16 @@ public class ComponentInteraction
                     {
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
-                        bool noCacheUsage = HasDuplicateLogType(message.Attachments.ToList(), "ELS") || cache == null;
                         ELSProcess elsProcess;
-                        if (noCacheUsage || cache.ElsProcess == null || cache.ElsProcess.log.AnalysisHasExpired())
+                        if (IsCacheUsagePossible("ELS", message.Attachments.ToList(), cache))
+                            elsProcess = cache.ElsProcess;
+                        else
                         {
                             elsProcess = new ELSProcess();
                             elsProcess.log = ELSAnalyzer.Run(targetAttachment.Url);
                             elsProcess.log.MsgId = cache.OriginalMessage.Id;
                             Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, elsProcess));
                         }
-                        else
-                            elsProcess = cache.ElsProcess;
 
                         await elsProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                         return;
@@ -106,17 +104,16 @@ public class ComponentInteraction
                     {
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
-                        bool noCacheUsage = HasDuplicateLogType(message.Attachments.ToList(), "asiloader") || cache == null;
                         ASIProcess asiProcess;
-                        if (noCacheUsage || cache.AsiProcess == null || cache.AsiProcess.log.AnalysisHasExpired())
+                        if (IsCacheUsagePossible("asiloader", message.Attachments.ToList(), cache))
+                            asiProcess = cache.AsiProcess;
+                        else 
                         {
                             asiProcess = new ASIProcess();
                             asiProcess.log = ASIAnalyzer.Run(targetAttachment.Url);
                             asiProcess.log.MsgId = cache.OriginalMessage.Id;
                             Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, asiProcess));
                         }
-                        else 
-                            asiProcess = cache.AsiProcess;
                         
                         await asiProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                         return;
@@ -125,17 +122,16 @@ public class ComponentInteraction
                     {
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
-                        bool noCacheUsage = HasDuplicateLogType(message.Attachments.ToList(), "ScriptHookVDotNet") || cache == null;
                         SHVDNProcess shvdnProcess;
-                        if (noCacheUsage || cache.ShvdnProcess == null || cache.ShvdnProcess.log.AnalysisHasExpired())
+                        if (IsCacheUsagePossible("ScriptHookVDotNet", message.Attachments.ToList(), cache))
+                            shvdnProcess = cache.ShvdnProcess;
+                        else
                         {
                             shvdnProcess = new SHVDNProcess();
                             shvdnProcess.log = SHVDNAnalyzer.Run(targetAttachment.Url);
                             shvdnProcess.log.MsgId = cache.OriginalMessage.Id;
                             Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, shvdnProcess));
                         }
-                        else
-                            shvdnProcess = cache.ShvdnProcess;
                         
                         await shvdnProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                         return;
@@ -223,15 +219,41 @@ public class ComponentInteraction
     }
 
     /// <summary>
-    /// Checks whether there are multiple attachments of the same log type in the passed list.
-    /// The term "log type" refers to the type of log, such as RPH, ELS, ASI, or SHVDN (the prefix of the log file name).
+    /// Determines whether the cached data can be utilized to retrieve log analysis results for a specific log type.
     /// </summary>
-    /// <param name="attachments">The list of file attachments to be examined for duplicate log types.</param>
-    /// <param name="logType">The file type name that should be used to scan the list for duplicates.</param>
-    /// <returns>True if there is more than 1 attachment of the specified log type in the list; false otherwise.</returns>
-    internal static bool HasDuplicateLogType(List<DiscordAttachment> attachments, string logType)
+    /// <param name="logType">The type of log to be analyzed (valid types: RagePluginHook, ELS, asiloader, ScriptHookVDotNet).</param>
+    /// <param name="attachments">The list of message attachments (checked for duplicate log types).</param>
+    /// <param name="cache">The ProcessCache object to be validated.</param>
+    /// <returns>True if the cache can be used to get the log analysis results for the specified log type; false otherwise.</returns>
+    /// <exception cref="ArgumentException">Thrown when an invalid log type is provided.</exception>
+    internal static bool IsCacheUsagePossible(string logType, List<DiscordAttachment> attachments, ProcessCache cache)
     {
-        int countType = attachments.Count(attachment => attachment.FileName.Contains(logType));
-        return countType > 1;
+        if (cache == null) return false;
+
+        int countOfType = attachments.Count(attachment => attachment.FileName.Contains(logType));
+        if (countOfType > 1) return false;
+
+        switch (logType)
+        {
+            case "RagePluginHook":
+                if (cache.RphProcess?.log == null || cache.RphProcess.log.AnalysisHasExpired()) 
+                    return false;
+                break;
+            case "ELS":
+                if (cache.ElsProcess?.log == null || cache.ElsProcess.log.AnalysisHasExpired()) 
+                    return false;
+                break;
+            case "asiloader":
+                if (cache.AsiProcess?.log == null || cache.AsiProcess.log.AnalysisHasExpired()) 
+                    return false;
+                break;
+            case "ScriptHookVDotNet":
+                if (cache.ShvdnProcess?.log == null || cache.ShvdnProcess.log.AnalysisHasExpired()) 
+                    return false;
+                break;
+            default:
+                throw new ArgumentException($"Invalid log type '{logType}'.");
+        }
+        return true;
     }
 }
