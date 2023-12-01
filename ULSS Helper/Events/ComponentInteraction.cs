@@ -63,22 +63,22 @@ public class ComponentInteraction
                     ulong targetAttachmentId = ulong.Parse(ids[1]);
                     DiscordMessage message = await eventArgs.Channel.GetMessageAsync(messageId);
                     DiscordAttachment targetAttachment = message.Attachments.FirstOrDefault(attachment => attachment.Id == targetAttachmentId);
-
+                    
                     if (targetAttachment!.FileName.Contains("RagePluginHook"))
                     {
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
                         RPHProcess rphProcess;
-                        if (cache == null || cache.RphProcess == null || cache.RphProcess.log.AnalysisHasExpired())
+                        if (ProcessCache.IsCacheUsagePossible("RagePluginHook", cache, message.Attachments.ToList()))
+                            rphProcess = cache.RphProcess;
+                        else
                         {
                             rphProcess = new RPHProcess();
                             rphProcess.log = RPHAnalyzer.Run(targetAttachment.Url);
                             rphProcess.log.MsgId = cache.OriginalMessage.Id;
                             Program.Cache.SaveProcess(messageId: eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, rphProcess));
                         }
-                        else
-                            rphProcess = cache.RphProcess;
-                        
+
                         await rphProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                         return;
                     }
@@ -87,15 +87,15 @@ public class ComponentInteraction
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
                         ELSProcess elsProcess;
-                        if (cache == null || cache.ElsProcess == null || cache.ElsProcess.log.AnalysisHasExpired())
+                        if (ProcessCache.IsCacheUsagePossible("ELS", cache, message.Attachments.ToList()))
+                            elsProcess = cache.ElsProcess;
+                        else
                         {
                             elsProcess = new ELSProcess();
                             elsProcess.log = ELSAnalyzer.Run(targetAttachment.Url);
                             elsProcess.log.MsgId = cache.OriginalMessage.Id;
                             Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, elsProcess));
                         }
-                        else
-                            elsProcess = cache.ElsProcess;
 
                         await elsProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                         return;
@@ -105,15 +105,15 @@ public class ComponentInteraction
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
                         ASIProcess asiProcess;
-                        if (cache == null || cache.AsiProcess == null || cache.AsiProcess.log.AnalysisHasExpired())
+                        if (ProcessCache.IsCacheUsagePossible("asiloader", cache, message.Attachments.ToList()))
+                            asiProcess = cache.AsiProcess;
+                        else 
                         {
                             asiProcess = new ASIProcess();
                             asiProcess.log = ASIAnalyzer.Run(targetAttachment.Url);
                             asiProcess.log.MsgId = cache.OriginalMessage.Id;
                             Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, asiProcess));
                         }
-                        else 
-                            asiProcess = cache.AsiProcess;
                         
                         await asiProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                         return;
@@ -123,15 +123,15 @@ public class ComponentInteraction
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
                         SHVDNProcess shvdnProcess;
-                        if (cache == null || cache.ShvdnProcess == null || cache.ShvdnProcess.log.AnalysisHasExpired())
+                        if (ProcessCache.IsCacheUsagePossible("ScriptHookVDotNet", cache, message.Attachments.ToList()))
+                            shvdnProcess = cache.ShvdnProcess;
+                        else
                         {
                             shvdnProcess = new SHVDNProcess();
                             shvdnProcess.log = SHVDNAnalyzer.Run(targetAttachment.Url);
                             shvdnProcess.log.MsgId = cache.OriginalMessage.Id;
                             Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, shvdnProcess));
                         }
-                        else
-                            shvdnProcess = cache.ShvdnProcess;
                         
                         await shvdnProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                         return;
