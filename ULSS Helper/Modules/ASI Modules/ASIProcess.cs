@@ -46,7 +46,7 @@ internal class ASIProcess : SharedLogInfo
             embed.AddField(":green_circle:     No faulty ASI files detected!", "Seems like everything loaded fine.");
         }
 
-        DiscordWebhookBuilder message = new DiscordWebhookBuilder()
+        DiscordWebhookBuilder webhookBuilder = new DiscordWebhookBuilder()
             .AddEmbed(embed)
             .AddComponents(
 	            // ReSharper disable RedundantExplicitParamsArrayCreation
@@ -59,9 +59,15 @@ internal class ASIProcess : SharedLogInfo
 
         DiscordMessage sentMessage;
         if (context != null)
-            sentMessage = await context.EditResponseAsync(message);
+            sentMessage = await context.EditResponseAsync(webhookBuilder);
+        else if (eventArgs.Id == ComponentInteraction.AsiGetQuickInfo)
+        {
+            var responseBuilder = new DiscordInteractionResponseBuilder(webhookBuilder);
+            await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, responseBuilder);
+            sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
+        }
         else
-            sentMessage = await eventArgs.Interaction.EditOriginalResponseAsync(message);
+            sentMessage = await eventArgs.Interaction.EditOriginalResponseAsync(webhookBuilder);
             
         Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this));
     }
@@ -81,6 +87,24 @@ internal class ASIProcess : SharedLogInfo
                 embed.AddField(field.Name, field.Value, field.Inline);
             }
         }
+
+        var buttonComponents = new DiscordComponent[]
+        {
+            new DiscordButtonComponent(
+                ButtonStyle.Secondary,
+                ComponentInteraction.AsiGetQuickInfo,
+                "Back to Quick Info", 
+                false,
+                new DiscordComponentEmoji("⬅️")
+            ),
+            new DiscordButtonComponent(
+                ButtonStyle.Danger, 
+                ComponentInteraction.AsiDetailedSendToUser, 
+                "Send To User", 
+                false,
+                new DiscordComponentEmoji("📨")
+            ),
+        };
         
         if (loadedAsiFilesList.Length >= 1024 || failedAsiFilesList.Length >= 1024)
         {
@@ -102,16 +126,11 @@ internal class ASIProcess : SharedLogInfo
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
 
-            var overflow = new DiscordWebhookBuilder();
-            overflow.AddEmbed(embed);
-            if (loadedAsiFilesList.Length != 0) overflow.AddEmbed(embed2);
-            if (failedAsiFilesList.Length != 0) overflow.AddEmbed(embed3);
-            overflow.AddComponents(new DiscordComponent[]
-            {
-                new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.AsiDetailedSendToUser, "Send To User", false,
-                    new DiscordComponentEmoji("📨"))
-            });
-            DiscordMessage sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflow);
+            var overflowBuilder = new DiscordWebhookBuilder().AddEmbed(embed);
+            if (loadedAsiFilesList.Length != 0) overflowBuilder.AddEmbed(embed2);
+            if (failedAsiFilesList.Length != 0) overflowBuilder.AddEmbed(embed3);
+            overflowBuilder.AddComponents(buttonComponents);
+            DiscordMessage sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflowBuilder);
             Program.Cache.SaveProcess(sentOverflowMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
             return;
         }
@@ -121,11 +140,11 @@ internal class ASIProcess : SharedLogInfo
         
         if (log.FailedAsiFiles.Count > 0) 
             embed.AddField(":red_circle:     Failed ASIs:", failedAsiFilesList, true);
-            
-        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,new DiscordInteractionResponseBuilder().AddEmbed(embed).AddComponents(new DiscordComponent[]
-        {
-            new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.AsiDetailedSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
-        }));
+        
+        var responseBuilder = new DiscordInteractionResponseBuilder();
+        responseBuilder.AddEmbed(embed);
+        responseBuilder.AddComponents(buttonComponents);
+        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, responseBuilder);
         var sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
         Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
     }

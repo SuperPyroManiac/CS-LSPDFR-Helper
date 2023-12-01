@@ -16,19 +16,31 @@ public class ComponentInteraction
 {
     public const string SelectAttachmentForAnalysis = "SelectAttachmentForAnalysis";
     public const string SelectIdForRemoval = "SelectIdForRemoval";
+    public const string SendFeedback = "SendFeedback";
+
+    // RPH log analysis events
+    public const string RphGetQuickInfo = "RphGetQuickInfo";
     public const string RphGetDetailedInfo = "RphGetDetailedInfo";
     public const string RphQuickSendToUser = "RphQuickInfoSendToUser";
     public const string RphDetailedSendToUser = "RphDetailedSendToUser";
+
+    // ELS log analysis events
+    public const string ElsGetQuickInfo = "ElsGetQuickInfo";
     public const string ElsGetDetailedInfo = "ElsGetDetailedInfo";
     public const string ElsQuickSendToUser = "ElsQuickInfoSendToUser";
     public const string ElsDetailedSendToUser = "ElsDetailedSendToUser";
+
+    // ASI log analysis events
+    public const string AsiGetQuickInfo = "AsiGetQuickInfo";
     public const string AsiGetDetailedInfo = "AsiGetDetailedInfo";
     public const string AsiQuickSendToUser = "AsiQuickInfoSendToUser";
     public const string AsiDetailedSendToUser = "AsiDetailedSendToUser";
+
+    // SHVDN log analysis events
+    public const string ShvdnGetQuickInfo = "ShvdnGetQuickInfo";
     public const string ShvdnGetDetailedInfo = "ShvdnGetDetailedInfo";
     public const string ShvdnQuickSendToUser = "ShvdnQuickInfoSendToUser";
     public const string ShvdnDetailedSendToUser = "ShvdnDetailedSendToUser";
-    public const string SendFeedback = "SendFeedback";
 
     internal static async Task HandleInteraction(DiscordClient s, ComponentInteractionCreateEventArgs eventArgs)
     {
@@ -36,15 +48,19 @@ public class ComponentInteraction
         {
             SelectAttachmentForAnalysis,
             SelectIdForRemoval,
+            RphGetQuickInfo,
             RphGetDetailedInfo,
             RphQuickSendToUser,
             RphDetailedSendToUser,
+            ElsGetQuickInfo,
             ElsGetDetailedInfo,
             ElsQuickSendToUser,
             ElsDetailedSendToUser,
+            AsiGetQuickInfo,
             AsiGetDetailedInfo,
             AsiQuickSendToUser,
             AsiDetailedSendToUser,
+            ShvdnGetQuickInfo,
             ShvdnGetDetailedInfo,
             ShvdnQuickSendToUser,
             ShvdnDetailedSendToUser
@@ -139,23 +155,37 @@ public class ComponentInteraction
                 }
                 if (eventArgs.Id.Equals(SelectIdForRemoval))
                 {
-                    var selectComp = (DiscordSelectComponent) eventArgs.Message.Components.AsList()[0].Components.AsList()[0];
-                    var options = new List<DiscordSelectComponentOption>(selectComp.Options);
-                    foreach (var option in selectComp.Options.Where(option => option.Value.Equals(eventArgs.Values.FirstOrDefault()))) options.Remove(option);
-                    var db = new DiscordInteractionResponseBuilder();
+                    var selectComp = (DiscordSelectComponent) eventArgs.Message.Components
+                        .Where(compRow => compRow.Components.Any(comp => comp.CustomId == SelectIdForRemoval))
+                        .FirstOrDefault()
+                        .Components
+                        .Where(comp => comp.CustomId == SelectIdForRemoval)
+                        .FirstOrDefault();
+
+                    var allComponentsExceptSelect = eventArgs.Message.Components
+                        .Where(compRow => !compRow.Components.Any(comp => comp.CustomId == SelectIdForRemoval))
+                        .FirstOrDefault()
+                        .Components;
                     
+                    var options = new List<DiscordSelectComponentOption>(selectComp.Options);
+                    var optionsToRemove = selectComp.Options.Where(option => option.Value.Equals(eventArgs.Values.FirstOrDefault()));
+                    foreach (var option in optionsToRemove)
+                        options.Remove(option);
+
+                    var db = new DiscordInteractionResponseBuilder();
                     if (options.Count > 0)
-                        db.AddComponents(new DiscordSelectComponent(
-                            customId: ComponentInteraction.SelectIdForRemoval,
-                            placeholder: "Remove Error",
-                            options: options));
-                    db.AddComponents(new DiscordComponent[]
-                    {
-                        new DiscordButtonComponent(
-                            ButtonStyle.Danger,
-                            ComponentInteraction.RphDetailedSendToUser,
-                            "Send To User", false,
-                            new DiscordComponentEmoji("📨"))});
+                        db.AddComponents(
+                            new DiscordSelectComponent(
+                                customId: ComponentInteraction.SelectIdForRemoval,
+                                placeholder: "Remove Error",
+                                options: options
+                            )
+                        );
+                    var compRow = new List<DiscordComponent>();
+                    foreach (DiscordComponent comp in allComponentsExceptSelect)
+                        compRow.Add(comp);
+                    db.AddComponents(compRow);
+                    
                     var embed = new DiscordEmbedBuilder(eventArgs.Message.Embeds.FirstOrDefault()!);
                     for (int i = embed.Fields.Count - 1; i > 0; i--) 
                         if (embed.Fields[i].Name.Contains(eventArgs.Values.FirstOrDefault()!)) embed.RemoveFieldAt(i);
@@ -164,32 +194,44 @@ public class ComponentInteraction
                 }
                     
                 //===//===//===////===//===//===////===//RPH Buttons//===////===//===//===////===//===//===//
-                if (eventArgs.Id is RphQuickSendToUser or RphDetailedSendToUser) 
-                    await cache.RphProcess.SendMessageToUser(eventArgs);
+                if (eventArgs.Id is RphGetQuickInfo) 
+                    await cache.RphProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                 
                 if (eventArgs.Id == RphGetDetailedInfo) 
                     await cache.RphProcess.SendDetailedInfoMessage(eventArgs);
+                
+                if (eventArgs.Id is RphQuickSendToUser or RphDetailedSendToUser) 
+                    await cache.RphProcess.SendMessageToUser(eventArgs);
             
                 //===//===//===////===//===//===////===//ELS Buttons//===////===//===//===////===//===//===//
-                if (eventArgs.Id is ElsQuickSendToUser or ElsDetailedSendToUser)
-                    await cache.ElsProcess.SendMessageToUser(eventArgs);
+                if (eventArgs.Id is ElsGetQuickInfo) 
+                    await cache.ElsProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                 
                 if (eventArgs.Id == ElsGetDetailedInfo) 
                     await cache.ElsProcess.SendDetailedInfoMessage(eventArgs);
                 
+                if (eventArgs.Id is ElsQuickSendToUser or ElsDetailedSendToUser)
+                    await cache.ElsProcess.SendMessageToUser(eventArgs);
+                
                 //===//===//===////===//===//===////===//ASI Buttons//===////===//===//===////===//===//===//
+                if (eventArgs.Id is AsiGetQuickInfo) 
+                    await cache.AsiProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
+
+                if (eventArgs.Id == AsiGetDetailedInfo) 
+                    await cache.AsiProcess.SendDetailedInfoMessage(eventArgs);
+
                 if (eventArgs.Id is AsiQuickSendToUser or AsiDetailedSendToUser)
                     await cache.AsiProcess.SendMessageToUser(eventArgs);
                 
-                if (eventArgs.Id == AsiGetDetailedInfo) 
-                    await cache.AsiProcess.SendDetailedInfoMessage(eventArgs);
-                
                 //===//===//===////===//===//===////===//SHVDN Buttons//===////===//===//===////===//===//===//
-                if (eventArgs.Id is ShvdnQuickSendToUser or ShvdnDetailedSendToUser)
-                    await cache.ShvdnProcess.SendMessageToUser(eventArgs);
+                if (eventArgs.Id is ShvdnGetQuickInfo) 
+                    await cache.ShvdnProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                 
                 if (eventArgs.Id == ShvdnGetDetailedInfo) 
                     await cache.ShvdnProcess.SendDetailedInfoMessage(eventArgs);
+
+                if (eventArgs.Id is ShvdnQuickSendToUser or ShvdnDetailedSendToUser)
+                    await cache.ShvdnProcess.SendMessageToUser(eventArgs);
             }
             
             //===//===//===////===//===//===////===//Send Feedback Button//===////===//===//===////===//===//===//
