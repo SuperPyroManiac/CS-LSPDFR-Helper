@@ -95,7 +95,7 @@ internal class RPHProcess : SharedLogInfo
 
         DiscordMessage targetMessage = context?.TargetMessage ?? eventArgs.Message;
         ProcessCache cache = Program.Cache.GetProcess(targetMessage.Id);
-        embed = AddTsViewFields(embed, cache.OriginalMessage, log.ElapsedTime);
+        embed = AddTsViewFields(embed, cache, log);
 
 
         if (missmatch.Length > 0 || missing.Length > 0) SendUnknownPluginsLog(cache.OriginalMessage.Channel.Id, cache.OriginalMessage.Author.Id);
@@ -170,7 +170,7 @@ internal class RPHProcess : SharedLogInfo
         var embed = GetBaseLogInfoEmbed(embedDescription);
 
         ProcessCache cache = Program.Cache.GetProcess(eventArgs.Message.Id);
-        embed = AddTsViewFields(embed, cache.OriginalMessage, log.ElapsedTime);
+        embed = AddTsViewFields(embed, cache, log);
         
         embed = AddCommonFields(embed);
 

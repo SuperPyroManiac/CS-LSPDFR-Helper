@@ -138,6 +138,8 @@ public class ModalSubmit
 
                 await FindErrorMessages.SendDbOperationConfirmation(newError: err, operation: DbOperation.UPDATE, oldError: oldError, e: e);
             }
+			// delete the cached data of the action that is completed now (which means the cache isn't needed anymore)
+            Program.Cache.RemoveUserAction(e.Interaction.User.Id, e.Interaction.Data.CustomId);
         }
 		else // modal submit events that don't require cached data
 		{

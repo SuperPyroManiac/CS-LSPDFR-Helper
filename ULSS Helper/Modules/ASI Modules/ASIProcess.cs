@@ -35,7 +35,7 @@ internal class ASIProcess : SharedLogInfo
 
         DiscordMessage targetMessage = context?.TargetMessage ?? eventArgs.Message;
         ProcessCache cache = Program.Cache.GetProcess(targetMessage.Id);
-        embed = AddTsViewFields(embed, cache.OriginalMessage, log.ElapsedTime);
+        embed = AddTsViewFields(embed, cache, log);
 
         if (log.FailedAsiFiles.Count != 0) 
         {

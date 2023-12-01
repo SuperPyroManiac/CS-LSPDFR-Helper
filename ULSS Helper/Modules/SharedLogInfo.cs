@@ -3,6 +3,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
+using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Modules;
 
@@ -52,11 +53,11 @@ internal class SharedLogInfo
 
     }
 
-    internal DiscordEmbedBuilder AddTsViewFields(DiscordEmbedBuilder embed, DiscordMessage originalMessage, string time) 
+    internal DiscordEmbedBuilder AddTsViewFields(DiscordEmbedBuilder embed, ProcessCache cache, Log log) 
     {
-        embed.AddField("Log uploader:", $"<@{originalMessage.Author.Id}>", true);
-        embed.AddField("Log message:", originalMessage.JumpLink.ToString(), true);
-        embed.AddField("Elapsed time:", $"{time}MS", true); //TS View only! Always index 0 - 2.
+        embed.AddField("Log uploader:", $"<@{cache.OriginalMessage.Author.Id}>", true);
+        embed.AddField("Log message:", cache.OriginalMessage.JumpLink.ToString(), true);
+        embed.AddField("Elapsed time:", $"{log.ElapsedTime}ms", true); //TS View only! Always index 0 - 2.
         return embed;
     }
 
