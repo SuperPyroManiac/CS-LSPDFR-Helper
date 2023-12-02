@@ -1,3 +1,4 @@
+using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
@@ -15,16 +16,32 @@ internal static class PermissionMessages
 }
 
 /// <summary>
-/// Checks whether the user has the TS role.
+/// Checks whether the user has the TS role for slash commands.
 /// </summary>
-public class RequireTsRoleAttribute : SlashCheckBaseAttribute
+public class RequireTsRoleSlash : SlashCheckBaseAttribute
 {
     public override async Task<bool> ExecuteChecksAsync(InteractionContext ctx)
     {
         if (ctx.Member.Roles.Any(role => role.Id == Program.Settings.Env.TsRoleId))
             return true;
-        else 
-            await PermissionMessages.SendNoPermissionError(ctx);
+        await PermissionMessages.SendNoPermissionError(ctx);
+        return false;
+    }
+}
+
+/// <summary>
+/// Checks whether the user has the TS role for app commands.
+/// </summary>
+public class RequireTsRoleContext : ContextMenuCheckBaseAttribute
+{
+    public override async Task<bool> ExecuteChecksAsync(ContextMenuContext ctx)
+    {
+        if (ctx.Member.Roles.Any(role => role.Id == Program.Settings.Env.TsRoleId))
+            return true;
+        var responseBuilder = new DiscordInteractionResponseBuilder { IsEphemeral = true };
+        await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, 
+            responseBuilder.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
+
         return false;
     }
 }
