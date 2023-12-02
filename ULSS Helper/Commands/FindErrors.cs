@@ -11,7 +11,7 @@ namespace ULSS_Helper.Commands;
 public class FindErrors : ApplicationCommandModule
 {
     [SlashCommand("FindErrors", "Returns a list of all errors in the database that match the search parameters!")]
-    [RequireTsRole]
+    [RequireTsRoleSlash]
     public static async Task FindErrorsCmd
     (
         InteractionContext ctx,

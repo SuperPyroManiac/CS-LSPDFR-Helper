@@ -231,6 +231,14 @@ public class CheckLog : ApplicationCommandModule
                     
             if (log.Errors.Any(error => error.Level == "CRITICAL" || error.Level == "SEVERE"))
                 embed.AddField(":bangbang:     **Serious Error Detected!**", "- You should post this log for our TS to check!");
+
+            foreach (var error in log.Errors)
+            {
+                if (error.Level == "CRITICAL")
+                {
+                    embed.AddField($"```{error.Level} ID: {error.ID}``` Troubleshooting Steps:", $"> {error.Solution.Replace("\n", "\n> ")}");
+                }
+            }
                 
             DiscordWebhookBuilder webhookBuilder = new();
             webhookBuilder.AddEmbed(embed);

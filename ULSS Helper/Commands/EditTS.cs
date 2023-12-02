@@ -1,4 +1,4 @@
-﻿using DSharpPlus.Entities;
+using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
@@ -8,7 +8,7 @@ namespace ULSS_Helper.Commands;
 public class EditTs : ApplicationCommandModule
 {
     [SlashCommand("ChangeErrorView", "Edits what you see in more details!")]
-    [RequireTsRole]
+    [RequireTsRoleSlash]
     public async Task EditViewCmd(
         InteractionContext ctx, 
         [Option("View", "True shows XTRA errors, False does not.")] bool view)
