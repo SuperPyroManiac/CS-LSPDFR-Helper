@@ -24,7 +24,7 @@ public class CheckPlugin : ApplicationCommandModule
 		}
 		var plugin = Database.GetPlugin(plug);
 		
-		if (plugin.Link != null) plugin.Link = $"[Here]({plugin.Link})";
+		if (!string.IsNullOrEmpty(plugin.Link)) plugin.Link = $"[Here]({plugin.Link})";
 		plugin.Link ??= "N/A";
 		
 		var embed = new DiscordEmbedBuilder
