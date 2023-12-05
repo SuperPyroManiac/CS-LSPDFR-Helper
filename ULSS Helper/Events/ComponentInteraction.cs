@@ -155,9 +155,9 @@ public class ComponentInteraction
                 }
                 if (eventArgs.Id.Equals(SelectIdForRemoval))
                 {
-	                var selectComp = (DiscordSelectComponent) (eventArgs.Message.Components
-			                .FirstOrDefault(compRow => compRow.Components.Any(comp => comp.CustomId == SelectIdForRemoval))
-			                ?.Components)!.FirstOrDefault(comp => comp.CustomId == SelectIdForRemoval);
+	                var selectComp = (DiscordSelectComponent) eventArgs.Message.Components
+		                .FirstOrDefault(compRow => compRow.Components.Any(comp => comp.CustomId == SelectIdForRemoval))
+		                ?.Components!.FirstOrDefault(comp => comp.CustomId == SelectIdForRemoval);
                     var allComponentsExceptSelect = eventArgs.Message.Components
 	                    .FirstOrDefault(compRow => compRow.Components.All(comp => comp.CustomId != SelectIdForRemoval))?.Components;
                     
