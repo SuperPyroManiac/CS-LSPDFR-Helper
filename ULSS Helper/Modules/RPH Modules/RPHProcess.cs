@@ -48,8 +48,8 @@ internal class RPHProcess : SharedLogInfo
         if (current.Length != 0 && outdated.Length != 0 && broken.Length == 0) broken = "**None**";
         if ((current.Length == 0 && outdated.Length != 0) || broken.Length != 0) current = "**None**";
 
-        if (outdated.Length > 0) embed.AddField(":orange_circle:     **Update:**", "\r\n- " + outdated, true);
-        if (broken.Length > 0) embed.AddField(":red_circle:     **Remove:**", "\r\n- " + broken, true);
+        if (outdated.Length > 0) embed.AddField(":orange_circle:     **Update:**", "\r\n>>> - " + outdated, true);
+        if (broken.Length > 0) embed.AddField(":red_circle:     **Remove:**", "\r\n>>> - " + broken, true);
         if (missing.Length > 0) embed.AddField(":bangbang:  **Plugins not recognized:**", missing);
         if (missmatch.Length > 0) embed.AddField(":bangbang:  **Plugin version newer than DB:**", missmatch);
 
@@ -107,14 +107,14 @@ internal class RPHProcess : SharedLogInfo
             var embed2 = new DiscordEmbedBuilder
             {
                 Title = ":orange_circle:     **Update:**",
-                Description = "\r\n- " + outdated,
+                Description = "\r\n>>> - " + outdated,
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
             var embed3 = new DiscordEmbedBuilder
             {
                 Title = ":red_circle:     **Remove:**",
-                Description = "\r\n- " + broken,
+                Description = "\r\n>>> - " + broken,
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
@@ -195,17 +195,18 @@ internal class RPHProcess : SharedLogInfo
             if (update)
             {
                 if (error.Level == "CRITICAL")
-                    embed.AddField($"```{error.Level} ID: {error.ID}``` Troubleshooting Steps:", $"> {error.Solution.Replace("\n", "\n> ")}");
+                    embed.AddField($"___```{error.Level} ID: {error.ID}``` Troubleshooting Steps:___",
+                        $"> {error.Solution.Replace("\n", "\n> ")}");
             }
             if (!update)
             {
                 if (ts == null || ts.View == 1)
-                    embed.AddField($"```{error.Level} ID: {error.ID}``` Troubleshooting Steps:",
+                    embed.AddField($"___```{error.Level} ID: {error.ID}``` Troubleshooting Steps:___",
                         $"> {error.Solution.Replace("\n", "\n> ")}");
             
                 // ReSharper disable MergeIntoPattern
                 if (ts != null && ts.View == 0 && error.Level != "XTRA")
-                    embed.AddField($"```{error.Level} ID: {error.ID}``` Troubleshooting Steps:",
+                    embed.AddField($"___```{error.Level} ID: {error.ID}``` Troubleshooting Steps:___",
                         $"> {error.Solution.Replace("\n", "\n> ")}");
             }
             if (error.Level != "XTRA")

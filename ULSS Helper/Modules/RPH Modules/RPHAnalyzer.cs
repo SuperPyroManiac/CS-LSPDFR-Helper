@@ -301,8 +301,8 @@ public class RPHAnalyzer
 
     private static bool IsPossiblyOutdatedFile(string dateLine)
     {
-        Regex? dateLineRegex = new Regex(@".+Started new log on \D*(\d+\W{1,2}\d+\W{1,2}\d+\S{0,1}|\d+\W[a-zA-Z]{3}\W\d+)\D*(\d{1,2}\W\d{1,2}\W\d{1,2})\s*\D*\.\d{1,3}");
-        Match? dateLineMatch = dateLineRegex.Match(dateLine);
+        Regex dateLineRegex = new Regex(@".+Started new log on \D*(\d+\W{1,2}\d+\W{1,2}\d+\S{0,1}|\d+\W[a-zA-Z]{3}\W\d+)\D*(\d{1,2}\W\d{1,2}\W\d{1,2})\s*\D*\.\d{1,3}");
+        Match dateLineMatch = dateLineRegex.Match(dateLine);
         if (!dateLineMatch.Success) 
             return false;
         
