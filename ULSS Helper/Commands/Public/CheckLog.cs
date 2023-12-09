@@ -194,14 +194,14 @@ public class CheckLog : ApplicationCommandModule
             var embed2 = new DiscordEmbedBuilder
             {
                 Title = ":orange_circle:     **Update:**",
-                Description = "\r\n- " + outdated,
+                Description = "\r\n>>> - " + outdated,
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
             var embed3 = new DiscordEmbedBuilder
             {
                 Title = ":red_circle:     **Remove:**",
-                Description = "\r\n- " + broken,
+                Description = "\r\n>>> - " + broken,
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
@@ -219,8 +219,8 @@ public class CheckLog : ApplicationCommandModule
             if (current.Length != 0 && outdated.Length != 0 && broken.Length == 0) broken = "**None**";
             if ((current.Length == 0 && outdated.Length != 0) || broken.Length != 0) current = "**None**";
 
-            if (outdated.Length > 0) embed.AddField(":orange_circle:     **Update:**", "\r\n- " + outdated, true);
-            if (broken.Length > 0) embed.AddField(":red_circle:     **Remove:**", "\r\n- " + broken, true);
+            if (outdated.Length > 0) embed.AddField(":orange_circle:     **Update:**", "\r\n>>> - " + outdated, true);
+            if (broken.Length > 0) embed.AddField(":red_circle:     **Remove:**", "\r\n>>> - " + broken, true);
 
             if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0)
                 embed.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
@@ -230,13 +230,23 @@ public class CheckLog : ApplicationCommandModule
                 embed.AddField(":green_circle:     **No loaded plugins!**", "- No plugins detected from this log.");
                     
             if (log.Errors.Any(error => error.Level == "CRITICAL" || error.Level == "SEVERE"))
-                embed.AddField(":bangbang:     **Serious Error Detected!**", "- You should post this log for our TS to check!");
+                embed.AddField(":bangbang:     **Serious Error(s) Detected!**", "You should post this log for our TS to check! The bot may not always be 100% correct!");
 
+            var update = false;
             foreach (var error in log.Errors)
             {
-                if (error.Level == "CRITICAL")
+                if (error.Level == "CRITICAL") update = true;
+                if (update)
                 {
-                    embed.AddField($"```{error.Level} ID: {error.ID}``` Troubleshooting Steps:", $"> {error.Solution.Replace("\n", "\n> ")}");
+                    if (error.Level == "CRITICAL")
+                        embed.AddField($"___```{error.Level} ID: {error.ID}``` Troubleshooting Steps:___",
+                        $"> {error.Solution.Replace("\n", "\n> ")}\r\n> ___*Generated in discord.gg/ulss*___");
+                }
+                if (!update)
+                {
+                    if (error.Level != "XTRA")
+                        embed.AddField($"___```{error.Level} ID: {error.ID}``` Troubleshooting Steps:___",
+                        $"> {error.Solution.Replace("\n", "\n> ")}\r\n> ___*Generated in discord.gg/ulss*___");
                 }
             }
                 

@@ -54,9 +54,10 @@ internal class Program
 
     private static AsyncEventHandler<SlashCommandsExtension, AutocompleteErrorEventArgs> Oops()
     {
-        return async (s, e) =>
+        return (s, e) =>
         {
-            Console.WriteLine(e.Exception);
+	        Console.WriteLine(e.Exception);
+	        return Task.CompletedTask;
         };
     }
 
