@@ -344,10 +344,7 @@ internal class Database
             {
                 if (plugin.State == "LSPDFR" && plugin.ID != null)
                 {
-                    var url =
-                        "https://www.lcpdfr.com/applications/downloadsng/interface/api.php?do=checkForUpdates&fileId=" +
-                        plugin.ID + "&textOnly=1";
-                    var onlineVersion = webClient.DownloadString(url);
+                    var onlineVersion = webClient.DownloadString($"https://www.lcpdfr.com/applications/downloadsng/interface/api.php?do=checkForUpdates&fileId={plugin.ID}&textOnly=1");
                     onlineVersion = onlineVersion.Replace("[a-zA-Z]", "").Split(" ")[0];
                     var characters = new[]
                     {

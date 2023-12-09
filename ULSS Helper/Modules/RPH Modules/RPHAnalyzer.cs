@@ -55,43 +55,40 @@ public class RPHAnalyzer
                             var match = regex.Match(line);
                             if (match.Success)
                             {
-                                string logVersion = match.Groups[1].Value;
+                                var logVersion = match.Groups[1].Value;
+
+                                //Check EA Version
+                                if (!string.IsNullOrEmpty(plugin.EAVersion) && logVersion == plugin.EAVersion && log.Current.All(x => x.Name != plugin.Name))
+                                {
+                                    log.Current.Add(plugin);
+                                    break;
+                                }
+
+                                //Compare Versions
                                 if (!string.IsNullOrEmpty(plugin.Version))
                                 {
                                     var result = CompareVersions(logVersion, plugin.Version);
-                                    if (result < 0) // plugin version in log is older than version in DB
+                                    switch (result)
                                     {
-                                        if (!log.Outdated.Any(x => x.Name == plugin.Name)) log.Outdated.Add(plugin);
-                                    }
-                                    else if (result > 0) // plugin version in log is newer than version in DB
-                                    {
-                                        if (!string.IsNullOrEmpty(plugin.EAVersion)) 
+                                        // plugin version in log is older than version in DB
+                                        case < 0:
                                         {
-                                            var resultEa = CompareVersions(logVersion, plugin.EAVersion);
-                                            if (resultEa < 0) // plugin version in log is older than Early Access version in DB
-                                            {
-	                                            // ReSharper disable SimplifyLinqExpressionUseAll
-	                                            if (!log.Outdated.Any(x => x.Name == plugin.Name)) log.Outdated.Add(plugin);
-                                            }
-                                            else if (resultEa > 0) // plugin version in log is newer than Early Access version in DB
-                                            {
-                                                plugin.EAVersion = logVersion; // save logVersion in log.Missmatch so we can access it later when building bot responses
-                                                if (!log.Missmatch.Any(x => x.Name == plugin.Name)) log.Missmatch.Add(plugin);
-                                            }
-                                            else // plugin version in log is up to date (equals Early Access version in DB)
-                                            {
-                                                if (!log.Current.Any(x => x.Name == plugin.Name)) log.Current.Add(plugin);
-                                            }
-                                        } 
-                                        else // plugin version in log is newer than version in DB and there is no Early Acccess version
+                                            if (log.Outdated.All(x => x.Name != plugin.Name)) log.Outdated.Add(plugin);
+                                            break;
+                                        }
+                                        // plugin version in log is newer than version in DB and there is no Early Acccess version
+                                        case > 0:
                                         {
                                             plugin.EAVersion = logVersion; // save logVersion in log.Missmatch so we can access it later when building bot responses
-                                            if (!log.Missmatch.Any(x => x.Name == plugin.Name)) log.Missmatch.Add(plugin);
+                                            if (log.Missmatch.All(x => x.Name != plugin.Name)) log.Missmatch.Add(plugin);
+                                            break;
                                         }
-                                    }
-                                    else // plugin version in log is up to date (equals plugin version number in DB)
-                                    {
-                                        if (!log.Current.Any(x => x.Name == plugin.Name)) log.Current.Add(plugin);
+                                        // plugin version in log is up to date (equals plugin version number in DB)
+                                        default:
+                                        {
+                                            if (log.Current.All(x => x.Name != plugin.Name)) log.Current.Add(plugin);
+                                            break;
+                                        }
                                     }
                                 }
                             }
@@ -103,7 +100,7 @@ public class RPHAnalyzer
                             var match = regex.Match(line);
                             if (match.Success)
                             {
-                                if (!log.Broken.Any(x => x.Name == plugin.Name)) log.Broken.Add(plugin);
+                                if (log.Broken.All(x => x.Name != plugin.Name)) log.Broken.Add(plugin);
                             }
                             break;
                         }
@@ -113,7 +110,7 @@ public class RPHAnalyzer
                             var match = regex.Match(line);
                             if (match.Success)
                             {
-                                if (!log.Library.Any(x => x.Name == plugin.Name)) log.Library.Add(plugin);
+                                if (log.Library.All(x => x.Name != plugin.Name)) log.Library.Add(plugin);
                             }
                             break;
                         }
