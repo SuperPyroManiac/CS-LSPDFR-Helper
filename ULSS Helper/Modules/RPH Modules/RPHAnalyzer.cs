@@ -164,7 +164,7 @@ public class RPHAnalyzer
         ohFuck.Level = "CRITICAL";
         ohFuck.Solution =
             "**Grand Theft Auto Has Updated!**\r\n"
-            + "RPH/LSPDFR/RPH is currently outdated!\r\n"
+            + "RPH/LSPDFR/SHV is currently outdated!\r\n"
             + "We do not have an ETA nor support outdated versions of the game. Please follow the updates channel for news!\r\n\r\n"
             + "*Asking for an ETA will result in a warning!*";
         log.Errors.Add(ohFuck);
