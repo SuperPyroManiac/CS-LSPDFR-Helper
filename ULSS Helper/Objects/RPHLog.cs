@@ -15,6 +15,7 @@ public class RPHLog : Log
     public List<string> IncorrectScripts { get; set; }
     public List<string> IncorrectPlugins { get; set; }
     public List<string> IncorrectLibs { get; set; }
+    public List<string> IncorrectOther { get; set; }
     public string GTAVersion { get; set; }
     public string RPHVersion { get; set; }
     public string LSPDFRVersion { get; set; }
