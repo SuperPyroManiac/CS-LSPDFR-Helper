@@ -241,8 +241,8 @@ public class RPHAnalyzer
         var othsmatch = new Regex(plugOth.Regex).Matches(wholeLog);
         foreach (Match match in othsmatch)
         {
-            if (log.IncorrectOther.Any(x => x.Equals(match.Groups[1].Value))) continue;
-            log.IncorrectOther.Add(match.Groups[1].Value);
+            if (log.IncorrectOther.Any(x => x.Equals(match.Groups[2].Value))) continue;
+            log.IncorrectOther.Add(match.Groups[2].Value);
         }
         if (log.IncorrectOther.Count != 0)
         {

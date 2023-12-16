@@ -94,9 +94,9 @@ internal class Settings
         return new EnvironmentConfig(
             BotToken: "INSERT_BOT_TOKEN_HERE",
             DbFileName: "ULSSDB.db",
-            RphVersion: "1.106.1330.16514",
-            LspdfrVersion: "0.4.8678.25591",
-            GtaVersion: "1.0.3028.0",
+            RphVersion: "1.107.1334.16527",
+            LspdfrVersion: "0.4.8748.23994",
+            GtaVersion: "1.0.3095.0",
             ServerId: 449706194140135444,
             TsRoleId: 517568233360982017,
             TsIconUrl: "https://cdn.discordapp.com/role-icons/517568233360982017/b69077cfafb6856a0752c863e1bb87f0.webp?size=128&quality=lossless",
