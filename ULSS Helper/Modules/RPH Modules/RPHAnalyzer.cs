@@ -36,6 +36,7 @@ public class RPHAnalyzer
         log.IncorrectScripts = new List<string>();
         log.IncorrectPlugins = new List<string>();
         log.IncorrectLibs = new List<string>();
+        log.IncorrectOther = new List<string>();
 
         if (reader.Length > 0)
             log.FilePossiblyOutdated = IsPossiblyOutdatedFile(reader[0]);
@@ -161,7 +162,7 @@ public class RPHAnalyzer
 
         foreach (var error in errorData)
         {
-            if (error.ID is "1" or "97" or "98" or "99") continue;
+            if (error.ID is "1" or "97" or "98" or "99" or "41") continue;
             var errregex = new Regex(error.Regex);
             var errmatch = errregex.Matches(wholeLog);
             foreach (Match match in errmatch)
@@ -235,6 +236,19 @@ public class RPHAnalyzer
             plugErr.Solution = $"{plugErr.Solution}\r\n- {string.Join("\r\n- ", log.IncorrectPlugins)}";
             if (plugErr.Solution.Length >= 1024) plugErr.Solution = "Too many to show! God damn!";
             log.Errors.Add(plugErr);
+        }
+        var plugOth = errorData.Find(x => x.ID == "41");
+        var othsmatch = new Regex(plugOth.Regex).Matches(wholeLog);
+        foreach (Match match in othsmatch)
+        {
+            if (log.IncorrectOther.Any(x => x.Equals(match.Groups[2].Value))) continue;
+            log.IncorrectOther.Add(match.Groups[2].Value);
+        }
+        if (log.IncorrectOther.Count != 0)
+        {
+            plugOth.Solution = $"{plugOth.Solution}\r\n- {string.Join("\r\n- ", log.IncorrectOther)}";
+            if (plugOth.Solution.Length >= 1024) plugOth.Solution = "Too many to show! God damn!";
+            log.Errors.Add(plugOth);
         }
 
         log.Errors = log.Errors.OrderBy(x => x.Level).ToList();
