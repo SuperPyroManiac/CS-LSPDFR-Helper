@@ -249,6 +249,12 @@ public class CheckLog : ApplicationCommandModule
                         $"> {error.Solution.Replace("\n", "\n> ")}\r\n> ___*Generated in discord.gg/ulss*___");
                 }
             }
+            embed.AddField($"___```NOTICE``` Bot Rules:___",
+                ">>> __**This is for personal use only!**__\r\n"
+                + "- Do not use this for proxy support!\r\n"
+                + "- Do not repost this for someone else!\r\n"
+                + "- Do not claim this as your own support!\r\n"
+                + "*Failure to comply will result in access being revoked!*");
                 
             DiscordWebhookBuilder webhookBuilder = new();
             webhookBuilder.AddEmbed(embed);
