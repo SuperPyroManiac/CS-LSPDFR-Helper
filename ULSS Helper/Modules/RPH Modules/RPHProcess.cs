@@ -54,7 +54,7 @@ internal class RPHProcess : SharedLogInfo
         if (missing.Length > 0) embed.AddField(":bangbang:  **Plugins not recognized:**", missing);
         if (missmatch.Length > 0) embed.AddField(":bangbang:  **Plugin version newer than DB:**", missmatch);
 
-        if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0)
+        if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0 && !string.IsNullOrEmpty(log.LSPDFRVersion))
             embed.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
         if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0 && string.IsNullOrEmpty(log.LSPDFRVersion))
             embed.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **No plugin information available!**");

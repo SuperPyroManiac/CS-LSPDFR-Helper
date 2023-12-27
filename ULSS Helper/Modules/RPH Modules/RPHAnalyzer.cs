@@ -13,9 +13,9 @@ public class RPHAnalyzer
     {
         var timer = new Stopwatch();
         timer.Start();
-#pragma warning disable SYSLIB0014
+        #pragma warning disable SYSLIB0014
         using var client = new WebClient();
-        string fullFilePath = Settings.GenerateNewFilePath(FileType.RPH_LOG);
+        var fullFilePath = Settings.GenerateNewFilePath(FileType.RPH_LOG);
         client.DownloadFile(attachmentUrl, fullFilePath);
 
         var pluginData = Database.LoadPlugins();
