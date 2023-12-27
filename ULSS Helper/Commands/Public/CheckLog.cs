@@ -254,6 +254,7 @@ public class CheckLog : ApplicationCommandModule
                 + "- Do not use this for proxy support!\r\n"
                 + "- Do not repost this for someone else!\r\n"
                 + "- Do not claim this as your own support!\r\n"
+                + "- Do not use this for support on LCPDFR.com!\r\n"
                 + "*Failure to comply will result in access being revoked!*");
                 
             DiscordWebhookBuilder webhookBuilder = new();
