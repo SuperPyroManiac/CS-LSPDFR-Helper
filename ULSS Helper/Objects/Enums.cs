@@ -23,7 +23,9 @@ public enum State
     [ChoiceName("BROKEN")]
     BROKEN,
     [ChoiceName("LIB")]
-    LIB
+    LIB,
+    [ChoiceName("IGNORE")]
+    IGNORE
 }
 
 public enum DbOperation

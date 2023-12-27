@@ -25,6 +25,7 @@ public class RPHAnalyzer
         var wholeLog = File.ReadAllText(fullFilePath);
         var reader = File.ReadAllLines(fullFilePath);
 
+        log.RPHPlugin = new List<Plugin>();
         log.Current = new List<Plugin>();
         log.Outdated = new List<Plugin>();
         log.Broken = new List<Plugin>();
@@ -145,6 +146,15 @@ public class RPHAnalyzer
                     temp.State = "MISSING";
                     log.Missing.Add(temp);
                 }
+            }
+            
+            var rphFinder = new Regex(@"Plugin \W?.+\W? was loaded from \W?(.+\.dll)\W?");
+            var rphMatch = rphFinder.Match(line);
+            if (rphMatch.Success)
+            {
+                var rphPlug = new Plugin();
+                rphPlug.Name = rphMatch.Groups[1].Value;
+                if (log.RPHPlugin.All(x => x.Name != rphPlug.Name)) log.RPHPlugin.Add(rphPlug);
             }
             
             var rphver = new Regex(@".+ Version: RAGE Plugin Hook v(\d+\.\d+\.\d+\.\d+) for Grand Theft Auto V");
