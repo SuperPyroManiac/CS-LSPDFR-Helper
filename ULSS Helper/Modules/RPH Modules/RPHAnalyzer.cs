@@ -118,7 +118,12 @@ public class RPHAnalyzer
                         }
                         case "IGNORE":
                         {
-                            if (log.Current.All(x => x.Name != plugin.Name)) log.Current.Add(plugin);
+                            var regex = new Regex($".+LSPD First Response: {Regex.Escape(plugin.Name)}. Version=[0-9.]+.+");
+                            var match = regex.Match(line);
+                            if (match.Success)
+                            {
+                                if (log.Current.All(x => x.Name != plugin.Name)) log.Current.Add(plugin);
+                            }
                             break;
                         }
                     }
