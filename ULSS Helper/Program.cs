@@ -1,8 +1,6 @@
 ﻿using System.Reflection;
 using DSharpPlus;
 using DSharpPlus.AsyncEvents;
-using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
@@ -16,7 +14,7 @@ internal class Program
 {
     internal static DiscordClient Client {get; set;}
     internal static Settings Settings;
-    internal static Cache Cache = new();
+    internal static readonly Cache Cache = new();
     
     static async Task Main()
     {

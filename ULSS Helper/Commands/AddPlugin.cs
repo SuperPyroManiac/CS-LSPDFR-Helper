@@ -14,7 +14,7 @@ public class AddPlugin : ApplicationCommandModule
     public async Task AddPluginCmd(
         InteractionContext ctx, 
         [Option("Name", "Plugins name as shown in the log!")] string pluginName, 
-        [Option("State", "Plugin state, LSPDFR, EXTERNAL, BROKEN, LIB")] State pluginState)
+        [Option("State", "Plugin state, LSPDFR, EXTERNAL, BROKEN, LIB, IGNORE")] State pluginState)
     {
         var bd = new DiscordInteractionResponseBuilder();
         bd.IsEphemeral = true;
