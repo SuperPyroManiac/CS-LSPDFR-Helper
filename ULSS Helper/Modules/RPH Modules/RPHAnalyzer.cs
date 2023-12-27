@@ -116,6 +116,11 @@ public class RPHAnalyzer
                             }
                             break;
                         }
+                        case "IGNORE":
+                        {
+                            if (log.Current.All(x => x.Name != plugin.Name)) log.Current.Add(plugin);
+                            break;
+                        }
                     }
                 }
                 catch (Exception e)
