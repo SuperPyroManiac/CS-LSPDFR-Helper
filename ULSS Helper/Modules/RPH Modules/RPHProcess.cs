@@ -274,8 +274,7 @@ internal class RPHProcess : SharedLogInfo
         embed = AddCommonFields(embed);
         if (current.Length >= 1024) current = "Too many plugins to show!";
         if (rph.Length >= 1024) current = "Too many plugins to show!";
-        if (current.Length == 0) current = "None!";
-        if (rph.Length == 0) current = "None!";
+        
         embed.AddField(":jigsaw:     **Up To Date:**", "\r\n>>> - " + current, false);
         embed.AddField(":purple_circle:     **RPH Plugins:**", "\r\n>>> - " + rph, false);
 
