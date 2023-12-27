@@ -12,12 +12,12 @@ namespace ULSS_Helper.Modules.RPH_Modules;
 internal class RPHProcess : SharedLogInfo
 {
     internal string current;
-    private List<string> _currentList;
     internal string outdated;
     internal string broken;
     internal string missing;
     internal string library;
     internal string missmatch;
+    internal string rph;
     internal RPHLog log;
     internal string GtAver = "X";
     internal string LspdfRver = "X";
@@ -46,7 +46,8 @@ internal class RPHProcess : SharedLogInfo
     {
         if (current.Length != 0 && outdated.Length == 0 && broken.Length != 0) outdated = "**None**";
         if (current.Length != 0 && outdated.Length != 0 && broken.Length == 0) broken = "**None**";
-        if ((current.Length == 0 && outdated.Length != 0) || broken.Length != 0) current = "**None**";
+        if (current.Length == 0) current = "**None**";
+        if (rph.Length == 0) rph = "**None**";
 
         if (outdated.Length > 0) embed.AddField(":orange_circle:     **Update:**", "\r\n>>> - " + outdated, true);
         if (broken.Length > 0) embed.AddField(":red_circle:     **Remove:**", "\r\n>>> - " + broken, true);
@@ -74,20 +75,22 @@ internal class RPHProcess : SharedLogInfo
                 : $"[{plugin.DName}](https://www.google.com/search?q=lspdfr+{plugin.DName.Replace(" ", "+")})"
         ).ToList();
         
-        _currentList = log.Current.Select(plugin => plugin?.DName).ToList();
+        var _currentList = log.Current.Select(plugin => plugin?.DName).ToList();
         var brokenList = log.Broken.Select(plugin => plugin?.DName).ToList();
         var missingList = log.Missing.Select(plugin => $"{plugin?.Name} ({plugin?.Version})").ToList();
         var missmatchList = log.Missmatch.Select(plugin => $"{plugin?.Name} ({plugin?.EAVersion})").ToList();
         var libraryList = log.Library.Select(plugin => plugin?.DName).ToList();
+        var rphList = log.RPHPlugin.Select(plugin => plugin?.Name).ToList();
         brokenList.AddRange(libraryList);
-        current = string.Join("\r\n- ", _currentList);
+        current = string.Join(", ", _currentList);
         outdated = string.Join("\r\n- ", linkedOutdated);
         broken = string.Join("\r\n- ", brokenList);
         missing = string.Join(", ", missingList);
         missmatch = string.Join(", ", missmatchList);
         library = string.Join(", ", libraryList);
+        rph = string.Join(", ", rphList);
         
-        string embedDescription = "## Quick RPH.log Info";        
+        string embedDescription = "## RPH.log Quick Info";        
         if (log.FilePossiblyOutdated)
             embedDescription += "\r\n:warning: **Attention!** This log file is probably too old to determine the current RPH-related issues of the uploader!\r\n";
 
@@ -153,7 +156,8 @@ internal class RPHProcess : SharedLogInfo
             webhookBuilder.AddComponents(
                 new DiscordComponent[]
                 {
-                    new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.RphGetDetailedInfo, "More Info", false, new DiscordComponentEmoji(Program.Settings.Env.MoreInfoBtnEmojiId)),
+                    new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.RphGetDetailedInfo, "Error Info", false, new DiscordComponentEmoji("❗")),
+                    new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.RphGetAdvancedInfo, "Plugin Info", false, new DiscordComponentEmoji("❓")),
                     new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.RphQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
                 }
             );
@@ -176,7 +180,7 @@ internal class RPHProcess : SharedLogInfo
 
     internal async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs eventArgs)
     {
-        string embedDescription = "## Detailed RPH.log Info";
+        string embedDescription = "## RPH.log Error Info";
         if (log.FilePossiblyOutdated)
             embedDescription += "\r\n:warning: **Attention!** This log file is probably too old to determine the current RPH-related issues of the uploader!\r\n";
         var embed = GetBaseLogInfoEmbed(embedDescription);
@@ -191,6 +195,12 @@ internal class RPHProcess : SharedLogInfo
         var update = false;
         foreach (var error in log.Errors)
         {
+            if (embed.Fields.Count == 24)
+            {
+                embed.AddField("**TOO MANY ERRORS**", "God Damn! Fix some errors and try again!\r\nCannot show more than 25 fields per message.");
+                break;
+            }
+            
             if (error.Level == "CRITICAL") update = true;
             if (update)
             {
@@ -243,6 +253,44 @@ internal class RPHProcess : SharedLogInfo
                     false,
                     new DiscordComponentEmoji("📨")
                 ), 
+            }
+        );
+
+        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, responseBuilder);
+        var sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
+        Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
+    }
+    
+    internal async Task SendAdvancedInfoMessage(ComponentInteractionCreateEventArgs eventArgs)
+    {
+        string embedDescription = "## RPH.log Plugin Info";
+        if (log.FilePossiblyOutdated)
+            embedDescription += "\r\n:warning: **Attention!** This log file is probably too old to determine the current RPH-related issues of the uploader!\r\n";
+        var embed = GetBaseLogInfoEmbed(embedDescription);
+
+        ProcessCache cache = Program.Cache.GetProcess(eventArgs.Message.Id);
+        embed = AddTsViewFields(embed, cache, log);
+        
+        embed = AddCommonFields(embed);
+        if (current.Length >= 1024) current = "Too many plugins to show!";
+        if (rph.Length >= 1024) current = "Too many plugins to show!";
+        
+        embed.AddField(":jigsaw:     **Up To Date:**", "\r\n>>> - " + current, false);
+        embed.AddField(":purple_circle:     **RPH Plugins:**", "\r\n>>> - " + rph, false);
+
+        var responseBuilder = new DiscordInteractionResponseBuilder();
+        responseBuilder.AddEmbed(embed);
+
+        responseBuilder.AddComponents(
+            new DiscordComponent[]
+            {
+                new DiscordButtonComponent(
+                    ButtonStyle.Secondary,
+                    ComponentInteraction.RphGetQuickInfo,
+                    "Back to Quick Info", 
+                    false,
+                    new DiscordComponentEmoji("⬅️")
+                ),
             }
         );
 

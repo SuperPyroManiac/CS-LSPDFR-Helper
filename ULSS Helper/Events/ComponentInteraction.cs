@@ -21,6 +21,7 @@ public class ComponentInteraction
     // RPH log analysis events
     public const string RphGetQuickInfo = "RphGetQuickInfo";
     public const string RphGetDetailedInfo = "RphGetDetailedInfo";
+    public const string RphGetAdvancedInfo = "RphGetAdvancedInfo";
     public const string RphQuickSendToUser = "RphQuickInfoSendToUser";
     public const string RphDetailedSendToUser = "RphDetailedSendToUser";
 
@@ -50,6 +51,7 @@ public class ComponentInteraction
             SelectIdForRemoval,
             RphGetQuickInfo,
             RphGetDetailedInfo,
+            RphGetAdvancedInfo,
             RphQuickSendToUser,
             RphDetailedSendToUser,
             ElsGetQuickInfo,
@@ -193,6 +195,9 @@ public class ComponentInteraction
                 
                 if (eventArgs.Id == RphGetDetailedInfo) 
                     await cache.RphProcess.SendDetailedInfoMessage(eventArgs);
+                
+                if (eventArgs.Id == RphGetAdvancedInfo) 
+                    await cache.RphProcess.SendAdvancedInfoMessage(eventArgs);
                 
                 if (eventArgs.Id is RphQuickSendToUser or RphDetailedSendToUser) 
                     await cache.RphProcess.SendMessageToUser(eventArgs);
