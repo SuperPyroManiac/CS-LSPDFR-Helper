@@ -31,7 +31,7 @@ public class EditPlugin : ApplicationCommandModule
 
         if (newState != null)
         {
-            plugin.State = newState.ToString().ToUpper();
+            plugin.State = newState.ToString()!.ToUpper();
         }
         
         DiscordInteractionResponseBuilder modal = new();
