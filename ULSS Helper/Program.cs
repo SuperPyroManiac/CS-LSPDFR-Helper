@@ -16,7 +16,7 @@ internal class Program
 {
     internal static DiscordClient Client {get; set;}
     internal static Settings Settings;
-    internal static readonly Cache Cache = new();
+    internal static Cache Cache = new();
     
     static async Task Main()
     {
