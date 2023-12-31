@@ -19,9 +19,9 @@ internal class RPHProcess : SharedLogInfo
     internal string missmatch;
     internal string rph;
     internal RPHLog log;
-    internal string GtAver = "X";
-    internal string LspdfRver = "X";
-    internal string RpHver = "X";
+    internal string GtAver = "❌";
+    internal string LspdfRver = "❌";
+    internal string RpHver = "❌";
 
     private DiscordEmbedBuilder GetBaseLogInfoEmbed(string description)
     {
@@ -111,14 +111,14 @@ internal class RPHProcess : SharedLogInfo
             var embed2 = new DiscordEmbedBuilder
             {
                 Title = ":orange_circle:     **Update:**",
-                Description = "\r\n>>> - " + outdated,
+                Description = "\r\n>>> " + string.Join(" - ", linkedOutdated),
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
             var embed3 = new DiscordEmbedBuilder
             {
                 Title = ":red_circle:     **Remove:**",
-                Description = "\r\n>>> - " + broken,
+                Description = "\r\n>>> " + string.Join(" - ", brokenList),
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };

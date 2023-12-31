@@ -141,9 +141,9 @@ public class CheckLog : ApplicationCommandModule
     private async Task CheckLogMessage(InteractionContext context, DiscordAttachment attach)
     {
         var log = RPHAnalyzer.Run(attach.Url);
-        var gtAver = "X";
-        var lspdfRver = "X";
-        var rpHver = "X";
+        var gtAver = "❌";
+        var lspdfRver = "❌";
+        var rpHver = "❌";
         if (Program.Settings.Env.GtaVersion.Equals(log.GTAVersion)) gtAver = "\u2713";
         if (Program.Settings.Env.LspdfrVersion.Equals(log.LSPDFRVersion)) lspdfRver = "\u2713";
         if (Program.Settings.Env.RphVersion.Equals(log.RPHVersion)) rpHver = "\u2713";
@@ -194,14 +194,14 @@ public class CheckLog : ApplicationCommandModule
             var embed2 = new DiscordEmbedBuilder
             {
                 Title = ":orange_circle:     **Update:**",
-                Description = "\r\n>>> - " + outdated,
+                Description = "\r\n>>> " + string.Join(" - ", linkedOutdated),
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
             var embed3 = new DiscordEmbedBuilder
             {
                 Title = ":red_circle:     **Remove:**",
-                Description = "\r\n>>> - " + broken,
+                Description = "\r\n>>> " + string.Join(" - ", brokenList),
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };

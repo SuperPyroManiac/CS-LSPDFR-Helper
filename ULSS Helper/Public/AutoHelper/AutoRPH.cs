@@ -11,9 +11,9 @@ public class AutoRPH
 {
     internal static async Task ProccessLog(RPHLog log, MessageCreateEventArgs ctx, DiscordThreadChannel st)
     {
-        var gtAver = "X";
-        var lspdfRver = "X";
-        var rpHver = "X";
+        var gtAver = "❌";
+        var lspdfRver = "❌";
+        var rpHver = "❌";
         if (Program.Settings.Env.GtaVersion.Equals(log.GTAVersion)) gtAver = "\u2713";
         if (Program.Settings.Env.LspdfrVersion.Equals(log.LSPDFRVersion)) lspdfRver = "\u2713";
         if (Program.Settings.Env.RphVersion.Equals(log.RPHVersion)) rpHver = "\u2713";
@@ -53,19 +53,19 @@ public class AutoRPH
                 if (outdated.Length >= 1024 || broken.Length >= 1024)
         {
             header.AddField(":warning:     **Message Too Big**",
-                "\r\nToo many plugins to display in a single message.\r\nFor detailed info, ask for help!",
+                "\r\nToo many plugins to display in a single message.\r\nYou need to fix these plugins first!",
                 true);
             var embed2 = new DiscordEmbedBuilder
             {
                 Title = ":orange_circle:     **Update:**",
-                Description = "\r\n>>> - " + outdated,
+                Description = "\r\n>>> " + string.Join(" - ", linkedOutdated),
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
             var embed3 = new DiscordEmbedBuilder
             {
                 Title = ":red_circle:     **Remove:**",
-                Description = "\r\n>>> - " + broken,
+                Description = "\r\n>>> " + string.Join(" - ", brokenList),
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
@@ -93,9 +93,6 @@ public class AutoRPH
                 header.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **No plugin information available!**");
             if (current.Length == 0 && outdated.Length == 0 && broken.Length == 0)
                 header.AddField(":green_circle:     **No loaded plugins!**", "- No plugins detected from this log.");
-                    
-            if (log.Errors.Any(error => error.Level == "CRITICAL" || error.Level == "SEVERE"))
-                header.AddField(":bangbang:     **Serious Error(s) Detected!**", "You should post this log for our TS to check! The bot may not always be 100% correct!");
 
             var update = false;
             foreach (var error in log.Errors)
@@ -109,19 +106,12 @@ public class AutoRPH
                 }
                 if (!update)
                 {
-                    if (error.Level != "XTRA")
+                    if (error.Level != "XTRA")//TODO: Add new public bool for errors in DB and Object
                         header.AddField($"___```{error.Level} ID: {error.ID}``` Troubleshooting Steps:___",
                         $"> {error.Solution.Replace("\n", "\n> ")}\r\n> ___*Generated in discord.gg/ulss*___");
                 }
             }
-            header.AddField($"___```NOTICE``` Bot Rules:___",
-                ">>> __**This is for ULSS use only!**__\r\n"
-                + "- Do not use this for proxy support!\r\n"
-                + "- Do not repost this for someone else!\r\n"
-                + "- Do not claim this as your own support!\r\n"
-                + "- Do not use this for support on LCPDFR.com!\r\n"
-                + "*Failure to comply will result in access being revoked!*");
-                
+            
             DiscordMessageBuilder messageBuilder = new();
             messageBuilder.AddEmbed(header);
             messageBuilder.AddFile(fs, AddFileOptions.CloseStream);
@@ -134,7 +124,6 @@ public class AutoRPH
         }
                 
         Thread.Sleep(30000);
-        await st.DeleteAsync();
-        await ctx.Message.DeleteAsync();
+        await st.DeleteAsync();//TODO: Remove this
     }
 }

@@ -88,6 +88,8 @@ public class MessageSent
                                        "Depending on the size, this may take a moment to process!"));
                 
                 await AutoRPH.ProccessLog(RPHAnalyzer.Run(attach!.Url), ctx, supportthread);
+                Thread.Sleep(4000);
+                await ctx.Message.DeleteAsync();
             }
             if (ctx.Message.MessageType == MessageType.ThreadCreated) await ctx.Message.DeleteAsync();
         }
