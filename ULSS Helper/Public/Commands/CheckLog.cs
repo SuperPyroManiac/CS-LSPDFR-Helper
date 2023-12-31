@@ -212,6 +212,13 @@ public class CheckLog : ApplicationCommandModule
             if (broken.Length != 0) overflow.AddEmbed(embed3);
             await context.EditResponseAsync(overflow);
 
+            Logging.SendPubLog(BasicEmbeds.Info(
+                $"__Successful overflow upload!__\r\n"
+                + $">>> Sender: {context.Member.Mention} ({context.Member.Username})\r\n"
+                + $"Channel: <#{context.Channel.Id}>\r\n"
+                + $"File name: {attach.FileName}\r\n"
+                + $"Size: {attach.FileSize / 1000}KB\r\n"
+                + $"[Download Here]({attach.Url})", true));
         }
         else
         {
