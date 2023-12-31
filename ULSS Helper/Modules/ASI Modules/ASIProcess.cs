@@ -31,10 +31,10 @@ internal class ASIProcess : SharedLogInfo
         if (context == null && eventArgs == null)
             throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
 
-        DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Quick ASI.log Info");
+        var embed = GetBaseLogInfoEmbed("## Quick ASI.log Info");
 
-        DiscordMessage targetMessage = context?.TargetMessage ?? eventArgs.Message;
-        ProcessCache cache = Program.Cache.GetProcess(targetMessage.Id);
+        var targetMessage = context?.TargetMessage ?? eventArgs.Message;
+        var cache = Program.Cache.GetProcess(targetMessage.Id);
         embed = AddTsViewFields(embed, cache, log);
 
         if (log.FailedAsiFiles.Count != 0) 
@@ -46,15 +46,14 @@ internal class ASIProcess : SharedLogInfo
             embed.AddField(":green_circle:     No faulty ASI files detected!", "Seems like everything loaded fine.");
         }
 
-        DiscordWebhookBuilder webhookBuilder = new DiscordWebhookBuilder()
+        var webhookBuilder = new DiscordWebhookBuilder()
             .AddEmbed(embed)
             .AddComponents(
 	            // ReSharper disable RedundantExplicitParamsArrayCreation
-	            new DiscordComponent[]
-                {
-                    new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.AsiGetDetailedInfo, "More Info", false, new DiscordComponentEmoji(Program.Settings.Env.MoreInfoBtnEmojiId)),
+                [
+                    new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.AsiGetDetailedInfo, "More Info", false, new DiscordComponentEmoji("❗")),
                     new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.AsiQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
-                }
+                ]
             );
 
         DiscordMessage sentMessage;
@@ -76,9 +75,9 @@ internal class ASIProcess : SharedLogInfo
     {
         var loadedAsiFilesList = "\r\n- " + string.Join("\r\n- ", log.LoadedAsiFiles);
         var failedAsiFilesList = "\r\n- " + string.Join("\r\n- ", log.FailedAsiFiles);
-        ProcessCache cache = Program.Cache.GetProcess(eventArgs.Message.Id);
+        var cache = Program.Cache.GetProcess(eventArgs.Message.Id);
         
-        DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Detailed ASI.log Info");
+        var embed = GetBaseLogInfoEmbed("## Detailed ASI.log Info");
         
         foreach (var field in eventArgs.Message.Embeds[0].Fields)
         {
@@ -130,7 +129,7 @@ internal class ASIProcess : SharedLogInfo
             if (loadedAsiFilesList.Length != 0) overflowBuilder.AddEmbed(embed2);
             if (failedAsiFilesList.Length != 0) overflowBuilder.AddEmbed(embed3);
             overflowBuilder.AddComponents(buttonComponents);
-            DiscordMessage sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflowBuilder);
+            var sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflowBuilder);
             Program.Cache.SaveProcess(sentOverflowMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
             return;
         }

@@ -22,10 +22,10 @@ public class CheckLog : ApplicationCommandModule
         
         if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.BotBlacklistRoleId))
         {
-            List<ulong> allowedChannelIds = Program.Settings.Env.PublicUsageAllowedChannelIds;
+            var allowedChannelIds = Program.Settings.Env.PublicUsageAllowedChannelIds;
             if (allowedChannelIds.All(allowedId => ctx.Channel != ctx.Guild.GetChannel(allowedId)))
             {
-                List<string> allowedChannels = allowedChannelIds.Select(selector: channelId => $"<#{channelId}>").ToList();
+                var allowedChannels = allowedChannelIds.Select(selector: channelId => $"<#{channelId}>").ToList();
                 response.AddEmbed(BasicEmbeds.Error($"Invalid channel!\r\nYou may only use this in {string.Join(" or ", allowedChannels)}!"));
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
                 return;
@@ -36,7 +36,7 @@ public class CheckLog : ApplicationCommandModule
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
                 Logging.SendPubLog(BasicEmbeds.Error(
                     $"Failed upload!\r\n"
-                    + $"Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
+                    + $">>> Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
                     + $"Channel: <#{ctx.Channel.Id}>\r\n\r\n"
                     + $"Reason denied: Failed to acquire log!"
                 ));
@@ -48,7 +48,7 @@ public class CheckLog : ApplicationCommandModule
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
                 Logging.SendPubLog(BasicEmbeds.Warning(
                     $"Rejected upload!\r\n"
-                    + $"Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
+                    + $">>> Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
                     + $"Channel: <#{ctx.Channel.Id}>\r\n"
                     + $"File name: {attachment.FileName}\r\n"
                     + $"Size: {attachment.FileSize/1000}KB\r\n"
@@ -64,7 +64,7 @@ public class CheckLog : ApplicationCommandModule
                 await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(Program.Settings.Env.BotBlacklistRoleId));
                 Logging.ReportPubLog(BasicEmbeds.Error(
                     $"Possible bot abuse!\r\n"
-                    + $"User has been blacklisted from bot use! (Dunce role added!)\r\n"
+                    + $">>> User has been blacklisted from bot use! (Dunce role added!)\r\n"
                     + $"Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
                     + $"Channel: <#{ctx.Channel.Id}>\r\n"
                     + $"File name: {attachment.FileName}\r\n"
@@ -74,7 +74,7 @@ public class CheckLog : ApplicationCommandModule
                 ));
                 Logging.SendPubLog(BasicEmbeds.Error(
                     $"Rejected upload!\r\n"
-                    + $"Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
+                    + $">>> Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
                     + $"Channel: <#{ctx.Channel.Id}>\r\n"
                     + $"File name: {attachment.FileName}\r\n"
                     + $"Size: {attachment.FileSize / 1000}KB\r\n"
@@ -89,7 +89,7 @@ public class CheckLog : ApplicationCommandModule
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
                 Logging.SendPubLog(BasicEmbeds.Warning(
                     $"Rejected upload!\r\n"
-                    + $"Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
+                    + $">>> Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
                     + $"Channel: <#{ctx.Channel.Id}>\r\n"
                     + $"File name: {attachment.FileName}\r\n"
                     + $"Size: {attachment.FileSize / 1000}KB\r\n"
@@ -114,7 +114,7 @@ public class CheckLog : ApplicationCommandModule
                 await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(Program.Settings.Env.BotBlacklistRoleId));
                 Logging.ReportPubLog(BasicEmbeds.Error(
                     $"Possible bot abuse!\r\n"
-                    + $"User has been blacklisted from bot use! (Dunce role added!)\r\n"
+                    + $">>> User has been blacklisted from bot use! (Dunce role added!)\r\n"
                     + $"Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
                     + $"Channel: <#{ctx.Channel.Id}>\r\n"
                     + $"File name: {attachment.FileName}\r\n"
@@ -124,7 +124,7 @@ public class CheckLog : ApplicationCommandModule
                 ));
                 Logging.SendPubLog(BasicEmbeds.Error(
                     $"Rejected upload!\r\n"
-                    + $"Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
+                    + $">>> Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
                     + $"Channel: <#{ctx.Channel.Id}>\r\n"
                     + $"File name: {attachment.FileName}\r\n"
                     + $"Size: {attachment.FileSize / 1000}KB\r\n"
@@ -141,9 +141,9 @@ public class CheckLog : ApplicationCommandModule
     private async Task CheckLogMessage(InteractionContext context, DiscordAttachment attach)
     {
         var log = RPHAnalyzer.Run(attach.Url);
-        string gtAver = "X";
-        string lspdfRver = "X";
-        string rpHver = "X";
+        var gtAver = "X";
+        var lspdfRver = "X";
+        var rpHver = "X";
         if (Program.Settings.Env.GtaVersion.Equals(log.GTAVersion)) gtAver = "\u2713";
         if (Program.Settings.Env.LspdfrVersion.Equals(log.LSPDFRVersion)) lspdfRver = "\u2713";
         if (Program.Settings.Env.RphVersion.Equals(log.RPHVersion)) rpHver = "\u2713";
@@ -163,12 +163,12 @@ public class CheckLog : ApplicationCommandModule
         if (log.Missing.Count > 0 || log.Missmatch.Count > 0) 
         {
 	        // ReSharper disable once UseObjectOrCollectionInitializer
-	        RPHProcess rphProcess = new RPHProcess();
+	        var rphProcess = new RPHProcess();
             rphProcess.log = log;
             rphProcess.SendUnknownPluginsLog(context.Channel.Id, context.Member.Id);
         }
 
-        string embedDescription = "## ULSS Log Reader\r\n*For detailed info, ask for help!*";
+        var embedDescription = "## ULSS Log Reader\r\n*For detailed info, ask for help!*";
         if (log.FilePossiblyOutdated)
             embedDescription += "\r\n\r\n:warning: **Attention!** This log file is probably too old to determine your current RPH-related issues!";
         if (outdated.Length > 0 || broken.Length > 0) 
@@ -260,11 +260,10 @@ public class CheckLog : ApplicationCommandModule
             DiscordWebhookBuilder webhookBuilder = new();
             webhookBuilder.AddEmbed(embed);
             // ReSharper disable once RedundantExplicitParamsArrayCreation
-            webhookBuilder.AddComponents(new DiscordComponent[]
-            {
+            webhookBuilder.AddComponents([
                 new DiscordButtonComponent(ButtonStyle.Secondary, "SendFeedback", "Send Feedback", false,
                     new DiscordComponentEmoji("📨"))
-            });
+            ]);
             await context.EditResponseAsync(webhookBuilder);
                     
             Logging.SendPubLog(BasicEmbeds.Info(

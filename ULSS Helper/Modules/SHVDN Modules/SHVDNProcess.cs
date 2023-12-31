@@ -31,10 +31,10 @@ internal class SHVDNProcess : SharedLogInfo
         if (context == null && eventArgs == null)
             throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
 
-        DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Quick SHVDN.log Info");
+        var embed = GetBaseLogInfoEmbed("## Quick SHVDN.log Info");
 
-        DiscordMessage targetMessage = context?.TargetMessage ?? eventArgs.Message;
-        ProcessCache cache = Program.Cache.GetProcess(targetMessage.Id);
+        var targetMessage = context?.TargetMessage ?? eventArgs.Message;
+        var cache = Program.Cache.GetProcess(targetMessage.Id);
         embed = AddTsViewFields(embed, cache, log);
 
         if (log.Scripts.Count != 0) 
@@ -46,15 +46,14 @@ internal class SHVDNProcess : SharedLogInfo
             embed.AddField(":orange_circle:     No faulty script files detected!", "Seems like everything loaded fine.");
         }
 
-        DiscordWebhookBuilder webhookBuilder = new DiscordWebhookBuilder()
+        var webhookBuilder = new DiscordWebhookBuilder()
             .AddEmbed(embed)
             .AddComponents(
 	            // ReSharper disable RedundantExplicitParamsArrayCreation
-	            new DiscordComponent[]
-                {
-                    new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.ShvdnGetDetailedInfo, "More Info", false, new DiscordComponentEmoji(Program.Settings.Env.MoreInfoBtnEmojiId)),
+                [
+                    new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.ShvdnGetDetailedInfo, "More Info", false, new DiscordComponentEmoji("❗")),
                     new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.ShvdnQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
-                }
+                ]
             );
 
         DiscordMessage sentMessage;
@@ -76,9 +75,9 @@ internal class SHVDNProcess : SharedLogInfo
     {
         var scriptsList = "\r\n- " + string.Join("\r\n- ", log.Scripts);
         var missingDependsList = "\r\n- " + string.Join("\r\n- ", log.MissingDepends);
-        ProcessCache cache = Program.Cache.GetProcess(eventArgs.Message.Id);
+        var cache = Program.Cache.GetProcess(eventArgs.Message.Id);
         
-        DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Detailed SHVDN.log Info");
+        var embed = GetBaseLogInfoEmbed("## Detailed SHVDN.log Info");
         
         foreach (var field in eventArgs.Message.Embeds[0].Fields)
         {
@@ -132,7 +131,7 @@ internal class SHVDNProcess : SharedLogInfo
             if (missingDependsList.Length != 0) overflowBuilder.AddEmbed(embed3);
             // ReSharper disable RedundantExplicitParamsArrayCreation
             overflowBuilder.AddComponents(buttonComponents);
-            DiscordMessage sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflowBuilder);
+            var sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflowBuilder);
             Program.Cache.SaveProcess(sentOverflowMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
             return;
         }

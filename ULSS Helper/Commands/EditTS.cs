@@ -17,7 +17,7 @@ public class EditTs : ApplicationCommandModule
         bd.IsEphemeral = true;
         if (Database.LoadTs().All(ts => ts.ID.ToString() != ctx.Member.Id.ToString()))
         {
-            List<string> botAdminMentions = Program.Settings.Env.BotAdminUserIds.Select(botAdminId => $"<@{botAdminId}>").ToList();
+            var botAdminMentions = Program.Settings.Env.BotAdminUserIds.Select(botAdminId => $"<@{botAdminId}>").ToList();
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error($"You are not in the DB, please contact {string.Join(" or ", botAdminMentions)}!")));
             return;
         }

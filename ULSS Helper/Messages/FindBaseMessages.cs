@@ -10,8 +10,8 @@ internal class FindBaseMessages
     
     internal static string GetModifiedPropertiesList(List<ModifiedProperty> properties)
     {
-        StringBuilder output = new StringBuilder();
-        foreach (ModifiedProperty prop in properties)
+        var output = new StringBuilder();
+        foreach (var prop in properties)
         {
             if (prop.OldValue.Equals(prop.NewValue))
             {
@@ -20,7 +20,7 @@ internal class FindBaseMessages
             else 
             {
                 output.Append($"**{prop.Label}:**\r\n```diff\r\n");
-                string diffText = GenerateDiff(prop.OldValue, prop.NewValue);
+                var diffText = GenerateDiff(prop.OldValue, prop.NewValue);
                 output.Append(diffText + "```\r\n");
                 ChangesCount++;
             }
@@ -30,17 +30,17 @@ internal class FindBaseMessages
 
     private static string GenerateDiff(string oldText, string newText)
     {
-        string[] oldLines = oldText.Split('\n');
-        string[] newLines = newText.Split('\n');
-        int maxLines = Math.Max(oldLines.Length, newLines.Length);
+        var oldLines = oldText.Split('\n');
+        var newLines = newText.Split('\n');
+        var maxLines = Math.Max(oldLines.Length, newLines.Length);
 
-        StringBuilder diffText = new StringBuilder();
-        int countChangedLines = 0;
+        var diffText = new StringBuilder();
+        var countChangedLines = 0;
 
-        for (int lineIdx = 0; lineIdx < maxLines; lineIdx++)
+        for (var lineIdx = 0; lineIdx < maxLines; lineIdx++)
         {
-            string oldLine = lineIdx < oldLines.Length ? oldLines[lineIdx] : null;
-            string newLine = lineIdx < newLines.Length ? newLines[lineIdx] : null;
+            var oldLine = lineIdx < oldLines.Length ? oldLines[lineIdx] : null;
+            var newLine = lineIdx < newLines.Length ? newLines[lineIdx] : null;
             
             if (oldLine == newLine || (oldLine != null && oldLine.Equals(newLine))) // line wasn't changed
             {
@@ -70,8 +70,8 @@ internal class FindBaseMessages
         }
         if (countChangedLines == maxLines) // if all lines have been changed, first show all removed lines, then show all new lines
         {
-            string cleanedOld = ReplaceDiffChars(oldText, multiline: true);
-            string cleanedNew = ReplaceDiffChars(newText, multiline: true);
+            var cleanedOld = ReplaceDiffChars(oldText, multiline: true);
+            var cleanedNew = ReplaceDiffChars(newText, multiline: true);
             diffText = new StringBuilder();
             diffText.Append("- " + cleanedOld.Replace("\n", "\n- "));
             diffText.Append("\r\n+ " + cleanedNew.Replace("\n", "\n+ "));
@@ -87,10 +87,10 @@ internal class FindBaseMessages
     /// <returns>The changed input text where the characters are replaced.</returns>
     private static string ReplaceDiffChars(string input, bool multiline=false)
     {
-        RegexOptions option = multiline ? RegexOptions.Multiline : RegexOptions.None;
-        Regex regexDash = new Regex("^- ", options: option);
-        string output = multiline ? regexDash.Replace(input, " - ") : regexDash.Replace(input, " - ", count: 1);
-        Regex regexPlus = new Regex("^+ ", options: option);
+        var option = multiline ? RegexOptions.Multiline : RegexOptions.None;
+        var regexDash = new Regex("^- ", options: option);
+        var output = multiline ? regexDash.Replace(input, " - ") : regexDash.Replace(input, " - ", count: 1);
+        var regexPlus = new Regex("^+ ", options: option);
         output = multiline ? regexPlus.Replace(output, " + ") : regexDash.Replace(input, " - ", count: 1);
         return output;
     }

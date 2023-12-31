@@ -15,7 +15,7 @@ internal class Cache
     {
         if (_processCacheDict.ContainsKey(messageId))
         {
-            ProcessCache currentCache = GetProcess(messageId);
+            var currentCache = GetProcess(messageId);
             _processCacheDict[messageId] = currentCache.Update(newCache);
         }
         else
@@ -46,7 +46,7 @@ internal class Cache
     /// <param name="newCache">The UserActionCache object.</param>
     internal void SaveUserAction(ulong userId, string actionId, UserActionCache newCache)
     {
-        string key = GetUserActionKey(userId, actionId);
+        var key = GetUserActionKey(userId, actionId);
         if (_userActionCacheDict.ContainsKey(key))
             _userActionCacheDict[key] = newCache;
         else
@@ -74,22 +74,22 @@ internal class Cache
     /// <summary>Removes all cache entries from the dictionaries that are older than the maxCacheAge parameter.</summary>
     internal void RemoveExpiredCacheEntries(TimeSpan maxCacheAge)
     {
-        List<ulong> expiredProcessKeys = _processCacheDict
+        var expiredProcessKeys = _processCacheDict
             .Where(cache => (DateTime.Now - cache.Value.ModifiedAt) > maxCacheAge)
             .Select(cache => cache.Key)
             .ToList();
 
-        foreach (ulong key in expiredProcessKeys)
+        foreach (var key in expiredProcessKeys)
         {
             _processCacheDict.Remove(key);
         }
 
-        List<string> expiredUserActionKeys = _userActionCacheDict
+        var expiredUserActionKeys = _userActionCacheDict
             .Where(cache => (DateTime.Now - cache.Value.ModifiedAt) > maxCacheAge)
             .Select(cache => cache.Key)
             .ToList();
 
-        foreach (string key in expiredUserActionKeys)
+        foreach (var key in expiredUserActionKeys)
         {
             _userActionCacheDict.Remove(key);
         }

@@ -14,14 +14,14 @@ public class ELSAnalyzer
         timer.Start();
 #pragma warning disable SYSLIB0014
         using var client = new WebClient();
-        string fullFilePath = Settings.GenerateNewFilePath(FileType.ELS_LOG);
+        var fullFilePath = Settings.GenerateNewFilePath(FileType.ELS_LOG);
         client.DownloadFile(attachmentUrl, fullFilePath);
         // ReSharper disable once UseObjectOrCollectionInitializer
         var log = new ELSLog();
         log.DownloadLink = attachmentUrl;
         var wholeLog = File.ReadAllText(fullFilePath);
-        log.ValidElsVcfFiles = new List<string>();
-        log.InvalidElsVcfFiles = new List<string>();
+        log.ValidElsVcfFiles = [];
+        log.InvalidElsVcfFiles = [];
 
         var regexElsVersion = new Regex("VER\\s+\\[ ([0-9.]+) \\]");
         var matchElsVersion = regexElsVersion.Match(wholeLog);
