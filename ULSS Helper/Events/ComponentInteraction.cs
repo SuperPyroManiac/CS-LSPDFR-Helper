@@ -45,8 +45,8 @@ public class ComponentInteraction
 
     internal static async Task HandleInteraction(DiscordClient s, ComponentInteractionCreateEventArgs eventArgs)
     {
-        List<string> cacheEventIds = new()
-        {
+        List<string> cacheEventIds =
+        [
             SelectAttachmentForAnalysis,
             SelectIdForRemoval,
             RphGetQuickInfo,
@@ -66,21 +66,21 @@ public class ComponentInteraction
             ShvdnGetDetailedInfo,
             ShvdnQuickSendToUser,
             ShvdnDetailedSendToUser
-        };
+        ];
         try
         {
             if (cacheEventIds.Any(eventId => eventId == eventArgs.Id))
             {
-                ProcessCache cache = Program.Cache.GetProcess(eventArgs.Message.Id);
+                var cache = Program.Cache.GetProcess(eventArgs.Message.Id);
 
                 if (eventArgs.Id.Equals(SelectAttachmentForAnalysis))
                 {
-                    string selectedValue = eventArgs.Values.FirstOrDefault();
-                    string[] ids = selectedValue!.Split(SharedLogInfo.OptionValueSeparator);
-                    ulong messageId = ulong.Parse(ids[0]);
-                    ulong targetAttachmentId = ulong.Parse(ids[1]);
-                    DiscordMessage message = await eventArgs.Channel.GetMessageAsync(messageId);
-                    DiscordAttachment targetAttachment = message.Attachments.FirstOrDefault(attachment => attachment.Id == targetAttachmentId);
+                    var selectedValue = eventArgs.Values.FirstOrDefault();
+                    var ids = selectedValue!.Split(SharedLogInfo.OptionValueSeparator);
+                    var messageId = ulong.Parse(ids[0]);
+                    var targetAttachmentId = ulong.Parse(ids[1]);
+                    var message = await eventArgs.Channel.GetMessageAsync(messageId);
+                    var targetAttachment = message.Attachments.FirstOrDefault(attachment => attachment.Id == targetAttachmentId);
                     
                     if (targetAttachment!.FileName.Contains("RagePluginHook"))
                     {
@@ -178,12 +178,12 @@ public class ComponentInteraction
                             )
                         );
                     var compRow = new List<DiscordComponent>();
-                    foreach (DiscordComponent comp in allComponentsExceptSelect!)
+                    foreach (var comp in allComponentsExceptSelect!)
                         compRow.Add(comp);
                     db.AddComponents(compRow);
                     
                     var embed = new DiscordEmbedBuilder(eventArgs.Message.Embeds.FirstOrDefault()!);
-                    for (int i = embed.Fields.Count - 1; i > 0; i--) 
+                    for (var i = embed.Fields.Count - 1; i > 0; i--) 
                         if (embed.Fields[i].Name.Contains(eventArgs.Values.FirstOrDefault()!)) embed.RemoveFieldAt(i);
                     
                     await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, db.AddEmbed(embed));

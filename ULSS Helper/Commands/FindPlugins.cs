@@ -28,7 +28,7 @@ public class FindPlugins : ApplicationCommandModule
         
         try 
         {
-            string searchParamsListForLog = FindPluginMessages.GetSearchParamsList(
+            var searchParamsListForLog = FindPluginMessages.GetSearchParamsList(
                 "Ran 'FindPlugins' command with the following parameters:", 
                 plugName, 
                 plugDName, 
@@ -39,14 +39,14 @@ public class FindPlugins : ApplicationCommandModule
             );
             Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info(searchParamsListForLog));
             
-            List<Plugin> pluginsFound = Database.FindPlugins(plugName, plugDName, plugId, plugState, plugDescription, exactMatch);
+            var pluginsFound = Database.FindPlugins(plugName, plugDName, plugId, plugState, plugDescription, exactMatch);
 
             if (pluginsFound.Count > 0) 
             {
-                int resultsPerPage = 3;
-                int currentResultsPerPage = 0;
-                List<Page> pages = new List<Page>();
-                string searchResultsHeader = FindPluginMessages.GetSearchParamsList(
+                var resultsPerPage = 3;
+                var currentResultsPerPage = 0;
+                List<Page> pages = [];
+                var searchResultsHeader = FindPluginMessages.GetSearchParamsList(
                     $"I found {pluginsFound.Count} plugin{(pluginsFound.Count != 1 ? "s" : "")} that match{(pluginsFound.Count == 1 ? "es" : "")} the following search parameters:", 
                     plugName, 
                     plugDName, 
@@ -56,8 +56,8 @@ public class FindPlugins : ApplicationCommandModule
                     exactMatch
                 ) + "\r\nSearch results:";
 
-                string currentPageContent = searchResultsHeader;
-                for(int i=0; i < pluginsFound.Count; i++)
+                var currentPageContent = searchResultsHeader;
+                for(var i=0; i < pluginsFound.Count; i++)
                 {
                     var plugin = pluginsFound[i];
                     var plugDesc = "N/A";

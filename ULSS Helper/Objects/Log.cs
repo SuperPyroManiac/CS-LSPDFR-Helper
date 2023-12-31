@@ -18,7 +18,7 @@ public class Log
     public bool AnalysisHasExpired(TimeSpan customMaxAge=default)
     {
         // if the input parameter maxAge was not used when calling this method, use the default cooldown period (AnalysisRestartCooldown). Otherwise use the input parameter's value. 
-        TimeSpan maxAge = customMaxAge == default ? AnalysisRestartCooldown : customMaxAge;
+        var maxAge = customMaxAge == default ? AnalysisRestartCooldown : customMaxAge;
         return (DateTime.Now - AnalysisCompletedAt) > maxAge;
     }
 }

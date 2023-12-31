@@ -12,7 +12,7 @@ public class AddError : ApplicationCommandModule
     [RequireAdvancedTsRole]
     public async Task AddErrorCmd(InteractionContext ctx, [Option("Level", "Warning type (XTRA, WARN, SEVERE, CRITICAL)")] Level level)
     {
-        Error error = new Error()
+        var error = new Error()
         {
             Level = level.ToString().ToUpper()
         };

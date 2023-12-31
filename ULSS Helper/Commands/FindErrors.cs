@@ -30,7 +30,7 @@ public class FindErrors : ApplicationCommandModule
         
         try 
         {
-            string searchParamsListForLog = FindErrorMessages.GetSearchParamsList(
+            var searchParamsListForLog = FindErrorMessages.GetSearchParamsList(
                 "Ran 'FindErrors' command with the following parameters:", 
                 errId,
                 regex,
@@ -41,14 +41,14 @@ public class FindErrors : ApplicationCommandModule
             );
             Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info(searchParamsListForLog));
 
-            List<Error> errorsFound = Database.FindErrors(errId, regex, solution, description, level, exactMatch);
+            var errorsFound = Database.FindErrors(errId, regex, solution, description, level, exactMatch);
 
             if (errorsFound.Count > 0) 
             {
-                int resultsPerPage = 3;
-                int currentResultsPerPage = 0;
-                List<Page> pages = new List<Page>();
-                string searchResultsHeader = FindErrorMessages.GetSearchParamsList(
+                var resultsPerPage = 3;
+                var currentResultsPerPage = 0;
+                List<Page> pages = [];
+                var searchResultsHeader = FindErrorMessages.GetSearchParamsList(
                     $"I found {errorsFound.Count} error{(errorsFound.Count != 1 ? "s" : "")} that match{(errorsFound.Count == 1 ? "es" : "")} the following search parameters:",
                     errId,
                     regex,
@@ -58,10 +58,10 @@ public class FindErrors : ApplicationCommandModule
                     exactMatch
                 ) + "\r\nSearch results:";
 
-                string currentPageContent = searchResultsHeader;
-                for(int i=0; i < errorsFound.Count; i++)
+                var currentPageContent = searchResultsHeader;
+                for(var i=0; i < errorsFound.Count; i++)
                 {
-                    Error error = errorsFound[i];
+                    var error = errorsFound[i];
                     currentPageContent += "\r\n\r\n"
                         + $"> **__Error ID {error.ID}__**\r\n"
                         + $"> **Regex:**\r\n> `{error.Regex.Replace("\n", "`\n> `")}`\r\n> \r\n" 
