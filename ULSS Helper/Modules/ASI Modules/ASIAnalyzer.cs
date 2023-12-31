@@ -14,15 +14,15 @@ public class ASIAnalyzer
         timer.Start();
 #pragma warning disable SYSLIB0014
         using var client = new WebClient();
-        string fullFilePath = Settings.GenerateNewFilePath(FileType.ASI_LOG);
+        var fullFilePath = Settings.GenerateNewFilePath(FileType.ASI_LOG);
         client.DownloadFile(attachmentUrl, fullFilePath);
 
         // ReSharper disable once UseObjectOrCollectionInitializer
         var log = new ASILog();
         log.DownloadLink = attachmentUrl;
         var wholeLog = File.ReadAllText(path: fullFilePath);
-        log.LoadedAsiFiles = new List<string>();
-        log.FailedAsiFiles = new List<string>();
+        log.LoadedAsiFiles = [];
+        log.FailedAsiFiles = [];
         
         var regexFailedAsi = new Regex(@"^\s+.(.+.asi). failed to load.*", RegexOptions.Multiline);
         var matchesFailedAsi = regexFailedAsi.Matches(wholeLog);

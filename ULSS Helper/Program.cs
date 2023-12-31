@@ -42,7 +42,7 @@ internal class Program
 
         Client.ModalSubmitted += ModalSubmit.HandleModalSubmit;
         Client.ComponentInteractionCreated += ComponentInteraction.HandleInteraction;
-        Client.MessageCreated += MessageSent;
+        Client.MessageCreated += Events.MessageSent.MessageSentEvent;
         //Client.VoiceStateUpdated += VoiceChatManager.OnMemberJoinLeaveVC;
 
         Client.UseInteractivity(new InteractivityConfiguration());
@@ -59,20 +59,5 @@ internal class Program
 	        Console.WriteLine(e.Exception);
 	        return Task.CompletedTask;
         };
-    }
-
-    private static async Task MessageSent(DiscordClient s, MessageCreateEventArgs ctx)
-    {
-        if (Settings.Env.BullyingVictims.Any(victimId => victimId == ctx.Author.Id))
-        {
-            var rNd = new Random().Next(4);
-            if (rNd == 1) await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":tarabruh:"));
-            if (rNd == 2) await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":middle_finger:"));
-            if (rNd == 0)
-            {
-                await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":tarabruh:"));
-                await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":middle_finger:"));
-            }
-        }
     }
 }

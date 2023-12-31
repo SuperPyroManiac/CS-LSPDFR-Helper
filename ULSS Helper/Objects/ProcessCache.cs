@@ -77,7 +77,7 @@ internal class ProcessCache : Cache
 
         if (attachments != null)
         {
-            int countOfType = attachments.Count(attachment => attachment.FileName.Contains(logType));
+            var countOfType = attachments.Count(attachment => attachment.FileName.Contains(logType));
             if (countOfType > 1) return false;
         }
 

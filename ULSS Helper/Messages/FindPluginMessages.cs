@@ -9,7 +9,7 @@ internal class FindPluginMessages : FindBaseMessages
 {
     internal static string GetSearchParamsList(string title, string plugName, string plugDName, string plugId, State? plugState, string plugDescription, bool exactMatch)
     {
-        string searchParamsList = $"**{title}**\r\n";
+        var searchParamsList = $"**{title}**\r\n";
         if (plugName != null)
             searchParamsList += $"- **Name:** {plugName}\r\n";
         if (plugDName != null)
@@ -28,14 +28,14 @@ internal class FindPluginMessages : FindBaseMessages
 
     internal static async Task SendDbOperationConfirmation(Plugin newPlugin, DbOperation operation, Plugin oldPlugin=null, ModalSubmitEventArgs e=null)
     {
-        string pluginDName = $"**Display Name:** {newPlugin.DName}\r\n";
-        string pluginVersion = $"**Version:** {newPlugin.Version}\r\n";
-        string pluginEaVersion = $"**Early Access Version:** {newPlugin.EAVersion}\r\n";
-        string pluginId = $"**ID (on lcpdfr.com):** {newPlugin.ID}\r\n";
-        string pluginLink = $"**Link:** {newPlugin.Link}\r\n";
-        string pluginState = $"**State:** {newPlugin.State}\r\n";
-        string pluginDescription = $"**Notes:** \r\n> {newPlugin.Description.Replace("\n", "\n> ")}\r\n";
-        string pluginPropsList = pluginDName + pluginVersion + pluginEaVersion + pluginId + pluginDescription + pluginLink + pluginState;
+        var pluginDName = $"**Display Name:** {newPlugin.DName}\r\n";
+        var pluginVersion = $"**Version:** {newPlugin.Version}\r\n";
+        var pluginEaVersion = $"**Early Access Version:** {newPlugin.EAVersion}\r\n";
+        var pluginId = $"**ID (on lcpdfr.com):** {newPlugin.ID}\r\n";
+        var pluginLink = $"**Link:** {newPlugin.Link}\r\n";
+        var pluginState = $"**State:** {newPlugin.State}\r\n";
+        var pluginDescription = $"**Notes:** \r\n> {newPlugin.Description.Replace("\n", "\n> ")}\r\n";
+        var pluginPropsList = pluginDName + pluginVersion + pluginEaVersion + pluginId + pluginDescription + pluginLink + pluginState;
         
         DiscordEmbedBuilder embed = null;
         switch (operation)
@@ -45,19 +45,20 @@ internal class FindPluginMessages : FindBaseMessages
                 break;
             
             case DbOperation.UPDATE:
-                string title = $"**Modified {newPlugin.Name}!**\r\n";
-                string text = title;
+                var title = $"**Modified {newPlugin.Name}!**\r\n";
+                var text = title;
 
-                List<ModifiedProperty> properties = new()
-                {
+                List<ModifiedProperty> properties =
+                [
                     new ModifiedProperty("Display Name", oldPlugin.DName, newPlugin.DName, pluginDName),
                     new ModifiedProperty("Version", oldPlugin.Version, newPlugin.Version, pluginVersion),
-                    new ModifiedProperty("Early Access Version", oldPlugin.EAVersion, newPlugin.EAVersion, pluginEaVersion),
+                    new ModifiedProperty("Early Access Version", oldPlugin.EAVersion, newPlugin.EAVersion,
+                        pluginEaVersion),
                     new ModifiedProperty("ID (on lcpdfr.com)", oldPlugin.ID, newPlugin.ID, pluginId),
                     new ModifiedProperty("Link", oldPlugin.Link, newPlugin.Link, pluginLink),
                     new ModifiedProperty("State", oldPlugin.State, newPlugin.State, pluginState),
-                    new ModifiedProperty("Notes", oldPlugin.Description, newPlugin.Description, pluginDescription),
-                };
+                    new ModifiedProperty("Notes", oldPlugin.Description, newPlugin.Description, pluginDescription)
+                ];
                 try 
                 {
                     text += GetModifiedPropertiesList(properties);

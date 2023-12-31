@@ -6,15 +6,15 @@ internal class StatusMessages
 {
     internal static void SendStartupMessage()
     {
-        string branchName = "";
-        string commitHash = "";
-        string commitHashShort = "";
+        var branchName = "";
+        var commitHash = "";
+        var commitHashShort = "";
         try 
         {
-            string infoFilePath = Path.Combine(Directory.GetCurrentDirectory(), "build_info.txt");
+            var infoFilePath = Path.Combine(Directory.GetCurrentDirectory(), "build_info.txt");
             if (File.Exists(infoFilePath)) 
             {
-                string buildInfo = File.ReadAllText(infoFilePath);
+                var buildInfo = File.ReadAllText(infoFilePath);
                 branchName = buildInfo.Split("Current Branch: ")[1].Split("|")[0].Trim();
                 commitHash = buildInfo.Split("Commit Hash: ")[1].Trim();
                 commitHashShort = commitHash.Substring(0, 7);
@@ -25,11 +25,11 @@ internal class StatusMessages
             Console.WriteLine(e);
             Logging.ErrLog(e.ToString());
         }
-        string msgText = "**Tara Helper woke up from her beauty sleep!**\n\n";
+        var msgText = "**Tara Helper woke up from her beauty sleep!**\n\n";
         if (!string.IsNullOrEmpty(commitHash))
             msgText += $"Build is based on commit with hash [`{commitHashShort}`](https://github.com/SuperPyroManiac/ULSS-Helper/commit/{commitHash}) (branch: `{branchName}`)\n";
         
-        DiscordEmbedBuilder embed = BasicEmbeds.Success(msgText);
+        var embed = BasicEmbeds.Success(msgText);
         new DiscordMessageBuilder()
 	        .WithEmbed(embed)
 	        .SendAsync(Program.Client.GetChannelAsync(Program.Settings.Env.TsBotLogChannelId).Result);

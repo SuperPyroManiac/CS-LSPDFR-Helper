@@ -17,18 +17,18 @@ public class ModalSubmit
 
     public static async Task HandleModalSubmit(DiscordClient s, ModalSubmitEventArgs e)
     {
-        List<string> cacheEventIds = new()
-        { // all event ids where cached data will be used to process it
+        List<string> cacheEventIds =
+        [
             AddPlugin,
             AddError,
             EditPlugin,
             EditPluginNotes,
             EditError
-        };
+        ];
 
         if (cacheEventIds.Contains(e.Interaction.Data.CustomId))
         {
-            UserActionCache cache = Program.Cache.GetUserAction(e.Interaction.User.Id, e.Interaction.Data.CustomId);
+            var cache = Program.Cache.GetUserAction(e.Interaction.User.Id, e.Interaction.Data.CustomId);
         
             if (e.Interaction.Data.CustomId == AddPlugin)
             {
@@ -103,7 +103,7 @@ public class ModalSubmit
                     Link = plugLink
                 };
 
-                Plugin oldPlugin = Database.GetPlugin(plug.Name);
+                var oldPlugin = Database.GetPlugin(plug.Name);
 
                 Database.EditPlugin(plug);
 
@@ -114,7 +114,7 @@ public class ModalSubmit
             {
                 cache.Plugin.Description = e.Values["plugnotes"];
 
-                Plugin oldPlugin = Database.GetPlugin(cache.Plugin.Name);
+                var oldPlugin = Database.GetPlugin(cache.Plugin.Name);
 
                 Database.EditPlugin(cache.Plugin);
 
@@ -132,7 +132,7 @@ public class ModalSubmit
                     Level = cache.Error.Level
                 };
 
-                Error oldError = Database.GetError(err.ID);
+                var oldError = Database.GetError(err.ID);
 
                 Database.EditError(err);
 

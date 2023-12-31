@@ -54,9 +54,9 @@ internal class Database
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
-            List<string> conditions = new List<string>();
-            string comparisonOperator = " = '";
-            string endOfComparison = "'";
+            List<string> conditions = [];
+            var comparisonOperator = " = '";
+            var endOfComparison = "'";
             if (!(exactMatch ?? true))  
             {
                 comparisonOperator = " like '%";
@@ -70,7 +70,7 @@ internal class Database
             if (description != null) conditions.Add("Description" + comparisonOperator + description + endOfComparison);
 
             if (conditions.Count == 0) throw new InvalidDataException("At least one of the input parameters has to have a non-null value!");
-            string conditionsString = string.Join(" and ", conditions);
+            var conditionsString = string.Join(" and ", conditions);
             var output = cnn.Query<Plugin>($"select * from Plugin where {conditionsString}");
 
             return output.ToList();
@@ -135,9 +135,9 @@ internal class Database
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
-            List<string> conditions = new List<string>();
-            string comparisonOperator = " = '";
-            string endOfComparison = "'";
+            List<string> conditions = [];
+            var comparisonOperator = " = '";
+            var endOfComparison = "'";
             if (!(exactMatch ?? true))  
             {
                 comparisonOperator = " like '%";
@@ -151,7 +151,7 @@ internal class Database
             conditions.Add("Level" + comparisonOperator + level + endOfComparison);
             
             if (conditions.Count == 0) throw new InvalidDataException("At least one of the input parameters has to have a non-null value!");
-            string conditionsString = string.Join(" and ", conditions);
+            var conditionsString = string.Join(" and ", conditions);
             var output = cnn.Query<Error>($"select * from Error where {conditionsString}", new DynamicParameters());
 
             return output.ToList();
@@ -177,7 +177,7 @@ internal class Database
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             cnn.Open();
             cnn.Execute("insert into Plugin (Name, DName, Version, EAVersion, ID, State, Description, Link) VALUES (@Name, @DName, @Version, @EAVersion, @ID, @State, @Description, @Link)", plugin);
-            long id = ((SQLiteConnection) cnn).LastInsertRowId;
+            var id = ((SQLiteConnection) cnn).LastInsertRowId;
             cnn.Close();
             return id;
         }
@@ -196,7 +196,7 @@ internal class Database
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             cnn.Open();
             cnn.Execute("insert into Error (Regex, Solution, Description, Level) VALUES (@Regex, @Solution, @Description, @Level)", error);
-            long id = ((SQLiteConnection) cnn).LastInsertRowId;
+            var id = ((SQLiteConnection) cnn).LastInsertRowId;
             cnn.Close();
             return id;    
         }
@@ -291,7 +291,7 @@ internal class Database
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             cnn.Open();
             cnn.Execute("insert into TS (ID, Username, View, Allow) VALUES (@ID, @Username, @View, @Allow)", ts);
-            long id = ((SQLiteConnection) cnn).LastInsertRowId;
+            var id = ((SQLiteConnection) cnn).LastInsertRowId;
             cnn.Close();
             return id;    
         }

@@ -53,8 +53,8 @@ public class RequireAdvancedTsRoleAttribute : SlashCheckBaseAttribute
 {
     public override async Task<bool> ExecuteChecksAsync(InteractionContext ctx)
     {
-        bool hasTsRole = ctx.Member.Roles.Any(role => role.Id == Program.Settings.Env.TsRoleId);
-        bool IsWhitelistedForCommands = false;
+        var hasTsRole = ctx.Member.Roles.Any(role => role.Id == Program.Settings.Env.TsRoleId);
+        var IsWhitelistedForCommands = false;
 
         var ts = Database.LoadTs().FirstOrDefault(ts => ts.ID.ToString() == ctx.Member.Id.ToString());
         if (ts != null && ts.Allow == 0)

@@ -20,9 +20,9 @@ internal class ContextMenu : ApplicationCommandModule
     {
         //===//===//===////===//===//===////===//Attachment Checks/===////===//===//===////===//===//===//
         DiscordAttachment attachmentForAnalysis = null;
-        List<string> acceptedFileNames = new(new[]{ "RagePluginHook", "ELS", "asiloader", "ScriptHookVDotNet" });
-        string acceptedFileNamesString = string.Join(" or ", acceptedFileNames);
-        string acceptedLogFileNamesString = "`" + string.Join(".log` or `", acceptedFileNames) + ".log`";
+        List<string> acceptedFileNames = [..new[] { "RagePluginHook", "ELS", "asiloader", "ScriptHookVDotNet" }];
+        var acceptedFileNamesString = string.Join(" or ", acceptedFileNames);
+        var acceptedLogFileNamesString = "`" + string.Join(".log` or `", acceptedFileNames) + ".log`";
         SharedLogInfo sharedLogInfo = new();
         try
         {
@@ -35,8 +35,8 @@ internal class ContextMenu : ApplicationCommandModule
                     attachmentForAnalysis = context.TargetMessage.Attachments[0];
                     break;
                 case > 1:
-                    List<DiscordAttachment> acceptedAttachments = new List<DiscordAttachment>();
-                    foreach(DiscordAttachment attachment in context.TargetMessage.Attachments)
+                    List<DiscordAttachment> acceptedAttachments = [];
+                    foreach(var attachment in context.TargetMessage.Attachments)
                     {
                         if (acceptedFileNames.Any(attachment.FileName.Contains))
                         {
@@ -107,7 +107,7 @@ internal class ContextMenu : ApplicationCommandModule
     {
         await context.DeferAsync(true);
         // ReSharper disable UseObjectOrCollectionInitializer
-        ProcessCache cache = Program.Cache.GetProcess(context.TargetMessage.Id);
+        var cache = Program.Cache.GetProcess(context.TargetMessage.Id);
         RPHProcess rphProcess;
         if (ProcessCache.IsCacheUsagePossible("RagePluginHook", cache))
             rphProcess = cache.RphProcess;
@@ -126,7 +126,7 @@ internal class ContextMenu : ApplicationCommandModule
     {
         await context.DeferAsync(true);
         // ReSharper disable UseObjectOrCollectionInitializer
-        ProcessCache cache = Program.Cache.GetProcess(context.TargetMessage.Id);
+        var cache = Program.Cache.GetProcess(context.TargetMessage.Id);
         ELSProcess elsProcess;
         if (ProcessCache.IsCacheUsagePossible("ELS", cache))
             elsProcess = cache.ElsProcess;
@@ -145,7 +145,7 @@ internal class ContextMenu : ApplicationCommandModule
     {
         await context.DeferAsync(true);
         // ReSharper disable UseObjectOrCollectionInitializer
-        ProcessCache cache = Program.Cache.GetProcess(context.TargetMessage.Id);
+        var cache = Program.Cache.GetProcess(context.TargetMessage.Id);
         ASIProcess asiProcess;
         if (ProcessCache.IsCacheUsagePossible("asiloader", cache))
             asiProcess = cache.AsiProcess;
@@ -164,7 +164,7 @@ internal class ContextMenu : ApplicationCommandModule
     {
         await context.DeferAsync(true);
         // ReSharper disable UseObjectOrCollectionInitializer
-        ProcessCache cache = Program.Cache.GetProcess(context.TargetMessage.Id);
+        var cache = Program.Cache.GetProcess(context.TargetMessage.Id);
         SHVDNProcess shvdnProcess;
         if (ProcessCache.IsCacheUsagePossible("ScriptHookVDotNet", cache))
             shvdnProcess = cache.ShvdnProcess;
