@@ -19,9 +19,9 @@ internal class RPHProcess : SharedLogInfo
     internal string missmatch;
     internal string rph;
     internal RPHLog log;
-    internal string GtAver = "X";
-    internal string LspdfRver = "X";
-    internal string RpHver = "X";
+    internal string GtAver = "❌";
+    internal string LspdfRver = "❌";
+    internal string RpHver = "❌";
 
     private DiscordEmbedBuilder GetBaseLogInfoEmbed(string description)
     {
@@ -46,8 +46,6 @@ internal class RPHProcess : SharedLogInfo
     {
         if (current.Length != 0 && outdated.Length == 0 && broken.Length != 0) outdated = "**None**";
         if (current.Length != 0 && outdated.Length != 0 && broken.Length == 0) broken = "**None**";
-        if (current.Length == 0) current = "**None**";
-        if (rph.Length == 0) rph = "**None**";
 
         if (outdated.Length > 0) embed.AddField(":orange_circle:     **Update:**", "\r\n>>> - " + outdated, true);
         if (broken.Length > 0) embed.AddField(":red_circle:     **Remove:**", "\r\n>>> - " + broken, true);
@@ -60,6 +58,9 @@ internal class RPHProcess : SharedLogInfo
             embed.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **No plugin information available!**");
         if (current.Length == 0 && outdated.Length == 0 && broken.Length == 0)
             embed.AddField(":green_circle:     **No loaded plugins!**", "- No plugins detected from this log.");
+        
+        if (current.Length == 0) current = "**None**";
+        if (rph.Length == 0) rph = "**None**";
 
         return embed;
     }
@@ -90,14 +91,14 @@ internal class RPHProcess : SharedLogInfo
         library = string.Join(", ", libraryList);
         rph = string.Join(", ", rphList);
         
-        string embedDescription = "## RPH.log Quick Info";        
+        var embedDescription = "## RPH.log Quick Info";        
         if (log.FilePossiblyOutdated)
             embedDescription += "\r\n:warning: **Attention!** This log file is probably too old to determine the current RPH-related issues of the uploader!\r\n";
 
-        DiscordEmbedBuilder embed = GetBaseLogInfoEmbed(embedDescription);
+        var embed = GetBaseLogInfoEmbed(embedDescription);
 
-        DiscordMessage targetMessage = context?.TargetMessage ?? eventArgs.Message;
-        ProcessCache cache = Program.Cache.GetProcess(targetMessage.Id);
+        var targetMessage = context?.TargetMessage ?? eventArgs.Message;
+        var cache = Program.Cache.GetProcess(targetMessage.Id);
         embed = AddTsViewFields(embed, cache, log);
 
 
@@ -110,14 +111,14 @@ internal class RPHProcess : SharedLogInfo
             var embed2 = new DiscordEmbedBuilder
             {
                 Title = ":orange_circle:     **Update:**",
-                Description = "\r\n>>> - " + outdated,
+                Description = "\r\n>>> " + string.Join(" - ", linkedOutdated),
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
             var embed3 = new DiscordEmbedBuilder
             {
                 Title = ":red_circle:     **Remove:**",
-                Description = "\r\n>>> - " + broken,
+                Description = "\r\n>>> " + string.Join(" - ", brokenList),
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
@@ -127,11 +128,10 @@ internal class RPHProcess : SharedLogInfo
             if (outdated.Length != 0) overflowBuilder.AddEmbed(embed2);
             if (broken.Length != 0) overflowBuilder.AddEmbed(embed3);
             // ReSharper disable RedundantExplicitParamsArrayCreation
-            overflowBuilder.AddComponents(new DiscordComponent[]
-            {
+            overflowBuilder.AddComponents([
                 new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.RphQuickSendToUser, "Send To User", false,
                     new DiscordComponentEmoji("📨"))
-            });
+            ]);
             
             DiscordMessage sentOverflowMessage;
             if (context != null)
@@ -154,12 +154,11 @@ internal class RPHProcess : SharedLogInfo
             DiscordWebhookBuilder webhookBuilder = new();
             webhookBuilder.AddEmbed(embed);
             webhookBuilder.AddComponents(
-                new DiscordComponent[]
-                {
+                [
                     new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.RphGetDetailedInfo, "Error Info", false, new DiscordComponentEmoji("❗")),
                     new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.RphGetAdvancedInfo, "Plugin Info", false, new DiscordComponentEmoji("❓")),
                     new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.RphQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
-                }
+                ]
             );
 
             DiscordMessage sentMessage;
@@ -180,12 +179,12 @@ internal class RPHProcess : SharedLogInfo
 
     internal async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs eventArgs)
     {
-        string embedDescription = "## RPH.log Error Info";
+        var embedDescription = "## RPH.log Error Info";
         if (log.FilePossiblyOutdated)
             embedDescription += "\r\n:warning: **Attention!** This log file is probably too old to determine the current RPH-related issues of the uploader!\r\n";
         var embed = GetBaseLogInfoEmbed(embedDescription);
 
-        ProcessCache cache = Program.Cache.GetProcess(eventArgs.Message.Id);
+        var cache = Program.Cache.GetProcess(eventArgs.Message.Id);
         embed = AddTsViewFields(embed, cache, log);
         
         embed = AddCommonFields(embed);
@@ -237,8 +236,7 @@ internal class RPHProcess : SharedLogInfo
             );
 
         responseBuilder.AddComponents(
-            new DiscordComponent[]
-            {
+            [
                 new DiscordButtonComponent(
                     ButtonStyle.Secondary,
                     ComponentInteraction.RphGetQuickInfo,
@@ -252,8 +250,8 @@ internal class RPHProcess : SharedLogInfo
                     "Send To User", 
                     false,
                     new DiscordComponentEmoji("📨")
-                ), 
-            }
+                )
+            ]
         );
 
         await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, responseBuilder);
@@ -263,12 +261,12 @@ internal class RPHProcess : SharedLogInfo
     
     internal async Task SendAdvancedInfoMessage(ComponentInteractionCreateEventArgs eventArgs)
     {
-        string embedDescription = "## RPH.log Plugin Info";
+        var embedDescription = "## RPH.log Plugin Info";
         if (log.FilePossiblyOutdated)
             embedDescription += "\r\n:warning: **Attention!** This log file is probably too old to determine the current RPH-related issues of the uploader!\r\n";
         var embed = GetBaseLogInfoEmbed(embedDescription);
 
-        ProcessCache cache = Program.Cache.GetProcess(eventArgs.Message.Id);
+        var cache = Program.Cache.GetProcess(eventArgs.Message.Id);
         embed = AddTsViewFields(embed, cache, log);
         
         embed = AddCommonFields(embed);
@@ -282,16 +280,15 @@ internal class RPHProcess : SharedLogInfo
         responseBuilder.AddEmbed(embed);
 
         responseBuilder.AddComponents(
-            new DiscordComponent[]
-            {
+            [
                 new DiscordButtonComponent(
                     ButtonStyle.Secondary,
                     ComponentInteraction.RphGetQuickInfo,
                     "Back to Quick Info", 
                     false,
                     new DiscordComponentEmoji("⬅️")
-                ),
-            }
+                )
+            ]
         );
 
         await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, responseBuilder);
@@ -302,7 +299,7 @@ internal class RPHProcess : SharedLogInfo
     internal async Task SendMessageToUser(ComponentInteractionCreateEventArgs eventArgs)
     {
         var newEmbList = new List<DiscordEmbed>();
-        string embedDescription = eventArgs.Message.Embeds[0].Description;
+        var embedDescription = eventArgs.Message.Embeds[0].Description;
         if (outdated.Length > 0 || broken.Length > 0) 
             embedDescription += "\r\n\r\nUpdate or remove the following files in `GTAV/plugins/LSPDFR`";
         var newEmb = GetBaseLogInfoEmbed(embedDescription);
@@ -328,23 +325,23 @@ internal class RPHProcess : SharedLogInfo
 
     internal void SendUnknownPluginsLog(ulong originalMsgChannelId, ulong originalMsgUserId)
     {
-        string embedDescription = "__Unknown plugins or plugin versions!__\r\n\r\n>>> ";
-        string rphLogLink = log.DownloadLink != null && log.DownloadLink.StartsWith("http")
+        var embedDescription = "__Unknown plugins or plugin versions!__\r\n\r\n>>> ";
+        var rphLogLink = log.DownloadLink != null && log.DownloadLink.StartsWith("http")
             ? $"[RagePluginHook.log]({log.DownloadLink})" 
             : "RagePluginHook.log";
         embedDescription += $"There was a {rphLogLink} uploaded that has plugin versions that are unknown to the bot's DB!\r\n\r\n";
-        DiscordEmbedBuilder embed = BasicEmbeds.Warning(embedDescription, true);
+        var embed = BasicEmbeds.Warning(embedDescription, true);
 
         var missingList = log.Missing.Select(plugin => $"{plugin?.Name} {plugin?.Version}").ToList();
         var missmatchList = log.Missmatch.Select(plugin => $"{plugin?.Name} {plugin?.EAVersion}").ToList();
         
-        string missingDashListStr = "- " + string.Join("\n- ", missingList) + "\n";
+        var missingDashListStr = "- " + string.Join("\n- ", missingList) + "\n";
         if (missingDashListStr.Length > 3 && missingDashListStr.Length < 1024)
         {
             embed.AddField(":bangbang:  **Plugins not recognized:**", missingDashListStr);
         }
 
-        string missmatchDashListStr = "- " + string.Join("\n- ", missmatchList) + "\n";
+        var missmatchDashListStr = "- " + string.Join("\n- ", missmatchList) + "\n";
         if (missmatchDashListStr.Length > 3 && missmatchDashListStr.Length < 1024)
         {
             embed.AddField(":bangbang:  **Plugin version newer than DB:**", missmatchDashListStr);

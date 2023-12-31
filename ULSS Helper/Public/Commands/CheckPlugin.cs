@@ -43,11 +43,10 @@ public class CheckPlugin : ApplicationCommandModule
 				Text = "Provided by discord.gg/ulss"
 			}
 		};
-		response.AddComponents(new DiscordComponent[]
-		{
+		response.AddComponents([
 			new DiscordButtonComponent(ButtonStyle.Secondary, "SendFeedback", "Send Feedback", false,
 				new DiscordComponentEmoji("📨"))
-		});
+		]);
 		
 		await ctx.CreateResponseAsync(response.AddEmbed(embed));
 		Logging.SendPubLog(BasicEmbeds.Info(

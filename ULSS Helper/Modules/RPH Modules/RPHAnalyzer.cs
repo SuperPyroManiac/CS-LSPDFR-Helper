@@ -22,22 +22,23 @@ public class RPHAnalyzer
         var errorData = Database.LoadErrors();
         var log = new RPHLog();
         log.DownloadLink = attachmentUrl;
+        log.FilePath = fullFilePath;
         var wholeLog = File.ReadAllText(fullFilePath);
         var reader = File.ReadAllLines(fullFilePath);
 
-        log.RPHPlugin = new List<Plugin>();
-        log.Current = new List<Plugin>();
-        log.Outdated = new List<Plugin>();
-        log.Broken = new List<Plugin>();
-        log.Library = new List<Plugin>();
-        log.Missing = new List<Plugin>();
-        log.Missmatch = new List<Plugin>();
-        log.Errors = new List<Error>();
-        log.MissingDepend = new List<Plugin>();
-        log.IncorrectScripts = new List<string>();
-        log.IncorrectPlugins = new List<string>();
-        log.IncorrectLibs = new List<string>();
-        log.IncorrectOther = new List<string>();
+        log.RPHPlugin = [];
+        log.Current = [];
+        log.Outdated = [];
+        log.Broken = [];
+        log.Library = [];
+        log.Missing = [];
+        log.Missmatch = [];
+        log.Errors = [];
+        log.MissingDepend = [];
+        log.IncorrectScripts = [];
+        log.IncorrectPlugins = [];
+        log.IncorrectLibs = [];
+        log.IncorrectOther = [];
 
         if (reader.Length > 0)
             log.FilePossiblyOutdated = IsPossiblyOutdatedFile(reader[0]);
@@ -168,15 +169,15 @@ public class RPHAnalyzer
             }
             
             var rphver = new Regex(@".+ Version: RAGE Plugin Hook v(\d+\.\d+\.\d+\.\d+) for Grand Theft Auto V");
-            Match match1 = rphver.Match(line);
+            var match1 = rphver.Match(line);
             if (match1.Success) log.RPHVersion = match1.Groups[1].Value;
             
             var gtaver = new Regex(@".+ Product version: (\d+\.\d+\.\d+\.\d+)");
-            Match match2 = gtaver.Match(line);
+            var match2 = gtaver.Match(line);
             if (match2.Success) log.GTAVersion = match2.Groups[1].Value;
             
             var lspdfrver = new Regex(@".+ Running LSPD First Response 0\.4\.9 \((\d+\.\d+\.\d+\.\d+)\)");
-            Match match3 = lspdfrver.Match(line);
+            var match3 = lspdfrver.Match(line);
             if (match3.Success) log.LSPDFRVersion = match3.Groups[1].Value;
         }
 
@@ -300,15 +301,15 @@ public class RPHAnalyzer
     
     public static int CompareVersions(string version1, string version2)
     {
-        string[] parts1 = version1.Split('.');
-        string[] parts2 = version2.Split('.');
+        var parts1 = version1.Split('.');
+        var parts2 = version2.Split('.');
         
-        int minLength = Math.Min(parts1.Length, parts2.Length);
+        var minLength = Math.Min(parts1.Length, parts2.Length);
 
-        for (int i = 0; i < minLength; i++)
+        for (var i = 0; i < minLength; i++)
         {
-            int part1 = int.Parse(parts1[i]);
-            int part2 = int.Parse(parts2[i]);
+            var part1 = int.Parse(parts1[i]);
+            var part2 = int.Parse(parts2[i]);
 
             if (part1 < part2)
             {
@@ -335,67 +336,67 @@ public class RPHAnalyzer
 
     private static bool IsPossiblyOutdatedFile(string dateLine)
     {
-        Regex dateLineRegex = new Regex(@".+Started new log on \D*(\d+\W{1,2}\d+\W{1,2}\d+\S{0,1}|\d+\W[a-zA-Z]{3}\W\d+)\D*(\d{1,2}\W\d{1,2}\W\d{1,2})\s*\D*\.\d{1,3}");
-        Match dateLineMatch = dateLineRegex.Match(dateLine);
+        var dateLineRegex = new Regex(@".+Started new log on \D*(\d+\W{1,2}\d+\W{1,2}\d+\S{0,1}|\d+\W[a-zA-Z]{3}\W\d+)\D*(\d{1,2}\W\d{1,2}\W\d{1,2})\s*\D*\.\d{1,3}");
+        var dateLineMatch = dateLineRegex.Match(dateLine);
         if (!dateLineMatch.Success) 
             return false;
         
-        string dateString = dateLineMatch.Groups[1].Value; 
-        string timeString = dateLineMatch.Groups[2].Value;
-        string dateTimeString = dateString + " " + timeString;
+        var dateString = dateLineMatch.Groups[1].Value; 
+        var timeString = dateLineMatch.Groups[2].Value;
+        var dateTimeString = dateString + " " + timeString;
 
-        Regex dateRegex1 = new Regex(@"(\d+)(\W{1,2})(\d+)(\W{1,2})(\d+)(\S{0,1})");
-        Regex dateRegex2 = new Regex(@"(\d+)(\W)([a-zA-Z]{3})(\W)(\d+)");
-        Regex timeRegex = new Regex(@"(\d{1,2})(\W)(\d{1,2})(\W)(\d{1,2})");
+        var dateRegex1 = new Regex(@"(\d+)(\W{1,2})(\d+)(\W{1,2})(\d+)(\S{0,1})");
+        var dateRegex2 = new Regex(@"(\d+)(\W)([a-zA-Z]{3})(\W)(\d+)");
+        var timeRegex = new Regex(@"(\d{1,2})(\W)(\d{1,2})(\W)(\d{1,2})");
 
-        Match dateMatch1 = dateRegex1.Match(dateString);
-        Match dateMatch2 = dateRegex2.Match(dateString);
-        Match timeMatch = timeRegex.Match(timeString);
+        var dateMatch1 = dateRegex1.Match(dateString);
+        var dateMatch2 = dateRegex2.Match(dateString);
+        var timeMatch = timeRegex.Match(timeString);
 
-        string timeSep1 = ":";
-        string timeSep2 = ":";
+        var timeSep1 = ":";
+        var timeSep2 = ":";
         if (timeMatch.Success)
         {
             timeSep1 = timeMatch.Groups[2].Value;
             timeSep2 = timeMatch.Groups[4].Value;
         }
 
-        List<string> dateFormats = new();
+        List<string> dateFormats = [];
         if (dateMatch1.Success)
         {
-            string sep1 = dateMatch1.Groups[2].Value ?? "";
-            string sep2 = dateMatch1.Groups[4].Value ?? "";
-            string sep3 = dateMatch1.Groups[6].Value ?? "";
+            var sep1 = dateMatch1.Groups[2].Value ?? "";
+            var sep2 = dateMatch1.Groups[4].Value ?? "";
+            var sep3 = dateMatch1.Groups[6].Value ?? "";
             dateFormats.Add($"d{sep1}M{sep2}yyyy{sep3} H{timeSep1}mm{timeSep2}ss");
             dateFormats.Add($"M{sep1}d{sep2}yyyy{sep3} H{timeSep1}mm{timeSep2}ss");
             dateFormats.Add($"yyyy{sep1}M{sep2}d{sep3} H{timeSep1}mm{timeSep2}ss");
         }
         else if (dateMatch2.Success)
         {
-            string sep1 = dateMatch2.Groups[2].Value ?? "";
-            string sep2 = dateMatch2.Groups[4].Value ?? "";
+            var sep1 = dateMatch2.Groups[2].Value ?? "";
+            var sep2 = dateMatch2.Groups[4].Value ?? "";
             dateFormats.Add($"d{sep1}MMM{sep2}yyyy H{timeSep1}mm{timeSep2}ss");
             dateFormats.Add($"yyyy{sep1}MMM{sep2}d H{timeSep1}mm{timeSep2}ss");
         }
 
-        List<DateTime> parsedDates = new();
+        List<DateTime> parsedDates = [];
 
-        bool success = DateTime.TryParse(dateTimeString, out DateTime parsedDate1);
+        var success = DateTime.TryParse(dateTimeString, out var parsedDate1);
         if (success)
             parsedDates.Add(parsedDate1);
 
-        foreach (string dateFormat in dateFormats)
+        foreach (var dateFormat in dateFormats)
         {
-            bool successExact = DateTime.TryParseExact(dateTimeString, dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out DateTime parsedDate2);
+            var successExact = DateTime.TryParseExact(dateTimeString, dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out var parsedDate2);
             if (successExact)
                 parsedDates.Add(parsedDate2);
         }        
         
-        DateTime currentDate = DateTime.Now;
-        DateTime currentDateWithBuffer = currentDate.AddHours(24); // add a buffer of 24h to allow for any time zone differences
-        DateTime closestDate = DateTime.MinValue;
-        TimeSpan closestDifference = TimeSpan.MaxValue;
-        bool noValidResult = true;
+        var currentDate = DateTime.Now;
+        var currentDateWithBuffer = currentDate.AddHours(24); // add a buffer of 24h to allow for any time zone differences
+        var closestDate = DateTime.MinValue;
+        var closestDifference = TimeSpan.MaxValue;
+        var noValidResult = true;
 
         /*
         The following loop determines the date in the list of parsedDates that...
@@ -404,11 +405,11 @@ public class RPHAnalyzer
 
         If no parsedDate meets the two conditions above, we can't say anything meaningful about the age of the log file (noValidResult remains true)
         */
-        foreach (DateTime parsedDate in parsedDates)
+        foreach (var parsedDate in parsedDates)
         {
             if (parsedDate <= currentDateWithBuffer)
             {
-                TimeSpan difference = currentDate - parsedDate;
+                var difference = currentDate - parsedDate;
                 if (difference < closestDifference)
                 {
                     closestDifference = difference;
@@ -421,7 +422,7 @@ public class RPHAnalyzer
         if (noValidResult) 
             return false; // we don't know whether the log file is too old, so we just assume it's the most recent log
 
-        TimeSpan difference2 = currentDateWithBuffer - closestDate;
+        var difference2 = currentDateWithBuffer - closestDate;
         if (difference2.TotalHours > 48)
             return true; // the uploaded RPH log is older than 24h compared to the current dateTime (excluding the 24h buffer to allow time zone differences)
 

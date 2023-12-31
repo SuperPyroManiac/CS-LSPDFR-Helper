@@ -14,15 +14,15 @@ public class SHVDNAnalyzer
         timer.Start();
 #pragma warning disable SYSLIB0014
         using var client = new WebClient();
-        string fullFilePath = Settings.GenerateNewFilePath(FileType.SHVDN_LOG);
+        var fullFilePath = Settings.GenerateNewFilePath(FileType.SHVDN_LOG);
         client.DownloadFile(attachmentUrl, fullFilePath);
 
         // ReSharper disable once UseObjectOrCollectionInitializer
         var log = new SHVDNLog();
         log.DownloadLink = attachmentUrl;
         var wholeLog = File.ReadAllText(fullFilePath);
-        log.Scripts = new List<string>();
-        log.MissingDepends = new List<string>();
+        log.Scripts = [];
+        log.MissingDepends = [];
         
         var missingDependsShvdn = new Regex(@".+\[ERROR\] .+ (.+\.dll): System\.IO\.FileNotFoundException: (\w+\s)+\W(?!RagePluginHook)(.+), Version=.+, Culture=.+PublicKeyToken=.+");
         var matchesMissingShvdn = missingDependsShvdn.Matches(wholeLog);

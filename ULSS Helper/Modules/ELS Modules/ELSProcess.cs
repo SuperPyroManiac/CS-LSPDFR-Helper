@@ -32,10 +32,10 @@ internal class ELSProcess : SharedLogInfo
         if (context == null && eventArgs == null)
             throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
 
-        DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Quick ELS.log Info");
+        var embed = GetBaseLogInfoEmbed("## Quick ELS.log Info");
 
-        DiscordMessage targetMessage = context?.TargetMessage ?? eventArgs.Message;
-        ProcessCache cache = Program.Cache.GetProcess(targetMessage.Id);
+        var targetMessage = context?.TargetMessage ?? eventArgs.Message;
+        var cache = Program.Cache.GetProcess(targetMessage.Id);
         embed = AddTsViewFields(embed, cache, log);
 
         if (log.FaultyVcfFile != null) 
@@ -51,15 +51,14 @@ internal class ELSProcess : SharedLogInfo
         if (log.TotalAmountElsModels != null) 
             embed.AddField("Total amount of ELS-enabled models:", log.TotalAmountElsModels.ToString());
 
-        DiscordWebhookBuilder webhookBuilder = new DiscordWebhookBuilder();
+        var webhookBuilder = new DiscordWebhookBuilder();
         webhookBuilder.AddEmbed(embed);
         webhookBuilder.AddComponents(
             // ReSharper disable RedundantExplicitParamsArrayCreation
-            new DiscordComponent[]
-            {
-                new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.ElsGetDetailedInfo, "More Info", false, new DiscordComponentEmoji(Program.Settings.Env.MoreInfoBtnEmojiId)),
+            [
+                new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.ElsGetDetailedInfo, "More Info", false, new DiscordComponentEmoji("❗")),
                 new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.ElsQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
-            }
+            ]
         );
 
         DiscordMessage sentMessage;
@@ -80,11 +79,11 @@ internal class ELSProcess : SharedLogInfo
 
     internal async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs eventArgs)
     {
-        string validVcFiles = "\r\n- " + string.Join(", ", log.ValidElsVcfFiles);
-        string invalidVcFiles = "\r\n- " + string.Join("\r\n- ", log.InvalidElsVcfFiles);
-        ProcessCache cache = Program.Cache.GetProcess(eventArgs.Message.Id);
+        var validVcFiles = "\r\n- " + string.Join(", ", log.ValidElsVcfFiles);
+        var invalidVcFiles = "\r\n- " + string.Join("\r\n- ", log.InvalidElsVcfFiles);
+        var cache = Program.Cache.GetProcess(eventArgs.Message.Id);
         
-        DiscordEmbedBuilder embed = GetBaseLogInfoEmbed("## Detailed ELS.log Info");
+        var embed = GetBaseLogInfoEmbed("## Detailed ELS.log Info");
         
         foreach (var field in eventArgs.Message.Embeds[0].Fields)
         {
@@ -135,7 +134,7 @@ internal class ELSProcess : SharedLogInfo
             if (invalidVcFiles.Length != 0) overflowBuilder.AddEmbed(embed3);
             // ReSharper disable RedundantExplicitParamsArrayCreation
             overflowBuilder.AddComponents(buttonComponents);
-            DiscordMessage sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflowBuilder);
+            var sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflowBuilder);
             Program.Cache.SaveProcess(sentOverflowMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
             return;
         }

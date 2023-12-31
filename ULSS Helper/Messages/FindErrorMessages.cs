@@ -9,7 +9,7 @@ internal class FindErrorMessages : FindBaseMessages
 {    
     internal static string GetSearchParamsList(string title, string errId, string regex, string solution, string description, Level? level, bool exactMatch)
     {
-        string searchParamsList = $"**{title}**\r\n";
+        var searchParamsList = $"**{title}**\r\n";
         if (errId != null)
             searchParamsList += $"- **ID:** {errId}\r\n";
         if (regex != null)
@@ -28,11 +28,11 @@ internal class FindErrorMessages : FindBaseMessages
 
     internal static async Task SendDbOperationConfirmation(Error newError, DbOperation operation, Error oldError=null, ModalSubmitEventArgs e=null)
     {
-        string errorRegex = $"**Regex:**\r\n```\n{newError.Regex}\n```\r\n";
-        string errorSolution = $"**Solution:**\n{newError.Solution}\r\n\r\n";
-        string errorDescription = $"**Description:**\n{newError.Description}\r\n\r\n";
-        string errorLevel = $"**Level:** {newError.Level}";
-        string errorPropsList = errorRegex + errorSolution + errorDescription + errorLevel;
+        var errorRegex = $"**Regex:**\r\n```\n{newError.Regex}\n```\r\n";
+        var errorSolution = $"**Solution:**\n{newError.Solution}\r\n\r\n";
+        var errorDescription = $"**Description:**\n{newError.Description}\r\n\r\n";
+        var errorLevel = $"**Level:** {newError.Level}";
+        var errorPropsList = errorRegex + errorSolution + errorDescription + errorLevel;
 
         DiscordEmbedBuilder embed = null;
         switch (operation)
@@ -42,16 +42,16 @@ internal class FindErrorMessages : FindBaseMessages
                 break;
             
             case DbOperation.UPDATE:
-                string title = $"**Modified error ID: {newError.ID}!**\r\n";
-                string text = title;
+                var title = $"**Modified error ID: {newError.ID}!**\r\n";
+                var text = title;
 
-                List<ModifiedProperty> properties = new()
-                {
+                List<ModifiedProperty> properties =
+                [
                     new ModifiedProperty("Regex", oldError!.Regex, newError.Regex, errorRegex),
                     new ModifiedProperty("Solution", oldError.Solution, newError.Solution, errorSolution),
                     new ModifiedProperty("Description", oldError.Description, newError.Description, errorDescription),
                     new ModifiedProperty("Level", oldError.Level, newError.Level, errorLevel)
-                };
+                ];
                 try 
                 {
                     text += GetModifiedPropertiesList(properties); 

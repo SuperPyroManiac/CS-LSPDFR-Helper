@@ -24,28 +24,27 @@ internal class SharedLogInfo
     
     internal async Task SendSelectFileForAnalysisMessage(ContextMenuContext context, List<DiscordAttachment> acceptedAttachments)
     {
-        DiscordEmbedBuilder embed = BasicEmbeds.Warning(" There were multiple attachments detected for log analysis!\r\n Please select the one you would like to be analyzed!");
+        var embed = BasicEmbeds.Warning(" There were multiple attachments detected for log analysis!\r\n Please select the one you would like to be analyzed!");
         
-        List<DiscordSelectComponentOption> selectOptions = new List<DiscordSelectComponentOption>();
-        foreach(DiscordAttachment acceptedAttachment in acceptedAttachments)
+        List<DiscordSelectComponentOption> selectOptions = [];
+        foreach(var acceptedAttachment in acceptedAttachments)
         {
-            string value = context.TargetMessage.Id + OptionValueSeparator + acceptedAttachment.Id;
-            DiscordSelectComponentOption option = new DiscordSelectComponentOption(acceptedAttachment.FileName, value);
+            var value = context.TargetMessage.Id + OptionValueSeparator + acceptedAttachment.Id;
+            var option = new DiscordSelectComponentOption(acceptedAttachment.FileName, value);
             selectOptions.Add(option);
         }
 
-        DiscordWebhookBuilder webhookBuilder = new DiscordWebhookBuilder()
+        var webhookBuilder = new DiscordWebhookBuilder()
             .AddEmbed(embed)
             .AddComponents(
 	            // ReSharper disable once RedundantExplicitParamsArrayCreation
-	            new DiscordComponent[]
-                {
+                [
                     new DiscordSelectComponent(
                         customId: ComponentInteraction.SelectAttachmentForAnalysis,
                         placeholder: "Select",
                         options: selectOptions
                     )
-                }
+                ]
             );  
 
         var sentMessage = await context.EditResponseAsync(webhookBuilder);

@@ -21,8 +21,8 @@ internal class Settings
     internal static string GenerateNewFilePath(FileType fileType)
     {
         string fileName;
-        DateTime currentDateTime = DateTime.Now;
-        string formattedDateTime = currentDateTime.ToString("yyyy-MM-dd_HH-mm-ss-fff");
+        var currentDateTime = DateTime.Now;
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd_HH-mm-ss-fff");
 
         switch(fileType)
         {
@@ -53,26 +53,26 @@ internal class Settings
 
     internal static string GetOrCreateFolder(string folder)
     {
-        string path = Path.Combine(Directory.GetCurrentDirectory(), folder);
+        var path = Path.Combine(Directory.GetCurrentDirectory(), folder);
         if (!Path.Exists(path)) Directory.CreateDirectory(path);
         return path;
     }
 
     private static EnvironmentConfig LoadEnvConfigFile()
     {
-        string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), ConfigFileName);
+        var jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), ConfigFileName);
 
         // if file doesn't exist, create one with the default config (including a placeholder for the token)
         if (!File.Exists(jsonFilePath))
         {
             var options = new JsonSerializerOptions { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
-            using FileStream newFile = File.Create(jsonFilePath);
+            using var newFile = File.Create(jsonFilePath);
             JsonSerializer.Serialize(newFile, GetDefaultEnvConfig(), options: options);
             throw new FileNotFoundException("Environment config file could not be found. One has been created for you. Please add your bot token to the file!", jsonFilePath);
         }
         
-        string jsonContent = File.ReadAllText(jsonFilePath);
-        EnvironmentConfig env = JsonSerializer.Deserialize<EnvironmentConfig>(jsonContent);
+        var jsonContent = File.ReadAllText(jsonFilePath);
+        var env = JsonSerializer.Deserialize<EnvironmentConfig>(jsonContent);
         if (env == null) 
             throw new FileLoadException("Environment config file could not be loaded or parsed. If you delete the current config file and restart the bot, it will generate a new default config file with a placeholder value.", jsonFilePath);
 
@@ -81,7 +81,7 @@ internal class Settings
             throw new InvalidDataException($"Error in Environment Config: Please replace the token placeholder '{GetDefaultEnvConfig().BotToken}' in the {ConfigFileName} with an actual Discord bot token!");
 
         // only allow this bot on specific Discord servers
-        List<ulong> serverIdWhitelist = new(){449706194140135444, 1166534357792600155};
+        List<ulong> serverIdWhitelist = [449706194140135444, 1166534357792600155];
         if (serverIdWhitelist.All(whitelistId => whitelistId != env.ServerId))
             throw new InvalidDataException($"Error in Environment Config: You are not allowed to use this bot on the Discord server with ID '{env.ServerId}'!");
         
@@ -100,15 +100,15 @@ internal class Settings
             ServerId: 449706194140135444,
             TsRoleId: 517568233360982017,
             TsIconUrl: "https://cdn.discordapp.com/role-icons/517568233360982017/b69077cfafb6856a0752c863e1bb87f0.webp?size=128&quality=lossless",
-            MoreInfoBtnEmojiId: 723417756938010646,
-            BotAdminUserIds: new(){339550607847194624},
+            BotAdminUserIds: [339550607847194624],
             BotBlacklistRoleId: 1134534059771572356,
-            PublicUsageAllowedChannelIds: new(){672541961969729540, 692254906752696332},
+            PublicUsageAllowedChannelIds: [672541961969729540, 692254906752696332],
+            AutoHelperChannelIds: [1189587698642583574],
             TsBotLogChannelId: 1173304071084585050,
             PublicBotLogChannelId: 1173304117557477456,
             PublicBotReportsChannelId: 547311030477520896,
             StaffContactChannelId: 693303741071228938,
-            BullyingVictims: new(){478591527321337857, 614191277528973428}
+            BullyingVictims: [478591527321337857, 614191277528973428]
         );
     } 
 }
