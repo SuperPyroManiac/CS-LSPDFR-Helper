@@ -333,9 +333,45 @@ internal class Database
         }
     }
     
+    internal static List<DiscordUser> LoadUsers()
+    {
+        try
+        {
+            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
+            var output = cnn.Query<DiscordUser>("select * from Users");
+            return output.ToList();
+        }
+        catch (SQLiteException e)
+        {
+            Console.WriteLine(e);
+            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            throw;
+        }
+    }
+    
+    
+    internal static long AddUser(DiscordUser user)
+    {
+        try
+        {
+            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
+            cnn.Open();
+            cnn.Execute("insert into Users (UID, Username, TS, View, Editor, BotAdmin, Bully) VALUES (@UID, @Username, @TS, @View, @Editor, @BotAdmin, @Bully)", user);
+            long id = ((SQLiteConnection) cnn).LastInsertRowId;
+            cnn.Close();
+            return id;    
+        }
+        catch (SQLiteException e)
+        {
+            Console.WriteLine(e);
+            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            throw;
+        }
+    }
+    
     internal static void UpdatePluginVersions()
     {
-#pragma warning disable SYSLIB0014
+        #pragma warning disable SYSLIB0014
 	    var webClient = new WebClient();
 	    var plugins = LoadPlugins();
         foreach (var plugin in plugins)
