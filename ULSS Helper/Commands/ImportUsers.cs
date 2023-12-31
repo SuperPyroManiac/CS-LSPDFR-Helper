@@ -3,12 +3,13 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Commands;
 
-public class ImportUsers
+public class ImportUsers : ApplicationCommandModule
 {
     [SlashCommand("ImportUsers", "Imports All Users!")]
     [RequireBotAdmin]
     public async Task ImportUsersCmd(InteractionContext ctx)
     {
+        var counter = 0;
         await foreach (var user in ctx.Guild.GetAllMembersAsync())
         {
             if (Database.LoadUsers().All(us => us.UID != user.Id.ToString()))
@@ -24,6 +25,8 @@ public class ImportUsers
                     Bully = 0
                 };
                 Database.AddUser(newUser);
+                counter++;
+                Console.WriteLine(counter);
             }
         }
     }
