@@ -35,10 +35,10 @@ public class CheckLog : ApplicationCommandModule
                 response.AddEmbed(BasicEmbeds.Error("There was an error here!\r\nPlease wait a minute and try again!"));
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
                 Logging.SendPubLog(BasicEmbeds.Error(
-                    $"Failed upload!\r\n"
+                    $"__Failed upload!__\r\n"
                     + $">>> Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
                     + $"Channel: <#{ctx.Channel.Id}>\r\n\r\n"
-                    + $"Reason denied: Failed to acquire log!"
+                    + $"Reason denied: Failed to acquire log!", true
                 ));
                 return;
             }
@@ -47,13 +47,13 @@ public class CheckLog : ApplicationCommandModule
                 response.AddEmbed(BasicEmbeds.Error("Incorrect file name.\r\nPlease make sure your file is called `RagePluginHook.log`!"));
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
                 Logging.SendPubLog(BasicEmbeds.Warning(
-                    $"Rejected upload!\r\n"
+                    $"__Rejected upload!__\r\n"
                     + $">>> Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
                     + $"Channel: <#{ctx.Channel.Id}>\r\n"
                     + $"File name: {attachment.FileName}\r\n"
                     + $"Size: {attachment.FileSize/1000}KB\r\n"
                     + $"[Download Here]({attachment.Url})\r\n\r\n"
-                    + $"Reason denied: Incorrect name"
+                    + $"Reason denied: Incorrect name", true
                 ));
                 return;
             }
@@ -63,23 +63,23 @@ public class CheckLog : ApplicationCommandModule
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
                 await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(Program.Settings.Env.BotBlacklistRoleId));
                 Logging.ReportPubLog(BasicEmbeds.Error(
-                    $"Possible bot abuse!\r\n"
+                    $"__Possible bot abuse!__\r\n"
                     + $">>> User has been blacklisted from bot use! (Dunce role added!)\r\n"
                     + $"Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
                     + $"Channel: <#{ctx.Channel.Id}>\r\n"
                     + $"File name: {attachment.FileName}\r\n"
                     + $"Size: {attachment.FileSize / 1000}KB\r\n"
                     + $"[Download Here]({attachment.Url})\r\n\r\n"
-                    + $"Reason denied: File way too large! (Larger than 10 MB)"
+                    + $"Reason denied: File way too large! (Larger than 10 MB)", true
                 ));
                 Logging.SendPubLog(BasicEmbeds.Error(
-                    $"Rejected upload!\r\n"
+                    $"__Rejected upload!__\r\n"
                     + $">>> Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
                     + $"Channel: <#{ctx.Channel.Id}>\r\n"
                     + $"File name: {attachment.FileName}\r\n"
                     + $"Size: {attachment.FileSize / 1000}KB\r\n"
                     + $"[Download Here]({attachment.Url})\r\n\r\n"
-                    + $"Reason denied: File way too large! (Larger than 10 MB)"
+                    + $"Reason denied: File way too large! (Larger than 10 MB)", true
                 ));
                 return;
             }
@@ -88,13 +88,13 @@ public class CheckLog : ApplicationCommandModule
                 response.AddEmbed(BasicEmbeds.Error("File is too big!\r\nAsk our TS to check this log!"));
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
                 Logging.SendPubLog(BasicEmbeds.Warning(
-                    $"Rejected upload!\r\n"
+                    $"__Rejected upload!__\r\n"
                     + $">>> Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
                     + $"Channel: <#{ctx.Channel.Id}>\r\n"
                     + $"File name: {attachment.FileName}\r\n"
                     + $"Size: {attachment.FileSize / 1000}KB\r\n"
                     + $"[Download Here]({attachment.Url})\r\n\r\n"
-                    + $"Reason denied: File too large!"
+                    + $"Reason denied: File too large!", true
                 ));
                 return;
             }
@@ -113,23 +113,23 @@ public class CheckLog : ApplicationCommandModule
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
                 await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(Program.Settings.Env.BotBlacklistRoleId));
                 Logging.ReportPubLog(BasicEmbeds.Error(
-                    $"Possible bot abuse!\r\n"
+                    $"__Possible bot abuse!__\r\n"
                     + $">>> User has been blacklisted from bot use! (Dunce role added!)\r\n"
                     + $"Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
                     + $"Channel: <#{ctx.Channel.Id}>\r\n"
                     + $"File name: {attachment.FileName}\r\n"
                     + $"Size: {attachment.FileSize / 1000}KB\r\n"
                     + $"[Download Here]({attachment.Url})\r\n\r\n"
-                    + $"Reason denied: Log caused an error! See <#{Program.Settings.Env.TsBotLogChannelId}>"
+                    + $"Reason denied: Log caused an error! See <#{Program.Settings.Env.TsBotLogChannelId}>", true
                 ));
                 Logging.SendPubLog(BasicEmbeds.Error(
-                    $"Rejected upload!\r\n"
+                    $"__Rejected upload!__\r\n"
                     + $">>> Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
                     + $"Channel: <#{ctx.Channel.Id}>\r\n"
                     + $"File name: {attachment.FileName}\r\n"
                     + $"Size: {attachment.FileSize / 1000}KB\r\n"
                     + $"[Download Here]({attachment.Url})\r\n\r\n"
-                    + $"Reason denied: Log caused an error! See <#{Program.Settings.Env.TsBotLogChannelId}>"
+                    + $"Reason denied: Log caused an error! See <#{Program.Settings.Env.TsBotLogChannelId}>", true
                 ));
                 Logging.ErrLog($"Public Log Error: {e}");
                 Console.WriteLine(e);

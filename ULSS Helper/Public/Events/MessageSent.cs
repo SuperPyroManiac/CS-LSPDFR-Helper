@@ -23,7 +23,17 @@ public class MessageSent
             {
                 if (!ctx.Message.Attachments.FirstOrDefault()!.FileName.Equals("RagePluginHook.log"))
                 {
+                    var attachment = ctx.Message.Attachments.FirstOrDefault()!;
                     var wng = await ctx.Message.RespondAsync(BasicEmbeds.Error("This is not a `RagePluginHook.log` file!"));
+                    Logging.SendPubLog(BasicEmbeds.Warning(
+                        $"__Rejected upload!__\r\n"
+                        + $">>> Sender: <@{ctx.Author.Id}> ({ctx.Author.Username})\r\n"
+                        + $"Channel: <#{ctx.Channel.Id}>\r\n"
+                        + $"File name: {attachment.FileName}\r\n"
+                        + $"Size: {attachment.FileSize/1000}KB\r\n"
+                        + $"[Download Here]({attachment.Url})\r\n\r\n"
+                        + $"Reason denied: Incorrect name", true
+                    ));
                     Thread.Sleep(4000);
                     await ctx.Message.DeleteAsync();
                     await ctx.Channel.DeleteMessageAsync(wng);
@@ -41,7 +51,7 @@ public class MessageSent
                 await supportthread.DeleteAsync();
                 await ctx.Message.DeleteAsync();
             }
-            if (ctx.Author.IsBot && ctx.Message.Content.Contains(thread)) await ctx.Message.DeleteAsync();
+            if (ctx.Message.MessageType == MessageType.ThreadCreated) await ctx.Message.DeleteAsync();
         }
     }
 }
