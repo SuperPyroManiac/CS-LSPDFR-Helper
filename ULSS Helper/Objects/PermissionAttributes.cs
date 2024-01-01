@@ -56,8 +56,8 @@ public class RequireAdvancedTsRoleAttribute : SlashCheckBaseAttribute
         var hasTsRole = ctx.Member.Roles.Any(role => role.Id == Program.Settings.Env.TsRoleId);
         var IsWhitelistedForCommands = false;
 
-        var ts = Database.LoadTs().FirstOrDefault(ts => ts.ID.ToString() == ctx.Member.Id.ToString());
-        if (ts != null && ts.Allow == 0)
+        var ts = Database.LoadUsers().FirstOrDefault(ts => ts.UID.ToString() == ctx.Member.Id.ToString());
+        if (ts != null && ts.Editor == 0)
             Logging.SendLog(
                 ctx.Interaction.Channel.Id, 
                 ctx.Interaction.User.Id,
