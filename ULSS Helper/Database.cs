@@ -268,71 +268,6 @@ internal class Database
         }
     }
     
-    internal static List<TS> LoadTs()
-    {
-        try
-        {
-            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
-            var output = cnn.Query<TS>("select * from TS");
-            return output.ToList();
-        }
-        catch (SQLiteException e)
-        {
-            Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}");
-            throw;
-        }
-    }
-    
-    internal static long AddTs(TS ts)
-    {
-        try
-        {
-            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
-            cnn.Open();
-            cnn.Execute("insert into TS (ID, Username, View, Allow) VALUES (@ID, @Username, @View, @Allow)", ts);
-            var id = ((SQLiteConnection) cnn).LastInsertRowId;
-            cnn.Close();
-            return id;    
-        }
-        catch (SQLiteException e)
-        {
-            Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}");
-            throw;
-        }
-    }
-    
-    internal static void EditTs(TS ts)
-    {
-        try
-        {
-            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
-            cnn.Execute("UPDATE TS SET (ID, Username, View, Allow) = (@ID, @Username, @View, @Allow) WHERE ID = (@ID)", ts);
-        }
-        catch (SQLiteException e)
-        {
-            Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}");
-            throw;
-        }
-    }
-    
-    internal static void DeleteTs(TS ts)
-    {
-        try
-        {
-            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
-            cnn.Execute("delete from TS where ID = (@ID)", ts);
-        }
-        catch (SQLiteException e)
-        {
-            Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}");
-            throw;
-        }
-    }
-    
     internal static List<DiscordUser> LoadUsers()
     {
         try
@@ -360,6 +295,21 @@ internal class Database
             long id = ((SQLiteConnection) cnn).LastInsertRowId;
             cnn.Close();
             return id;    
+        }
+        catch (SQLiteException e)
+        {
+            Console.WriteLine(e);
+            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            throw;
+        }
+    }
+    
+    internal static void EditUser(DiscordUser user)
+    {
+        try
+        {
+            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
+            cnn.Execute("UPDATE Users SET (UID, Username, TS, View, Editor, BotAdmin, Bully) = (@UID, @Username, @TS, @View, @Editor, @BotAdmin, @Bully) WHERE UID = (@UID)", user);
         }
         catch (SQLiteException e)
         {

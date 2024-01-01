@@ -159,7 +159,7 @@ public class RPHAnalyzer
                 }
             }
             
-            var rphFinder = new Regex(@"Plugin \W?.+\W? was loaded from \W?(.+\.dll)\W?");
+            var rphFinder = new Regex(@"Loading plugin .+\wlugins(?:\\|/)(.+).dll.*");
             var rphMatch = rphFinder.Match(line);
             if (rphMatch.Success)
             {

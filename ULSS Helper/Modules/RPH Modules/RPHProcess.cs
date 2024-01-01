@@ -189,7 +189,7 @@ internal class RPHProcess : SharedLogInfo
         
         embed = AddCommonFields(embed);
 
-        var ts = Database.LoadTs().FirstOrDefault(ts => ts.ID.ToString().Equals(eventArgs.User.Id.ToString()));
+        var ts = Database.LoadUsers().FirstOrDefault(ts => ts.UID.ToString().Equals(eventArgs.User.Id.ToString()));
         var errorIds = new List<DiscordSelectComponentOption>();
         var update = false;
         foreach (var error in log.Errors)
