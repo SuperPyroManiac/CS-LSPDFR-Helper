@@ -159,16 +159,18 @@ public class ModalSubmit
                 var embed = BasicEmbeds.Info(
                     $"__User Updated!__\r\n"
                     + $">>> **UID: **{user.UID}\r\n"
-                    + $">>> **Username: **{user.Username}\r\n"
-                    + $">>> **Is TS: **{user.TS}\r\n"
-                    + $">>> **Xtra View: **{user.View}\r\n"
-                    + $">>> **Is Editor: **{user.Editor}\r\n"
-                    + $">>> **Is Bot Admin: **{user.BotAdmin}\r\n"
-                    + $">>> **Bully Victim: **{user.Bully}\r\n");
-                Logging.SendLog(e.Interaction.ChannelId,e.Interaction.User.Id,embed);
+                    + $" **Username: **{user.Username}\r\n"
+                    + $" **Is TS: **{user.TS}\r\n"
+                    + $" **Xtra View: **{user.View}\r\n"
+                    + $" **Is Editor: **{user.Editor}\r\n"
+                    + $" **Is Bot Admin: **{user.BotAdmin}\r\n"
+                    + $" **Bully Victim: **{user.Bully}\r\n", true);
+                
                 await e.Interaction.CreateResponseAsync(
-                    InteractionResponseType.UpdateMessage,
-                    new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Feedback sent!")));
+                    InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().AddEmbed(embed).AsEphemeral(true));
+                
+                Logging.SendLog(e.Interaction.ChannelId,e.Interaction.User.Id,embed);
             }
             
 			// delete the cached data of the action that is completed now (which means the cache isn't needed anymore)
