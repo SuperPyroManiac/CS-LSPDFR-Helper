@@ -319,6 +319,57 @@ internal class Database
         }
     }
     
+    internal static List<AutoCase> LoadCases()
+    {
+        try
+        {
+            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
+            var output = cnn.Query<AutoCase>("select * from Cases");
+            return output.ToList();
+        }
+        catch (SQLiteException e)
+        {
+            Console.WriteLine(e);
+            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            throw;
+        }
+    }
+    
+    
+    internal static long AddCase(AutoCase autocase)
+    {
+        try
+        {
+            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
+            cnn.Open();
+            cnn.Execute("insert into Cases (CaseID, OwnerID, ChannelID, ParentID, Solved, Timer) VALUES (@CaseID, @OwnerID, @ChannelID, @ParentID, @Solved, @Timer)", autocase);
+            long id = ((SQLiteConnection) cnn).LastInsertRowId;
+            cnn.Close();
+            return id;    
+        }
+        catch (SQLiteException e)
+        {
+            Console.WriteLine(e);
+            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            throw;
+        }
+    }
+    
+    internal static void EditUser(AutoCase autocase)
+    {
+        try
+        {
+            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
+            cnn.Execute("UPDATE Cases SET (CaseID, OwnerID, ChannelID, ParentID, Solved, Timer) = (@CaseID, @OwnerID, @ChannelID, @ParentID, @Solved, @Timer) WHERE CaseID = (@CaseID)", autocase);
+        }
+        catch (SQLiteException e)
+        {
+            Console.WriteLine(e);
+            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            throw;
+        }
+    }
+    
     internal static void UpdatePluginVersions()
     {
         #pragma warning disable SYSLIB0014

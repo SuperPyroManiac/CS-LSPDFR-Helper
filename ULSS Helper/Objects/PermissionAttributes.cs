@@ -81,13 +81,10 @@ public class RequireBotAdminAttribute : SlashCheckBaseAttribute
 {
     public override async Task<bool> ExecuteChecksAsync(InteractionContext ctx)
     {
-        if (Program.Settings.Env.BotAdminUserIds.Any(adminId => adminId == ctx.Member.Id))
+        if (Database.LoadUsers().Any(x => x.UID == ctx.Member.Id.ToString() && x.BotAdmin == 1))
             return true;
-        else
-        {
-            await PermissionMessages.SendNoPermissionError(ctx);
-            return false;
-        }
+        await PermissionMessages.SendNoPermissionError(ctx);
+        return false;
     }
 }
 
@@ -100,7 +97,7 @@ public class RequireNotOnBotBlacklist : SlashCheckBaseAttribute
     {
         if (ctx.Member.Roles.Any(role => role.Id == Program.Settings.Env.BotBlacklistRoleId))
         {
-            var responseBuilder = new DiscordInteractionResponseBuilder { IsEphemeral = true };
+            var responseBuilder = new DiscordInteractionResponseBuilder { IsEphemeral = true };//TODO: Make it use DB
             responseBuilder.AddEmbed(BasicEmbeds.Error(
                 $"You are blacklisted from the bot!\r\nContact server staff in <#{Program.Settings.Env.StaffContactChannelId}> if you think this is an error!"
             ));

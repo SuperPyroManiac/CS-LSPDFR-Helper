@@ -3,6 +3,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Modules.RPH_Modules;
+using ULSS_Helper.Objects;
 using ULSS_Helper.Public.AutoHelper;
 
 namespace ULSS_Helper.Public.Events;
@@ -25,7 +26,7 @@ public class MessageSent
             {
                 var attach = ctx.Message.Attachments.FirstOrDefault();
                 
-                if (!attach!.FileName.Equals("RagePluginHook.log"))
+                if (!attach!.FileName.Contains("RagePluginHook")) //TODO: if (!attach!.FileName.Equals("RagePluginHook.log"))
                 {
                     var wng = await ctx.Message.RespondAsync(BasicEmbeds.Error("This is not a `RagePluginHook.log` file!"));
                     Logging.SendPubLog(BasicEmbeds.Warning(
@@ -77,6 +78,18 @@ public class MessageSent
 
             if (!ctx.Author.IsBot)
             {
+                AutoCase findCase = null;
+                foreach (var autocase in Database.LoadCases().Where(autocase => autocase.OwnerID.Equals(ctx.Author.Id.ToString()))) findCase = autocase;
+                
+                if (findCase != null && findCase.Solved == 0)
+                {
+                    var wng = await ctx.Message.RespondAsync(BasicEmbeds.Error($"You already have an open case!\r\nCheck <#{findCase.ChannelID}>"));
+                    Thread.Sleep(4000);
+                    await ctx.Message.DeleteAsync();
+                    await ctx.Channel.DeleteMessageAsync(wng);
+                    return;
+                }
+                
                 var attach = ctx.Message.Attachments.FirstOrDefault();
                 var caseId = new Random().Next(int.MaxValue).ToString("x");
                 var supportthread = await ctx.Channel.
@@ -86,6 +99,16 @@ public class MessageSent
                 await supportthread.SendMessageAsync(
                     BasicEmbeds.Public("## Your log has been uploaded!\r\n" +
                                        "Depending on the size, this may take a moment to process!"));
+                var newCase = new AutoCase()
+                {
+                    CaseID = caseId,
+                    OwnerID = ctx.Author.Id.ToString(),
+                    ChannelID = supportthread.Id.ToString(),
+                    ParentID = supportthread.Parent.Id.ToString(),
+                    Solved = 0,
+                    Timer = 24
+                };
+                Database.AddCase(newCase);
                 
                 await AutoRPH.ProccessLog(RPHAnalyzer.Run(attach!.Url), ctx, supportthread);
                 Thread.Sleep(4000);
