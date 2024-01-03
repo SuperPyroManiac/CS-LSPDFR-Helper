@@ -75,6 +75,9 @@ public class AutoRPH
             overflow.AddFile(fs, AddFileOptions.CloseStream);
             if (outdated.Length != 0) overflow.AddEmbed(embed2);
             if (broken.Length != 0) overflow.AddEmbed(embed3);
+            overflow.AddComponents([
+                new DiscordButtonComponent(ButtonStyle.Secondary, "SendFeedback", "Send Feedback", false,
+                    new DiscordComponentEmoji("📨"))]);
             await st.SendMessageAsync(overflow);
 
         }
@@ -118,12 +121,11 @@ public class AutoRPH
             // ReSharper disable once RedundantExplicitParamsArrayCreation
             messageBuilder.AddComponents([
                 new DiscordButtonComponent(ButtonStyle.Secondary, "SendFeedback", "Send Feedback", false,
-                    new DiscordComponentEmoji("📨"))
-            ]);
+                    new DiscordComponentEmoji("📨"))]);
             await st.SendMessageAsync(messageBuilder);
         }
                 
-        Thread.Sleep(30000);
+        Thread.Sleep(60000);
         await st.DeleteAsync();//TODO: Remove this
     }
 }

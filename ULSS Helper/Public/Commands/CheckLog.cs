@@ -210,6 +210,9 @@ public class CheckLog : ApplicationCommandModule
             overflow.AddEmbed(embed);
             if (outdated.Length != 0) overflow.AddEmbed(embed2);
             if (broken.Length != 0) overflow.AddEmbed(embed3);
+            overflow.AddComponents([
+                new DiscordButtonComponent(ButtonStyle.Secondary, "SendFeedback", "Send Feedback", false,
+                    new DiscordComponentEmoji("📨"))]);
             await context.EditResponseAsync(overflow);
 
             Logging.SendPubLog(BasicEmbeds.Info(

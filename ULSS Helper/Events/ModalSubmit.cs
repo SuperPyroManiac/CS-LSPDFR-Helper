@@ -190,8 +190,8 @@ public class ModalSubmit
 					);
 				Logging.SendPubLog(embed);
 				await e.Interaction.CreateResponseAsync(
-					InteractionResponseType.UpdateMessage,
-					new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Feedback sent!"))
+					InteractionResponseType.ChannelMessageWithSource,
+					new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Feedback sent!")).AsEphemeral(true)
 					);
 			}
 		}
