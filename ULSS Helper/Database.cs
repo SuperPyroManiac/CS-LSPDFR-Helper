@@ -291,8 +291,8 @@ internal class Database
         {
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             cnn.Open();
-            cnn.Execute("insert into Users (UID, Username, TS, View, Editor, BotAdmin, Bully) VALUES (@UID, @Username, @TS, @View, @Editor, @BotAdmin, @Bully)", user);
-            long id = ((SQLiteConnection) cnn).LastInsertRowId;
+            cnn.Execute("insert into Users (UID, Username, TS, View, Editor, BotAdmin, Bully, Blocked) VALUES (@UID, @Username, @TS, @View, @Editor, @BotAdmin, @Bully, @Blocked)", user);
+            var id = ((SQLiteConnection) cnn).LastInsertRowId;
             cnn.Close();
             return id;    
         }
@@ -309,7 +309,7 @@ internal class Database
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
-            cnn.Execute("UPDATE Users SET (UID, Username, TS, View, Editor, BotAdmin, Bully) = (@UID, @Username, @TS, @View, @Editor, @BotAdmin, @Bully) WHERE UID = (@UID)", user);
+            cnn.Execute("UPDATE Users SET (UID, Username, TS, View, Editor, BotAdmin, Bully, Blocked) = (@UID, @Username, @TS, @View, @Editor, @BotAdmin, @Bully, @Blocked) WHERE UID = (@UID)", user);
         }
         catch (SQLiteException e)
         {
@@ -342,8 +342,8 @@ internal class Database
         {
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             cnn.Open();
-            cnn.Execute("insert into Cases (CaseID, OwnerID, ChannelID, ParentID, Solved, Timer) VALUES (@CaseID, @OwnerID, @ChannelID, @ParentID, @Solved, @Timer)", autocase);
-            long id = ((SQLiteConnection) cnn).LastInsertRowId;
+            cnn.Execute("insert into Cases (CaseID, OwnerID, ChannelID, ParentID, Solved, Timer, TsRequested) VALUES (@CaseID, @OwnerID, @ChannelID, @ParentID, @Solved, @Timer, @TsRequested)", autocase);
+            var id = ((SQLiteConnection) cnn).LastInsertRowId;
             cnn.Close();
             return id;    
         }
@@ -355,12 +355,12 @@ internal class Database
         }
     }
     
-    internal static void EditUser(AutoCase autocase)
+    internal static void EditCase(AutoCase autocase)
     {
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
-            cnn.Execute("UPDATE Cases SET (CaseID, OwnerID, ChannelID, ParentID, Solved, Timer) = (@CaseID, @OwnerID, @ChannelID, @ParentID, @Solved, @Timer) WHERE CaseID = (@CaseID)", autocase);
+            cnn.Execute("UPDATE Cases SET (CaseID, OwnerID, ChannelID, ParentID, Solved, Timer, TsRequested) = (@CaseID, @OwnerID, @ChannelID, @ParentID, @Solved, @Timer, @TsRequested) WHERE CaseID = (@CaseID)", autocase);
         }
         catch (SQLiteException e)
         {

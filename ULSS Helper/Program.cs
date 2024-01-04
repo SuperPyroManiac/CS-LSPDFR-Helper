@@ -42,7 +42,9 @@ internal class Program
 
         Client.ModalSubmitted += ModalSubmit.HandleModalSubmit;
         Client.ComponentInteractionCreated += ComponentInteraction.HandleInteraction;
-        Client.MessageCreated += Events.MessageSent.MessageSentEvent;
+        Client.MessageCreated += MessageSent.MessageSentEvent;
+        Client.GuildMemberAdded += JoinLeave.JoinEvent;
+        Client.GuildMemberRemoved += JoinLeave.LeaveEvent;
         //Client.VoiceStateUpdated += VoiceChatManager.OnMemberJoinLeaveVC;
 
         Client.UseInteractivity(new InteractivityConfiguration());

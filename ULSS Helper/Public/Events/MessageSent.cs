@@ -12,8 +12,16 @@ public class MessageSent
 {
     internal static async Task MessageSentEvent(DiscordClient s, MessageCreateEventArgs ctx)
     {
-        if (Program.Settings.Env.AutoHelperChannelIds.All(x => ctx.Channel == ctx.Guild.GetChannel(x)))
+        if (Program.Settings.Env.AutoHelperChannelIds.Any(x => ctx.Channel == ctx.Guild.GetChannel(x)))
         {
+            if (Database.LoadUsers().Any(x => x.UID == ctx.Author.Id.ToString() && x.Blocked == 1))
+            {
+                var wng = await ctx.Message.RespondAsync(BasicEmbeds.Error($"You are blacklisted from the bot!\r\nContact server staff in <#{Program.Settings.Env.StaffContactChannelId}> if you think this is an error!"));
+                Thread.Sleep(4000);
+                await ctx.Message.DeleteAsync();
+                await ctx.Channel.DeleteMessageAsync(wng);
+                return;
+            }
             if (ctx.Message.Attachments.Count != 1 && !ctx.Author.IsBot)
             {
                 var wng = await ctx.Message.RespondAsync(BasicEmbeds.Error("Please only send a single `RagePluginHook.log` file!"));
@@ -48,11 +56,12 @@ public class MessageSent
                 {
                     var wng = await ctx.Message.RespondAsync(BasicEmbeds.Error(
                         "File is way too big!\r\nYou may not upload anything else until staff review this!"));
-                    await ctx.Guild.GetMemberAsync(ctx.Author.Id).Result.
-                        GrantRoleAsync(ctx.Guild.GetRole(Program.Settings.Env.BotBlacklistRoleId));
+                    var user = Database.LoadUsers().FirstOrDefault(x => x.UID == ctx.Author.Id.ToString());
+                    if (user != null) user.Blocked = 1;
+                    Database.EditUser(user);
                     Logging.ReportPubLog(BasicEmbeds.Error(
                         $"__Possible bot abuse!__\r\n"
-                        + $">>> User has been blacklisted from bot use! (Dunce role added!)\r\n"
+                        + $">>> User has been blacklisted from bot use!\r\n"
                         + $"Sender: <@{ctx.Author.Id}> ({ctx.Author.Username})\r\n"
                         + $"Channel: <#{ctx.Channel.Id}>\r\n"
                         + $"File name: {attach.FileName}\r\n"
@@ -106,7 +115,8 @@ public class MessageSent
                     ChannelID = supportthread.Id.ToString(),
                     ParentID = supportthread.Parent.Id.ToString(),
                     Solved = 0,
-                    Timer = 24
+                    Timer = 24,
+                    TsRequested = 0
                 };
                 Database.AddCase(newCase);
                 

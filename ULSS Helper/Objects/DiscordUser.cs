@@ -9,5 +9,5 @@ public class DiscordUser
     public int Editor { get; set; }
     public int BotAdmin { get; set; }
     public int Bully { get; set; }
-    public int Block { get; set; }
+    public int Blocked { get; set; }
 }

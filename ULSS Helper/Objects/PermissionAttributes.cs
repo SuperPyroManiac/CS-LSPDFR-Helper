@@ -68,8 +68,7 @@ public class RequireAdvancedTsRoleAttribute : SlashCheckBaseAttribute
         
         if (hasTsRole && IsWhitelistedForCommands)
             return true;
-        else
-            await PermissionMessages.SendNoPermissionError(ctx);
+        await PermissionMessages.SendNoPermissionError(ctx);
         return false;
     }
 }
@@ -89,15 +88,15 @@ public class RequireBotAdminAttribute : SlashCheckBaseAttribute
 }
 
 /// <summary>
-/// Makes sure that the user does not have the "bot blacklist (dunce)" role.
+/// Checks whether the user is blocked from public usage.
 /// </summary>
 public class RequireNotOnBotBlacklist : SlashCheckBaseAttribute
 {
     public override async Task<bool> ExecuteChecksAsync(InteractionContext ctx)
     {
-        if (ctx.Member.Roles.Any(role => role.Id == Program.Settings.Env.BotBlacklistRoleId))
+        if (Database.LoadUsers().Any(x => x.UID == ctx.User.Id.ToString() && x.Blocked == 1))
         {
-            var responseBuilder = new DiscordInteractionResponseBuilder { IsEphemeral = true };//TODO: Make it use DB
+            var responseBuilder = new DiscordInteractionResponseBuilder { IsEphemeral = true };
             responseBuilder.AddEmbed(BasicEmbeds.Error(
                 $"You are blacklisted from the bot!\r\nContact server staff in <#{Program.Settings.Env.StaffContactChannelId}> if you think this is an error!"
             ));

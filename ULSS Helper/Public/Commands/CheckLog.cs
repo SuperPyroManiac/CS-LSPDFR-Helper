@@ -20,121 +20,122 @@ public class CheckLog : ApplicationCommandModule
 
         //===//===//===////===//===//===////===//Check Permissions//===////===//===//===////===//===//===//
         
-        if (ctx.Member.Roles.All(role => role.Id != Program.Settings.Env.BotBlacklistRoleId))
+        var allowedChannelIds = Program.Settings.Env.PublicUsageAllowedChannelIds;
+        if (allowedChannelIds.All(allowedId => ctx.Channel != ctx.Guild.GetChannel(allowedId)))
         {
-            var allowedChannelIds = Program.Settings.Env.PublicUsageAllowedChannelIds;
-            if (allowedChannelIds.All(allowedId => ctx.Channel != ctx.Guild.GetChannel(allowedId)))
-            {
-                var allowedChannels = allowedChannelIds.Select(selector: channelId => $"<#{channelId}>").ToList();
-                response.AddEmbed(BasicEmbeds.Error($"Invalid channel!\r\nYou may only use this in {string.Join(" or ", allowedChannels)}!"));
-                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
-                return;
-            }
-            if (string.IsNullOrEmpty(attachment.Url))
-            {
-                response.AddEmbed(BasicEmbeds.Error("There was an error here!\r\nPlease wait a minute and try again!"));
-                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
-                Logging.SendPubLog(BasicEmbeds.Error(
-                    $"__Failed upload!__\r\n"
-                    + $">>> Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
-                    + $"Channel: <#{ctx.Channel.Id}>\r\n\r\n"
-                    + $"Reason denied: Failed to acquire log!", true
-                ));
-                return;
-            }
-            if (attachment.FileName != "RagePluginHook.log")
-            {
-                response.AddEmbed(BasicEmbeds.Error("Incorrect file name.\r\nPlease make sure your file is called `RagePluginHook.log`!"));
-                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
-                Logging.SendPubLog(BasicEmbeds.Warning(
-                    $"__Rejected upload!__\r\n"
-                    + $">>> Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
-                    + $"Channel: <#{ctx.Channel.Id}>\r\n"
-                    + $"File name: {attachment.FileName}\r\n"
-                    + $"Size: {attachment.FileSize/1000}KB\r\n"
-                    + $"[Download Here]({attachment.Url})\r\n\r\n"
-                    + $"Reason denied: Incorrect name", true
-                ));
-                return;
-            }
-            if (attachment.FileSize > 10000000)
-            {
-                response.AddEmbed(BasicEmbeds.Error("File is way too big!\r\nYou may not upload anything else until staff review this!"));
-                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
-                await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(Program.Settings.Env.BotBlacklistRoleId));
-                Logging.ReportPubLog(BasicEmbeds.Error(
-                    $"__Possible bot abuse!__\r\n"
-                    + $">>> User has been blacklisted from bot use! (Dunce role added!)\r\n"
-                    + $"Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
-                    + $"Channel: <#{ctx.Channel.Id}>\r\n"
-                    + $"File name: {attachment.FileName}\r\n"
-                    + $"Size: {attachment.FileSize / 1000}KB\r\n"
-                    + $"[Download Here]({attachment.Url})\r\n\r\n"
-                    + $"Reason denied: File way too large! (Larger than 10 MB)", true
-                ));
-                Logging.SendPubLog(BasicEmbeds.Error(
-                    $"__Rejected upload!__\r\n"
-                    + $">>> Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
-                    + $"Channel: <#{ctx.Channel.Id}>\r\n"
-                    + $"File name: {attachment.FileName}\r\n"
-                    + $"Size: {attachment.FileSize / 1000}KB\r\n"
-                    + $"[Download Here]({attachment.Url})\r\n\r\n"
-                    + $"Reason denied: File way too large! (Larger than 10 MB)", true
-                ));
-                return;
-            }
-            if (attachment.FileSize > 3000000)
-            {
-                response.AddEmbed(BasicEmbeds.Error("File is too big!\r\nAsk our TS to check this log!"));
-                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
-                Logging.SendPubLog(BasicEmbeds.Warning(
-                    $"__Rejected upload!__\r\n"
-                    + $">>> Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
-                    + $"Channel: <#{ctx.Channel.Id}>\r\n"
-                    + $"File name: {attachment.FileName}\r\n"
-                    + $"Size: {attachment.FileSize / 1000}KB\r\n"
-                    + $"[Download Here]({attachment.Url})\r\n\r\n"
-                    + $"Reason denied: File too large!", true
-                ));
-                return;
-            }
-            await ctx.DeferAsync(true);
+            var allowedChannels = allowedChannelIds.Select(selector: channelId => $"<#{channelId}>").ToList();
+            response.AddEmbed(BasicEmbeds.Error($"Invalid channel!\r\nYou may only use this in {string.Join(" or ", allowedChannels)}!"));
+            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
+            return;
+        }
+        if (string.IsNullOrEmpty(attachment.Url))
+        {
+            response.AddEmbed(BasicEmbeds.Error("There was an error here!\r\nPlease wait a minute and try again!"));
+            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
+            Logging.SendPubLog(BasicEmbeds.Error(
+                $"__Failed upload!__\r\n"
+                + $">>> Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
+                + $"Channel: <#{ctx.Channel.Id}>\r\n\r\n"
+                + $"Reason denied: Failed to acquire log!", true
+            ));
+            return;
+        }
+        if (attachment.FileName != "RagePluginHook.log")
+        {
+            response.AddEmbed(BasicEmbeds.Error("Incorrect file name.\r\nPlease make sure your file is called `RagePluginHook.log`!"));
+            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
+            Logging.SendPubLog(BasicEmbeds.Warning(
+                $"__Rejected upload!__\r\n"
+                + $">>> Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
+                + $"Channel: <#{ctx.Channel.Id}>\r\n"
+                + $"File name: {attachment.FileName}\r\n"
+                + $"Size: {attachment.FileSize/1000}KB\r\n"
+                + $"[Download Here]({attachment.Url})\r\n\r\n"
+                + $"Reason denied: Incorrect name", true
+            ));
+            return;
+        }
+        if (attachment.FileSize > 10000000)
+        {
+            response.AddEmbed(BasicEmbeds.Error("File is way too big!\r\nYou may not upload anything else until staff review this!"));
+            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
+            var user = Database.LoadUsers().FirstOrDefault(x => x.UID == ctx.Member.Id.ToString());
+            if (user != null) user.Blocked = 1;
+            Database.EditUser(user);
+            Logging.ReportPubLog(BasicEmbeds.Error(
+                $"__Possible bot abuse!__\r\n"
+                + $">>> User has been blacklisted from bot use!\r\n"
+                + $"Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
+                + $"Channel: <#{ctx.Channel.Id}>\r\n"
+                + $"File name: {attachment.FileName}\r\n"
+                + $"Size: {attachment.FileSize / 1000}KB\r\n"
+                + $"[Download Here]({attachment.Url})\r\n\r\n"
+                + $"Reason denied: File way too large! (Larger than 10 MB)", true
+            ));
+            Logging.SendPubLog(BasicEmbeds.Error(
+                $"__Rejected upload!__\r\n"
+                + $">>> Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
+                + $"Channel: <#{ctx.Channel.Id}>\r\n"
+                + $"File name: {attachment.FileName}\r\n"
+                + $"Size: {attachment.FileSize / 1000}KB\r\n"
+                + $"[Download Here]({attachment.Url})\r\n\r\n"
+                + $"Reason denied: File way too large! (Larger than 10 MB)", true
+            ));
+            return;
+        }
+        if (attachment.FileSize > 3000000)
+        {
+            response.AddEmbed(BasicEmbeds.Error("File is too big!\r\nAsk our TS to check this log!"));
+            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
+            Logging.SendPubLog(BasicEmbeds.Warning(
+                $"__Rejected upload!__\r\n"
+                + $">>> Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
+                + $"Channel: <#{ctx.Channel.Id}>\r\n"
+                + $"File name: {attachment.FileName}\r\n"
+                + $"Size: {attachment.FileSize / 1000}KB\r\n"
+                + $"[Download Here]({attachment.Url})\r\n\r\n"
+                + $"Reason denied: File too large!", true
+            ));
+            return;
+        }
+        await ctx.DeferAsync(true);
 
-            //===//===//===////===//===//===////===//Process Attachment//===////===//===//===////===//===//===//
-            try
-            {
-                #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-	            var th = new Thread(() => CheckLogMessage(ctx, attachment));
-	            th.Start();
-            }
-            catch (Exception e)
-            {
-                response.AddEmbed(BasicEmbeds.Error("There was an error here!\r\nYou may not upload anything else until staff review this!"));
-                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
-                await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(Program.Settings.Env.BotBlacklistRoleId));
-                Logging.ReportPubLog(BasicEmbeds.Error(
-                    $"__Possible bot abuse!__\r\n"
-                    + $">>> User has been blacklisted from bot use! (Dunce role added!)\r\n"
-                    + $"Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
-                    + $"Channel: <#{ctx.Channel.Id}>\r\n"
-                    + $"File name: {attachment.FileName}\r\n"
-                    + $"Size: {attachment.FileSize / 1000}KB\r\n"
-                    + $"[Download Here]({attachment.Url})\r\n\r\n"
-                    + $"Reason denied: Log caused an error! See <#{Program.Settings.Env.TsBotLogChannelId}>", true
-                ));
-                Logging.SendPubLog(BasicEmbeds.Error(
-                    $"__Rejected upload!__\r\n"
-                    + $">>> Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
-                    + $"Channel: <#{ctx.Channel.Id}>\r\n"
-                    + $"File name: {attachment.FileName}\r\n"
-                    + $"Size: {attachment.FileSize / 1000}KB\r\n"
-                    + $"[Download Here]({attachment.Url})\r\n\r\n"
-                    + $"Reason denied: Log caused an error! See <#{Program.Settings.Env.TsBotLogChannelId}>", true
-                ));
-                Logging.ErrLog($"Public Log Error: {e}");
-                Console.WriteLine(e);
-                throw;
-            }
+        //===//===//===////===//===//===////===//Process Attachment//===////===//===//===////===//===//===//
+        try
+        {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            var th = new Thread(() => CheckLogMessage(ctx, attachment));
+            th.Start();
+        }
+        catch (Exception e)
+        {
+            response.AddEmbed(BasicEmbeds.Error("There was an error here!\r\nYou may not upload anything else until staff review this!"));
+            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
+            var user = Database.LoadUsers().FirstOrDefault(x => x.UID == ctx.Member.Id.ToString());
+            if (user != null) user.Blocked = 1;
+            Database.EditUser(user);
+            Logging.ReportPubLog(BasicEmbeds.Error(
+                $"__Possible bot abuse!__\r\n"
+                + $">>> User has been blacklisted from bot use!\r\n"
+                + $"Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
+                + $"Channel: <#{ctx.Channel.Id}>\r\n"
+                + $"File name: {attachment.FileName}\r\n"
+                + $"Size: {attachment.FileSize / 1000}KB\r\n"
+                + $"[Download Here]({attachment.Url})\r\n\r\n"
+                + $"Reason denied: Log caused an error! See <#{Program.Settings.Env.TsBotLogChannelId}>", true
+            ));
+            Logging.SendPubLog(BasicEmbeds.Error(
+                $"__Rejected upload!__\r\n"
+                + $">>> Sender: <@{ctx.Member.Id}> ({ctx.Member.Username})\r\n"
+                + $"Channel: <#{ctx.Channel.Id}>\r\n"
+                + $"File name: {attachment.FileName}\r\n"
+                + $"Size: {attachment.FileSize / 1000}KB\r\n"
+                + $"[Download Here]({attachment.Url})\r\n\r\n"
+                + $"Reason denied: Log caused an error! See <#{Program.Settings.Env.TsBotLogChannelId}>", true
+            ));
+            Logging.ErrLog($"Public Log Error: {e}");
+            Console.WriteLine(e);
+            throw;
         }
     }
 
@@ -144,9 +145,9 @@ public class CheckLog : ApplicationCommandModule
         var gtAver = "❌";
         var lspdfRver = "❌";
         var rpHver = "❌";
-        if (Program.Settings.Env.GtaVersion.Equals(log.GTAVersion)) gtAver = "\u2713";
-        if (Program.Settings.Env.LspdfrVersion.Equals(log.LSPDFRVersion)) lspdfRver = "\u2713";
-        if (Program.Settings.Env.RphVersion.Equals(log.RPHVersion)) rpHver = "\u2713";
+        if (Database.GetPlugin("GrandTheftAuto5").Version.Equals(log.GTAVersion)) gtAver = "\u2713";
+        if (Database.GetPlugin("LSPDFR").Version.Equals(log.LSPDFRVersion)) lspdfRver = "\u2713";
+        if (Database.GetPlugin("RagePluginHook").Version.Equals(log.RPHVersion)) rpHver = "\u2713";
 
         var linkedOutdated = log.Outdated.Select(i => !string.IsNullOrEmpty(i?.Link)
                 ? $"[{i.DName}]({i.Link})"
