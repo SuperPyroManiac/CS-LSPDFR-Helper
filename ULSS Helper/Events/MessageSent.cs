@@ -34,7 +34,8 @@ internal class MessageSent
                 View = 0,
                 Editor = 0,
                 BotAdmin = 0,
-                Bully = 0
+                Bully = 0,
+                Blocked = 0
             };
             Database.AddUser(newUser);
         }

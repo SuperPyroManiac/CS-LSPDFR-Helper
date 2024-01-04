@@ -14,6 +14,14 @@ public class MessageSent
     {
         if (Program.Settings.Env.AutoHelperChannelIds.All(x => ctx.Channel == ctx.Guild.GetChannel(x)))
         {
+            if (Database.LoadUsers().All(x => x.UID == ctx.Author.Id.ToString() && x.Blocked == 1))
+            {
+                var wng = await ctx.Message.RespondAsync(BasicEmbeds.Error($"You are blacklisted from the bot!\r\nContact server staff in <#{Program.Settings.Env.StaffContactChannelId}> if you think this is an error!"));
+                Thread.Sleep(4000);
+                await ctx.Message.DeleteAsync();
+                await ctx.Channel.DeleteMessageAsync(wng);
+                return;
+            }
             if (ctx.Message.Attachments.Count != 1 && !ctx.Author.IsBot)
             {
                 var wng = await ctx.Message.RespondAsync(BasicEmbeds.Error("Please only send a single `RagePluginHook.log` file!"));
@@ -106,7 +114,8 @@ public class MessageSent
                     ChannelID = supportthread.Id.ToString(),
                     ParentID = supportthread.Parent.Id.ToString(),
                     Solved = 0,
-                    Timer = 24
+                    Timer = 24,
+                    TsRequested = 0
                 };
                 Database.AddCase(newCase);
                 

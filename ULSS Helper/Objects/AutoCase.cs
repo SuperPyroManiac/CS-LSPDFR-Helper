@@ -8,4 +8,5 @@ public class AutoCase
     public string ParentID { get; set; }
     public int Solved { get; set; }
     public int Timer { get; set; }
+    public int TsRequested { get; set; }
 }

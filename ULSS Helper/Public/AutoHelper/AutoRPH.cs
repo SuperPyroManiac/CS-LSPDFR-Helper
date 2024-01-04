@@ -126,6 +126,9 @@ public class AutoRPH
         }
                 
         Thread.Sleep(60000);
+        var autocase = Database.LoadCases().FirstOrDefault(x => x.ChannelID == st.Id.ToString());
+        autocase.Solved = 1;
+        Database.EditCase(autocase);
         await st.DeleteAsync();//TODO: Remove this
     }
 }
