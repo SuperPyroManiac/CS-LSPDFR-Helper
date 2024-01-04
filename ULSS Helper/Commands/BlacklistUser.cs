@@ -23,14 +23,28 @@ public class BlacklistUser : ApplicationCommandModule
         }
 
         var dUser = Database.LoadUsers().FirstOrDefault(x => x.UID.ToString() == userId);
-        if (dUser.Blocked == 0) dUser.Blocked = 1;
-        if (dUser.Blocked == 1) dUser.Blocked = 0;
-        
-        await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Success($"<@{userId}>'s blocked status: {dUser.Blocked}")));
-        Logging.SendLog(
-            ctx.Interaction.Channel.Id,
-            ctx.Interaction.User.Id,
-            BasicEmbeds.Info(
-                $"User <@{dUser.UID}> ({dUser.Username}) has had their blacklist status changed!\r\nBlocked: {dUser.Blocked}", true));
+        switch (dUser.Blocked)
+        {
+            case 0:
+                dUser.Blocked = 1;
+                Database.EditUser(dUser);
+                await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Success($"<@{userId}>'s blocked status: {dUser.Blocked}")));
+                Logging.SendLog(
+                    ctx.Interaction.Channel.Id,
+                    ctx.Interaction.User.Id,
+                    BasicEmbeds.Info(
+                        $"<@{dUser.UID}> ({dUser.Username}) Blocked:\r\nStatus: {dUser.Blocked}", true));
+                break;
+            case 1:
+                dUser.Blocked = 0;
+                Database.EditUser(dUser);
+                await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Success($"<@{userId}>'s blocked status: {dUser.Blocked}")));
+                Logging.SendLog(
+                    ctx.Interaction.Channel.Id,
+                    ctx.Interaction.User.Id,
+                    BasicEmbeds.Info(
+                        $"<@{dUser.UID}> ({dUser.Username}) Blocked:\r\nStatus: {dUser.Blocked}", true));
+                break;
+        }
     }
 }

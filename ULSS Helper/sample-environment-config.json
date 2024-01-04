@@ -1,19 +1,13 @@
 {
     "BotToken": "INSERT_BOT_TOKEN_HERE",
     "DbFileName": "ULSSDB.db",
-    "RphVersion": "1.107.1334.16527",
-    "LspdfrVersion": "0.4.8748.23994",
-    "GtaVersion": "1.0.3095.0",
     "TsIconUrl": "https://cdn.discordapp.com/role-icons/517568233360982017/b69077cfafb6856a0752c863e1bb87f0.webp?size=128&quality=lossless",
     "ServerId": 449706194140135444,
     "TsRoleId": 517568233360982017,
-    "BotAdminUserIds": [339550607847194624],
-    "BotBlacklistRoleId": 1134534059771572356,
     "PublicUsageAllowedChannelIds": [672541961969729540, 692254906752696332],
     "AutoHelperChannelIds": [1189587698642583574],
     "TsBotLogChannelId": 1173304071084585050,
     "PublicBotLogChannelId": 1173304117557477456,
     "PublicBotReportsChannelId": 547311030477520896,
     "StaffContactChannelId": 693303741071228938,
-    "BullyingVictims": [478591527321337857, 614191277528973428]
 }

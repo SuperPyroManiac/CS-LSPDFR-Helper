@@ -94,7 +94,7 @@ public class RequireNotOnBotBlacklist : SlashCheckBaseAttribute
 {
     public override async Task<bool> ExecuteChecksAsync(InteractionContext ctx)
     {
-        if (Database.LoadUsers().All(x => x.UID == ctx.User.Id.ToString() && x.Blocked == 1))
+        if (Database.LoadUsers().Any(x => x.UID == ctx.User.Id.ToString() && x.Blocked == 1))
         {
             var responseBuilder = new DiscordInteractionResponseBuilder { IsEphemeral = true };
             responseBuilder.AddEmbed(BasicEmbeds.Error(

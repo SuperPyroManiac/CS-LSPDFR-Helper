@@ -14,9 +14,9 @@ public class AutoRPH
         var gtAver = "❌";
         var lspdfRver = "❌";
         var rpHver = "❌";
-        if (Program.Settings.Env.GtaVersion.Equals(log.GTAVersion)) gtAver = "\u2713";
-        if (Program.Settings.Env.LspdfrVersion.Equals(log.LSPDFRVersion)) lspdfRver = "\u2713";
-        if (Program.Settings.Env.RphVersion.Equals(log.RPHVersion)) rpHver = "\u2713";
+        if (Database.GetPlugin("GrandTheftAuto5").Version.Equals(log.GTAVersion)) gtAver = "\u2713";
+        if (Database.GetPlugin("LSPDFR").Version.Equals(log.LSPDFRVersion)) lspdfRver = "\u2713";
+        if (Database.GetPlugin("RagePluginHook").Version.Equals(log.RPHVersion)) rpHver = "\u2713";
         var linkedOutdated = log.Outdated.Select(i => !string.IsNullOrEmpty(i?.Link)
                 ? $"[{i.DName}]({i.Link})"
                 : $"[{i?.DName}](https://www.google.com/search?q=lspdfr+{i!.DName.Replace(" ", "+")})")
