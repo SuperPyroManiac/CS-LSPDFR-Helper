@@ -5,7 +5,7 @@ using ULSS_Helper.Messages;
 using ULSS_Helper.Modules.RPH_Modules;
 using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Commands.Public;
+namespace ULSS_Helper.Public.Commands;
 
 public class CheckLog : ApplicationCommandModule
 {
@@ -246,6 +246,13 @@ public class CheckLog : ApplicationCommandModule
             var update = false;
             foreach (var error in log.Errors)
             {
+                if (embed.Fields.Count == 10)
+                {
+                    embed.AddField($"___```God Damn``` BOAH:___",
+                        ">>> You have more errors than we can show! This is insane, or a bug!\r\nPlease fix what is shown, and upload a new log!");
+                    embed.ImageUrl = "https://media1.tenor.com/m/oPdYV8G-PhQAAAAC/arthur-arthur-morgan.gif";
+                    break;
+                }
                 if (error.Level == "CRITICAL") update = true;
                 if (update)
                 {

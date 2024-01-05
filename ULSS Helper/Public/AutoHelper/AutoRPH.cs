@@ -9,8 +9,10 @@ namespace ULSS_Helper.Public.AutoHelper;
 
 public class AutoRPH
 {
-    internal static async Task ProccessLog(RPHLog log, MessageCreateEventArgs ctx, DiscordThreadChannel st)
+    internal static async Task<DiscordMessageBuilder> ProccessLog(RPHLog log, MessageCreateEventArgs ctx,
+        DiscordThreadChannel st)
     {
+        DiscordMessageBuilder messageBuilder = new();
         var gtAver = "❌";
         var lspdfRver = "❌";
         var rpHver = "❌";
@@ -28,107 +30,80 @@ public class AutoRPH
         var current = string.Join("\r\n- ", currentList);
         var outdated = string.Join("\r\n- ", linkedOutdated);
         var broken = string.Join("\r\n- ", brokenList);
-        
-        if (log.Missing.Count > 0 || log.Missmatch.Count > 0) 
+
+        if (log.Missing.Count > 0 || log.Missmatch.Count > 0)
         {
             var rphProcess = new RPHProcess();
             rphProcess.log = log;
             rphProcess.SendUnknownPluginsLog(ctx.Channel.Id, ctx.Author.Id);
         }
-        
-        var embdesc = "## ULSS Auto Helper - BETA\r\n*Plugin Information*";
-        if (log.FilePossiblyOutdated)
-            embdesc += "\r\n\r\n:warning: **Attention!** This log file is probably too old to determine your current RPH-related issues!";
-        if (outdated.Length > 0 || broken.Length > 0) 
-            embdesc += "\r\n\r\nUpdate or remove the following files in `GTAV/plugins/LSPDFR`";
-        
-        var header = BasicEmbeds.Public(embdesc);
-        var fs = new FileStream(Path.Combine(log.FilePath), FileMode.Open, FileAccess.Read);
 
+        var embdesc = "## ULSS Auto Helper - BETA";
+        if (log.FilePossiblyOutdated)
+            embdesc +=
+                "\r\n\r\n:warning: **Attention!** This log file is probably too old to determine your current RPH-related issues!";
+        var header = BasicEmbeds.Public(embdesc);
         header.Footer = new DiscordEmbedBuilder.EmbedFooter
         {
             Text = $"GTA: {gtAver} - RPH: {rpHver}" + $" - LSPDFR: {lspdfRver} - Generated in Discord.gg/ulss"
         };
+        if (outdated.Length != 0 || broken.Length != 0) header.AddField("Plugin Issues Detected!", "> Update or Remove from `GTAV/Plugins/LSPDFR`");
+        if (outdated.Length == 0 && broken.Length == 0) header.AddField("Up To Date!", "> All plugins are up to date!");
         
-                if (outdated.Length >= 1024 || broken.Length >= 1024)
+        var embed2 = new DiscordEmbedBuilder
         {
-            header.AddField(":warning:     **Message Too Big**",
-                "\r\nToo many plugins to display in a single message.\r\nYou need to fix these plugins first!",
-                true);
-            var embed2 = new DiscordEmbedBuilder
-            {
-                Title = ":orange_circle:     **Update:**",
-                Description = "\r\n>>> " + string.Join(" - ", linkedOutdated),
-                Color = new DiscordColor(243, 154, 18),
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
-            };
-            var embed3 = new DiscordEmbedBuilder
-            {
-                Title = ":red_circle:     **Remove:**",
-                Description = "\r\n>>> " + string.Join(" - ", brokenList),
-                Color = new DiscordColor(243, 154, 18),
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
-            };
-
-            var overflow = new DiscordMessageBuilder();
-            overflow.AddEmbed(header);
-            overflow.AddFile(fs, AddFileOptions.CloseStream);
-            if (outdated.Length != 0) overflow.AddEmbed(embed2);
-            if (broken.Length != 0) overflow.AddEmbed(embed3);
-            overflow.AddComponents([
-                new DiscordButtonComponent(ButtonStyle.Secondary, "SendFeedback", "Send Feedback", false,
-                    new DiscordComponentEmoji("📨"))]);
-            await st.SendMessageAsync(overflow);
-
-        }
-        else
+            Title = ":orange_circle:     **Outdated:**",
+            Description = "\r\n>>> " + string.Join(" - ", linkedOutdated),
+            Color = new DiscordColor(243, 154, 18),
+            Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
+        };
+        embed2.Footer = new DiscordEmbedBuilder.EmbedFooter
         {
-            if (current.Length != 0 && outdated.Length == 0 && broken.Length != 0) outdated = "**None**";
-            if (current.Length != 0 && outdated.Length != 0 && broken.Length == 0) broken = "**None**";
-            if ((current.Length == 0 && outdated.Length != 0) || broken.Length != 0) current = "**None**";
+            Text = "These plugins need to be updated!"
+        };
+        var embed3 = new DiscordEmbedBuilder
+        {
+            Title = ":red_circle:     **Broken:**",
+            Description = "\r\n>>> " + string.Join(" - ", brokenList),
+            Color = new DiscordColor(243, 154, 18),
+            Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
+        };
+        embed3.Footer = new DiscordEmbedBuilder.EmbedFooter
+        {
+            Text = "These plugins should be removed! `/CheckPlugin <Name>` for info why!"
+        };
+        var embed4 = new DiscordEmbedBuilder
+        {
+            Title = ":bangbang:     **Possible Issues:**",
+            Color = new DiscordColor(243, 154, 18),
+            Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
+        };
 
-            if (outdated.Length > 0) header.AddField(":orange_circle:     **Update:**", "\r\n>>> - " + outdated, true);
-            if (broken.Length > 0) header.AddField(":red_circle:     **Remove:**", "\r\n>>> - " + broken, true);
-
-            if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0)
-                header.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
-            if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0 && string.IsNullOrEmpty(log.LSPDFRVersion))
-                header.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **No plugin information available!**");
-            if (current.Length == 0 && outdated.Length == 0 && broken.Length == 0)
-                header.AddField(":green_circle:     **No loaded plugins!**", "- No plugins detected from this log.");
-
-            var update = false;
-            foreach (var error in log.Errors)
+        var update = false;
+        foreach (var error in log.Errors)
+        {
+            if (embed4.Fields.Count == 10)
             {
-                if (error.Level == "CRITICAL") update = true;
-                if (update)
-                {
-                    if (error.Level == "CRITICAL")
-                        header.AddField($"___```{error.Level} ID: {error.ID}``` Troubleshooting Steps:___",
-                        $"> {error.Solution.Replace("\n", "\n> ")}\r\n> ___*Generated in discord.gg/ulss*___");
-                }
-                if (!update)
-                {
-                    if (error.Level != "XTRA")//TODO: Add new public bool for errors in DB and Object
-                        header.AddField($"___```{error.Level} ID: {error.ID}``` Troubleshooting Steps:___",
-                        $"> {error.Solution.Replace("\n", "\n> ")}\r\n> ___*Generated in discord.gg/ulss*___");
-                }
+                embed4.AddField($"___```God Damn``` BOAH:___",
+                    ">>> You have more errors than we can show! This is insane, or a bug!\r\nPlease fix what is shown, and upload a new log!");
+                embed4.ImageUrl = "https://media1.tenor.com/m/oPdYV8G-PhQAAAAC/arthur-arthur-morgan.gif";
+                break;
             }
-            
-            DiscordMessageBuilder messageBuilder = new();
-            messageBuilder.AddEmbed(header);
-            messageBuilder.AddFile(fs, AddFileOptions.CloseStream);
-            // ReSharper disable once RedundantExplicitParamsArrayCreation
-            messageBuilder.AddComponents([
-                new DiscordButtonComponent(ButtonStyle.Secondary, "SendFeedback", "Send Feedback", false,
-                    new DiscordComponentEmoji("📨"))]);
-            await st.SendMessageAsync(messageBuilder);
+            if (error.Level == "CRITICAL") update = true;
+            if (update)
+                if (error.Level == "CRITICAL")
+                    embed4.AddField($"___```{error.Level} ID: {error.ID}``` Troubleshooting Steps:___",
+                        $"> {error.Solution.Replace("\n", "\n> ")}\r\n> ___*Generated in discord.gg/ulss*___");
+            if (!update)
+                if (error.Level != "XTRA") //TODO: Add new public bool for errors in DB and Object
+                    embed4.AddField($"___```{error.Level} ID: {error.ID}``` Troubleshooting Steps:___",
+                        $"> {error.Solution.Replace("\n", "\n> ")}\r\n> ___*Generated in discord.gg/ulss*___");
         }
-                
-        Thread.Sleep(60000);
-        var autocase = Database.LoadCases().FirstOrDefault(x => x.ChannelID == st.Id.ToString());
-        autocase.Solved = 1;
-        Database.EditCase(autocase);
-        await st.DeleteAsync();//TODO: Remove this
+
+        messageBuilder.AddEmbed(header);
+        if (outdated.Length != 0) messageBuilder.AddEmbed(embed2);
+        if (broken.Length != 0) messageBuilder.AddEmbed(embed3);
+        if (embed4.Fields.Count != 0) messageBuilder.AddEmbed(embed4);
+        return messageBuilder;
     }
 }

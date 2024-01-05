@@ -4,7 +4,7 @@ using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Commands.Public;
+namespace ULSS_Helper.Public.Commands;
 
 public class CheckPlugin : ApplicationCommandModule
 {
