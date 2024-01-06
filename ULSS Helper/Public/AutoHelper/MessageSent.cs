@@ -31,7 +31,7 @@ public class MessageSent
                     OwnerID = ctx.Author.Id.ToString(),
                     ChannelID = supportthread.Id.ToString(),
                     ParentID = supportthread.Parent.Id.ToString(),
-                    Solved = 1,//TODO: MAKE THIS A 0 AFTER TESTING
+                    Solved = 0,
                     Timer = 24,
                     TsRequested = 0
                 };
@@ -41,48 +41,44 @@ public class MessageSent
                 var msg = await AutoRPH.ProccessLog(log, ctx, supportthread);
                 msg.AddFile(new FileStream(Path.Combine(log.FilePath), FileMode.Open, FileAccess.Read), AddFileOptions.CloseStream);
                 msg.AddComponents([
-                    new DiscordButtonComponent(ButtonStyle.Success, "Mark Solved", "Mark Solved", true,
+                    new DiscordButtonComponent(ButtonStyle.Success, "MarkSolved", "Mark Solved", false,
                         new DiscordComponentEmoji("👍")),
-                    new DiscordButtonComponent(ButtonStyle.Danger, "Request Help", "Request Help", true,
+                    new DiscordButtonComponent(ButtonStyle.Danger, "RequestHelp", "Request Help", true,
                         new DiscordComponentEmoji("❓")),
                     new DiscordButtonComponent(ButtonStyle.Secondary, "SendFeedback", "Send Feedback", false,
                         new DiscordComponentEmoji("📨"))]);
                 await msg.ModifyAsync(oldmsg);
                 await supportthread.SendMessageAsync(
-                    BasicEmbeds.Info("This is a BETA - Threads are deleted after 1 minute for testing reasons!"));
-                Thread.Sleep(60000);
-                var autocase = Database.LoadCases().FirstOrDefault(x => x.ChannelID == supportthread.Id.ToString());
-                autocase.Solved = 1;
-                Database.EditCase(autocase);
-                await supportthread.DeleteAsync();//TODO: Remove this
+                    BasicEmbeds.Info("This is a BETA - features are missing and subject to change!\r\n" +
+                                     "You are not to share this preview outside of ULSS!"));
             }
         }
         catch (Exception e)
         {
-            // await ctx.Message.RespondAsync(BasicEmbeds.Error("There was an error here!\r\nYou may not upload anything else until staff review this!"));
-            // var attachment = ctx.Message.Attachments.FirstOrDefault();
-            // var user = Database.LoadUsers().FirstOrDefault(x => x.UID == ctx.Author.Id.ToString());
-            // if (user != null) user.Blocked = 1;
-            // Database.EditUser(user);
-            // Logging.ReportPubLog(BasicEmbeds.Error(
-            //     $"__Possible bot abuse!__\r\n"
-            //     + $">>> User has been blacklisted from bot use!\r\n"
-            //     + $"Sender: <@{ctx.Author.Id}> ({ctx.Author.Username})\r\n"
-            //     + $"Channel: <#{ctx.Channel.Id}>\r\n"
-            //     + $"File name: {attachment.FileName}\r\n"
-            //     + $"Size: {attachment.FileSize / 1000}KB\r\n"
-            //     + $"[Download Here]({attachment.Url})\r\n\r\n"
-            //     + $"Reason denied: Log caused an error! See <#{Program.Settings.Env.TsBotLogChannelId}>", true
-            // ));
-            // Logging.SendPubLog(BasicEmbeds.Error(
-            //     $"__Rejected upload!__\r\n"
-            //     + $">>> Sender: <@{ctx.Author.Id}> ({ctx.Author.Username})\r\n"
-            //     + $"Channel: <#{ctx.Channel.Id}>\r\n"
-            //     + $"File name: {attachment.FileName}\r\n"
-            //     + $"Size: {attachment.FileSize / 1000}KB\r\n"
-            //     + $"[Download Here]({attachment.Url})\r\n\r\n"
-            //     + $"Reason denied: Log caused an error! See <#{Program.Settings.Env.TsBotLogChannelId}>", true
-            // ));
+            await ctx.Message.RespondAsync(BasicEmbeds.Error("There was an error here!\r\nYou may not upload anything else until staff review this!"));
+            var attachment = ctx.Message.Attachments.FirstOrDefault();
+            var user = Database.LoadUsers().FirstOrDefault(x => x.UID == ctx.Author.Id.ToString());
+            if (user != null) user.Blocked = 1;
+            Database.EditUser(user);
+            Logging.ReportPubLog(BasicEmbeds.Error(
+                $"__Possible bot abuse!__\r\n"
+                + $">>> User has been blacklisted from bot use!\r\n"
+                + $"Sender: <@{ctx.Author.Id}> ({ctx.Author.Username})\r\n"
+                + $"Channel: <#{ctx.Channel.Id}>\r\n"
+                + $"File name: {attachment.FileName}\r\n"
+                + $"Size: {attachment.FileSize / 1000}KB\r\n"
+                + $"[Download Here]({attachment.Url})\r\n\r\n"
+                + $"Reason denied: Log caused an error! See <#{Program.Settings.Env.TsBotLogChannelId}>", true
+            ));
+            Logging.SendPubLog(BasicEmbeds.Error(
+                $"__Rejected upload!__\r\n"
+                + $">>> Sender: <@{ctx.Author.Id}> ({ctx.Author.Username})\r\n"
+                + $"Channel: <#{ctx.Channel.Id}>\r\n"
+                + $"File name: {attachment.FileName}\r\n"
+                + $"Size: {attachment.FileSize / 1000}KB\r\n"
+                + $"[Download Here]({attachment.Url})\r\n\r\n"
+                + $"Reason denied: Log caused an error! See <#{Program.Settings.Env.TsBotLogChannelId}>", true
+            ));
             Logging.ErrLog($"Public Log Error: {e}");
             Console.WriteLine(e);
             throw;

@@ -9,14 +9,19 @@ using ULSS_Helper.Modules.ELS_Modules;
 using ULSS_Helper.Modules.RPH_Modules;
 using ULSS_Helper.Modules.SHVDN_Modules;
 using ULSS_Helper.Objects;
+using ULSS_Helper.Public.AutoHelper;
 
 namespace ULSS_Helper.Events;
 
 public class ComponentInteraction
 {
+    // Msc
     public const string SelectAttachmentForAnalysis = "SelectAttachmentForAnalysis";
     public const string SelectIdForRemoval = "SelectIdForRemoval";
+    
+    // Public
     public const string SendFeedback = "SendFeedback";
+    public const string MarkSolved = "MarkSolved";
 
     // RPH log analysis events
     public const string RphGetQuickInfo = "RphGetQuickInfo";
@@ -249,6 +254,11 @@ public class ComponentInteraction
                 );
 
                 await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
+            }
+            if (eventArgs.Id == MarkSolved)
+            {
+                var ac = Database.LoadCases().First(x => x.ChannelID.Equals(eventArgs.Channel.Id.ToString()));
+                await CloseCase.Close(ac, eventArgs);
             }
         }
         catch (Exception exception)
