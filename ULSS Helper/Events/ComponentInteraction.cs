@@ -97,7 +97,7 @@ public class ComponentInteraction
                         else
                         {
                             rphProcess = new RPHProcess();
-                            rphProcess.log = RPHAnalyzer.Run(targetAttachment.Url);
+                            rphProcess.log = RPHAnalyzer.Run(targetAttachment.Url).Result;
                             rphProcess.log.MsgId = cache.OriginalMessage.Id;
                             Program.Cache.SaveProcess(messageId: eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, rphProcess));
                         }
@@ -115,7 +115,7 @@ public class ComponentInteraction
                         else
                         {
                             elsProcess = new ELSProcess();
-                            elsProcess.log = ELSAnalyzer.Run(targetAttachment.Url);
+                            elsProcess.log = ELSAnalyzer.Run(targetAttachment.Url).Result;
                             elsProcess.log.MsgId = cache.OriginalMessage.Id;
                             Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, elsProcess));
                         }
@@ -133,7 +133,7 @@ public class ComponentInteraction
                         else 
                         {
                             asiProcess = new ASIProcess();
-                            asiProcess.log = ASIAnalyzer.Run(targetAttachment.Url);
+                            asiProcess.log = ASIAnalyzer.Run(targetAttachment.Url).Result;
                             asiProcess.log.MsgId = cache.OriginalMessage.Id;
                             Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, asiProcess));
                         }
@@ -151,7 +151,7 @@ public class ComponentInteraction
                         else
                         {
                             shvdnProcess = new SHVDNProcess();
-                            shvdnProcess.log = SHVDNAnalyzer.Run(targetAttachment.Url);
+                            shvdnProcess.log = SHVDNAnalyzer.Run(targetAttachment.Url).Result;
                             shvdnProcess.log.MsgId = cache.OriginalMessage.Id;
                             Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, shvdnProcess));
                         }

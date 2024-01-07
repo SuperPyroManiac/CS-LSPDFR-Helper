@@ -37,9 +37,9 @@ public class MessageSent
                 };
                 Database.AddCase(newCase);
 
-                var log = RPHAnalyzer.Run(attach!.Url);
+                var log = RPHAnalyzer.Run(attach!.Url).Result;
                 var msg = await AutoRPH.ProccessLog(log, ctx, supportthread);
-                msg.AddFile(new FileStream(Path.Combine(log.FilePath), FileMode.Open, FileAccess.Read), AddFileOptions.CloseStream);
+                //msg.AddFile(new FileStream(Path.Combine(log.FilePath), FileMode.Open, FileAccess.Read), AddFileOptions.CloseStream);
                 msg.AddComponents([
                     new DiscordButtonComponent(ButtonStyle.Success, "MarkSolved", "Mark Solved", false,
                         new DiscordComponentEmoji("👍")),

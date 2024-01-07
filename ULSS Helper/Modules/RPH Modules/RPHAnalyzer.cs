@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Diagnostics;
-using System.Net;
 using System.Text.RegularExpressions;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
@@ -9,23 +8,17 @@ namespace ULSS_Helper.Modules.RPH_Modules;
 
 public class RPHAnalyzer
 {
-    internal static RPHLog Run(string attachmentUrl)
+    internal static async Task<RPHLog> Run(string attachmentUrl)
     {
         var timer = new Stopwatch();
         timer.Start();
-        #pragma warning disable SYSLIB0014
-        using var client = new WebClient();
-        var fullFilePath = Settings.GenerateNewFilePath(FileType.RPH_LOG);
-        client.DownloadFile(attachmentUrl, fullFilePath);
-
+        
         var pluginData = Database.LoadPlugins();
         var errorData = Database.LoadErrors();
         var log = new RPHLog();
-        log.DownloadLink = attachmentUrl;
-        log.FilePath = fullFilePath;
-        var wholeLog = File.ReadAllText(fullFilePath);
-        var reader = File.ReadAllLines(fullFilePath);
-
+        var wholeLog = await new HttpClient().GetStringAsync(attachmentUrl);
+        var reader = wholeLog.Split("\r\n");
+        
         log.RPHPlugin = [];
         log.Current = [];
         log.Outdated = [];
@@ -39,6 +32,7 @@ public class RPHAnalyzer
         log.IncorrectPlugins = [];
         log.IncorrectLibs = [];
         log.IncorrectOther = [];
+        log.DownloadLink = attachmentUrl;
 
         if (reader.Length > 0)
             log.FilePossiblyOutdated = IsPossiblyOutdatedFile(reader[0]);
