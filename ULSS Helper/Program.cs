@@ -31,7 +31,7 @@ internal class Program
             Token = Settings.Env.BotToken,
             TokenType = TokenType.Bot,
             AutoReconnect = true,
-            MinimumLogLevel = LogLevel.Warning
+            MinimumLogLevel = LogLevel.Trace
         };
         Client = new DiscordClient(discordConfig);
         
