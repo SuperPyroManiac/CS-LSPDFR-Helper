@@ -20,5 +20,4 @@ public class RPHLog : Log
     public string GTAVersion { get; set; }
     public string RPHVersion { get; set; }
     public string LSPDFRVersion { get; set; }
-    public string FilePath { get; set; }
 }

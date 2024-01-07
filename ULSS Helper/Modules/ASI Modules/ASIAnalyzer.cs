@@ -8,19 +8,13 @@ namespace ULSS_Helper.Modules.ASI_Modules;
 // ReSharper disable InconsistentNaming
 public class ASIAnalyzer
 {
-    internal static ASILog Run(string attachmentUrl)
+    internal static async Task<ASILog> Run(string attachmentUrl)
     {
         var timer = new Stopwatch();
         timer.Start();
-#pragma warning disable SYSLIB0014
-        using var client = new WebClient();
-        var fullFilePath = Settings.GenerateNewFilePath(FileType.ASI_LOG);
-        client.DownloadFile(attachmentUrl, fullFilePath);
-
-        // ReSharper disable once UseObjectOrCollectionInitializer
         var log = new ASILog();
         log.DownloadLink = attachmentUrl;
-        var wholeLog = File.ReadAllText(path: fullFilePath);
+        var wholeLog = await new HttpClient().GetStringAsync(attachmentUrl);
         log.LoadedAsiFiles = [];
         log.FailedAsiFiles = [];
         

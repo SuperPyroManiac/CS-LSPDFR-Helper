@@ -141,7 +141,7 @@ public class CheckLog : ApplicationCommandModule
 
     private async Task CheckLogMessage(InteractionContext context, DiscordAttachment attach)
     {
-        var log = RPHAnalyzer.Run(attach.Url);
+        var log = RPHAnalyzer.Run(attach.Url).Result;
         var gtAver = "❌";
         var lspdfRver = "❌";
         var rpHver = "❌";
