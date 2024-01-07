@@ -13,7 +13,8 @@ public class MessageSent
     {
         try
         {
-            if (Program.Settings.Env.AutoHelperChannelIds.Any(x => ctx.Channel == ctx.Guild.GetChannel(x)) && !ctx.Channel.IsPrivate)
+            if (ctx.Channel.IsPrivate) return;
+            if (Program.Settings.Env.AutoHelperChannelIds.Any(x => ctx.Channel == ctx.Guild.GetChannel(x)))
             {
                 if (!OriginUploadChecks.Check(ctx).Result) return;
 
