@@ -194,6 +194,9 @@ public class RPHAnalyzer
         foreach (Match match in dependmatch)
         {
             if (log.MissingDepend.Any(x => x.Name.Equals(match.Groups[2].Value))) continue;
+            if (log.Current.Any(x => x.Name.Equals(match.Groups[2].Value))) continue;
+            if (log.Broken.Any(x => x.Name.Equals(match.Groups[2].Value))) continue;
+            if (log.Outdated.Any(x => x.Name.Equals(match.Groups[2].Value))) continue;//TODO fuck me
             var newDepend = new Plugin { Name = match.Groups[2].Value, DName = match.Groups[2].Value};
             foreach (var plugin in pluginData.Where(plugin => plugin.Name.Equals(newDepend.Name)))
             {newDepend.DName = plugin.DName; newDepend.Link = plugin.Link; log.MissingDepend.Add(newDepend);}
