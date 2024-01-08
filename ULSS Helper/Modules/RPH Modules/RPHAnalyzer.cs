@@ -18,7 +18,8 @@ public class RPHAnalyzer
         var log = new RPHLog();
         var wholeLog = await new HttpClient().GetStringAsync(attachmentUrl);
         var reader = wholeLog.Split("\r\n");
-        
+
+        List<Plugin> unsorted = [];
         log.RPHPlugin = [];
         log.Current = [];
         log.Outdated = [];
@@ -40,97 +41,6 @@ public class RPHAnalyzer
         foreach (var lineReader in reader)
         {
             var line = lineReader;
-            foreach (var plugin in pluginData)
-            {
-                try
-                {
-                    switch (plugin.State)
-                    {
-                        case "LSPDFR" or "EXTERNAL":
-                        {
-                            var regex = new Regex($".+LSPD First Response: {Regex.Escape(plugin.Name)}. Version=([0-9.]+).+");
-                            var match = regex.Match(line);
-                            if (match.Success)
-                            {
-                                var logVersion = match.Groups[1].Value;
-
-                                //Check EA Version
-                                if (!string.IsNullOrEmpty(plugin.EAVersion) && logVersion == plugin.EAVersion && log.Current.All(x => x.Name != plugin.Name))
-                                {
-                                    log.Current.Add(plugin);
-                                    break;
-                                }
-
-                                //Compare Versions
-                                if (!string.IsNullOrEmpty(plugin.Version))
-                                {
-                                    var result = CompareVersions(logVersion, plugin.Version);
-                                    switch (result)
-                                    {
-                                        // plugin version in log is older than version in DB
-                                        case < 0:
-                                        {
-                                            if (log.Outdated.All(x => x.Name != plugin.Name)) log.Outdated.Add(plugin);
-                                            break;
-                                        }
-                                        // plugin version in log is newer than version in DB and there is no Early Acccess version
-                                        case > 0:
-                                        {
-                                            plugin.EAVersion = logVersion; // save logVersion in log.Missmatch so we can access it later when building bot responses
-                                            if (log.Missmatch.All(x => x.Name != plugin.Name)) log.Missmatch.Add(plugin);
-                                            break;
-                                        }
-                                        // plugin version in log is up to date (equals plugin version number in DB)
-                                        default:
-                                        {
-                                            if (log.Current.All(x => x.Name != plugin.Name)) log.Current.Add(plugin);
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                            break;
-                        }
-                        case "BROKEN":
-                        {
-                            var regex = new Regex($".+LSPD First Response: {Regex.Escape(plugin.Name)}. Version=[0-9.]+.+");
-                            var match = regex.Match(line);
-                            if (match.Success)
-                            {
-                                if (log.Broken.All(x => x.Name != plugin.Name)) log.Broken.Add(plugin);
-                            }
-                            break;
-                        }
-                        case "LIB":
-                        {
-                            var regex = new Regex($".+LSPD First Response: {Regex.Escape(plugin.Name)}. Version=[0-9.]+.+");
-                            var match = regex.Match(line);
-                            if (match.Success)
-                            {
-                                if (log.Library.All(x => x.Name != plugin.Name)) log.Library.Add(plugin);
-                            }
-                            break;
-                        }
-                        case "IGNORE":
-                        {
-                            var regex = new Regex($".+LSPD First Response: {Regex.Escape(plugin.Name)}. Version=[0-9.]+.+");
-                            var match = regex.Match(line);
-                            if (match.Success)
-                            {
-                                if (log.Current.All(x => x.Name != plugin.Name)) log.Current.Add(plugin);
-                            }
-                            break;
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    Logging.ErrLog(e.ToString());
-                    Console.WriteLine(e);
-                    throw;
-                }
-            }
-            
             var allrounder = new Regex(@".+LSPD First Response: (\W*\w*\W*\w*\W*), Version=([0-9]+\..+), Culture=\w+, PublicKeyToken=\w+");
             var allmatch = allrounder.Match(line);
             if (allmatch.Success)
@@ -139,17 +49,12 @@ public class RPHAnalyzer
                 line = line.Replace(": ", string.Empty);
                 line = line.Substring(0, line.IndexOf(", ") + 1);
                 line = line.Replace(",", string.Empty);
-                if (line.Length > 1 && !log.Current.Any(x => x.Name == line) &&
-                    !log.Outdated.Any(x => x.Name == line) && !log.Broken.Any(x => x.Name == line) &&
-                    !log.Library.Any(x => x.Name == line) && !log.Missing.Any(x => x.Name == line) && 
-                    !log.Missmatch.Any(x => x.Name == line))
+                if (line.Length > 1 && unsorted.All(x => x.Name != line))
                 {
-                    // save info from log about unrecognized plugin in log.Missing so we can access it later when building bot responses
                     var temp = new Plugin();
                     temp.Name = line;
                     temp.Version = allmatch.Groups[2].Value;
-                    temp.State = "MISSING";
-                    log.Missing.Add(temp);
+                    unsorted.Add(temp);
                 }
             }
             
@@ -173,9 +78,100 @@ public class RPHAnalyzer
             var lspdfrver = new Regex(@".+ Running LSPD First Response 0\.4\.9 \((\d+\.\d+\.\d+\.\d+)\)");
             var match3 = lspdfrver.Match(line);
             if (match3.Success) log.LSPDFRVersion = match3.Groups[1].Value;
-
-            if (line.Contains("LSPD First Response: Creating plugin")) break;
+            
+            if (lineReader.Contains("LSPD First Response: Creating plugin")) break;
         }
+
+        foreach (var plugin in pluginData)
+        {
+            try
+            {
+                if (unsorted.All(x => x.Name != plugin.Name)) continue;
+                var logPlug = unsorted.First(x => x.Name == plugin.Name);
+                switch (plugin.State)
+                {
+                    case "LSPDFR" or "EXTERNAL":
+                    {
+                        if (logPlug.Name == plugin.Name)
+                        {
+                            //Check EA Version
+                            if (!string.IsNullOrEmpty(plugin.EAVersion) && logPlug.Version == plugin.EAVersion && log.Current.All(x => x.Name != plugin.Name))
+                            {
+                                log.Current.Add(plugin);
+                                unsorted.Remove(logPlug);
+                                break;
+                            }
+
+                            //Compare Versions
+                            if (!string.IsNullOrEmpty(plugin.Version))
+                            {
+                                var result = CompareVersions(logPlug.Version, plugin.Version);
+                                switch (result)
+                                {
+                                    // plugin version in log is older than version in DB
+                                    case < 0:
+                                    {
+                                        if (log.Outdated.All(x => x.Name != plugin.Name)) log.Outdated.Add(plugin);
+                                        unsorted.Remove(logPlug);
+                                        break;
+                                    }
+                                    // plugin version in log is newer than version in DB and there is no Early Acccess version
+                                    case > 0:
+                                    {
+                                        plugin.EAVersion = logPlug.Version; // save logVersion in log.Missmatch so we can access it later when building bot responses
+                                        if (log.Missmatch.All(x => x.Name != plugin.Name)) log.Missmatch.Add(plugin);
+                                        unsorted.Remove(logPlug);
+                                        break;
+                                    }
+                                    // plugin version in log is up to date (equals plugin version number in DB)
+                                    default:
+                                    {
+                                        if (log.Current.All(x => x.Name != plugin.Name)) log.Current.Add(plugin);
+                                        unsorted.Remove(logPlug);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    }
+                    case "BROKEN":
+                    {
+                        if (logPlug.Name == plugin.Name)
+                        {
+                            if (log.Broken.All(x => x.Name != plugin.Name)) log.Broken.Add(plugin);
+                            unsorted.Remove(logPlug);
+                        }
+                        break;
+                    }
+                    case "LIB":
+                    {
+                        if (logPlug.Name == plugin.Name)
+                        {
+                            if (log.Library.All(x => x.Name != plugin.Name)) log.Library.Add(plugin);
+                            unsorted.Remove(logPlug);
+                        }
+                        break;
+                    }
+                    case "IGNORE":
+                    {
+                        if (logPlug.Name == plugin.Name)
+                        {
+                            if (log.Current.All(x => x.Name != plugin.Name)) log.Current.Add(plugin);
+                            unsorted.Remove(logPlug);
+                        }
+                        break;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logging.ErrLog(e.ToString());
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+        log.Missing.AddRange(unsorted);
 
         foreach (var error in errorData)
         {
@@ -285,6 +281,7 @@ public class RPHAnalyzer
         Console.WriteLine($"Broken: {log.Broken.Count}");
         Console.WriteLine($"Incorrect Library: {log.Library.Count}");
         Console.WriteLine($"Missing Library: {log.MissingDepend.Count}");
+        Console.WriteLine($"Errors: {log.Errors.Count}");
         Console.ForegroundColor = ConsoleColor.Blue;
         Console.WriteLine($"Missing: {log.Missing.Count}");
         Console.WriteLine($"Newer: {log.Missmatch.Count}");
