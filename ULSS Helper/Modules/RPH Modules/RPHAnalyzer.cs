@@ -173,6 +173,8 @@ public class RPHAnalyzer
             var lspdfrver = new Regex(@".+ Running LSPD First Response 0\.4\.9 \((\d+\.\d+\.\d+\.\d+)\)");
             var match3 = lspdfrver.Match(line);
             if (match3.Success) log.LSPDFRVersion = match3.Groups[1].Value;
+
+            if (line.Contains("LSPD First Response: Creating plugin")) break;
         }
 
         foreach (var error in errorData)
