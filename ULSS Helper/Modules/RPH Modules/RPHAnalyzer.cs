@@ -10,9 +10,6 @@ public class RPHAnalyzer
 {
     internal static async Task<RPHLog> Run(string attachmentUrl)
     {
-        var timer = new Stopwatch();
-        timer.Start();
-        
         var pluginData = Database.LoadPlugins();
         var errorData = Database.LoadErrors();
         var log = new RPHLog();
@@ -38,6 +35,9 @@ public class RPHAnalyzer
         if (reader.Length > 0)
             log.FilePossiblyOutdated = IsPossiblyOutdatedFile(reader[0]);
 
+        var timer = new Stopwatch();
+        timer.Start();
+        
         foreach (var lineReader in reader)
         {
             var line = lineReader;
@@ -190,7 +190,7 @@ public class RPHAnalyzer
             }
         }
 
-        var dependmatch = new Regex(errorData[0].Regex).Matches(wholeLog);
+        var dependmatch = new Regex(errorData[0].Regex, RegexOptions.Multiline).Matches(wholeLog);
         foreach (Match match in dependmatch)
         {
             if (log.MissingDepend.Any(x => x.Name.Equals(match.Groups[2].Value))) continue;
@@ -212,7 +212,7 @@ public class RPHAnalyzer
             log.Errors.Add(dependErr);
         }
         var libErr = errorData.Find(x => x.ID == "97");
-        var libssmatch = new Regex(libErr.Regex).Matches(wholeLog);
+        var libssmatch = new Regex(libErr.Regex, RegexOptions.Multiline).Matches(wholeLog);
         foreach (Match match in libssmatch)
         {
             if (log.IncorrectLibs.Any(x => x.Equals(match.Groups[1].Value))) continue;
@@ -225,7 +225,7 @@ public class RPHAnalyzer
             log.Errors.Add(libErr);
         }
         var scriptErr = errorData.Find(x => x.ID == "98");
-        var scriptsmatch = new Regex(scriptErr.Regex).Matches(wholeLog);
+        var scriptsmatch = new Regex(scriptErr.Regex, RegexOptions.Multiline).Matches(wholeLog);
         foreach (Match match in scriptsmatch)
         {
             if (log.IncorrectScripts.Any(x => x.Equals(match.Groups[1].Value))) continue;
@@ -238,7 +238,7 @@ public class RPHAnalyzer
             log.Errors.Add(scriptErr);
         }
         var plugErr = errorData.Find(x => x.ID == "99");
-        var plugssmatch = new Regex(plugErr.Regex).Matches(wholeLog);
+        var plugssmatch = new Regex(plugErr.Regex, RegexOptions.Multiline).Matches(wholeLog);
         foreach (Match match in plugssmatch)
         {
             if (log.IncorrectPlugins.Any(x => x.Equals(match.Groups[1].Value))) continue;
@@ -251,7 +251,7 @@ public class RPHAnalyzer
             log.Errors.Add(plugErr);
         }
         var plugOth = errorData.Find(x => x.ID == "41");
-        var othsmatch = new Regex(plugOth.Regex).Matches(wholeLog);
+        var othsmatch = new Regex(plugOth.Regex, RegexOptions.Multiline).Matches(wholeLog);
         foreach (Match match in othsmatch)
         {
             if (log.IncorrectOther.Any(x => x.Equals(match.Groups[2].Value))) continue;
