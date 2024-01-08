@@ -14,7 +14,7 @@ public class RPHAnalyzer
         var errorData = Database.LoadErrors();
         var log = new RPHLog();
         var wholeLog = await new HttpClient().GetStringAsync(attachmentUrl);
-        var reader = wholeLog.Split("\r\n");
+        var reader = wholeLog.Split("\r\n").Distinct().ToArray();
 
         List<Plugin> unsorted = [];
         log.RPHPlugin = [];
