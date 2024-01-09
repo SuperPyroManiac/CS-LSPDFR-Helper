@@ -12,19 +12,19 @@ internal class UserActionCache : Cache
     internal Error Error { get; }
     internal DiscordUser User { get; }
 
-    internal UserActionCache(DiscordInteraction interaction, Plugin plugin) : base()
+    internal UserActionCache(DiscordInteraction interaction, Plugin plugin)
     {
         Interaction = interaction;
         Plugin = plugin;
     }
 
-    internal UserActionCache(DiscordInteraction interaction, Error error) : base()
+    internal UserActionCache(DiscordInteraction interaction, Error error)
     {
         Interaction = interaction;
         Error = error;
     }
     
-    internal UserActionCache(DiscordInteraction interaction, DiscordUser user) : base()
+    internal UserActionCache(DiscordInteraction interaction, DiscordUser user)
     {
         Interaction = interaction;
         User = user;

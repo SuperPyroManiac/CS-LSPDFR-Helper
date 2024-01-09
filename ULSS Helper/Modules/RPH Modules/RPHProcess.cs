@@ -25,9 +25,9 @@ internal class RPHProcess : SharedLogInfo
 
     private DiscordEmbedBuilder GetBaseLogInfoEmbed(string description)
     {
-        if (Database.GetPlugin("GrandTheftAuto5").Version.Equals(log.GTAVersion)) GtAver = "\u2713";
-        if (Database.GetPlugin("LSPDFR").Version.Equals(log.LSPDFRVersion)) LspdfRver = "\u2713";
-        if (Database.GetPlugin("RagePluginHook").Version.Equals(log.RPHVersion)) RpHver = "\u2713";
+        if (Program.Cache.GetPlugin("GrandTheftAuto5").Version.Equals(log.GTAVersion)) GtAver = "\u2713";
+        if (Program.Cache.GetPlugin("LSPDFR").Version.Equals(log.LSPDFRVersion)) LspdfRver = "\u2713";
+        if (Program.Cache.GetPlugin("RagePluginHook").Version.Equals(log.RPHVersion)) RpHver = "\u2713";
 
         return new DiscordEmbedBuilder
         {

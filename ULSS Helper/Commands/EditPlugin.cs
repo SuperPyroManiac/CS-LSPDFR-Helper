@@ -72,7 +72,6 @@ public class EditPlugin : ApplicationCommandModule
             style: TextInputStyle.Short, 
             value: plugin.Link
         ));
-        
 		Program.Cache.SaveUserAction(ctx.Interaction.User.Id, modal.CustomId, new UserActionCache(ctx.Interaction, plugin));
         await ctx.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
     }

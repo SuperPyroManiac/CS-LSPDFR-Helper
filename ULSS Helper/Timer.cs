@@ -31,15 +31,15 @@ internal class Timer
         foreach (var ac in cases.Where(x => x.Solved == 0))
         {
             if (ac.Timer > 0) ac.Timer--;
-            if (ac.Timer <= 0) CloseCase.Close(ac);
+            Database.EditCase(ac);
+            if (ac.Timer <= 0) Task.Run(() => CloseCase.Close(ac));
         }
     }
 
     private static void OnShortTimedEvent(object source, ElapsedEventArgs e)
     {
-        //Clean Cache
+        //Clean & Update Caches
         Task.Run(() => Program.Cache.RemoveExpiredCacheEntries(TimeSpan.FromMinutes(10)));
+        Task.Run(() => Program.Cache.UpdatePlugins(Database.LoadPlugins()));
     }
-
-
 }

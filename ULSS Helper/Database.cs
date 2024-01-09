@@ -417,5 +417,6 @@ internal class Database
                 throw;
             }
         }
+        Task.Run(() => Program.Cache.UpdatePlugins(LoadPlugins()));
     }
 }

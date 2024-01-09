@@ -257,17 +257,20 @@ public class ComponentInteraction
             }
             if (eventArgs.Id == MarkSolved)
             {
+                var msg = new DiscordInteractionResponseBuilder();
+                msg.IsEphemeral = true;
                 var ac = Database.LoadCases().First(x => x.ChannelID.Equals(eventArgs.Channel.Id.ToString()));
 
                 if (eventArgs.User.Id.ToString().Equals(ac.OwnerID) || eventArgs.Guild.GetMemberAsync(eventArgs.User.Id)
                         .Result.Roles.Any(role => role.Id == Program.Settings.Env.TsRoleId))
                 {
-                    await CloseCase.Close(ac, eventArgs);
+                    msg.AddEmbed(BasicEmbeds.Info("Closing case!"));
+                    await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, msg);
+                    await CloseCase.Close(ac);
                     return;
                 }
-                var msg = new DiscordInteractionResponseBuilder();
-                msg.IsEphemeral = true;
                 msg.AddEmbed(BasicEmbeds.Error("You do not own this case!"));
+                await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, msg);
             }
         }
         catch (Exception exception)

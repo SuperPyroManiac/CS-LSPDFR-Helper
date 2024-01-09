@@ -21,6 +21,7 @@ public class RemovePlugin : ApplicationCommandModule
             if (plugin.Name == pluginName)
             {
                 Database.DeletePlugin(plugin);
+                await Task.Run(() => Program.Cache.UpdatePlugins(Database.LoadPlugins()));
                 isValid = true;
                 await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Success($"**Removed: {pluginName}**")));
                 Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Warning($"Removed plugin: {pluginName}!"));

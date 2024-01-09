@@ -60,6 +60,7 @@ public class ModalSubmit
                 }
 
                 Database.AddPlugin(plug);
+                await Task.Run(() => Program.Cache.UpdatePlugins(Database.LoadPlugins()));
                 
                 await FindPluginMessages.SendDbOperationConfirmation(newPlugin: plug, operation: DbOperation.CREATE, e: e);
             }
@@ -109,6 +110,7 @@ public class ModalSubmit
                 var oldPlugin = Database.GetPlugin(plug.Name);
 
                 Database.EditPlugin(plug);
+                await Task.Run(() => Program.Cache.UpdatePlugins(Database.LoadPlugins()));
 
                 await FindPluginMessages.SendDbOperationConfirmation(newPlugin: plug, operation: DbOperation.UPDATE, oldPlugin: oldPlugin, e: e);
             }
@@ -120,6 +122,7 @@ public class ModalSubmit
                 var oldPlugin = Database.GetPlugin(cache.Plugin.Name);
 
                 Database.EditPlugin(cache.Plugin);
+                await Task.Run(() => Program.Cache.UpdatePlugins(Database.LoadPlugins()));
 
                 await FindPluginMessages.SendDbOperationConfirmation(newPlugin: cache.Plugin, operation: DbOperation.UPDATE, oldPlugin: oldPlugin, e: e);
             }

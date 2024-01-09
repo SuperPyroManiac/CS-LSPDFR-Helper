@@ -16,13 +16,13 @@ public class CheckPlugin : ApplicationCommandModule
 	{
 		var response = new DiscordInteractionResponseBuilder();
 		response.IsEphemeral = true;
+		var plugin = Program.Cache.GetPlugin(plug);
 		
-		if (Database.LoadPlugins().All(x => x.Name != plug))
+		if (plugin == null)
 		{
 			await ctx.CreateResponseAsync(response.AddEmbed(BasicEmbeds.Error($"No plugin found with name {plug}")));
 			return;
 		}
-		var plugin = Database.GetPlugin(plug);
 		
 		if (!string.IsNullOrEmpty(plugin.Link)) plugin.Link = $"[Here]({plugin.Link})";
 		plugin.Link ??= "N/A";
