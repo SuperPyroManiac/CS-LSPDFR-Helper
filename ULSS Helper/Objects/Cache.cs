@@ -1,8 +1,8 @@
 namespace ULSS_Helper.Objects;
 
-abstract internal class Cache
+internal abstract class Cache
 {
-    internal DateTime CreatedAt { get; }
+    private DateTime CreatedAt { get; }
     internal DateTime ModifiedAt { get; private set; }
 
     internal Cache()

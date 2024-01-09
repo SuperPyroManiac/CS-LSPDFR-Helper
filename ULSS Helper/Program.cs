@@ -1,8 +1,6 @@
 ﻿using System.Reflection;
 using DSharpPlus;
 using DSharpPlus.AsyncEvents;
-using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
@@ -51,6 +49,7 @@ internal class Program
         Client.UseInteractivity(new InteractivityConfiguration());
 
         await Client.ConnectAsync();
+        await Task.Run(() => Program.Cache.UpdatePlugins(Database.LoadPlugins()));
         StatusMessages.SendStartupMessage();
         await Task.Delay(-1);
     }

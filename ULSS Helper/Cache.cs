@@ -7,7 +7,27 @@ internal class Cache
 {
     private Dictionary<ulong, ProcessCache> _processCacheDict = new();
     private Dictionary<string, UserActionCache> _userActionCacheDict = new();
+    private Dictionary<string, Plugin> _pluginCacheDict = new();
 
+    /// <summary>Saves the plugin list to the cache replacing any old ones.</summary>
+    internal void UpdatePlugins(List<Plugin> plugins)
+    {
+        _pluginCacheDict.Clear();
+        foreach (var plugin in plugins) _pluginCacheDict.Add(plugin.Name, plugin);
+    }
+    
+    /// <summary>Returns a list of all cached plugins.</summary>
+    internal List<Plugin> GetPlugins()
+    {
+        return _pluginCacheDict.Values.ToList();
+    }
+    
+    /// <summary>Returns a single plugin based off the name.</summary>
+    internal Plugin GetPlugin(string pluginName)
+    {
+        return _pluginCacheDict.GetValueOrDefault(pluginName);
+    }
+    
     /// <summary>Saves the current state of a log analysis process.</summary>
     /// <param name="messageId">The ID of the last message in the current chain of messages in response to an uploaded log.</param>
     /// <param name="newCache">The ProcessCache object (will be merged with any existing cache objects for the same message id).</param>

@@ -10,7 +10,7 @@ public class RPHAnalyzer
 {
     internal static async Task<RPHLog> Run(string attachmentUrl)
     {
-        var pluginData = Database.LoadPlugins();
+        var pluginData = Program.Cache.GetPlugins();
         var errorData = Database.LoadErrors();
         var log = new RPHLog();
         var wholeLog = await new HttpClient().GetStringAsync(attachmentUrl);

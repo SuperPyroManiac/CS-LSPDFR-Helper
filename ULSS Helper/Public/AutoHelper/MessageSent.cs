@@ -50,8 +50,7 @@ public class MessageSent
                         new DiscordComponentEmoji("📨"))]);
                 await msg.ModifyAsync(oldmsg);
                 await supportthread.SendMessageAsync(
-                    BasicEmbeds.Info("This is a BETA - features are missing and subject to change!\r\n" +
-                                     "You are not to share this preview outside of ULSS!"));
+                    BasicEmbeds.Info("This is a BETA!\r\n>>> Features are missing and subject to change! You are not to share this preview outside of ULSS!", true));
             }
         }
         catch (Exception e)
