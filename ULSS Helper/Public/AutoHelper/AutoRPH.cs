@@ -53,7 +53,7 @@ public class AutoRPH
         var embed2 = new DiscordEmbedBuilder
         {
             Title = ":orange_circle:     **Outdated:**",
-            Description = "\r\n>>> " + string.Join(" - ", linkedOutdated),
+            Description = "\r\n>>> " + string.Join(" ᕀ ", linkedOutdated),
             Color = new DiscordColor(243, 154, 18),
             Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
         };
@@ -64,7 +64,7 @@ public class AutoRPH
         var embed3 = new DiscordEmbedBuilder
         {
             Title = ":red_circle:     **Broken:**",
-            Description = "\r\n>>> " + string.Join(" - ", brokenList),
+            Description = "\r\n>>> " + string.Join(" ᕀ ", brokenList),
             Color = new DiscordColor(243, 154, 18),
             Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
         };
@@ -84,9 +84,8 @@ public class AutoRPH
         {
             if (embed4.Fields.Count == 10)
             {
-                embed4.AddField($"___```God Damn``` BOAH:___",
-                    ">>> You have more errors than we can show! This is insane, or a bug!\r\nPlease fix what is shown, and upload a new log!");
-                embed4.ImageUrl = "https://media1.tenor.com/m/oPdYV8G-PhQAAAAC/arthur-arthur-morgan.gif";
+                embed4.AddField($"___```Oh Merde``` Overflow:___",
+                    ">>> You have more errors than we can show!\r\nPlease fix what is shown, and upload a new log!");
                 break;
             }
             if (error.Level == "CRITICAL") update = true;
@@ -95,7 +94,7 @@ public class AutoRPH
                     embed4.AddField($"___```{error.Level} ID: {error.ID}``` Troubleshooting Steps:___",
                         $"> {error.Solution.Replace("\n", "\n> ")}\r\n> ___*Generated in discord.gg/ulss*___");
             if (!update)
-                if (error.Level != "XTRA") //TODO: Add new public bool for errors in DB and Object
+                if (error.Level != "XTRA")
                     embed4.AddField($"___```{error.Level} ID: {error.ID}``` Troubleshooting Steps:___",
                         $"> {error.Solution.Replace("\n", "\n> ")}\r\n> ___*Generated in discord.gg/ulss*___");
         }
