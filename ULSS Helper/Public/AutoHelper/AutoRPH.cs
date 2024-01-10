@@ -52,7 +52,7 @@ public class AutoRPH
         
         var embed2 = new DiscordEmbedBuilder
         {
-            Title = ":orange_circle:     **Outdated:**",
+            Title = ":orange_circle:     **Update Required:**",
             Description = "\r\n>>> " + string.Join(" ᕀ ", linkedOutdated),
             Color = new DiscordColor(243, 154, 18),
             Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
@@ -63,7 +63,7 @@ public class AutoRPH
         };
         var embed3 = new DiscordEmbedBuilder
         {
-            Title = ":red_circle:     **Broken:**",
+            Title = ":red_circle:     **Known To Cause Problems:**",
             Description = "\r\n>>> " + string.Join(" ᕀ ", brokenList),
             Color = new DiscordColor(243, 154, 18),
             Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
