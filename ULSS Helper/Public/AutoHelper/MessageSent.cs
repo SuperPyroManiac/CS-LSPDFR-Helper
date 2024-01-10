@@ -15,6 +15,8 @@ public class MessageSent
         try
         {
             if (ctx.Channel.IsPrivate) return;
+            if (Database.LoadCases().Any(x => x.ChannelID == ctx.Channel.Id.ToString()) && !ctx.Author.IsBot)
+                await ExtraUploads.CheckLog(ctx);
             if (Program.Settings.Env.AutoHelperChannelIds.Any(x => ctx.Channel == ctx.Guild.GetChannel(x)))
             {
                 if (!OriginUploadChecks.Check(ctx).Result) return;
@@ -27,6 +29,7 @@ public class MessageSent
                 var oldmsg = await supportthread.SendMessageAsync(
                     BasicEmbeds.Public("## Your log has been uploaded!\r\n" +
                                        "Depending on the size, this may take a moment to process!"));
+                await oldmsg.PinAsync();
                 var newCase = new AutoCase()
                 {
                     CaseID = caseId,
@@ -51,7 +54,7 @@ public class MessageSent
                         new DiscordComponentEmoji("📨"))]);
                 await msg.ModifyAsync(oldmsg);
                 await supportthread.SendMessageAsync(
-                    BasicEmbeds.Info("This is a BETA!\r\n>>> Features are missing and subject to change! You are not to share this preview outside of ULSS!", true));
+                    BasicEmbeds.Info("This is a BETA!\r\n>>> Features are missing and subject to change!\r\nSuggestions/Ideas/Complaints use the feedback button!", true));
             }
         }
         catch (Exception e)
