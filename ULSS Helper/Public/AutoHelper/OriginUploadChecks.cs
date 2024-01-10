@@ -1,4 +1,3 @@
-using DSharpPlus;
 using DSharpPlus.EventArgs;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
@@ -31,8 +30,7 @@ internal class OriginUploadChecks
         {
             var attach = ctx.Message.Attachments.FirstOrDefault();
 
-            if (!attach!.FileName
-                    .Contains("RagePluginHook")) //TODO: if (!attach!.FileName.Equals("RagePluginHook.log"))
+            if (!attach!.FileName.Equals("RagePluginHook.log"))
             {
                 await ctx.Message.RespondAsync(BasicEmbeds.Error("This is not a `RagePluginHook.log` file!"));
                 Logging.SendPubLog(BasicEmbeds.Warning(

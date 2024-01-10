@@ -1,6 +1,7 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Modules.RPH_Modules;
 using ULSS_Helper.Objects;
@@ -14,6 +15,8 @@ public class MessageSent
         try
         {
             if (ctx.Channel.IsPrivate) return;
+            if (Database.LoadCases().Any(x => x.ChannelID == ctx.Channel.Id.ToString()) && !ctx.Author.IsBot)
+                await ExtraUploads.CheckLog(ctx);
             if (Program.Settings.Env.AutoHelperChannelIds.Any(x => ctx.Channel == ctx.Guild.GetChannel(x)))
             {
                 if (!OriginUploadChecks.Check(ctx).Result) return;
@@ -26,6 +29,7 @@ public class MessageSent
                 var oldmsg = await supportthread.SendMessageAsync(
                     BasicEmbeds.Public("## Your log has been uploaded!\r\n" +
                                        "Depending on the size, this may take a moment to process!"));
+                await oldmsg.PinAsync();
                 var newCase = new AutoCase()
                 {
                     CaseID = caseId,
@@ -42,15 +46,15 @@ public class MessageSent
                 var msg = await AutoRPH.ProccessLog(log, ctx, supportthread);
                 //msg.AddFile(new FileStream(Path.Combine(log.FilePath), FileMode.Open, FileAccess.Read), AddFileOptions.CloseStream);
                 msg.AddComponents([
-                    new DiscordButtonComponent(ButtonStyle.Success, "MarkSolved", "Mark Solved", false,
+                    new DiscordButtonComponent(ButtonStyle.Success, ComponentInteraction.MarkSolved, "Mark Solved", false,
                         new DiscordComponentEmoji("👍")),
-                    new DiscordButtonComponent(ButtonStyle.Danger, "RequestHelp", "Request Help", true,
+                    new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.RequestHelp, "Request Help", false,
                         new DiscordComponentEmoji("❓")),
-                    new DiscordButtonComponent(ButtonStyle.Secondary, "SendFeedback", "Send Feedback", false,
+                    new DiscordButtonComponent(ButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", false,
                         new DiscordComponentEmoji("📨"))]);
                 await msg.ModifyAsync(oldmsg);
                 await supportthread.SendMessageAsync(
-                    BasicEmbeds.Info("This is a BETA!\r\n>>> Features are missing and subject to change! You are not to share this preview outside of ULSS!", true));
+                    BasicEmbeds.Info("This is a BETA!\r\n>>> Features are missing and subject to change!\r\nSuggestions/Ideas/Complaints use the feedback button!", true));
             }
         }
         catch (Exception e)

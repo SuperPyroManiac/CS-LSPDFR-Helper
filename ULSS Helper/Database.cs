@@ -342,7 +342,7 @@ internal class Database
         {
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             cnn.Open();
-            cnn.Execute("insert into Cases (CaseID, OwnerID, ChannelID, ParentID, Solved, Timer, TsRequested) VALUES (@CaseID, @OwnerID, @ChannelID, @ParentID, @Solved, @Timer, @TsRequested)", autocase);
+            cnn.Execute("insert into Cases (CaseID, OwnerID, ChannelID, ParentID, Solved, Timer, TsRequested, RequestID) VALUES (@CaseID, @OwnerID, @ChannelID, @ParentID, @Solved, @Timer, @TsRequested, @RequestID)", autocase);
             var id = ((SQLiteConnection) cnn).LastInsertRowId;
             cnn.Close();
             return id;    
@@ -360,7 +360,7 @@ internal class Database
         try
         {
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
-            cnn.Execute("UPDATE Cases SET (CaseID, OwnerID, ChannelID, ParentID, Solved, Timer, TsRequested) = (@CaseID, @OwnerID, @ChannelID, @ParentID, @Solved, @Timer, @TsRequested) WHERE CaseID = (@CaseID)", autocase);
+            cnn.Execute("UPDATE Cases SET (CaseID, OwnerID, ChannelID, ParentID, Solved, Timer, TsRequested, RequestID) = (@CaseID, @OwnerID, @ChannelID, @ParentID, @Solved, @Timer, @TsRequested, @RequestID) WHERE CaseID = (@CaseID)", autocase);
         }
         catch (SQLiteException e)
         {

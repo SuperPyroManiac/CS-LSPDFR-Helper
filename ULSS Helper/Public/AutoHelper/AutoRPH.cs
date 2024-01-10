@@ -38,7 +38,7 @@ public class AutoRPH
             rphProcess.SendUnknownPluginsLog(ctx.Channel.Id, ctx.Author.Id);
         }
 
-        var embdesc = "## ULSS Auto Helper - BETA";
+        var embdesc = $"## __ULSS Auto Helper - BETA__\r\n**{log.DownloadLink}**";
         if (log.FilePossiblyOutdated)
             embdesc +=
                 "\r\n\r\n:warning: **Attention!** This log file is probably too old to determine your current RPH-related issues!";

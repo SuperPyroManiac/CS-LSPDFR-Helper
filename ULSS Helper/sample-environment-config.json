@@ -6,6 +6,7 @@
     "TsRoleId": 517568233360982017,
     "PublicUsageAllowedChannelIds": [672541961969729540, 692254906752696332],
     "AutoHelperChannelIds": [1189587698642583574],
+    "RequestHelpChannelId": 1176922277850394715,
     "TsBotLogChannelId": 1173304071084585050,
     "PublicBotLogChannelId": 1173304117557477456,
     "PublicBotReportsChannelId": 547311030477520896,
