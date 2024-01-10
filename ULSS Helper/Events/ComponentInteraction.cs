@@ -1,4 +1,3 @@
-using Dapper;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
@@ -21,7 +20,9 @@ public class ComponentInteraction
     
     // Public
     public const string SendFeedback = "SendFeedback";
+    public const string RequestHelp = "RequestHelp";
     public const string MarkSolved = "MarkSolved";
+    public const string JoinCase = "JoinCase";
 
     // RPH log analysis events
     public const string RphGetQuickInfo = "RphGetQuickInfo";
@@ -255,6 +256,52 @@ public class ComponentInteraction
 
                 await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
             }
+            
+            //===//===//===////===//===//===////===//Request Help Button//===////===//===//===////===//===//===//
+            if (eventArgs.Id == RequestHelp)
+            {
+                var msg = new DiscordInteractionResponseBuilder();
+                msg.IsEphemeral = true;
+                var ac = Database.LoadCases().First(x => x.ChannelID.Equals(eventArgs.Channel.Id.ToString()));
+
+                if (eventArgs.User.Id.ToString().Equals(ac.OwnerID) || eventArgs.Guild.GetMemberAsync(eventArgs.User.Id)
+                        .Result.Roles.Any(role => role.Id == Program.Settings.Env.TsRoleId))
+                {
+                    if (ac.TsRequested == 0)
+                    {
+                        msg.IsEphemeral = false;
+                        msg.AddEmbed(BasicEmbeds.Info("__Help Requested!__\r\n>>> TS have been sent an alert! " +
+                                                      "Keep in mind they are real people and may not be available at the moment. Patience is key!" +
+                                                      "\r\n**Do not tag random TS for support while waiting.**", true));
+                        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, msg);
+                        var tsMsg = new DiscordMessageBuilder();
+                        tsMsg.AddEmbed(BasicEmbeds.Info(
+                            $"__Help Requested! Case: {ac.CaseID}__\r\n" +
+                            $">>> Author: <@{ac.OwnerID}> ({eventArgs.Guild.GetMemberAsync(ulong.Parse(ac.OwnerID)).Result.DisplayName})\r\n" +
+                            $"Thread: <#{ac.ChannelID}>\r\n" +
+                            $"Created: <t:{eventArgs.Channel.CreationTimestamp.ToUnixTimeSeconds()}:R>", true));
+                        tsMsg.AddComponents([
+                            new DiscordButtonComponent(ButtonStyle.Secondary, JoinCase, "Join Case", false,
+                            new DiscordComponentEmoji("💢"))]);
+                        var tsMsgSent = await eventArgs.Guild.GetChannel(Program.Settings.Env.RequestHelpChannelId)
+                            .SendMessageAsync(tsMsg);
+                        ac.TsRequested = 1;
+                        ac.RequestID = tsMsgSent.Id.ToString();
+                        Database.EditCase(ac);
+                        return;
+                    }
+                    if (ac.TsRequested == 1)
+                    {
+                        msg.AddEmbed(BasicEmbeds.Error("Help has already been requested!"));
+                        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, msg);
+                        return;
+                    }
+                }
+                msg.AddEmbed(BasicEmbeds.Error("You do not own this case!"));
+                await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, msg);
+            }
+            
+            //===//===//===////===//===//===////===//Mark Solved Button//===////===//===//===////===//===//===//
             if (eventArgs.Id == MarkSolved)
             {
                 var msg = new DiscordInteractionResponseBuilder();
@@ -271,6 +318,14 @@ public class ComponentInteraction
                 }
                 msg.AddEmbed(BasicEmbeds.Error("You do not own this case!"));
                 await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, msg);
+            }
+            
+            //===//===//===////===//===//===////===//Join Case Button//===////===//===//===////===//===//===//
+            if (eventArgs.Id == JoinCase)
+            {
+                var ac = Database.LoadCases().First(x => x.CaseID.Equals(
+                    eventArgs.Message.Embeds.First().Description.Split("Case: ")[1].Split("_").First()));
+                await Public.AutoHelper.JoinCase.Join(ac, eventArgs.User.Id.ToString());
             }
         }
         catch (Exception exception)

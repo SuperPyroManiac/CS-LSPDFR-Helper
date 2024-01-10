@@ -12,6 +12,12 @@ internal class CloseCase
     {
         ac.Solved = 1;
         ac.Timer = 0;
+        if (ac.TsRequested == 1 && ac.RequestID != null)
+        {
+            var chTs = Program.Client.GetChannelAsync(Program.Settings.Env.RequestHelpChannelId).Result;
+            await chTs.DeleteMessageAsync(chTs.GetMessageAsync(ulong.Parse(ac.RequestID)).Result);
+            ac.RequestID = null;
+        }
         Database.EditCase(ac);
         
         var ch = (DiscordThreadChannel)Program.Client.GetChannelAsync(ulong.Parse(ac.ChannelID)).Result;

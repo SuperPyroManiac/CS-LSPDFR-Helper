@@ -1,6 +1,7 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Modules.RPH_Modules;
 using ULSS_Helper.Objects;
@@ -42,11 +43,11 @@ public class MessageSent
                 var msg = await AutoRPH.ProccessLog(log, ctx, supportthread);
                 //msg.AddFile(new FileStream(Path.Combine(log.FilePath), FileMode.Open, FileAccess.Read), AddFileOptions.CloseStream);
                 msg.AddComponents([
-                    new DiscordButtonComponent(ButtonStyle.Success, "MarkSolved", "Mark Solved", false,
+                    new DiscordButtonComponent(ButtonStyle.Success, ComponentInteraction.MarkSolved, "Mark Solved", false,
                         new DiscordComponentEmoji("👍")),
-                    new DiscordButtonComponent(ButtonStyle.Danger, "RequestHelp", "Request Help", true,
+                    new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.RequestHelp, "Request Help", false,
                         new DiscordComponentEmoji("❓")),
-                    new DiscordButtonComponent(ButtonStyle.Secondary, "SendFeedback", "Send Feedback", false,
+                    new DiscordButtonComponent(ButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", false,
                         new DiscordComponentEmoji("📨"))]);
                 await msg.ModifyAsync(oldmsg);
                 await supportthread.SendMessageAsync(
