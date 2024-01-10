@@ -1,3 +1,4 @@
+using System.Net;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
@@ -44,7 +45,10 @@ public class MessageSent
 
                 var log = RPHAnalyzer.Run(attach!.Url).Result;
                 var msg = await AutoRPH.ProccessLog(log, ctx, supportthread);
-                //msg.AddFile(new FileStream(Path.Combine(log.FilePath), FileMode.Open, FileAccess.Read), AddFileOptions.CloseStream);
+                new WebClient().DownloadFile(log.DownloadLink, Path.Combine(Settings.GetOrCreateFolder("Exports"), $"RPH-{caseId}.log"));
+                var fs = new FileStream(Path.Combine(Settings.GetOrCreateFolder("Exports"), $"RPH-{caseId}.log"),
+                    FileMode.Open, FileAccess.Read);
+                msg.AddFile(fs, AddFileOptions.CloseStream);
                 msg.AddComponents([
                     new DiscordButtonComponent(ButtonStyle.Success, ComponentInteraction.MarkSolved, "Mark Solved", false,
                         new DiscordComponentEmoji("👍")),
@@ -53,8 +57,11 @@ public class MessageSent
                     new DiscordButtonComponent(ButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", false,
                         new DiscordComponentEmoji("📨"))]);
                 await msg.ModifyAsync(oldmsg);
+                await msg.DisposeAsync();
+                await fs.DisposeAsync();
                 await supportthread.SendMessageAsync(
                     BasicEmbeds.Info("This is a BETA!\r\n>>> Features are missing and subject to change!\r\nSuggestions/Ideas/Complaints use the feedback button!", true));
+                File.Delete(Path.Combine(Settings.GetOrCreateFolder("Exports"), $"RPH-{caseId}.log"));
             }
         }
         catch (Exception e)
