@@ -70,7 +70,7 @@ public class AutoRPH
         };
         embed3.Footer = new DiscordEmbedBuilder.EmbedFooter
         {
-            Text = "These plugins should be removed! `/CheckPlugin <Name>` for info why!"
+            Text = "We recommend removing these, /CheckPlugin for reason why!"
         };
         var embed4 = new DiscordEmbedBuilder
         {
