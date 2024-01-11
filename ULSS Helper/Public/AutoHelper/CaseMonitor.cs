@@ -20,7 +20,7 @@ internal class CaseMonitor
                 break;
             }
             
-            var st = cl.GetChannelAsync(ulong.Parse(ac.ChannelID)).Result;
+            var st = (DiscordThreadChannel)cl.GetChannelAsync(ulong.Parse(ac.ChannelID)).Result;
 
             if (ac.Solved == 0)
                 embed.AddField($"__<#{ac.ChannelID}>__",
