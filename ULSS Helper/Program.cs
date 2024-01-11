@@ -54,7 +54,6 @@ internal class Program
         await Task.Run(() => Program.Cache.UpdatePlugins(Database.LoadPlugins()));
         await Task.Run(CaseMonitor.UpdateMonitor);
         StatusMessages.SendStartupMessage();
-	await Client.GetChannelAsync(600849173322924052).Result.SendMessageAsync("Soon To Be Case Viewer");
         await Task.Delay(-1);
     }
 
