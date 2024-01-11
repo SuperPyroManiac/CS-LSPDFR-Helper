@@ -8,6 +8,8 @@ using DSharpPlus.SlashCommands.EventArgs;
 using Microsoft.Extensions.Logging;
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
+using ULSS_Helper.Public.AutoHelper;
+using MessageSent = ULSS_Helper.Events.MessageSent;
 
 namespace ULSS_Helper;
 
@@ -50,6 +52,7 @@ internal class Program
 
         await Client.ConnectAsync();
         await Task.Run(() => Program.Cache.UpdatePlugins(Database.LoadPlugins()));
+        await Task.Run(CaseMonitor.UpdateMonitor);
         StatusMessages.SendStartupMessage();
 	await Client.GetChannelAsync(600849173322924052).Result.SendMessageAsync("Soon To Be Case Viewer");
         await Task.Delay(-1);
