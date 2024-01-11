@@ -12,7 +12,6 @@ internal class OriginUploadChecks
         {
             await ctx.Message.RespondAsync(BasicEmbeds.Error(
                 $"You are blacklisted from the bot!\r\nContact server staff in <#{Program.Settings.Env.StaffContactChannelId}> if you think this is an error!"));
-            Thread.Sleep(4000);
             await ctx.Message.DeleteAsync();
             return false;
         }
@@ -21,7 +20,6 @@ internal class OriginUploadChecks
         {
             await ctx.Message.RespondAsync(
                 BasicEmbeds.Error("Please only send a single `RagePluginHook.log` file!"));
-            Thread.Sleep(4000);
             await ctx.Message.DeleteAsync();
             return false;
         }
@@ -42,7 +40,6 @@ internal class OriginUploadChecks
                     + $"[Download Here]({attach.Url})\r\n\r\n"
                     + $"Reason denied: Incorrect name", true
                 ));
-                Thread.Sleep(4000);
                 await ctx.Message.DeleteAsync();
                 return false;
             }
@@ -73,7 +70,6 @@ internal class OriginUploadChecks
                     + $"[Download Here]({attach.Url})\r\n\r\n"
                     + $"Reason denied: File way too large! (Larger than 10 MB)", true
                 ));
-                Thread.Sleep(4000);
                 await ctx.Message.DeleteAsync();
                 return false;
             }
@@ -86,7 +82,6 @@ internal class OriginUploadChecks
             {
                 var wng = await ctx.Message.RespondAsync(
                     BasicEmbeds.Error($"You already have an open case!\r\nCheck <#{findCase.ChannelID}>"));
-                Thread.Sleep(4000);
                 await ctx.Message.DeleteAsync();
                 return false;
             }
