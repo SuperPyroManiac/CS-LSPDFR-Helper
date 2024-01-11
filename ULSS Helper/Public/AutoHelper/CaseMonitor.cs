@@ -20,13 +20,11 @@ internal class CaseMonitor
                 break;
             }
             
-            var st = (DiscordThreadChannel)cl.GetChannelAsync(ulong.Parse(ac.ChannelID)).Result;
-
             if (ac.Solved == 0)
                 embed.AddField($"__<#{ac.ChannelID}>__",
                     $">>> Author: {cl.GetGuildAsync(Program.Settings.Env.ServerId).Result.GetMemberAsync(ulong.Parse(ac.OwnerID)).Result.DisplayName}"
                     + $"\r\nHelp Requested: {Convert.ToBoolean(ac.TsRequested)}"
-                    + $"\r\nCreated: <t:{st.CreationTimestamp.ToUnixTimeSeconds()}:R> | AutoClose: `{ac.Timer}` hours");
+                    + $"\r\nCreated: <t:{cl.GetChannelAsync(ulong.Parse(ac.ChannelID)).Result.CreationTimestamp.ToUnixTimeSeconds()}:R> | AutoClose: `{ac.Timer}` hours");
         }
         if (embed.Fields.Count == 0) embed.AddField("None", "No open cases!");
 
