@@ -3,6 +3,7 @@ using System.Data.SQLite;
 using System.Net;
 using Dapper;
 using ULSS_Helper.Objects;
+using ULSS_Helper.Public.AutoHelper;
 
 namespace ULSS_Helper;
 
@@ -345,6 +346,7 @@ internal class Database
             cnn.Execute("insert into Cases (CaseID, OwnerID, ChannelID, ParentID, Solved, Timer, TsRequested, RequestID) VALUES (@CaseID, @OwnerID, @ChannelID, @ParentID, @Solved, @Timer, @TsRequested, @RequestID)", autocase);
             var id = ((SQLiteConnection) cnn).LastInsertRowId;
             cnn.Close();
+            Task.Run(CaseMonitor.UpdateMonitor);
             return id;    
         }
         catch (SQLiteException e)
@@ -361,6 +363,7 @@ internal class Database
         {
             using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
             cnn.Execute("UPDATE Cases SET (CaseID, OwnerID, ChannelID, ParentID, Solved, Timer, TsRequested, RequestID) = (@CaseID, @OwnerID, @ChannelID, @ParentID, @Solved, @Timer, @TsRequested, @RequestID) WHERE CaseID = (@CaseID)", autocase);
+            Task.Run(CaseMonitor.UpdateMonitor);
         }
         catch (SQLiteException e)
         {
