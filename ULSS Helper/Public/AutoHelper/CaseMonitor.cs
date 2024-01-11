@@ -14,13 +14,19 @@ internal class CaseMonitor
 
         foreach (var ac in Database.LoadCases().TakeWhile(ac => embed.Fields.Count < 25))
         {
-            if (embed.Fields.Count == 24) embed.AddField("..And More", "There are too many cases to show!");
-            if (ac.Solved == 0) embed.AddField($"__Case: {ac.CaseID}__", 
-                $">>> Author: {cl.GetGuildAsync(Program.Settings.Env.ServerId).Result.GetMemberAsync(ulong.Parse(ac.OwnerID)).Result.DisplayName}" 
-                + $"\r\nThread: <#{ac.ChannelID}>"
-                + $"\r\nHelp Requested: {Convert.ToBoolean(ac.TsRequested)}"
-                + $"\r\nCreated: <t:{cl.GetChannelAsync(ulong.Parse(ac.ChannelID)).Result.CreationTimestamp.ToUnixTimeSeconds()}:R>"
-                + $"\r\nAuto Close: `{ac.Timer}` hours");
+            if (embed.Fields.Count == 24)
+            {
+                embed.AddField("..And More", "There are too many cases to show!");
+                break;
+            }
+            
+            var st = cl.GetChannelAsync(ulong.Parse(ac.ChannelID)).Result;
+
+            if (ac.Solved == 0)
+                embed.AddField($"__<#{ac.ChannelID}>__",
+                    $">>> Author: {cl.GetGuildAsync(Program.Settings.Env.ServerId).Result.GetMemberAsync(ulong.Parse(ac.OwnerID)).Result.DisplayName}"
+                    + $"\r\nHelp Requested: {Convert.ToBoolean(ac.TsRequested)}"
+                    + $"\r\nCreated: <t:{st.CreationTimestamp.ToUnixTimeSeconds()}:R> | AutoClose: `{ac.Timer}` hours");
         }
         if (embed.Fields.Count == 0) embed.AddField("None", "No open cases!");
 
