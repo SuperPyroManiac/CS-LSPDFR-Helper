@@ -48,7 +48,7 @@ internal class RPHProcess : SharedLogInfo
         if (current.Length != 0 && outdated.Length != 0 && broken.Length == 0) broken = "**None**";
 
         if (outdated.Length > 0) embed.AddField(":orange_circle:     **Update:**", "\r\n>>> - " + outdated, true);
-        if (broken.Length > 0) embed.AddField(":red_circle:     **Remove:**", "\r\n>>> - " + broken, true);
+        if (broken.Length > 0) embed.AddField(":red_circle:     **Unstable:**", "\r\n>>> - " + broken, true);
         if (missing.Length > 0) embed.AddField(":bangbang:  **Plugins not recognized:**", missing);
         if (missmatch.Length > 0) embed.AddField(":bangbang:  **Plugin version newer than DB:**", missmatch);
 
@@ -117,7 +117,7 @@ internal class RPHProcess : SharedLogInfo
             };
             var embed3 = new DiscordEmbedBuilder
             {
-                Title = ":red_circle:     **Remove:**",
+                Title = ":red_circle:     **Unstable:**",
                 Description = "\r\n>>> " + string.Join(" - ", brokenList),
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
@@ -196,9 +196,8 @@ internal class RPHProcess : SharedLogInfo
         {
             if (embed.Fields.Count == 10)
             {
-                embed.AddField($"___```God Damn``` BOAH:___",
-                    ">>> You have more errors than we can show! This is insane, or a bug!\r\nPlease fix what is shown, and upload a new log!");
-                embed.ImageUrl = "https://media1.tenor.com/m/oPdYV8G-PhQAAAAC/arthur-arthur-morgan.gif";
+                embed.AddField($"___```Oh Merde``` Overflow:___",
+                    ">>> You have more errors than we can show!\r\nPlease fix what is shown, and upload a new log!");
                 break;
             }
             
