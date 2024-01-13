@@ -318,6 +318,8 @@ internal class RPHProcess : SharedLogInfo
         var newMessage = new DiscordMessageBuilder();
         newMessage.AddEmbeds(newEmbList);
         newMessage.WithReply(log.MsgId, true);
+        newMessage.AddComponents(new DiscordButtonComponent(ButtonStyle.Secondary, ComponentInteraction.SendFeedback,
+            "Send Feedback", false, new DiscordComponentEmoji("📨")));
         await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
             new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Sent!")));
         await eventArgs.Interaction.DeleteOriginalResponseAsync();
