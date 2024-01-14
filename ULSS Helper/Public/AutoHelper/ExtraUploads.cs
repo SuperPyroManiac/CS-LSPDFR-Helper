@@ -15,7 +15,7 @@ internal class ExtraUploads
 
         if (ac.OwnerID == ctx.Author.Id.ToString())
         {
-            ac.Timer = 24;
+            ac.Timer = 6;
             Database.EditCase(ac);
         }
         

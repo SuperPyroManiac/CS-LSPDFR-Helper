@@ -38,7 +38,7 @@ public class MessageSent
                     ChannelID = supportthread.Id.ToString(),
                     ParentID = supportthread.Parent.Id.ToString(),
                     Solved = 0,
-                    Timer = 24,
+                    Timer = 6,
                     TsRequested = 0
                 };
                 Database.AddCase(newCase);
