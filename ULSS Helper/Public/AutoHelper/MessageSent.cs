@@ -48,7 +48,7 @@ public class MessageSent
                 var filepath = Path.Combine(Settings.GetOrCreateFolder("Exports"), $"RPH-{caseId}.log");
                 new WebClient().DownloadFile(log.DownloadLink, filepath);
                 var fs = new FileStream(filepath, FileMode.Open, FileAccess.Read);
-                msg.AddFile(fs, AddFileOptions.CloseStream);
+                msg.AddFile("RagePluginHook.log", fs, AddFileOptions.CloseStream);
                 msg.AddComponents([
                     new DiscordButtonComponent(ButtonStyle.Success, ComponentInteraction.MarkSolved, "Mark Solved", false,
                         new DiscordComponentEmoji("👍")),
