@@ -82,9 +82,9 @@ public class AutoRPH
         var update = false;
         foreach (var error in log.Errors)
         {
-            if (embed4.Fields.Count == 10)
+            if (embed4.Fields.Count == 20)
             {
-                embed4.AddField($"___```Oh Merde``` Overflow:___",
+                embed4.AddField($"___```Too Much``` Overflow:___",
                     ">>> You have more errors than we can show!\r\nPlease fix what is shown, and upload a new log!");
                 break;
             }

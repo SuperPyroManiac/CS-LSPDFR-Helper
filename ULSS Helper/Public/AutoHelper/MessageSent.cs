@@ -61,7 +61,7 @@ public class MessageSent
                 await fs.DisposeAsync();
                 await supportthread.SendMessageAsync(
                     BasicEmbeds.Info("This is a BETA!\r\n>>> Features are missing and subject to change!\r\nSuggestions/Ideas/Complaints use the feedback button!", true));
-                File.Delete(filepath);
+                //File.Delete(filepath);
             }
         }
         catch (Exception e)

@@ -272,7 +272,7 @@ public class ComponentInteraction
                         msg.IsEphemeral = false;
                         msg.AddEmbed(BasicEmbeds.Info("__Help Requested!__\r\n>>> TS have been sent an alert! " +
                                                       "Keep in mind they are real people and may not be available at the moment. Patience is key!" +
-                                                      "\r\n**Do not tag random TS for support while waiting.**", true));
+                                                      "\r\n__**If you have not already, please explain what the issue is!**__", true));
                         await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, msg);
                         var tsMsg = new DiscordMessageBuilder();
                         tsMsg.AddEmbed(BasicEmbeds.Info(
@@ -287,6 +287,7 @@ public class ComponentInteraction
                             .SendMessageAsync(tsMsg);
                         ac.TsRequested = 1;
                         ac.RequestID = tsMsgSent.Id.ToString();
+                        ac.Timer = 72;
                         Database.EditCase(ac);
                         return;
                     }
