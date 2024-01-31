@@ -17,7 +17,7 @@ internal class ExtraUploads
         {
             ac.Timer = ac.TsRequested switch
             {
-                1 => 72,
+                1 => 24,
                 0 => 6,
                 _ => ac.Timer
             };

@@ -273,6 +273,8 @@ public class ComponentInteraction
                         msg.AddEmbed(BasicEmbeds.Info("__Help Requested!__\r\n>>> TS have been sent an alert! " +
                                                       "Keep in mind they are real people and may not be available at the moment. Patience is key!" +
                                                       "\r\n__**If you have not already, please explain what the issue is!**__", true));
+                        msg.AddEmbed(BasicEmbeds.Error("__Explain Your Issue!__\r\n>>> Help TS understand by explaining what you have tried, " +
+                                                      "and what the exact issue is! If you fail to do this no one will help!", true));
                         await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, msg);
                         var tsMsg = new DiscordMessageBuilder();
                         tsMsg.AddEmbed(BasicEmbeds.Info(
@@ -287,7 +289,7 @@ public class ComponentInteraction
                             .SendMessageAsync(tsMsg);
                         ac.TsRequested = 1;
                         ac.RequestID = tsMsgSent.Id.ToString();
-                        ac.Timer = 72;
+                        ac.Timer = 24;
                         Database.EditCase(ac);
                         return;
                     }
