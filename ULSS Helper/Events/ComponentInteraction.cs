@@ -262,46 +262,17 @@ public class ComponentInteraction
             //===//===//===////===//===//===////===//Request Help Button//===////===//===//===////===//===//===//
             if (eventArgs.Id == RequestHelp)
             {
-                var msg = new DiscordInteractionResponseBuilder();
-                msg.IsEphemeral = true;
-                var ac = Database.LoadCases().First(x => x.ChannelID.Equals(eventArgs.Channel.Id.ToString()));
-
-                if (eventArgs.User.Id.ToString().Equals(ac.OwnerID) || eventArgs.Guild.GetMemberAsync(eventArgs.User.Id)
-                        .Result.Roles.Any(role => role.Id == Program.Settings.Env.TsRoleId))
-                {
-                    if (ac.TsRequested == 0)
-                    {
-                        msg.IsEphemeral = false;
-                        msg.AddEmbed(BasicEmbeds.Info("__Help Requested!__\r\n>>> TS have been sent an alert! " +
-                                                      "Keep in mind they are real people and may not be available at the moment. Patience is key!" +
-                                                      "\r\n__**Ensure you have explained your issue well!!**__", true));
-                        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, msg);
-                        var tsMsg = new DiscordMessageBuilder();
-                        tsMsg.AddEmbed(BasicEmbeds.Info(
-                            $"__Help Requested! Case: {ac.CaseID}__\r\n" +
-                            $">>> Author: <@{ac.OwnerID}> ({eventArgs.Guild.GetMemberAsync(ulong.Parse(ac.OwnerID)).Result.DisplayName})\r\n" +
-                            $"Thread: <#{ac.ChannelID}>\r\n" +
-                            $"Created: <t:{eventArgs.Channel.CreationTimestamp.ToUnixTimeSeconds()}:R>", true));
-                        tsMsg.AddComponents([
-                            new DiscordButtonComponent(ButtonStyle.Secondary, JoinCase, "Join Case", false,
-                            new DiscordComponentEmoji("💢"))]);
-                        var tsMsgSent = await eventArgs.Guild.GetChannel(Program.Settings.Env.RequestHelpChannelId)
-                            .SendMessageAsync(tsMsg);
-                        ac.TsRequested = 1;
-                        ac.RequestID = tsMsgSent.Id.ToString();
-                        ac.Timer = 24;
-                        Database.EditCase(ac);
-                        return;
-                    }
-                    if (ac.TsRequested == 1)
-                    {
-                        msg.AddEmbed(BasicEmbeds.Error("Help has already been requested!"));
-                        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, msg);
-                        return;
-                    }
-                }
-                msg.AddEmbed(BasicEmbeds.Error("You do not own this case!"));
-                await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, msg);
+                DiscordInteractionResponseBuilder modal = new();
+                modal.WithCustomId(ModalSubmit.RequestHelp);
+                modal.WithTitle($"Requesting help!");
+                modal.AddComponents(new TextInputComponent(
+                    label: "Explain your issue in detail:",
+                    customId: "issueDsc",
+                    required: true,
+                    style: TextInputStyle.Paragraph
+                ));
+        
+                await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
             }
             
             //===//===//===////===//===//===////===//Mark Solved Button//===////===//===//===////===//===//===//
