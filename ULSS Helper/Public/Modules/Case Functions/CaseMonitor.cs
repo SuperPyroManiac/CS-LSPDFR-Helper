@@ -11,7 +11,7 @@ internal class CaseMonitor
         var ch = cl.GetChannelAsync(Program.Settings.Env.RequestHelpChannelId).Result;
         List<DiscordMessage> msgPurge = [];
         DiscordMessage origMsg = null;
-        var embed = BasicEmbeds.Public("# __AutoHelper Active Cases_");
+        var embed = BasicEmbeds.Public("# __AutoHelper Active Cases__");
         await foreach (var msg in ch.GetMessagesAsync(100))
         {
             if (msg.Embeds.Count == 0) msgPurge.Add(msg);
