@@ -71,7 +71,7 @@ public class OpenCase
         }
         foreach (var msg in msgPurge)
         {
-            await ch.DeleteMessageAsync(msg);
+            if (msg != null) await ch.DeleteMessageAsync(msg);
         }
         if (origMsg == null) origMsg = await ch.SendMessageAsync("Starting...");
         embed.AddField("Early Access",
