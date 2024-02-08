@@ -11,7 +11,6 @@ namespace ULSS_Helper.Objects;
 /// <param name="PublicUsageAllowedChannelIds">A list of channel IDs where the public users are allowed to use the bot commands (/checkLog, etc.).</param>
 /// <param name="AutoHelperChannelIds">The channel that the autohelper will run in.</param>
 /// <param name="RequestHelpChannelId">The channel that the autohelper will request help in.</param>
-/// <param name="ActiveThreadsMessageID">The message that the autohelper monitor will edit.</param>
 /// <param name="TsBotLogChannelId">The channel ID of the channel on the server where the bot should log everything that should be visible to users with the TS role.</param>
 /// <param name="PublicBotLogChannelId">The channel ID of the channel on the server where the bot should log all actions related to public users using the bot commands (checkLog) on their own.</param>
 /// <param name="PublicBotReportsChannelId">The channel ID of the channel on the server where the bot should log reports related to public users using the bot commands (checkLog) on their own.</param>
@@ -25,7 +24,6 @@ public record EnvironmentConfig(
     List<ulong> PublicUsageAllowedChannelIds, 
     List<ulong> AutoHelperChannelIds,
     ulong RequestHelpChannelId,
-    ulong ActiveThreadsMessageID,
     ulong TsBotLogChannelId, 
     ulong PublicBotLogChannelId, 
     ulong PublicBotReportsChannelId, 
