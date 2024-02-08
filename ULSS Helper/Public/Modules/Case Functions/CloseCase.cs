@@ -2,7 +2,7 @@ using DSharpPlus.Entities;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Public.AutoHelper;
+namespace ULSS_Helper.Public.Modules.Case_Functions;
 
 internal class CloseCase
 {

@@ -9,6 +9,7 @@ using ULSS_Helper.Modules.RPH_Modules;
 using ULSS_Helper.Modules.SHVDN_Modules;
 using ULSS_Helper.Objects;
 using ULSS_Helper.Public.AutoHelper;
+using ULSS_Helper.Public.Modules.Case_Functions;
 
 namespace ULSS_Helper.Events;
 
@@ -23,6 +24,7 @@ public class ComponentInteraction
     public const string RequestHelp = "RequestHelp";
     public const string MarkSolved = "MarkSolved";
     public const string JoinCase = "JoinCase";
+    public const string OpenCase = "OpenCase";
 
     // RPH log analysis events
     public const string RphGetQuickInfo = "RphGetQuickInfo";
@@ -326,7 +328,34 @@ public class ComponentInteraction
             {
                 var ac = Database.LoadCases().First(x => x.CaseID.Equals(
                     eventArgs.Message.Embeds.First().Description.Split("Case: ")[1].Split("_").First()));
-                await Public.AutoHelper.JoinCase.Join(ac, eventArgs.User.Id.ToString());
+                await Public.Modules.Case_Functions.JoinCase.Join(ac, eventArgs.User.Id.ToString());
+            }
+            
+            //===//===//===////===//===//===////===//Open Case Button//===////===//===//===////===//===//===//
+            if (eventArgs.Id == OpenCase)
+            {
+                var msg = new DiscordInteractionResponseBuilder();
+                msg.IsEphemeral = true;
+                if (Database.LoadUsers().Where(x => x.UID == eventArgs.User.Id.ToString()).FirstOrDefault()!.Blocked == 1)
+                {
+                    await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, 
+                        msg.AddEmbed(BasicEmbeds.Error($"You are blacklisted from the bot!\r\nContact server staff in <#{Program.Settings.Env.StaffContactChannelId}> if you think this is an error!")));
+                    return;
+                }
+        
+                AutoCase findCase = null;
+                foreach (var autocase in Database.LoadCases()
+                             .Where(autocase => autocase.OwnerID.Equals(eventArgs.User.Id.ToString()))) findCase = autocase;
+
+                if (findCase != null && findCase.Solved == 0)
+                {
+                    await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, 
+                        msg.AddEmbed(BasicEmbeds.Error($"You already have an open case!\r\nCheck <#{findCase.ChannelID}>")));
+                    return;
+                }
+
+                msg.AddEmbed(BasicEmbeds.Success($"Created new case! {Public.Modules.Case_Functions.OpenCase.CreateCase(eventArgs).Result.Mention}"));
+                await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, msg);
             }
         }
         catch (Exception exception)

@@ -1,7 +1,7 @@
 using DSharpPlus.Entities;
 using ULSS_Helper.Messages;
 
-namespace ULSS_Helper.Public.AutoHelper;
+namespace ULSS_Helper.Public.Modules.Case_Functions;
 
 internal class CaseMonitor
 {

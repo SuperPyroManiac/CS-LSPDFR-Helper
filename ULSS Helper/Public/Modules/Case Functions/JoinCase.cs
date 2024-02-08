@@ -2,7 +2,7 @@ using DSharpPlus.Entities;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Public.AutoHelper;
+namespace ULSS_Helper.Public.Modules.Case_Functions;
 
 internal class JoinCase
 {
@@ -19,7 +19,6 @@ internal class JoinCase
         await Program.Client.GetChannelAsync(ch.Id).Result.SendMessageAsync(BasicEmbeds.Success(
             $"__TS has joined!__\r\n" +
             $"> <@{tsID}> is here to help!", true));
-        var ping = await Program.Client.GetChannelAsync(ch.Id).Result.SendMessageAsync($"<@{tsID}>");
-        await ping.DeleteAsync();
+        await ch.AddThreadMemberAsync(Program.Client.Guilds[Program.Settings.Env.ServerId].GetMemberAsync(ulong.Parse(tsID)).Result);
     }
 }

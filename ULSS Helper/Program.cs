@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Public.AutoHelper;
+using ULSS_Helper.Public.Modules.Case_Functions;
 using MessageSent = ULSS_Helper.Events.MessageSent;
 
 namespace ULSS_Helper;
