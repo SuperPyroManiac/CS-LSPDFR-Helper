@@ -1,3 +1,4 @@
+using DSharpPlus;
 using DSharpPlus.EventArgs;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
@@ -91,6 +92,8 @@ internal class OriginUploadChecks
         }
 
         Thread.Sleep(4000);
+        if (ctx.Author.IsBot && ctx.Message.Embeds.Count > 0) 
+            if (ctx.Message.Embeds.FirstOrDefault()!.Description.Contains("ULSS AutoHelper")) return false;
         await ctx.Message.DeleteAsync();
         return false;
     }

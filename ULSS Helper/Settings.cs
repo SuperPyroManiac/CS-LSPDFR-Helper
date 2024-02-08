@@ -98,7 +98,7 @@ internal class Settings
             TsRoleId: 517568233360982017,
             TsIconUrl: "https://cdn.discordapp.com/role-icons/517568233360982017/b69077cfafb6856a0752c863e1bb87f0.webp?size=128&quality=lossless",
             PublicUsageAllowedChannelIds: [672541961969729540, 692254906752696332],
-            AutoHelperChannelIds: [1189587698642583574],
+            AutoHelperChannelId: 1189587698642583574,
             RequestHelpChannelId: 1194828033849299076,
             TsBotLogChannelId: 1173304071084585050,
             PublicBotLogChannelId: 1173304117557477456,

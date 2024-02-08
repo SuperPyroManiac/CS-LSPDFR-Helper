@@ -18,7 +18,7 @@ public class MessageSent
             if (ctx.Channel.IsPrivate) return;
             if (Database.LoadCases().Any(x => x.ChannelID == ctx.Channel.Id.ToString()) && !ctx.Author.IsBot)
                 await ExtraUploads.CheckLog(ctx);
-            if (Program.Settings.Env.AutoHelperChannelIds.Any(x => ctx.Channel == ctx.Guild.GetChannel(x)))
+            if (Program.Settings.Env.AutoHelperChannelId.ToString() == ctx.Channel.Id.ToString())
             {
                 if (!OriginUploadChecks.Check(ctx).Result) return;
 
