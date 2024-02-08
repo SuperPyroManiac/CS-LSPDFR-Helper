@@ -220,6 +220,7 @@ public class ModalSubmit
                             $"__Help Requested! Case: {ac.CaseID}__\r\n" +
                             $">>> Author: <@{ac.OwnerID}> ({e.Interaction.Guild.GetMemberAsync(ulong.Parse(ac.OwnerID)).Result.DisplayName})\r\n" +
                             $"Thread: <#{ac.ChannelID}>\r\n" +
+                            $"Reason:\r\n```{e.Values["issueDsc"]}```\r\n" +
                             $"Created: <t:{e.Interaction.Channel.CreationTimestamp.ToUnixTimeSeconds()}:R>", true));
                         tsMsg.AddComponents([
                             new DiscordButtonComponent(ButtonStyle.Secondary, ComponentInteraction.JoinCase, "Join Case", false,
