@@ -50,13 +50,6 @@
 
 
 
-    <ItemGroup>
-      <Folder Include="Public\Modules\Process Logs\" />
-    </ItemGroup>
-
-
-
-
 
 
 
