@@ -43,7 +43,7 @@ internal class SHVDNProcess : SharedLogInfo
         }
         else 
         {
-            embed.AddField(":orange_circle:     No faulty script files detected!", "Seems like everything loaded fine.");
+            embed.AddField(":green_circle:     No faulty script files detected!", "Seems like everything loaded fine.");
         }
 
         var webhookBuilder = new DiscordWebhookBuilder()
