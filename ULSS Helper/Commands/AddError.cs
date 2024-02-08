@@ -10,7 +10,7 @@ public class AddError : ApplicationCommandModule
 {
     [SlashCommand("AddError", "Adds an error to the database!")]
     [RequireAdvancedTsRole]
-    public async Task AddErrorCmd(InteractionContext ctx, [Option("Level", "Warning type (XTRA, WARN, SEVERE, CRITICAL)")] Level level)
+    public async Task AddErrorCmd(InteractionContext ctx, [Option("Level", "Warning type (AUTO, XTRA, WARN, SEVERE, CRITICAL)")] Level level)
     {
         var error = new Error()
         {

@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text.RegularExpressions;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
@@ -31,6 +32,15 @@ public class MessageSent
                     };
                     Database.EditCase(ac);
 
+                    foreach (var error in Database.LoadErrors().Where(error => error.Level == "AUTO"))
+                    {
+                        Console.WriteLine("We detected an error auto");
+                        var errregex = new Regex(error.Regex);
+                        var errmatch = errregex.Match(ctx.Message.Content);
+                        if (errmatch.Success)
+                            ctx.Message.RespondAsync(BasicEmbeds.Public($"# __ULSS AutoHelper__\r\n{error.Solution}")).GetAwaiter();
+                    }
+                    
                     if (ctx.Message.Attachments.Count == 0) return;
                     foreach (var attach in ctx.Message.Attachments)
                     {

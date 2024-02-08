@@ -15,7 +15,7 @@ public class EditError : ApplicationCommandModule
     (
         InteractionContext ctx, 
         [Option("ID", "Errors ID!")] string errorId, 
-        [Option("New_Level", "Warning type (XTRA, WARN, SEVERE, CRITICAL)")] Level? newLevel=null
+        [Option("NewLevel", "Warning type (AUTO, XTRA, WARN, SEVERE, CRITICAL)")] Level? newLevel=null
     )
     {
         var bd = new DiscordInteractionResponseBuilder();

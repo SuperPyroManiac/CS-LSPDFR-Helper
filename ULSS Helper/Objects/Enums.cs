@@ -4,28 +4,20 @@ namespace ULSS_Helper.Objects;
 
 public enum Level
 {
-    [ChoiceName("XTRA")]
-    XTRA,
-    [ChoiceName("WARN")]
-    WARN,
-    [ChoiceName("SEVERE")]
-    SEVERE,
-    [ChoiceName("CRITICAL")]
-    CRITICAL
+    [ChoiceName("AUTO")] AUTO,
+    [ChoiceName("XTRA")] XTRA,
+    [ChoiceName("WARN")] WARN,
+    [ChoiceName("SEVERE")] SEVERE,
+    [ChoiceName("CRITICAL")] CRITICAL
 }
 
 public enum State
 {
-    [ChoiceName("LSPDFR")]
-    LSPDFR,
-    [ChoiceName("EXTERNAL")]
-    EXTERNAL,
-    [ChoiceName("BROKEN")]
-    BROKEN,
-    [ChoiceName("LIB")]
-    LIB,
-    [ChoiceName("IGNORE")]
-    IGNORE
+    [ChoiceName("LSPDFR")] LSPDFR,
+    [ChoiceName("EXTERNAL")] EXTERNAL,
+    [ChoiceName("BROKEN")] BROKEN,
+    [ChoiceName("LIB")] LIB,
+    [ChoiceName("IGNORE")] IGNORE
 }
 
 public enum DbOperation

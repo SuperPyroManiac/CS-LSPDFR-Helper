@@ -1,3 +1,4 @@
+using System.Reflection.Metadata.Ecma335;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
@@ -200,7 +201,8 @@ internal class RPHProcess : SharedLogInfo
                     ">>> You have more errors than we can show!\r\nPlease fix what is shown, and upload a new log!");
                 break;
             }
-            
+
+            if (error.Level == "AUTO") continue;
             if (error.Level == "CRITICAL") update = true;
             if (update)
             {
