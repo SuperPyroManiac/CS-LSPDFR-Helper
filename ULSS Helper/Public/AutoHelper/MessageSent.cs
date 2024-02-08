@@ -1,12 +1,7 @@
-using System.Net;
 using System.Text.RegularExpressions;
 using DSharpPlus;
-using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
-using ULSS_Helper.Modules.RPH_Modules;
-using ULSS_Helper.Objects;
 using ULSS_Helper.Public.Modules.Process_Logs;
 using RPHProcess = ULSS_Helper.Public.Modules.Process_Logs.RPHProcess;
 
