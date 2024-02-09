@@ -53,6 +53,12 @@ public class MessageSent
                             case "ScriptHookVDotNet.log":
                                 SHVDNProcess.ProcessLog(attach, ctx);
                                 break;
+                            default:
+                                if (attach.FileName.EndsWith(".png") || attach.FileName.EndsWith(".jpg"))
+                                {
+                                    ImageProcess.ProcessImage(attach, ctx);
+                                }
+                                break;
                         }
                     }
                 }
