@@ -41,16 +41,16 @@ public class MessageSent
                         switch (attach.FileName)
                         {
                             case "RagePluginHook.log":
-                                RPHProcess.ProcessLog(attach, ctx);
+                                RPHProcess.ProcessLog(attach, ctx).GetAwaiter();
                                 break;
                             case "ELS.log":
-                                ELSProcess.ProcessLog(attach, ctx);
+                                ELSProcess.ProcessLog(attach, ctx).GetAwaiter();
                                 break;
                             case "asiloader.log":
-                                ASIProcess.ProcessLog(attach, ctx);
+                                ASIProcess.ProcessLog(attach, ctx).GetAwaiter();
                                 break;
                             case "ScriptHookVDotNet.log":
-                                SHVDNProcess.ProcessLog(attach, ctx);
+                                SHVDNProcess.ProcessLog(attach, ctx).GetAwaiter();
                                 break;
                         }
                     }
