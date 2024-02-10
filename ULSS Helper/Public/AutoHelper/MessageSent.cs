@@ -29,7 +29,6 @@ public class MessageSent
 
                     foreach (var error in Database.LoadErrors().Where(error => error.Level == "AUTO"))
                     {
-                        Console.WriteLine("We detected an error auto");
                         var errregex = new Regex(error.Regex, RegexOptions.IgnoreCase | RegexOptions.Multiline);
                         var errmatch = errregex.Match(ctx.Message.Content);
                         if (errmatch.Success)
@@ -42,16 +41,16 @@ public class MessageSent
                         switch (attach.FileName)
                         {
                             case "RagePluginHook.log":
-                                RPHProcess.ProcessLog(attach, ctx);
+                                RPHProcess.ProcessLog(attach, ctx).GetAwaiter();
                                 break;
                             case "ELS.log":
-                                ELSProcess.ProcessLog(attach, ctx);
+                                ELSProcess.ProcessLog(attach, ctx).GetAwaiter();
                                 break;
                             case "asiloader.log":
-                                ASIProcess.ProcessLog(attach, ctx);
+                                ASIProcess.ProcessLog(attach, ctx).GetAwaiter();
                                 break;
                             case "ScriptHookVDotNet.log":
-                                SHVDNProcess.ProcessLog(attach, ctx);
+                                SHVDNProcess.ProcessLog(attach, ctx).GetAwaiter();
                                 break;
                         }
                     }
