@@ -29,8 +29,7 @@ public class MessageSent
 
                     foreach (var error in Database.LoadErrors().Where(error => error.Level == "AUTO"))
                     {
-                        Console.WriteLine("We detected an error auto");
-                        var errregex = new Regex(error.Regex);
+                        var errregex = new Regex(error.Regex, RegexOptions.IgnoreCase | RegexOptions.Multiline);
                         var errmatch = errregex.Match(ctx.Message.Content);
                         if (errmatch.Success)
                             ctx.Message.RespondAsync(BasicEmbeds.Public($"# __ULSS AutoHelper__\r\n{error.Solution}")).GetAwaiter();
