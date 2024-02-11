@@ -14,7 +14,7 @@ public class ImageProcess
         try
         {
             DiscordMessageBuilder messageBuilder = new();
-            var engine = new TesseractEngine(@".\tessdata", "eng");
+            var engine = new TesseractEngine(Path.Combine(Directory.GetCurrentDirectory(), "tessdata"), "eng");
             var publicEmbed = BasicEmbeds.Public("## __ULSS AutoHelper__");
             
             using (HttpClient client = new HttpClient())
