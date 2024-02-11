@@ -324,7 +324,7 @@ public class ComponentInteraction
                 }
 
                 msg.AddEmbed(BasicEmbeds.Success($"Created new case! {Public.AutoHelper.Modules.Case_Functions.OpenCase.CreateCase(eventArgs).Result.Mention}"));
-                await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, msg);
+                await eventArgs.Interaction.EditOriginalResponseAsync(msg);
             }
         }
         catch (Exception exception)
