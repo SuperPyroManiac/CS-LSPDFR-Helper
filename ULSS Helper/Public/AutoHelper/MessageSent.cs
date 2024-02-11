@@ -33,7 +33,7 @@ public class MessageSent
                         var errregex = new Regex(error.Regex, RegexOptions.IgnoreCase | RegexOptions.Multiline);
                         var errmatch = errregex.Match(ctx.Message.Content);
                         if (errmatch.Success)
-                            ctx.Message.RespondAsync(BasicEmbeds.Public($"# __ULSS AutoHelper__\r\n{error.Solution}")).GetAwaiter();
+                            ctx.Message.RespondAsync(BasicEmbeds.Public($"## __ULSS AutoHelper__\r\n`Response ID is: {error.ID}`\r\n{error.Solution}")).GetAwaiter();
                     }
                     
                     if (ctx.Message.Attachments.Count == 0) return;
