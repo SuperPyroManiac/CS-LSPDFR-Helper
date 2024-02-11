@@ -28,7 +28,7 @@ public class MessageSent
                     };
                     Database.EditCase(ac);
 
-                    foreach (var error in Database.LoadErrors().Where(error => error.Level == "AUTO"))
+                    foreach (var error in Database.LoadErrors().Where(error => error.Level == "PMSG"))
                     {
                         var errregex = new Regex(error.Regex, RegexOptions.IgnoreCase | RegexOptions.Multiline);
                         var errmatch = errregex.Match(ctx.Message.Content);

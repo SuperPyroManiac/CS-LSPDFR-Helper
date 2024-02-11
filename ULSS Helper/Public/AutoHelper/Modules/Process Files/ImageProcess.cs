@@ -47,7 +47,7 @@ public class ImageProcess
                         }
                         // Match against all errors. May need to use it's own error type for this.
                         var matchedErrors = new List<Error>();
-                        foreach (var error in Database.LoadErrors().Where(x => x.Level == "PIMAGE"))
+                        foreach (var error in Database.LoadErrors().Where(x => x.Level == "PIMG"))
                         {
                             var errregex = new Regex(error.Regex);
                             var errmatch = errregex.Match(textNoLineBreaks);
