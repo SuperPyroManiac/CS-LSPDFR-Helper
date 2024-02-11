@@ -14,6 +14,7 @@ public class MessageSent
         try
         {
             if (ctx.Channel.IsPrivate) return;
+            if (ctx.Message.MessageType == MessageType.ThreadCreated) ctx.Channel.DeleteMessageAsync(ctx.Message).GetAwaiter();
             if (Database.LoadCases().Any(x => x.ChannelID == ctx.Channel.Id.ToString()) && !ctx.Author.IsBot)
             {
                 var ac = Database.LoadCases().First(x => x.ChannelID == ctx.Channel.Id.ToString());
@@ -29,11 +30,15 @@ public class MessageSent
 
                     foreach (var error in Database.LoadErrors().Where(error => error.Level == "AUTO"))
                     {
-                        Console.WriteLine("We detected an error auto");
-                        var errregex = new Regex(error.Regex);
+                        var errregex = new Regex(error.Regex, RegexOptions.IgnoreCase | RegexOptions.Multiline);
                         var errmatch = errregex.Match(ctx.Message.Content);
                         if (errmatch.Success)
-                            ctx.Message.RespondAsync(BasicEmbeds.Public($"# __ULSS AutoHelper__\r\n{error.Solution}")).GetAwaiter();
+                        {
+                            var emb = BasicEmbeds.Public(
+                                $"## __ULSS AutoHelper__\r\n>>> {error.Solution}");
+                            emb.Footer.Text = emb.Footer.Text + $" - ID: {error.ID}";
+                            ctx.Message.RespondAsync(emb).GetAwaiter();
+                        }
                     }
                     
                     if (ctx.Message.Attachments.Count == 0) return;
@@ -42,16 +47,16 @@ public class MessageSent
                         switch (attach.FileName)
                         {
                             case "RagePluginHook.log":
-                                RPHProcess.ProcessLog(attach, ctx);
+                                RPHProcess.ProcessLog(attach, ctx).GetAwaiter();
                                 break;
                             case "ELS.log":
-                                ELSProcess.ProcessLog(attach, ctx);
+                                ELSProcess.ProcessLog(attach, ctx).GetAwaiter();
                                 break;
                             case "asiloader.log":
-                                ASIProcess.ProcessLog(attach, ctx);
+                                ASIProcess.ProcessLog(attach, ctx).GetAwaiter();
                                 break;
                             case "ScriptHookVDotNet.log":
-                                SHVDNProcess.ProcessLog(attach, ctx);
+                                SHVDNProcess.ProcessLog(attach, ctx).GetAwaiter();
                                 break;
                             default: 
                                 if (attach.FileName.EndsWith(".png") || attach.FileName.EndsWith(".jpg"))

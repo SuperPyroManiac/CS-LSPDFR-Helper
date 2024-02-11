@@ -58,20 +58,8 @@ public class OpenCase
         var embed = BasicEmbeds.Public("# __ULSS AutoHelper__");
         await foreach (var msg in ch.GetMessagesAsync(100))
         {
-            if (msg.Embeds.Count == 0)
-            {
-                msgPurge.Add(msg);
-                continue;
-            }
-            if (!msg.Embeds.FirstOrDefault()!.Description.Contains("ULSS AutoHelper")) msgPurge.Add(msg);
-            if (msg.Embeds.FirstOrDefault()!.Description.Contains("ULSS AutoHelper"))
-            {
-                origMsg = msg;
-            }
-        }
-        foreach (var msg in msgPurge)
-        {
-            if (msg != null) await ch.DeleteMessageAsync(msg);
+            if (msg.Embeds.Count <= 0) continue;
+            if (msg.Embeds.FirstOrDefault()!.Description.Contains("ULSS AutoHelper")) origMsg = msg;
         }
         if (origMsg == null) origMsg = await ch.SendMessageAsync("Starting...");
         embed.AddField("Early Access",
