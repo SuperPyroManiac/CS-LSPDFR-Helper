@@ -33,16 +33,20 @@ public class ImageProcess
             
             using (HttpClient client = new HttpClient())
             {
+                // download attachment
                 using (HttpResponseMessage response = await client.GetAsync(attachment.Url))
                 {
                     if (response.IsSuccessStatusCode)
                     {
+                        // convert HttpResponse into imageData
                         byte[] imageData = await response.Content.ReadAsByteArrayAsync();
+                        // load the image data into the Tesseract lib
                         var image = Pix.LoadFromMemory(imageData);
-                        var page = engine.Process(image);
+                        // process the image using the Tesseract OCR engine
+                        var processedImage = engine.Process(image);
 
-                        var text = page.GetText().Trim();
-                        var textNoLineBreaks = text.Replace("\n", " ").Replace("\r", " ");
+                        var text = processedImage.GetText().Trim();
+                        var textNoLineBreaks = text.Replace("\n", " ").Replace("\r", " "); // remove the linebreaks for easier regex matching
                         
                         var logEmbedContent = new StringBuilder("**__Uploaded image was processed__**\r\n\r\n");
                         logEmbedContent.Append($"Sender: <@{ctx.Message.Author.Id}>\r\n");
@@ -59,7 +63,7 @@ public class ImageProcess
                             Logging.SendPubLog(logNoTextEmbed);
                             return;
                         }
-
+                        // try to match the text with an AUTO-Level error from our DB
                         var matchedErrors = new List<Error>();
                         foreach (var error in Database.LoadErrors().Where(error => error.Level == "AUTO"))
                         {
