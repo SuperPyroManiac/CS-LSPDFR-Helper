@@ -55,4 +55,4 @@ jobs:
       continue-on-error: true
 
     - name: Restart app
-      run: pm2 restart 7
+      run: pm2 restart 2
