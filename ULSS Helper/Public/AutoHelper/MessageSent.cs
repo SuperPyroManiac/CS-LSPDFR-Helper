@@ -14,6 +14,7 @@ public class MessageSent
         try
         {
             if (ctx.Channel.IsPrivate) return;
+            if (ctx.Message.MessageType == MessageType.ThreadCreated) ctx.Channel.DeleteMessageAsync(ctx.Message).GetAwaiter();
             if (Database.LoadCases().Any(x => x.ChannelID == ctx.Channel.Id.ToString()) && !ctx.Author.IsBot)
             {
                 var ac = Database.LoadCases().First(x => x.ChannelID == ctx.Channel.Id.ToString());

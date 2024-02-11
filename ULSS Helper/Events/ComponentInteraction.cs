@@ -305,12 +305,11 @@ public class ComponentInteraction
             //===//===//===////===//===//===////===//Open Case Button//===////===//===//===////===//===//===//
             if (eventArgs.Id == OpenCase)
             {
-                var msg = new DiscordInteractionResponseBuilder();
-                msg.IsEphemeral = true;
-                if (Database.LoadUsers().Where(x => x.UID == eventArgs.User.Id.ToString()).FirstOrDefault()!.Blocked == 1)
+                await eventArgs.Interaction.DeferAsync(true);
+                var msg = new DiscordWebhookBuilder();
+                if (Database.LoadUsers().FirstOrDefault(x => x.UID == eventArgs.User.Id.ToString())!.Blocked == 1)
                 {
-                    await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, 
-                        msg.AddEmbed(BasicEmbeds.Error($"You are blacklisted from the bot!\r\nContact server staff in <#{Program.Settings.Env.StaffContactChannelId}> if you think this is an error!")));
+                    await eventArgs.Interaction.EditOriginalResponseAsync(msg.AddEmbed(BasicEmbeds.Error($"You are blacklisted from the bot!\r\nContact server staff in <#{Program.Settings.Env.StaffContactChannelId}> if you think this is an error!")));
                     return;
                 }
         
@@ -320,13 +319,12 @@ public class ComponentInteraction
 
                 if (findCase != null && findCase.Solved == 0)
                 {
-                    await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, 
-                        msg.AddEmbed(BasicEmbeds.Error($"You already have an open case!\r\nCheck <#{findCase.ChannelID}>")));
+                    await eventArgs.Interaction.EditOriginalResponseAsync(msg.AddEmbed(BasicEmbeds.Error($"You already have an open case!\r\nCheck <#{findCase.ChannelID}>")));
                     return;
                 }
 
                 msg.AddEmbed(BasicEmbeds.Success($"Created new case! {Public.Modules.Case_Functions.OpenCase.CreateCase(eventArgs).Result.Mention}"));
-                await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, msg);
+                await eventArgs.Interaction.EditOriginalResponseAsync(msg);
             }
         }
         catch (Exception exception)
