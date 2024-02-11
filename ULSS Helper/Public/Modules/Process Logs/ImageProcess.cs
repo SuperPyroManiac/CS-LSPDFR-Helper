@@ -44,11 +44,19 @@ public class ImageProcess
                         var text = page.GetText().Trim();
                         var textNoLineBreaks = text.Replace("\n", " ").Replace("\r", " ");
                         
+                        var logEmbedContent = new StringBuilder("**__Uploaded image was processed__**\r\n\r\n");
+                        logEmbedContent.Append($"Sender: <@{ctx.Message.Author.Id}>\r\n");
+                        logEmbedContent.Append($"Channel: <#{ctx.Message.Channel.Id}>\r\n");
+                        logEmbedContent.Append($"Image: [{attachment.FileName}]({attachment.Url}) ({attachment.FileSize / 1000}KB)\r\n");
+                        if (String.IsNullOrEmpty(text))
+                            logEmbedContent.Append($"No text recognized in uploaded image\r\n");
+                        else
+                            logEmbedContent.Append($"Recognized text: ```{text}```\r\n");
+                        
                         if (String.IsNullOrEmpty(text))
                         {
-                            var logNoTextEmbed = BasicEmbeds.Info("No text recognized in uploaded image");
-                            logNoTextEmbed.AddField("Image:", $"[Link](<{attachment.Url}>)");
-                            Logging.SendLog(ctx.Message.Channel.Id, ctx.Message.Author.Id, logNoTextEmbed);
+                            var logNoTextEmbed = BasicEmbeds.Info(logEmbedContent.ToString());
+                            Logging.SendPubLog(logNoTextEmbed);
                             return;
                         }
 
@@ -69,39 +77,22 @@ public class ImageProcess
                                 publicEmbed.AddField($"Suggested troubleshooting steps (ID {error.ID}):", $"> {error.Solution.Replace("\n", "\n> ")}\r\n");
                             }
                         }
-
                         
                         // ts-bot-log
-                        var logEmbedContentBuilder = new StringBuilder("**__Uploaded image was processed__**\r\n\r\n");
-                        logEmbedContentBuilder.Append($"Sender: <@{ctx.Message.Author.Id}>\r\n");
-                        logEmbedContentBuilder.Append($"Channel: <#{ctx.Message.Channel.Id}>\r\n");
-                        logEmbedContentBuilder.Append($"Image: [{attachment.FileName}]({attachment.Url}) ({attachment.FileSize / 1000}KB)\r\n");
-                        logEmbedContentBuilder.Append($"Recognized text: ```{text}```\r\n");
                         if (matchedErrors.Count > 0)
                         {
                             var matchedErrorIds = matchedErrors.Select(matchedError => matchedError.ID).ToList();
-                            logEmbedContentBuilder.Append($"Matched with error IDs: {string.Join(", ", matchedErrorIds)}");
-                            
+                            logEmbedContent.Append($"Matched with error IDs: {string.Join(", ", matchedErrorIds)}");
+                            messageBuilder.AddEmbed(publicEmbed);
+                            await ctx.Message.RespondAsync(messageBuilder);
                         }
                         else
                         {
-                            publicEmbed.AddField(
-                                $"No common issues found in the text within the uploaded image. Try the following:\n", 
-                                "- if you think your screenshot contains some kind of text or error message that corresponds to a common issue that I know about...\n" +
-                                " - try creating a higher quality screenshot (no phone pictures of your computer screen), use the PRINT-SCREEN key or Windows Key + Shift + S.\n" +
-                                " - try cropping the screenshot before uploading it here so it only shows the error message and no other unrelated text on your screen.\n" +
-                                "- if the above applies to you but you already tried the suggested steps, feel free to request help from a human.\n" +
-                                "" +
-                                "\r\n"
-                            );
-                            logEmbedContentBuilder.Append($"Matched with error IDs: None");
+                            logEmbedContent.Append($"Matched with error IDs: None");
                         }
                         
-                        var logEmbed = BasicEmbeds.Info(logEmbedContentBuilder.ToString());
+                        var logEmbed = BasicEmbeds.Info(logEmbedContent.ToString());
                         Logging.SendPubLog(logEmbed);
-                        
-                        messageBuilder.AddEmbed(publicEmbed);
-                        await ctx.Message.RespondAsync(messageBuilder);
                     }
                     else
                     {
@@ -112,7 +103,7 @@ public class ImageProcess
         }
         catch (Exception e)
         {
-            ULSS_Helper.Messages.Logging.ErrLog(e.ToString());//TODO: Blacklist
+            Logging.ErrLog(e.ToString());//TODO: Blacklist
             Console.WriteLine(e);
             throw;
         }
