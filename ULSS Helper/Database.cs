@@ -4,7 +4,7 @@ using System.Net;
 using Dapper;
 using ULSS_Helper.Objects;
 using ULSS_Helper.Public.AutoHelper;
-using ULSS_Helper.Public.Modules.Case_Functions;
+using ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 
 namespace ULSS_Helper;
 

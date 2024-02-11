@@ -5,7 +5,7 @@ using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Public.Modules.Case_Functions;
+namespace ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 
 public class OpenCase
 {
@@ -22,6 +22,8 @@ public class OpenCase
             $"\r\n> - ELS.log" +
             $"\r\n> - asiloader.log" +
             $"\r\n> - ScriptHookVDotNet.log" +
+            $"\r\n> - Screenshots of .png or .jpg - BETA" +
+            $"\r\n\r\nIf you need help with something else, it may be faster to ask in the public support channels!" +
             $"\r\n\r\n__Please check the FAQ for common issues!__"));
         caseMsg.AddComponents([
             new DiscordButtonComponent(ButtonStyle.Success, ComponentInteraction.MarkSolved, "Mark Solved", false,

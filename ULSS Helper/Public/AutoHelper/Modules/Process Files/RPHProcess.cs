@@ -4,9 +4,8 @@ using DSharpPlus.EventArgs;
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Modules.RPH_Modules;
-using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Public.Modules.Process_Logs;
+namespace ULSS_Helper.Public.AutoHelper.Modules.Process_Files;
 
 public class RPHProcess
 {
