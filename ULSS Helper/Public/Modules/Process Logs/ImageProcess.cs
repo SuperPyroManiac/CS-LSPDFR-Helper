@@ -69,7 +69,6 @@ public class ImageProcess
                             {
                                 matchedErrors.Add(error);
                                 
-                                // response to public user
                                 publicEmbed.AddField(
                                     "\r\nCommon issue detected in uploaded image:", 
                                     $"> {errmatch.Value}"
@@ -78,7 +77,6 @@ public class ImageProcess
                             }
                         }
                         
-                        // ts-bot-log
                         if (matchedErrors.Count > 0)
                         {
                             var matchedErrorIds = matchedErrors.Select(matchedError => matchedError.ID).ToList();
