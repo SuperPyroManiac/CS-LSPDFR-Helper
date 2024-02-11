@@ -34,9 +34,9 @@ internal class CaseMonitor
         }
         if (origMsg == null) origMsg = await ch.SendMessageAsync("Starting...");
         
-        foreach (var ac in Database.LoadCases().TakeWhile(ac => embed.Fields.Count < 25))
+        foreach (var ac in Database.LoadCases().TakeWhile(ac => embed.Fields.Count < 16))
         {
-            if (embed.Fields.Count == 24)
+            if (embed.Fields.Count == 15)
             {
                 embed.AddField("..And More", "There are too many cases to show!");
                 break;
