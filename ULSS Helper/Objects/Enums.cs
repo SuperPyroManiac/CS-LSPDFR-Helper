@@ -4,7 +4,8 @@ namespace ULSS_Helper.Objects;
 
 public enum Level
 {
-    [ChoiceName("AUTO")] AUTO,
+    [ChoiceName("PMSG")] PMSG,
+    [ChoiceName("PIMG")] PIMG,
     [ChoiceName("XTRA")] XTRA,
     [ChoiceName("WARN")] WARN,
     [ChoiceName("SEVERE")] SEVERE,

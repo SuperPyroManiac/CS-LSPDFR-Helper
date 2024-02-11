@@ -2,8 +2,8 @@ using System.Text.RegularExpressions;
 using DSharpPlus;
 using DSharpPlus.EventArgs;
 using ULSS_Helper.Messages;
-using ULSS_Helper.Public.Modules.Process_Logs;
-using RPHProcess = ULSS_Helper.Public.Modules.Process_Logs.RPHProcess;
+using ULSS_Helper.Public.AutoHelper.Modules.Process_Files;
+using RPHProcess = ULSS_Helper.Public.AutoHelper.Modules.Process_Files.RPHProcess;
 
 namespace ULSS_Helper.Public.AutoHelper;
 
@@ -28,16 +28,21 @@ public class MessageSent
                     };
                     Database.EditCase(ac);
 
-                    foreach (var error in Database.LoadErrors().Where(error => error.Level == "AUTO"))
+                    foreach (var error in Database.LoadErrors().Where(error => error.Level == "PMSG"))
                     {
                         var errregex = new Regex(error.Regex, RegexOptions.IgnoreCase | RegexOptions.Multiline);
                         var errmatch = errregex.Match(ctx.Message.Content);
                         if (errmatch.Success)
-                            ctx.Message.RespondAsync(BasicEmbeds.Public($"## __ULSS AutoHelper__\r\n`Response ID is: {error.ID}`\r\n{error.Solution}")).GetAwaiter();
+                        {
+                            var emb = BasicEmbeds.Public(
+                                $"## __ULSS AutoHelper__\r\n>>> {error.Solution}");
+                            emb.Footer.Text = emb.Footer.Text + $" - ID: {error.ID}";
+                            ctx.Message.RespondAsync(emb).GetAwaiter();
+                        }
                     }
                     
                     if (ctx.Message.Attachments.Count == 0) return;
-                    foreach (var attach in ctx.Message.Attachments)
+                    foreach (var attach in ctx.Message.Attachments)//TODO: Blacklist over 6MB file size on match
                     {
                         switch (attach.FileName)
                         {
@@ -52,6 +57,13 @@ public class MessageSent
                                 break;
                             case "ScriptHookVDotNet.log":
                                 SHVDNProcess.ProcessLog(attach, ctx).GetAwaiter();
+                                break;
+                            default: 
+                                if (attach.FileName.EndsWith(".png") || attach.FileName.EndsWith(".jpg"))
+                                    ImageProcess.ProcessImage(attach, ctx).GetAwaiter();
+                                if (attach.FileName.EndsWith(".log"))
+                                    ctx.Message.RespondAsync(BasicEmbeds.Public(
+                                        "## __ULSS AutoHelper__\r\nThis file is not supported or is not named correctly!"));
                                 break;
                         }
                     }
