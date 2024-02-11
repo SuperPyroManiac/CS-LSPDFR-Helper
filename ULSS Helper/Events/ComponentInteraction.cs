@@ -9,7 +9,7 @@ using ULSS_Helper.Modules.RPH_Modules;
 using ULSS_Helper.Modules.SHVDN_Modules;
 using ULSS_Helper.Objects;
 using ULSS_Helper.Public.AutoHelper;
-using ULSS_Helper.Public.Modules.Case_Functions;
+using ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 
 namespace ULSS_Helper.Events;
 
@@ -299,7 +299,7 @@ public class ComponentInteraction
             {
                 var ac = Database.LoadCases().First(x => x.CaseID.Equals(
                     eventArgs.Message.Embeds.First().Description.Split("Case: ")[1].Split("_").First()));
-                await Public.Modules.Case_Functions.JoinCase.Join(ac, eventArgs.User.Id.ToString());
+                await Public.AutoHelper.Modules.Case_Functions.JoinCase.Join(ac, eventArgs.User.Id.ToString());
             }
             
             //===//===//===////===//===//===////===//Open Case Button//===////===//===//===////===//===//===//
@@ -325,7 +325,7 @@ public class ComponentInteraction
                     return;
                 }
 
-                msg.AddEmbed(BasicEmbeds.Success($"Created new case! {Public.Modules.Case_Functions.OpenCase.CreateCase(eventArgs).Result.Mention}"));
+                msg.AddEmbed(BasicEmbeds.Success($"Created new case! {Public.AutoHelper.Modules.Case_Functions.OpenCase.CreateCase(eventArgs).Result.Mention}"));
                 await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, msg);
             }
         }

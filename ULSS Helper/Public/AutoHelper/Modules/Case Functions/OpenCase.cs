@@ -5,7 +5,7 @@ using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Public.Modules.Case_Functions;
+namespace ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 
 public class OpenCase
 {

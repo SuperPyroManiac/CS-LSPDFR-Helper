@@ -6,7 +6,7 @@ using Tesseract;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Public.Modules.Process_Logs;
+namespace ULSS_Helper.Public.AutoHelper.Modules.Process_Files;
 public class ImageProcess
 {
     internal static async Task ProcessImage(DiscordAttachment attachment, MessageCreateEventArgs ctx)
@@ -14,58 +14,40 @@ public class ImageProcess
         try
         {
             DiscordMessageBuilder messageBuilder = new();
-            
-            // 1. download the English OCR training data from here: https://github.com/tesseract-ocr/tessdata/blob/main/eng.traineddata
-            // 2. create a folder called "tessdata" (on the root level where ULSSDB.db and environment-config.json files are located, too)
-            // 3. move the downloaded "eng.traineddata" file into the created "tessdata" folder
             var engine = new TesseractEngine(@".\tessdata", "eng");
-            
-            DiscordEmbedBuilder publicEmbed = new()
-            {
-                Description = $"## __ULSS AutoHelper__",
-                Color = new DiscordColor(243, 154, 18),
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl },
-                Footer = new DiscordEmbedBuilder.EmbedFooter
-                {
-                    Text = $"Disclaimer: This is an experimental feature and may not be as accurate as my log analysis."
-                }
-            };
+            var publicEmbed = BasicEmbeds.Public("## __ULSS AutoHelper__");
             
             using (HttpClient client = new HttpClient())
-            {
-                // download attachment
+            { 
                 using (HttpResponseMessage response = await client.GetAsync(attachment.Url))
                 {
                     if (response.IsSuccessStatusCode)
                     {
-                        // convert HttpResponse into imageData
-                        byte[] imageData = await response.Content.ReadAsByteArrayAsync();
-                        // load the image data into the Tesseract lib
+                        var imageData = await response.Content.ReadAsByteArrayAsync();
                         var image = Pix.LoadFromMemory(imageData);
-                        // process the image using the Tesseract OCR engine
                         var processedImage = engine.Process(image);
 
                         var text = processedImage.GetText().Trim();
-                        var textNoLineBreaks = text.Replace("\n", " ").Replace("\r", " "); // remove the linebreaks for easier regex matching
+                        var textNoLineBreaks = text.Replace("\n", " ").Replace("\r", " ");
                         
                         var logEmbedContent = new StringBuilder("**__Uploaded image was processed__**\r\n\r\n");
                         logEmbedContent.Append($"Sender: <@{ctx.Message.Author.Id}>\r\n");
                         logEmbedContent.Append($"Channel: <#{ctx.Message.Channel.Id}>\r\n");
                         logEmbedContent.Append($"Image: [{attachment.FileName}]({attachment.Url}) ({attachment.FileSize / 1000}KB)\r\n");
-                        if (String.IsNullOrEmpty(text))
+                        if (string.IsNullOrEmpty(text))
                             logEmbedContent.Append($"No text recognized in uploaded image\r\n");
                         else
                             logEmbedContent.Append($"Recognized text: ```{text}```\r\n");
                         
-                        if (String.IsNullOrEmpty(text))
+                        if (string.IsNullOrEmpty(text))
                         {
                             var logNoTextEmbed = BasicEmbeds.Info(logEmbedContent.ToString());
                             Logging.SendPubLog(logNoTextEmbed);
                             return;
                         }
-                        // try to match the text with an AUTO-Level error from our DB
+                        // Match against all errors. May need to use it's own error type for this.
                         var matchedErrors = new List<Error>();
-                        foreach (var error in Database.LoadErrors().Where(error => error.Level == "AUTO"))
+                        foreach (var error in Database.LoadErrors().Where(x => x.Level == "PIMAGE"))
                         {
                             var errregex = new Regex(error.Regex);
                             var errmatch = errregex.Match(textNoLineBreaks);

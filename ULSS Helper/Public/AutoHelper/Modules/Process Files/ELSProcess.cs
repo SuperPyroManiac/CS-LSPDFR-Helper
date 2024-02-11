@@ -3,18 +3,18 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
-using ULSS_Helper.Modules.SHVDN_Modules;
+using ULSS_Helper.Modules.ELS_Modules;
 
-namespace ULSS_Helper.Public.Modules.Process_Logs;
+namespace ULSS_Helper.Public.AutoHelper.Modules.Process_Files;
 
-public class SHVDNProcess
+public class ELSProcess
 {
     internal static async Task ProcessLog(DiscordAttachment attach, MessageCreateEventArgs ctx)
     {
         try
         {
-            var log = SHVDNAnalyzer.Run(attach.Url).Result;
-            
+            var log = ELSAnalyzer.Run(attach.Url).Result;
+
             DiscordMessageBuilder messageBuilder = new();
             DiscordEmbedBuilder embed = new()
             {
@@ -23,41 +23,37 @@ public class SHVDNProcess
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl },
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
-                    Text = $"Problems: {log.Scripts.Count}"
+                    Text = $"ELS Version: {log.ElsVersion} - AdvancedHookV installed: {(log.AdvancedHookVFound ? "\u2713" : "X")}"
                 }
             };
-            var scriptsList = "\r\n- " + string.Join("\r\n- ", log.Scripts);
-            var missingDependsList = "\r\n- " + string.Join("\r\n- ", log.MissingDepends);
+            DiscordEmbedBuilder embed2 = new();
+            var invalidVcFiles = "\r\n- " + string.Join(" ᕀ ", log.InvalidElsVcfFiles);
             
-            if (log.Scripts.Count != 0) 
+            if (log.FaultyVcfFile != null) 
+                embed.AddField(":red_circle:     Faulty VCF found!", $"Remove `{log.FaultyVcfFile}` from `{log.VcfContainer}`");
+
+            if (log.InvalidElsVcfFiles.Count > 0)
             {
-                embed.AddField(":red_circle:     Some scripts have issues!", "See details below!");
+                embed2 = new DiscordEmbedBuilder
+                {
+                    Title = ":orange_circle:     **Invalid VCFs:**",
+                    Description = invalidVcFiles,
+                    Color = new DiscordColor(243, 154, 18),
+                    Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
+                };
             }
-            else 
-            {
-                embed.AddField(":green_circle:     No faulty script files detected!", "Seems like everything loaded fine.");
-            }
-            
-            var embed2 = new DiscordEmbedBuilder
-            {
-                Title = ":red_circle:     **Failed Scripts:**",
-                Color = new DiscordColor(243, 154, 18),
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
-            };
-            if (log.Scripts.Count > 0)
-                embed2.AddField("Script:", scriptsList, true);
-        
-            if (log.MissingDepends.Count > 0) 
-                embed2.AddField("Missing Depend:", missingDependsList, true);
+
+            if (log.FaultyVcfFile == null)
+                embed.AddField(":green_circle:     No faulty VCF files detected!", "Seems like ELS loaded fine. If ELS still is not working correctly, make sure to check the asiloader.log as well!");
 
             messageBuilder.AddEmbed(embed);
-            if (log.Scripts.Count > 0) messageBuilder.AddEmbed(embed2);
-            if (log.Scripts.Count == 0)
+            if (log.InvalidElsVcfFiles.Count > 0) messageBuilder.AddEmbed(embed2);
+            if (log.InvalidElsVcfFiles.Count == 0 && log.FaultyVcfFile == null)
                 messageBuilder.AddEmbed(BasicEmbeds.Success("__No Issues Detected__\r\n>>> If you do have any problems, please request help so a TS can take a look for you!", true));
             messageBuilder.AddComponents([
                 new DiscordButtonComponent(ButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", false,
                     new DiscordComponentEmoji("📨"))]);
-            
+
             await ctx.Message.RespondAsync(messageBuilder);
         }
         catch (Exception e)
