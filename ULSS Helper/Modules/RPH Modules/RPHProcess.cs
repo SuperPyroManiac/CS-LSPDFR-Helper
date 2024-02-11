@@ -202,7 +202,6 @@ internal class RPHProcess : SharedLogInfo
                 break;
             }
 
-            if (error.Level == "AUTO") continue;
             if (error.Level == "CRITICAL") update = true;
             if (update)
             {
