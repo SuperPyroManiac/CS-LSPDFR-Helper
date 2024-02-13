@@ -22,7 +22,7 @@ public class OpenCase
             $"\r\n> - ELS.log" +
             $"\r\n> - asiloader.log" +
             $"\r\n> - ScriptHookVDotNet.log" +
-            $"\r\n> - Screenshots of .png or .jpg - BETA" +
+            //$"\r\n> - Screenshots of .png or .jpg - BETA" +
             $"\r\n\r\nIf you need help with something else, it may be faster to ask in the public support channels!" +
             $"\r\n\r\n__Please check the FAQ for common issues!__"));
         caseMsg.AddComponents([
