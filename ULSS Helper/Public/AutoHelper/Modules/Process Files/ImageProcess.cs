@@ -13,18 +13,14 @@ public class ImageProcess
     {
         try
         {
-            await ctx.Message.RespondAsync("Point 1");//TODO: REMOVE
             DiscordMessageBuilder messageBuilder = new();
             var engine = new TesseractEngine(Path.Combine(Directory.GetCurrentDirectory(), "tessdata"), "eng");
             var publicEmbed = BasicEmbeds.Public("## __ULSS AutoHelper__");
-            await ctx.Message.RespondAsync("Point 2");//TODO: REMOVE
             
             using (HttpClient client = new HttpClient())
             { 
-                await ctx.Message.RespondAsync("Point 3");//TODO: REMOVE
                 using (HttpResponseMessage response = await client.GetAsync(attachment.Url))
                 {
-                    await ctx.Message.RespondAsync("Point POO");//TODO: REMOVE
                     if (response.IsSuccessStatusCode)
                     {
                         var imageData = await response.Content.ReadAsByteArrayAsync();
