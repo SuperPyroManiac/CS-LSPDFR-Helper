@@ -13,6 +13,7 @@ public class ImageProcess
     {
         try
         {
+            await ctx.Message.RespondAsync("Point 1");//TODO: REMOVE
             DiscordMessageBuilder messageBuilder = new();
             var engine = new TesseractEngine(Path.Combine(Directory.GetCurrentDirectory(), "tessdata"), "eng");
             var publicEmbed = BasicEmbeds.Public("## __ULSS AutoHelper__");
@@ -21,13 +22,19 @@ public class ImageProcess
             { 
                 using (HttpResponseMessage response = await client.GetAsync(attachment.Url))
                 {
+                    await ctx.Message.RespondAsync("Point 2");//TODO: REMOVE
                     if (response.IsSuccessStatusCode)
                     {
+                        await ctx.Message.RespondAsync("Point 3");//TODO: REMOVE
                         var imageData = await response.Content.ReadAsByteArrayAsync();
+                        await ctx.Message.RespondAsync("Point 4");//TODO: REMOVE
                         var image = Pix.LoadFromMemory(imageData);
+                        await ctx.Message.RespondAsync("Point 5");//TODO: REMOVE
                         var processedImage = engine.Process(image);
+                        await ctx.Message.RespondAsync("Point 6");//TODO: REMOVE
 
                         var text = processedImage.GetText().Trim();
+                        await ctx.Message.RespondAsync("Point 7");//TODO: REMOVE
                         var textNoLineBreaks = text.Replace("\n", " ").Replace("\r", " ");
                         
                         var logEmbedContent = new StringBuilder("**__Uploaded image was processed__**\r\n\r\n");
