@@ -23,7 +23,7 @@ public class OpenCase
             $"\r\n> - asiloader.log" +
             $"\r\n> - ScriptHookVDotNet.log" +
             //$"\r\n> - Screenshots of .png or .jpg - BETA" +
-            $"\r\n\r\nIf you need help with something else, it may be faster to ask in the public support channels!" +
+            $"\r\n\r\nThis is not to be used as general use tickets! It may be closed at any time if TS deem it so. If you need help with something else, it may be faster to ask in the public support channels!" +
             $"\r\n\r\n__Please check the FAQ for common issues!__"));
         caseMsg.AddComponents([
             new DiscordButtonComponent(ButtonStyle.Success, ComponentInteraction.MarkSolved, "Mark Solved", false,
@@ -72,6 +72,8 @@ public class OpenCase
             "Do not use information from this bot to help others. Instead redirect them here themselves.");
         embed.AddField("Do not upload other peoples logs!",
             "This is considered proxy support, your access will be revoked!");
+        embed.AddField("This is not a ticket system!",
+            "You may use the bot to try and solve your own problems, if things still are not working well, only then can you request TS!");
 
         var dmsg = new DiscordMessageBuilder().AddEmbed(embed);
         dmsg.AddComponents(new DiscordButtonComponent(ButtonStyle.Success, ComponentInteraction.OpenCase, "Open Case", false));
