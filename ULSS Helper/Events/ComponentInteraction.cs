@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
@@ -163,20 +164,26 @@ public class ComponentInteraction
                         return;
                     }
                 }
+                
+                //===//===//===////===//===//===////===//Remove errors from bot response before sending it to the public user//===////===//===//===////===//===//===//
                 if (eventArgs.Id.Equals(SelectIdForRemoval))
                 {
+                    // Get the current SelectComponent from the Message that the user interacted with
 	                var selectComp = (DiscordSelectComponent) eventArgs.Message.Components
 		                .FirstOrDefault(compRow => compRow.Components.Any(comp => comp.CustomId == SelectIdForRemoval))
 		                ?.Components!.FirstOrDefault(comp => comp.CustomId == SelectIdForRemoval);
+                    // Get a list of all components (like buttons) except for the SelectComponent so we can rebuild the list of components later after modifying the SelectComponent
                     var allComponentsExceptSelect = eventArgs.Message.Components
 	                    .FirstOrDefault(compRow => compRow.Components.All(comp => comp.CustomId != SelectIdForRemoval))?.Components;
                     
                     var options = new List<DiscordSelectComponentOption>(selectComp!.Options);
-                    var optionsToRemove = selectComp.Options.Where(option => int.Parse(option.Value) == int.Parse(eventArgs.Values.FirstOrDefault()));
+                    var optionsToRemove = selectComp.Options.Where(option => int.Parse(option.Value) == int.Parse(eventArgs.Values.FirstOrDefault()!));
+                    // Remove the selected option(s) from the list of options in the SelectComponent. This doesn't affect the list of troubleshooting steps in the embed yet.
                     foreach (var option in optionsToRemove)
                         options.Remove(option);
 
                     var db = new DiscordInteractionResponseBuilder();
+                    // If there are any options left after removing the selected error, rebuild the SelectComponent and add it to the response.
                     if (options.Count > 0)
                         db.AddComponents(
                             new DiscordSelectComponent(
@@ -191,21 +198,19 @@ public class ComponentInteraction
                     db.AddComponents(compRow);
                     
                     var embed = new DiscordEmbedBuilder(eventArgs.Message.Embeds.FirstOrDefault()!);
+                    // Remove the error field with the selected id
                     for (var i = embed.Fields.Count - 1; i > 0; i--)
                     {
-                        try
+                        var fieldName = embed.Fields[i].Name;
+                        // If the field name contains "ID:" followed by a number, extract the number to compare it with the selected id (for removal) in eventArgs.Values
+                        if (new Regex(@"ID:\s?\d+\D+").IsMatch(fieldName)) 
                         {
-                            var idString = embed.Fields[i].Name.Split("ID: ")[1];
-                            idString = idString.Split("``` Troubleshooting Steps")[0];
+                            var idString = fieldName.Split("ID:")[1].Trim(); // ["__```SEVERE ", " 123``` Troubleshooting Steps:__"]
+                            idString = Regex.Split(idString, @"\D")[0];  // ["123", "``` Troubleshooting Steps:__"]
                             if (int.Parse(idString) == int.Parse(eventArgs.Values.FirstOrDefault()!))
                                 embed.RemoveFieldAt(i);
                         }
-                        catch (Exception e)
-                        {
-                            Console.WriteLine(e);
-                        }
                     }
-                        
                     
                     await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, db.AddEmbed(embed));
                 }
