@@ -172,7 +172,7 @@ public class ComponentInteraction
 	                    .FirstOrDefault(compRow => compRow.Components.All(comp => comp.CustomId != SelectIdForRemoval))?.Components;
                     
                     var options = new List<DiscordSelectComponentOption>(selectComp!.Options);
-                    var optionsToRemove = selectComp.Options.Where(option => option.Value.Equals(eventArgs.Values.FirstOrDefault()));
+                    var optionsToRemove = selectComp.Options.Where(option => int.Parse(option.Value) == int.Parse(eventArgs.Values.FirstOrDefault()));
                     foreach (var option in optionsToRemove)
                         options.Remove(option);
 
@@ -191,8 +191,21 @@ public class ComponentInteraction
                     db.AddComponents(compRow);
                     
                     var embed = new DiscordEmbedBuilder(eventArgs.Message.Embeds.FirstOrDefault()!);
-                    for (var i = embed.Fields.Count - 1; i > 0; i--) 
-                        if (embed.Fields[i].Name.Contains(eventArgs.Values.FirstOrDefault()!)) embed.RemoveFieldAt(i);
+                    for (var i = embed.Fields.Count - 1; i > 0; i--)
+                    {
+                        try
+                        {
+                            var idString = embed.Fields[i].Name.Split("ID: ")[1];
+                            idString = idString.Split("``` Troubleshooting Steps")[0];
+                            if (int.Parse(idString) == int.Parse(eventArgs.Values.FirstOrDefault()!))
+                                embed.RemoveFieldAt(i);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                        }
+                    }
+                        
                     
                     await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, db.AddEmbed(embed));
                 }
