@@ -53,7 +53,7 @@ internal class Program
 
         await Client.ConnectAsync();
         await Task.Run(() => Program.Cache.UpdatePlugins(Database.LoadPlugins()));
-        await Task.Run(CaseMonitor.UpdateMonitor);
+        await Task.Run(Startup.StartAutoHelper);
         StatusMessages.SendStartupMessage();
         await Task.Delay(-1);
     }

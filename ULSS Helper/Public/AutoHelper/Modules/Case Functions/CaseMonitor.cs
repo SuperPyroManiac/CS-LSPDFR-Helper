@@ -50,7 +50,6 @@ internal class CaseMonitor
         }
         if (embed.Fields.Count == 0) embed.AddField("None", "No open cases!");
 
-        await OpenCase.UpdateMsg();
         await new DiscordMessageBuilder().AddEmbed(embed).ModifyAsync(origMsg);
     }
 }
