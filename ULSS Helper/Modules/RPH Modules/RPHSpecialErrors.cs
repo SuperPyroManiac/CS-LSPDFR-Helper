@@ -90,11 +90,12 @@ public class RPHSpecialErrors
         var excsmatch = new Regex(plugExc.Regex, RegexOptions.Multiline).Matches(wholeLog);
         foreach (Match match in excsmatch)
         {
+            var excErr = plugExc;
             for (var i = 0; i <= 10; i++)
             {
-                plugExc.Solution = plugExc.Solution.Replace("{" + i + "}", match.Groups[i].Value);
+                excErr.Solution = excErr.Solution.Replace("{" + i + "}", match.Groups[i].Value);
             }
-            log.Errors.Add(plugExc);
+            log.Errors.Add(excErr);
         }
 
         //RNUI Dupes
