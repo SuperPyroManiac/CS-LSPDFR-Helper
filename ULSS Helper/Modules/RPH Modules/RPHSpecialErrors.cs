@@ -86,6 +86,16 @@ public class RPHSpecialErrors
             if (plugOth.Solution.Length >= 1024) plugOth.Solution = "Too many to show! God damn!";
             log.Errors.Add(plugOth);
         }
+        var plugExc = errorData.Find(x => x.ID == "176");
+        var excsmatch = new Regex(plugExc.Regex, RegexOptions.Multiline).Matches(wholeLog);
+        foreach (Match match in excsmatch)
+        {
+            for (var i = 0; i <= 10; i++)
+            {
+                plugExc.Solution = plugExc.Solution.Replace("{" + i + "}", match.Groups[i].Value);
+            }
+            log.Errors.Add(plugExc);
+        }
 
         //RNUI Dupes
         var rmvdupe = new List<Error>();

@@ -175,7 +175,7 @@ public class RPHAnalyzer
 
         foreach (var error in errorData)
         {
-            if (error.ID is "1" or "97" or "98" or "99" or "41") continue;
+            if (error.ID is "1" or "97" or "98" or "99" or "41" or "176") continue;
             if (error.Level is "PMSG" or "PIMG") continue;
             var errregex = new Regex(error.Regex);
             var errmatch = errregex.Matches(wholeLog);
