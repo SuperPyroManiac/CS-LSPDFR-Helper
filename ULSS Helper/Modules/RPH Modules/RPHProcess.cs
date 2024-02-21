@@ -99,7 +99,8 @@ internal class RPHProcess : SharedLogInfo
         var embedDescription = "## RPH.log Quick Info";        
         if (log.FilePossiblyOutdated)
             embedDescription += "\r\n:warning: **Attention!** This log file is probably too old to determine the current RPH-related issues of the uploader!\r\n";
-
+        if (log.MultipleSession)
+            embedDescription += "\r\n:warning: **Attention!** This log file contains multiple LSPDFR session!";
         var embed = GetBaseLogInfoEmbed(embedDescription);
 
         var targetMessage = context?.TargetMessage ?? eventArgs.Message;

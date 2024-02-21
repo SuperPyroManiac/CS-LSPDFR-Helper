@@ -38,6 +38,8 @@ public class RPHAnalyzer
 
         var timer = new Stopwatch();
         timer.Start();
+        log.MultipleSession = false;
+        int sessionCounter = 0; // For the Console. Can be removed
         foreach (var lineReader in reader)
         {
             var line = lineReader;
@@ -74,14 +76,10 @@ public class RPHAnalyzer
             var match3 = lspdfrver.Match(line);
             if (match3.Success) log.LSPDFRVersion = match3.Groups[1].Value;
 
-            var multiplesession = new Regex(@"Player went on duty");
-            var multiplesessionmatches = multiplesession.Matches(line);
-            if (multiplesessionmatches.Count > 1)
-            {
-                /* TODO: Add some logic to show a embed message where it tells them, that the bot solution might not be as accurate */
-                await Console.Out.WriteLineAsync("Amount of sessions: " + multiplesessionmatches.Count); break;
-            }
-            if (lineReader.Contains("LSPD First Response: Creating plugin")) break;
+            var multiplesession = new Regex(@"Player went on duty").Matches(wholeLog);
+            sessionCounter = multiplesession.Count;
+            if (lineReader.Contains("LSPD First Response: Creating plugin") || multiplesession.Count > 1)
+            { log.MultipleSession = true; break; } 
         }
 
         foreach (var plugin in pluginData)
@@ -316,7 +314,7 @@ public class RPHAnalyzer
         Console.WriteLine($"Newer: {log.Missmatch.Count}");
         Console.WriteLine("");
         Console.WriteLine("");
-        Console.WriteLine("");
+        Console.WriteLine("SessionCounter " + sessionCounter);
         Console.ForegroundColor = ConsoleColor.White;
         return log;
     }

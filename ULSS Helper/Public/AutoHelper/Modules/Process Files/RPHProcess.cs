@@ -47,6 +47,9 @@ public class RPHProcess
             if (log.FilePossiblyOutdated)
                 embdesc +=
                     "\r\n\r\n:warning: **Attention!** This log file is probably too old to determine your current RPH-related issues!";
+            if (log.MultipleSession)
+                embdesc +=
+                    "\r\n\r\n:warning: **Attention!** This log file contains multiple LSPDFR session!";
             var header = BasicEmbeds.Public(embdesc);
             header.Footer = new DiscordEmbedBuilder.EmbedFooter
             {
