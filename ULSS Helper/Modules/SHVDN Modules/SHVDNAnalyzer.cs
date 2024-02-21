@@ -15,17 +15,39 @@ public class SHVDNAnalyzer
         var log = new SHVDNLog();
         log.DownloadLink = attachmentUrl;
         var wholeLog = await new HttpClient().GetStringAsync(attachmentUrl);
-        log.Scripts = [];
-        log.MissingDepends = [];
-        
-        var missingDependsShvdn = new Regex(@".+\[ERROR\] .+ (.+\.dll): System\.IO\.FileNotFoundException: (\w+\s)+\W(?!RagePluginHook)(.+), Version=.+, Culture=.+PublicKeyToken=.+");
+        log.ScriptsCausingFreeze = [];
+        log.MissingFiles = [];
+
+        var missingDependsShvdn = new Regex(@"Could not load file or assembly \W?(.+)(?<!RagePluginHook), Version=.+");
         var matchesMissingShvdn = missingDependsShvdn.Matches(wholeLog);
+        var scriptsCausingFreezeError = new Regex(@"file name: (.+)\.dll\) was terminated because it caused the game to freeze");
+        var matchesscriptsCausingFreezeError = scriptsCausingFreezeError.Matches(wholeLog);
+        var missingFiles = new Regex(@"Could not find file \W?.+(?:Grand Theft Auto V\\|GTAV\\)([a-zA-Z.\\/0-9]+)");
+        var matchesMissingFiles = missingFiles.Matches(wholeLog);
         foreach (Match match in matchesMissingShvdn)
         {
-            log.Scripts.Add(match.Groups[1].Value);
-            log.MissingDepends.Add(match.Groups[3].Value);
+            if (!log.MissingFiles.Contains(match.Groups[1].Value))
+            {
+                log.MissingFiles.Add(match.Groups[1].Value); 
+            }
+
         }
-        
+        foreach (Match match in matchesscriptsCausingFreezeError)
+        {
+            if (!log.ScriptsCausingFreeze.Contains(match.Groups[1].Value))
+            {
+                log.ScriptsCausingFreeze.Add(match.Groups[1].Value);
+            } 
+        }
+
+        foreach (Match match in matchesMissingFiles)
+        {
+            if (!log.MissingFiles.Contains(match.Groups[1].Value))
+            {
+                log.MissingFiles.Add(match.Groups[1].Value);
+            }
+        }
+
         timer.Stop();
         log.ElapsedTime = timer.ElapsedMilliseconds.ToString();
         log.AnalysisCompletedAt = DateTime.Now;
@@ -35,7 +57,7 @@ public class SHVDNAnalyzer
         Console.WriteLine($"Time: {log.ElapsedTime}MS");
         Console.WriteLine("");
         Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine($"Missing: {log.MissingDepends.Count}");
+        Console.WriteLine($"Missing: {log.MissingFiles.Count}");
         Console.ForegroundColor = ConsoleColor.White;
         Console.WriteLine("");
         Console.WriteLine("");
