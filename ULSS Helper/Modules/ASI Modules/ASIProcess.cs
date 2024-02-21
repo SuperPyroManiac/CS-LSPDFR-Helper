@@ -22,7 +22,7 @@ internal class ASIProcess : SharedLogInfo
             Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl },
             Footer = new DiscordEmbedBuilder.EmbedFooter
             {
-                Text = $"Loaded ASIs: {log.LoadedAsiFiles.Count} - Failed ASIs: {log.FailedAsiFiles.Count}"
+                Text = $"Loaded ASIs: {log.LoadedAsiFiles.Count} - Failed ASIs: {log.FailedAsiFiles.Count} - Outdated ASIs: {log.OutdatedAsiFiles.Count}"
             }
         };
     }
@@ -37,7 +37,7 @@ internal class ASIProcess : SharedLogInfo
         var cache = Program.Cache.GetProcess(targetMessage.Id);
         embed = AddTsViewFields(embed, cache, log);
 
-        if (log.FailedAsiFiles.Count != 0) 
+        if (log.FailedAsiFiles.Count != 0 || log.OutdatedAsiFiles.Count != 0) 
         {
             embed.AddField(":red_circle:     Some ASIs failed to load!", "Select `More Info` for details!");
         }
@@ -73,8 +73,9 @@ internal class ASIProcess : SharedLogInfo
     
     internal async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs eventArgs)
     {
-        var loadedAsiFilesList = "\r\n- " + string.Join("\r\n- ", log.LoadedAsiFiles);
-        var failedAsiFilesList = "\r\n- " + string.Join("\r\n- ", log.FailedAsiFiles);
+        var loadedAsiFilesList = "\r\n> - " + string.Join("\r\n> - ", log.LoadedAsiFiles);
+        var failedAsiFilesList = "\r\n> - " + string.Join("\r\n> - ", log.FailedAsiFiles);
+        var outdatedAsiFilesList = "\r\n> - " + string.Join("\r\n> - ", log.OutdatedAsiFiles);
         var cache = Program.Cache.GetProcess(eventArgs.Message.Id);
         
         var embed = GetBaseLogInfoEmbed("## Detailed ASI.log Info");
@@ -105,7 +106,7 @@ internal class ASIProcess : SharedLogInfo
             ),
         };
         
-        if (loadedAsiFilesList.Length >= 1024 || failedAsiFilesList.Length >= 1024)
+        if (loadedAsiFilesList.Length >= 1024 || failedAsiFilesList.Length >= 1024 || outdatedAsiFilesList.Length >= 1024)
         {
             await eventArgs.Interaction.DeferAsync(true);
             embed.AddField(":warning:     **Message Too Big**", "\r\nToo many ASIs to display in a single message.", true);
@@ -124,10 +125,18 @@ internal class ASIProcess : SharedLogInfo
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
+            var embed4 = new DiscordEmbedBuilder
+            {
+                Title = ":red_circle:     **Outdated ASIs:**",
+                Description = outdatedAsiFilesList,
+                Color = new DiscordColor(243, 154, 18),
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
+            };
 
             var overflowBuilder = new DiscordWebhookBuilder().AddEmbed(embed);
             if (loadedAsiFilesList.Length != 0) overflowBuilder.AddEmbed(embed2);
             if (failedAsiFilesList.Length != 0) overflowBuilder.AddEmbed(embed3);
+            if (outdatedAsiFilesList.Length != 0) overflowBuilder.AddEmbed(embed4);
             overflowBuilder.AddComponents(buttonComponents);
             var sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflowBuilder);
             Program.Cache.SaveProcess(sentOverflowMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
@@ -139,7 +148,20 @@ internal class ASIProcess : SharedLogInfo
         
         if (log.FailedAsiFiles.Count > 0) 
             embed.AddField(":red_circle:     Failed ASIs:", failedAsiFilesList, true);
-        
+        #region Added some Logic with the help of the BrokenListManager Method and common list value checking:
+        if (log.OutdatedAsiFiles.Count > 0)
+        {
+            embed.AddField(":red_square:    Remove", outdatedAsiFilesList, false);
+        }
+        if (!log.FailedAsiFiles.Contains("ELS.asi") && log.FailedAsiFiles.Count > 0)
+        {
+            embed.AddField("Solution:", "Please install [ScriptHookV.dll](http://dev-c.com/gtav/scripthookv/) in your GTAV folder", false);
+        }
+        else if (log.FailedAsiFiles.Contains("ELS.asi") && log.FailedAsiFiles.Count > 0)
+        {
+            embed.AddField("Solution:", "Please install [ScriptHookV.dll](http://dev-c.com/gtav/scripthookv/) and [AdvancedHookV.dll](https://www.lcpdfr.com/downloads/gta5mods/scripts/13865-emergency-lighting-system/) in your GTAV folder", false);
+        }
+        #endregion
         var responseBuilder = new DiscordInteractionResponseBuilder();
         responseBuilder.AddEmbed(embed);
         responseBuilder.AddComponents(buttonComponents);
