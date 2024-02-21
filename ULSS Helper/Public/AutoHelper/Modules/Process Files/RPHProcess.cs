@@ -1,6 +1,7 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using System.ComponentModel.Design;
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Modules.RPH_Modules;
@@ -14,7 +15,6 @@ public class RPHProcess
         try
         {
             var log = RPHAnalyzer.Run(attach.Url).Result;
-        
             DiscordMessageBuilder messageBuilder = new();
             var gtAver = "❌";
             var lspdfRver = "❌";
@@ -29,10 +29,12 @@ public class RPHProcess
                 .ToList();
             var currentList = log.Current.Select(i => i?.DName).ToList();
             var brokenList = log.Broken.Select(i => i?.DName).ToList();
+            var causedaCrashList = log.CausedCrash.Select(i => i?.DName).ToList();
             brokenList.AddRange(log.Library.Select(i => i?.DName).ToList());
             var current = string.Join("\r\n- ", currentList);
             var outdated = string.Join("\r\n- ", linkedOutdated);
             var broken = string.Join("\r\n- ", brokenList);
+            var causedACrash = string.Join("\r\n- ", causedaCrashList);
 
             if (log.Missing.Count > 0 || log.Missmatch.Count > 0)
             {
@@ -50,9 +52,9 @@ public class RPHProcess
             {
                 Text = $"GTA: {gtAver} - RPH: {rpHver}" + $" - LSPDFR: {lspdfRver} - Generated in Discord.gg/ulss"
             };
-            if (outdated.Length != 0 || broken.Length != 0) header.AddField("Plugin Issues Detected!", "> Update or Remove from `GTAV/Plugins/LSPDFR`");
-            if (outdated.Length == 0 && broken.Length == 0) header.AddField("Up To Date!", "> All plugins are up to date!");
-        
+            if (outdated.Length != 0 || broken.Length != 0 || causedACrash.Length != 0) header.AddField("Plugin Issues Detected!", "> Update or Remove from `GTAV/Plugins/LSPDFR`");
+            if (outdated.Length == 0 && broken.Length == 0 && causedACrash.Length == 0) header.AddField("Up To Date!", "> All plugins are up to date!");
+
             var embed2 = new DiscordEmbedBuilder
             {
                 Title = ":orange_circle:     **Update Required:**",
@@ -75,6 +77,23 @@ public class RPHProcess
             {
                 Text = "We recommend removing these, /CheckPlugin for reason why!"
             };
+            var embed5 = new DiscordEmbedBuilder
+            {
+                Title = ":red_circle:     **Caused LSPDFR to crash:**",
+                Description = "\r\n>>> " + string.Join(" ᕀ ", causedaCrashList),
+                Color = new DiscordColor(243, 154, 18),
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
+            };
+            if (causedaCrashList.Count > 1)
+            {
+                embed5.Footer = new DiscordEmbedBuilder.EmbedFooter
+                { Text = "Remove these plugins and inform the developers!" };
+            }
+            else
+            {
+                embed5.Footer = new DiscordEmbedBuilder.EmbedFooter
+                { Text = "Remove this plugin and inform the developer!" };
+            }
             var embed4 = new DiscordEmbedBuilder
             {
                 Title = ":bangbang:     **Possible Issues:**",
@@ -106,8 +125,9 @@ public class RPHProcess
             messageBuilder.AddEmbed(header);
             if (outdated.Length != 0) messageBuilder.AddEmbed(embed2);
             if (broken.Length != 0) messageBuilder.AddEmbed(embed3);
+            if (causedACrash.Length != 0) messageBuilder.AddEmbed(embed5);
             if (embed4.Fields.Count != 0) messageBuilder.AddEmbed(embed4);
-            if (outdated.Length == 0 && broken.Length == 0 && embed4.Fields.Count == 0)
+            if (outdated.Length == 0 && broken.Length == 0 && embed4.Fields.Count == 0 && causedACrash.Length == 0)
                 messageBuilder.AddEmbed(BasicEmbeds.Success("__No Issues Detected__\r\n>>> If you do have any problems, please request help so a TS can take a look for you!", true));
             messageBuilder.AddComponents([
                 new DiscordButtonComponent(ButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", false,

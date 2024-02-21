@@ -18,6 +18,7 @@ internal class RPHProcess : SharedLogInfo
     internal string missing;
     internal string library;
     internal string missmatch;
+    internal string causedCrash;
     internal string rph;
     internal RPHLog log;
     internal string GtAver = "❌";
@@ -52,6 +53,7 @@ internal class RPHProcess : SharedLogInfo
         if (broken.Length > 0) embed.AddField(":red_circle:     **Unstable:**", "\r\n>>> - " + broken, true);
         if (missing.Length > 0) embed.AddField(":bangbang:  **Plugins not recognized:**", missing);
         if (missmatch.Length > 0) embed.AddField(":bangbang:  **Plugin version newer than DB:**", missmatch);
+        if (causedCrash.Length > 0) embed.AddField(":red_circle:     **Caused a crash:**", "\r\n>>> - " + causedCrash, true);
 
         if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0 && !string.IsNullOrEmpty(log.LSPDFRVersion))
             embed.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
@@ -83,6 +85,7 @@ internal class RPHProcess : SharedLogInfo
         var missmatchList = log.Missmatch.Select(plugin => $"{plugin?.Name} ({plugin?.EAVersion})").ToList();
         var libraryList = log.Library.Select(plugin => plugin?.DName).ToList();
         var rphList = log.RPHPlugin.Select(plugin => plugin?.Name).ToList();
+        var CausedACrashList = log.CausedCrash.Select(plugin => plugin?.Name).ToList();
         brokenList.AddRange(libraryList);
         current = string.Join(", ", _currentList);
         outdated = string.Join("\r\n- ", linkedOutdated);
@@ -91,7 +94,8 @@ internal class RPHProcess : SharedLogInfo
         missmatch = string.Join(", ", missmatchList);
         library = string.Join(", ", libraryList);
         rph = string.Join(", ", rphList);
-        
+        causedCrash = string.Join(", ", CausedACrashList);
+
         var embedDescription = "## RPH.log Quick Info";        
         if (log.FilePossiblyOutdated)
             embedDescription += "\r\n:warning: **Attention!** This log file is probably too old to determine the current RPH-related issues of the uploader!\r\n";
@@ -105,7 +109,7 @@ internal class RPHProcess : SharedLogInfo
 
         if (missmatch.Length > 0 || missing.Length > 0) SendUnknownPluginsLog(cache.OriginalMessage.Channel.Id, cache.OriginalMessage.Author.Id);
         
-        if (outdated.Length >= 1024 || broken.Length >= 1024)
+        if (outdated.Length >= 1024 || broken.Length >= 1024 || causedCrash.Length >= 1024)
         {
             embed.AddField(":warning:     **Message Too Big**", "\r\nToo many plugins to display in a single message.\r\nFor detailed info, first fix the plugins!", true);
             if (missing.Length > 0) embed.AddField(":bangbang:  **Plugins not recognized:**", missing);
@@ -123,11 +127,19 @@ internal class RPHProcess : SharedLogInfo
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
+            var embed4 = new DiscordEmbedBuilder
+            {
+                Title = ":red_circle:     **Caused a crash!:**",
+                Description = "\r\n>>> " + string.Join(" - ", CausedACrashList),
+                Color = new DiscordColor(243, 154, 18),
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
+            };
 
             var overflowBuilder = new DiscordWebhookBuilder();
             overflowBuilder.AddEmbed(embed);
             if (outdated.Length != 0) overflowBuilder.AddEmbed(embed2);
             if (broken.Length != 0) overflowBuilder.AddEmbed(embed3);
+            if (causedCrash.Length != 0) overflowBuilder.AddEmbed(embed4);
             // ReSharper disable RedundantExplicitParamsArrayCreation
             overflowBuilder.AddComponents([
                 new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.RphQuickSendToUser, "Send To User", false,
