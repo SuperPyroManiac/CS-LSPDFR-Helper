@@ -38,7 +38,7 @@ public class RPHAnalyzer
 
         var timer = new Stopwatch();
         timer.Start();
-        log.MultipleSession = false;
+        log.MultipleSessions = false;
         int sessionCounter = 0; // For the Console. Can be removed
         foreach (var lineReader in reader)
         {
@@ -79,7 +79,7 @@ public class RPHAnalyzer
             var multiplesession = new Regex(@"Player went on duty").Matches(wholeLog);
             sessionCounter = multiplesession.Count;
             if (lineReader.Contains("LSPD First Response: Creating plugin") || multiplesession.Count > 1)
-            { log.MultipleSession = true; break; } 
+            { log.MultipleSessions = true; break; } 
         }
 
         foreach (var plugin in pluginData)
@@ -268,7 +268,6 @@ public class RPHAnalyzer
             log.Errors.Add(plugOth);
         }
         var plugCausingCrash = @"Stack trace:.*\n(?:.+at (\w+)\..+\n)+";
-        RegexOptions options = RegexOptions.Multiline;
         var plugCausingCrashMatch = Regex.Matches(wholeLog, plugCausingCrash);
         foreach (Match match in plugCausingCrashMatch)
         {

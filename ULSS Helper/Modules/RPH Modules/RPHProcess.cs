@@ -85,7 +85,7 @@ internal class RPHProcess : SharedLogInfo
         var missmatchList = log.Missmatch.Select(plugin => $"{plugin?.Name} ({plugin?.EAVersion})").ToList();
         var libraryList = log.Library.Select(plugin => plugin?.DName).ToList();
         var rphList = log.RPHPlugin.Select(plugin => plugin?.Name).ToList();
-        var CausedACrashList = log.CausedCrash.Select(plugin => plugin?.Name).ToList();
+        var CausedCrashList = log.CausedCrash.Select(plugin => plugin?.Name).ToList();
         brokenList.AddRange(libraryList);
         current = string.Join(", ", _currentList);
         outdated = string.Join("\r\n- ", linkedOutdated);
@@ -94,13 +94,13 @@ internal class RPHProcess : SharedLogInfo
         missmatch = string.Join(", ", missmatchList);
         library = string.Join(", ", libraryList);
         rph = string.Join(", ", rphList);
-        causedCrash = string.Join(", ", CausedACrashList);
+        causedCrash = string.Join(", ", CausedCrashList);
 
         var embedDescription = "## RPH.log Quick Info";        
         if (log.FilePossiblyOutdated)
             embedDescription += "\r\n:warning: **Attention!** This log file is probably too old to determine the current RPH-related issues of the uploader!\r\n";
-        if (log.MultipleSession)
-            embedDescription += "\r\n:warning: **Attention!** This log file contains multiple LSPDFR session!";
+        if (log.MultipleSessions)
+            embedDescription += "\r\n:warning: **Attention!** This log file contains multiple LSPDFR sessions!\nThe plugin checks will only be done to your first LSPDFR session and therefore might be incorrect, if you changed anything in your `GTAV/plugins/LSPDFR` folder";
         var embed = GetBaseLogInfoEmbed(embedDescription);
 
         var targetMessage = context?.TargetMessage ?? eventArgs.Message;
@@ -130,8 +130,8 @@ internal class RPHProcess : SharedLogInfo
             };
             var embed4 = new DiscordEmbedBuilder
             {
-                Title = ":red_circle:     **Caused a crash!:**",
-                Description = "\r\n>>> " + string.Join(" - ", CausedACrashList),
+                Title = ":red_circle:     **Caused a crash:**",
+                Description = "\r\n>>> " + string.Join(" - ", CausedCrashList),
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
