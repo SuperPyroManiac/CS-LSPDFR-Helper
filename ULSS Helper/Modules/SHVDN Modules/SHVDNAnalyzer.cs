@@ -18,29 +18,30 @@ public class SHVDNAnalyzer
         log.FrozenScripts = [];
         log.ScriptDepends = [];
 
-        var missingDependsShvdn = new Regex(@"Could not load file or assembly \W?(.+)(?<!RagePluginHook), Version=.+");
-        var matchesMissingShvdn = missingDependsShvdn.Matches(wholeLog);
-        var scriptsCausingFreezeError = new Regex(@"file name: (.+)\.dll\) was terminated because it caused the game to freeze");
-        var matchesscriptsCausingFreezeError = scriptsCausingFreezeError.Matches(wholeLog);
+        var missingDepends = new Regex(@"Could not load file or assembly \W?(.+)(?<!RagePluginHook), Version=.+");
+        var matchesMissing = missingDepends.Matches(wholeLog);
+        var frozenScripts = new Regex(@"file name: (.+)\.dll\) was terminated because it caused the game to freeze");
+        var matchedFs = frozenScripts.Matches(wholeLog);
         var missingFiles = new Regex(@"Could not find file \W?.+(?:Grand Theft Auto V\\|GTAV\\)([a-zA-Z.\\/0-9]+)");
-        var matchesMissingFiles = missingFiles.Matches(wholeLog);
-        foreach (Match match in matchesMissingShvdn)
+        var matchedMf = missingFiles.Matches(wholeLog);
+        
+        foreach (Match match in matchesMissing)
         {
             if (!log.ScriptDepends.Contains(match.Groups[1].Value))
             {
                 log.ScriptDepends.Add(match.Groups[1].Value); 
             }
-
         }
-        foreach (Match match in matchesscriptsCausingFreezeError)
+        
+        foreach (Match match in matchedFs)
         {
             if (!log.FrozenScripts.Contains(match.Groups[1].Value))
             {
                 log.FrozenScripts.Add(match.Groups[1].Value);
             } 
         }
-
-        foreach (Match match in matchesMissingFiles)
+        
+        foreach (Match match in matchedMf)
         {
             if (!log.ScriptDepends.Contains(match.Groups[1].Value))
             {
