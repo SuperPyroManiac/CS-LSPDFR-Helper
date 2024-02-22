@@ -15,8 +15,8 @@ public class SHVDNAnalyzer
         var log = new SHVDNLog();
         log.DownloadLink = attachmentUrl;
         var wholeLog = await new HttpClient().GetStringAsync(attachmentUrl);
-        log.ScriptsCausingFreeze = [];
-        log.MissingFiles = [];
+        log.FrozenScripts = [];
+        log.ScriptDepends = [];
 
         var missingDependsShvdn = new Regex(@"Could not load file or assembly \W?(.+)(?<!RagePluginHook), Version=.+");
         var matchesMissingShvdn = missingDependsShvdn.Matches(wholeLog);
@@ -26,25 +26,25 @@ public class SHVDNAnalyzer
         var matchesMissingFiles = missingFiles.Matches(wholeLog);
         foreach (Match match in matchesMissingShvdn)
         {
-            if (!log.MissingFiles.Contains(match.Groups[1].Value))
+            if (!log.ScriptDepends.Contains(match.Groups[1].Value))
             {
-                log.MissingFiles.Add(match.Groups[1].Value); 
+                log.ScriptDepends.Add(match.Groups[1].Value); 
             }
 
         }
         foreach (Match match in matchesscriptsCausingFreezeError)
         {
-            if (!log.ScriptsCausingFreeze.Contains(match.Groups[1].Value))
+            if (!log.FrozenScripts.Contains(match.Groups[1].Value))
             {
-                log.ScriptsCausingFreeze.Add(match.Groups[1].Value);
+                log.FrozenScripts.Add(match.Groups[1].Value);
             } 
         }
 
         foreach (Match match in matchesMissingFiles)
         {
-            if (!log.MissingFiles.Contains(match.Groups[1].Value))
+            if (!log.ScriptDepends.Contains(match.Groups[1].Value))
             {
-                log.MissingFiles.Add(match.Groups[1].Value);
+                log.ScriptDepends.Add(match.Groups[1].Value);
             }
         }
 
@@ -57,7 +57,7 @@ public class SHVDNAnalyzer
         Console.WriteLine($"Time: {log.ElapsedTime}MS");
         Console.WriteLine("");
         Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine($"Missing: {log.MissingFiles.Count}");
+        Console.WriteLine($"Missing: {log.ScriptDepends.Count}");
         Console.ForegroundColor = ConsoleColor.White;
         Console.WriteLine("");
         Console.WriteLine("");

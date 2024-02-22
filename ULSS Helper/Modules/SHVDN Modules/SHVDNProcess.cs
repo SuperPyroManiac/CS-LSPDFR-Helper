@@ -11,11 +11,11 @@ namespace ULSS_Helper.Modules.SHVDN_Modules;
 // ReSharper disable once InconsistentNaming
 internal class SHVDNProcess : SharedLogInfo
 {
-        internal SHVDNLog log;
+    internal SHVDNLog log;
     private int ProblemCounter(SHVDNLog log)
     {
         if (log == null) return 0;
-        else return log.ScriptsCausingFreeze.Count + log.MissingFiles.Count;
+        else return log.FrozenScripts.Count + log.ScriptDepends.Count;
     }
     private DiscordEmbedBuilder GetBaseLogInfoEmbed(string description) 
     {
@@ -30,7 +30,7 @@ internal class SHVDNProcess : SharedLogInfo
             }
         };
     }
-    internal async Task SendQuickLogInfoMessage(ContextMenuContext context=null, ComponentInteractionCreateEventArgs eventArgs=null)
+    internal async Task SendQuickLogInfoMessage(ContextMenuContext context = null, ComponentInteractionCreateEventArgs eventArgs = null)
     {
         if (context == null && eventArgs == null)
             throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
@@ -77,8 +77,8 @@ internal class SHVDNProcess : SharedLogInfo
     
     internal async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs eventArgs)
     {
-        var scriptsCausingFreezeList = "\r\n> - " + string.Join("\r\n> - ", log.ScriptsCausingFreeze);
-        var missingFilesList = "\r\n> - " + string.Join("\r\n> - ", log.MissingFiles);
+        var scriptsCausingFreezeList = "\r\n> - " + string.Join("\r\n> - ", log.FrozenScripts);
+        var missingFilesList = "\r\n> - " + string.Join("\r\n> - ", log.ScriptDepends);
         var cache = Program.Cache.GetProcess(eventArgs.Message.Id);
         
         var embed = GetBaseLogInfoEmbed("## Detailed SHVDN.log Info");
@@ -140,10 +140,10 @@ internal class SHVDNProcess : SharedLogInfo
             return;
         }
         
-        if (log.ScriptsCausingFreeze.Count > 0)
+        if (log.FrozenScripts.Count > 0)
             embed.AddField(":orange_circle:     Unstable Scripts:", scriptsCausingFreezeList, true);
         
-        if (log.MissingFiles.Count > 0) 
+        if (log.ScriptDepends.Count > 0) 
             embed.AddField(":red_circle:     Missing Files:", missingFilesList, true);
         
         var responseBuilder = new DiscordInteractionResponseBuilder();
