@@ -10,6 +10,23 @@ public class RPHSpecialErrors
         var errorData = Database.LoadErrors();
         var pluginData = Program.Cache.GetPlugins();
         
+        //===//===//===////===//===//===////===//Multi Session Detection//===////===//===//===////===//===//===//
+        var seshmatch = new Regex("LSPD First Response: Creating plugin").Matches(wholeLog);
+        if (seshmatch.Count > 1)
+        {
+            log.Errors.Add(new Error
+            {
+                ID = "15",
+                Solution = "**Multiple Sessions**" +
+                           "\r\nYour log contains multiple sessions. This means you reloaded LSPDFR without restarting the game. " +
+                           "This is not an issue, but the log reader cannot provide correct info." +
+                           "\r\nPlugin info is based off the first game session." +
+                           "\r\nError info can only be provided from a single session.",
+                Level = "CRITICAL"
+            });
+        }
+        
+        //===//===//===////===//===//===////===//Combined Error Lists//===////===//===//===////===//===//===//
         var dependmatch = new Regex(@errorData[0].Regex, RegexOptions.Multiline).Matches(wholeLog);
         foreach (Match match in dependmatch)
         {
@@ -86,19 +103,21 @@ public class RPHSpecialErrors
             if (plugOth.Solution.Length >= 1024) plugOth.Solution = "Too many to show! God damn!";
             log.Errors.Add(plugOth);
         }
-        var plugExc = errorData.Find(x => x.ID == "176");
-        var excsmatch = new Regex(plugExc.Regex, RegexOptions.Multiline).Matches(wholeLog);
-        foreach (Match match in excsmatch)
-        {
-            var excErr = plugExc;
-            for (var i = 0; i <= 10; i++)
-            {
-                excErr.Solution = excErr.Solution.Replace("{" + i + "}", match.Groups[i].Value);
-            }
-            log.Errors.Add(excErr);
-        }
+        
+        //===//===//===////===//===//===////===//Exception Detection//===////===//===//===////===//===//===//
+        // var plugExc = errorData.Find(x => x.ID == "176");
+        // var excsmatch = new Regex(plugExc.Regex, RegexOptions.Multiline).Matches(wholeLog);
+        // foreach (Match match in excsmatch)
+        // {
+        //     var excErr = plugExc;
+        //     for (var i = 0; i <= 10; i++)
+        //     {
+        //         excErr.Solution = excErr.Solution.Replace("{" + i + "}", match.Groups[i].Value);
+        //     }
+        //     log.Errors.Add(excErr);
+        // }
 
-        //RNUI Dupes
+        //===//===//===////===//===//===////===//RNUI Dupes//===////===//===//===////===//===//===//
         var rmvdupe = new List<Error>();
         if (log.Errors.Any(x => x.ID == "113"))
             foreach (var error in log.Errors)
