@@ -11,8 +11,12 @@ namespace ULSS_Helper.Modules.SHVDN_Modules;
 // ReSharper disable once InconsistentNaming
 internal class SHVDNProcess : SharedLogInfo
 {
-        internal SHVDNLog log;
-    
+    internal SHVDNLog log;
+    private int ProblemCounter(SHVDNLog log)
+    {
+        if (log == null) return 0;
+        else return log.FrozenScripts.Count + log.ScriptDepends.Count;
+    }
     private DiscordEmbedBuilder GetBaseLogInfoEmbed(string description) 
     {
         return new DiscordEmbedBuilder
@@ -22,11 +26,11 @@ internal class SHVDNProcess : SharedLogInfo
             Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl },
             Footer = new DiscordEmbedBuilder.EmbedFooter
             {
-                Text = $"Problems: {log.Scripts.Count}"
+                Text = $"Problems: {ProblemCounter(log)}"
             }
         };
     }
-    internal async Task SendQuickLogInfoMessage(ContextMenuContext context=null, ComponentInteractionCreateEventArgs eventArgs=null)
+    internal async Task SendQuickLogInfoMessage(ContextMenuContext context = null, ComponentInteractionCreateEventArgs eventArgs = null)
     {
         if (context == null && eventArgs == null)
             throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
@@ -37,13 +41,13 @@ internal class SHVDNProcess : SharedLogInfo
         var cache = Program.Cache.GetProcess(targetMessage.Id);
         embed = AddTsViewFields(embed, cache, log);
 
-        if (log.Scripts.Count != 0) 
+        if (ProblemCounter(log) != 0) 
         {
             embed.AddField(":red_circle:     Some scripts have issues!", "Select `More Info` for details!");
         }
         else 
         {
-            embed.AddField(":green_circle:     No faulty script files detected!", "Seems like everything loaded fine.");
+            embed.AddField(":green_circle:     No faulty scripts detected!", "Seems like everything loaded fine.");
         }
 
         var webhookBuilder = new DiscordWebhookBuilder()
@@ -73,8 +77,8 @@ internal class SHVDNProcess : SharedLogInfo
     
     internal async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs eventArgs)
     {
-        var scriptsList = "\r\n- " + string.Join("\r\n- ", log.Scripts);
-        var missingDependsList = "\r\n- " + string.Join("\r\n- ", log.MissingDepends);
+        var frozenScriptsList = "\r\n> - " + string.Join("\r\n> - ", log.FrozenScripts);
+        var scriptDependsList = "\r\n> - " + string.Join("\r\n> - ", log.ScriptDepends);
         var cache = Program.Cache.GetProcess(eventArgs.Message.Id);
         
         var embed = GetBaseLogInfoEmbed("## Detailed SHVDN.log Info");
@@ -105,30 +109,30 @@ internal class SHVDNProcess : SharedLogInfo
             ),
         };
         
-        if (scriptsList.Length >= 1024 || missingDependsList.Length >= 1024)
+        if (frozenScriptsList.Length >= 1024 || scriptDependsList.Length >= 1024)
         {
             await eventArgs.Interaction.DeferAsync(true);
             embed.AddField(":warning:     **Message Too Big**", "\r\nToo many Scripts to display in a single message.", true);
             
             var embed2 = new DiscordEmbedBuilder
             {
-                Title = ":orange_circle:     **Script:**",
-                Description = scriptsList,
+                Title = ":orange_circle:     **Unstable Scripts**:",
+                Description = frozenScriptsList,
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
             var embed3 = new DiscordEmbedBuilder
             {
-                Title = ":red_circle:     **Missing Depend:**",
-                Description = missingDependsList,
+                Title = ":red_circle:     **Missing Files**:",
+                Description = scriptDependsList,
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
 
             var overflowBuilder = new DiscordWebhookBuilder();
             overflowBuilder.AddEmbed(embed);
-            if (scriptsList.Length != 0) overflowBuilder.AddEmbed(embed2);
-            if (missingDependsList.Length != 0) overflowBuilder.AddEmbed(embed3);
+            if (frozenScriptsList.Length != 0) overflowBuilder.AddEmbed(embed2);
+            if (scriptDependsList.Length != 0) overflowBuilder.AddEmbed(embed3);
             // ReSharper disable RedundantExplicitParamsArrayCreation
             overflowBuilder.AddComponents(buttonComponents);
             var sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflowBuilder);
@@ -136,11 +140,11 @@ internal class SHVDNProcess : SharedLogInfo
             return;
         }
         
-        if (log.Scripts.Count > 0)
-            embed.AddField(":orange_circle:     Script:", scriptsList, true);
+        if (log.FrozenScripts.Count > 0)
+            embed.AddField(":orange_circle:     Unstable Scripts:", frozenScriptsList, true);
         
-        if (log.MissingDepends.Count > 0) 
-            embed.AddField(":red_circle:     Missing Depend:", missingDependsList, true);
+        if (log.ScriptDepends.Count > 0) 
+            embed.AddField(":red_circle:     Missing Files:", scriptDependsList, true);
         
         var responseBuilder = new DiscordInteractionResponseBuilder();
         responseBuilder.AddEmbed(embed);
