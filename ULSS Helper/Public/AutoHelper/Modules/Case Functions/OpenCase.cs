@@ -23,7 +23,7 @@ public class OpenCase
             $"\r\n> - asiloader.log" +
             $"\r\n> - ScriptHookVDotNet.log" +
             //$"\r\n> - Screenshots of .png or .jpg - BETA" +
-            $"\r\n\r\nIf you need help with something else, it may be faster to ask in the public support channels!" +
+            $"\r\n\r\nThis is not to be used as general use tickets! It may be closed at any time if TS deem it so. If you need help with something else, it may be faster to ask in the public support channels!" +
             $"\r\n\r\n__Please check the FAQ for common issues!__"));
         caseMsg.AddComponents([
             new DiscordButtonComponent(ButtonStyle.Success, ComponentInteraction.MarkSolved, "Mark Solved", false,
@@ -47,36 +47,6 @@ public class OpenCase
         Database.AddCase(newCase);
 
         await supportthread.SendMessageAsync(caseMsg).Result.PinAsync();
-        await UpdateMsg();
         return supportthread;
-    }
-
-    internal static async Task UpdateMsg()
-    {
-        var cl = Program.Client;
-        var ch = cl.GetChannelAsync(Program.Settings.Env.AutoHelperChannelId).Result;
-        List<DiscordMessage> msgPurge = [];
-        DiscordMessage origMsg = null;
-        var embed = BasicEmbeds.Public("# __ULSS AutoHelper__");
-        await foreach (var msg in ch.GetMessagesAsync(100))
-        {
-            if (msg.Embeds.Count <= 0) continue;
-            if (msg.Embeds.FirstOrDefault()!.Description.Contains("ULSS AutoHelper")) origMsg = msg;
-        }
-        if (origMsg == null) origMsg = await ch.SendMessageAsync("Starting...");
-        embed.AddField("Early Access",
-            "AutoHelper is still a work in progress! It is not perfect and can never fully replace people!");
-        embed.AddField("Do not abuse the bot!",
-            "This is broad, sending altered logs, other files, etc. Your access will be revoked!");
-        embed.AddField("No proxy support!",
-            "Do not use information from this bot to help others. Instead redirect them here themselves.");
-        embed.AddField("Do not upload other peoples logs!",
-            "This is considered proxy support, your access will be revoked!");
-
-        var dmsg = new DiscordMessageBuilder().AddEmbed(embed);
-        dmsg.AddComponents(new DiscordButtonComponent(ButtonStyle.Success, ComponentInteraction.OpenCase, "Open Case", false));
-        
-        
-        await dmsg.ModifyAsync(origMsg);
     }
 }
