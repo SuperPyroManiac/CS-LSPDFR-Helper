@@ -11,7 +11,7 @@ public class RPHSpecialErrors
         var pluginData = Program.Cache.GetPlugins();
         
         //===//===//===////===//===//===////===//Multi Session Detection//===////===//===//===////===//===//===//
-        var seshmatch = new Regex("LSPD First Response: Creating plugin").Matches(wholeLog);
+        var seshmatch = new Regex("Started loading LSPDFR").Matches(wholeLog);
         if (seshmatch.Count > 1)
         {
             log.Errors.Add(new Error
