@@ -116,14 +116,14 @@ internal class SHVDNProcess : SharedLogInfo
             
             var embed2 = new DiscordEmbedBuilder
             {
-                Title = ":orange_circle:     Unstable Scripts:",
+                Title = ":orange_circle:     **Unstable Scripts**:",
                 Description = frozenScriptsList,
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
             };
             var embed3 = new DiscordEmbedBuilder
             {
-                Title = ":red_circle:     Missing Files:",
+                Title = ":red_circle:     **Missing Files**:",
                 Description = scriptDependsList,
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
