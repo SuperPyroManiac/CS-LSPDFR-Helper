@@ -126,14 +126,15 @@ public class RPHSpecialErrors
                 }
             }
         }
-        log.Errors.Add(new Error
-        {
+        if (causedCrashName.Count > 0)
+            log.Errors.Add(new Error
+            {
             ID = "20",
             Solution = "**These plugins threw an error:**" +
                        $"\r\n- {string.Join("\r\n- ", causedCrashName)}" +
                        "\r\n*You should send the authors your log!*",
             Level = "SEVERE"
-        });
+            });
 
         //===//===//===////===//===//===////===//RNUI Dupes//===////===//===//===////===//===//===//
         var rmvdupe = new List<Error>();
