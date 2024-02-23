@@ -114,15 +114,13 @@ public class RPHSpecialErrors
             {
                 foreach (Capture capture in match.Groups[i].Captures)
                 {
-                    if (!causedCrash.Any(x => x.Name.Equals(capture.Value)))
+                    if (causedCrash.Any(x => x.Name.Equals(capture.Value))) continue;
+                    foreach (var plugin in pluginData.Where(plugin => plugin.Name.Equals(capture.Value)))
                     {
-                        foreach (var plugin in pluginData.Where(plugin => plugin.Name.Equals(capture.Value)))
+                        if (!causedCrash.Contains(plugin))
                         {
-                            if (!causedCrash.Contains(plugin))
-                            {
-                                causedCrash.Add(plugin);
-                                causedCrashName.Add(plugin.DName);
-                            }
+                            causedCrash.Add(plugin);
+                            causedCrashName.Add(plugin.DName);
                         }
                     }
                 }
