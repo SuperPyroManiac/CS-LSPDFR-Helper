@@ -11,8 +11,8 @@ public class RPHLog : Log
     public List<Plugin> Library { get; set; }
     public List<Plugin> Missing { get; set; }
     public List<Plugin> Missmatch { get; set; }
-    public List<Error> Errors { get; set; }
     public List<Plugin> MissingDepend { get; set; }
+    public List<Error> Errors { get; set; }
     public List<string> IncorrectScripts { get; set; }
     public List<string> IncorrectPlugins { get; set; }
     public List<string> IncorrectLibs { get; set; }
