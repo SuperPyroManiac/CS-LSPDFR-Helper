@@ -21,8 +21,8 @@ public class RPHSpecialErrors
                            "\r\nYour log contains multiple sessions. This means you reloaded LSPDFR without restarting the game. " +
                            "This is not an issue, but the log reader cannot provide correct info." +
                            "\r\nPlugin info is based off the first game session." +
-                           "\r\nError info can only be provided from a single session.",
-                Level = "CRITICAL"
+                           "\r\nError info can only be provided from __**all**__ sessions.",
+                Level = "WARN"
             });
         }
         
@@ -105,17 +105,37 @@ public class RPHSpecialErrors
         }
         
         //===//===//===////===//===//===////===//Exception Detection//===////===//===//===////===//===//===//
-        // var plugExc = errorData.Find(x => x.ID == "176");
-        // var excsmatch = new Regex(plugExc.Regex, RegexOptions.Multiline).Matches(wholeLog);
-        // foreach (Match match in excsmatch)
-        // {
-        //     var excErr = plugExc;
-        //     for (var i = 0; i <= 10; i++)
-        //     {
-        //         excErr.Solution = excErr.Solution.Replace("{" + i + "}", match.Groups[i].Value);
-        //     }
-        //     log.Errors.Add(excErr);
-        // }
+        var crashMatch = Regex.Matches(wholeLog, @"Stack trace:.*\n(?:.+at (\w+)\..+\n)+");
+        var causedCrash = new List<Plugin>();
+        var causedCrashName = new List<string>();
+        foreach (Match match in crashMatch)
+        {
+            for (var i = match.Groups.Count; i > 0; i--)
+            {
+                foreach (Capture capture in match.Groups[i].Captures)
+                {
+                    if (!causedCrash.Any(x => x.Name.Equals(capture.Value)))
+                    {
+                        foreach (var plugin in pluginData.Where(plugin => plugin.Name.Equals(capture.Value)))
+                        {
+                            if (!causedCrash.Contains(plugin))
+                            {
+                                causedCrash.Add(plugin);
+                                causedCrashName.Add(plugin.DName);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        log.Errors.Add(new Error
+        {
+            ID = "20",
+            Solution = "**These plugins threw an error:**" +
+                       $"\r\n- {string.Join("\r\n- ", causedCrashName)}" +
+                       "\r\n*You should send the authors your log!*",
+            Level = "SEVERE"
+        });
 
         //===//===//===////===//===//===////===//RNUI Dupes//===////===//===//===////===//===//===//
         var rmvdupe = new List<Error>();
