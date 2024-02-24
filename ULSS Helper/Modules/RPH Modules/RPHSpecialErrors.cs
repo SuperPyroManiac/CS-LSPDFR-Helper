@@ -105,7 +105,7 @@ public class RPHSpecialErrors
         }
         
         //===//===//===////===//===//===////===//Exception Detection//===////===//===//===////===//===//===//
-        var crashMatch = Regex.Matches(wholeLog, @"Stack trace:.*\n(?:.+at (\w+(?<!RAGENativeUI))\..+\n)+");
+        var crashMatch = Regex.Matches(wholeLog, @"Stack trace:.*\n(?:.+at (\w+)\..+\n)+");
         var causedCrash = new List<Plugin>();
         var causedCrashName = new List<string>();
         foreach (Match match in crashMatch)
