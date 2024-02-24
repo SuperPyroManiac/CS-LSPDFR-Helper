@@ -105,7 +105,7 @@ public class RPHSpecialErrors
         }
         
         //===//===//===////===//===//===////===//Exception Detection//===////===//===//===////===//===//===//
-        var crashMatch = Regex.Matches(wholeLog, @"Stack trace:.*\n(?:.+at (\w+(?<!RAGENativeUI))\..+\n)+");
+        var crashMatch = Regex.Matches(wholeLog, @"Stack trace:.*\n(?:.+at (\w+)\..+\n)+");
         var causedCrash = new List<Plugin>();
         var causedCrashName = new List<string>();
         foreach (Match match in crashMatch)
@@ -115,7 +115,7 @@ public class RPHSpecialErrors
                 foreach (Capture capture in match.Groups[i].Captures)
                 {
                     if (causedCrash.Any(x => x.Name.Equals(capture.Value))) continue;
-                    foreach (var plugin in pluginData.Where(plugin => plugin.Name.Equals(capture.Value)))
+                    foreach (var plugin in pluginData.Where(plugin => plugin.Name.Equals(capture.Value) && plugin.State is "LSPDFR" or "EXTERNAL"))
                     {
                         if (!causedCrash.Contains(plugin))
                         {
