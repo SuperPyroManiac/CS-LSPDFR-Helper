@@ -6,7 +6,7 @@ internal static class BasicEmbeds
 {
     internal static DiscordEmbedBuilder Error(string msg, bool bold = false)
     {
-        var embed = new DiscordEmbedBuilder
+        var embed = new DiscordEmbedBuilder//fuckass
         {
             Description = $":no_entry:  {msg}",
             Color = DiscordColor.Red
