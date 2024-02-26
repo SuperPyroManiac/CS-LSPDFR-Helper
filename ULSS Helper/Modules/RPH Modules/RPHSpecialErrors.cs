@@ -117,10 +117,14 @@ public class RPHSpecialErrors
                     if (causedCrash.Any(x => x.Name.Equals(capture.Value))) continue;
                     foreach (var plugin in pluginData.Where(plugin => plugin.Name.Equals(capture.Value) && plugin.State is "LSPDFR" or "EXTERNAL" or "BROKEN"))
                     {
-                        if (!causedCrash.Contains(plugin))
+                        if (!causedCrash.Contains(plugin) || !log.IncorrectLibs.Contains(plugin.Name) || 
+                            !log.IncorrectOther.Contains(plugin.Name) || !log.IncorrectPlugins.Contains(plugin.Name) || 
+                            !log.IncorrectScripts.Contains(plugin.Name))
                         {
                             causedCrash.Add(plugin);
-                            causedCrashName.Add(plugin.DName);
+                            if (plugin.State is "LSPDFR" or "EXTERNAL" && !string.IsNullOrEmpty(plugin.Link))
+                                causedCrashName.Add($"[{plugin.DName}]({plugin.Link})");
+                            else causedCrashName.Add(plugin.DName);
                         }
                     }
                 }
@@ -132,7 +136,7 @@ public class RPHSpecialErrors
             ID = "20",
             Solution = "**These plugins threw an error:**" +
                        $"\r\n- {string.Join("\r\n- ", causedCrashName)}" +
-                       "\r\n*You should send the authors your log!*",
+                       "\r\n*You may want to report this to the authors!*",
             Level = "SEVERE"
             });
 
