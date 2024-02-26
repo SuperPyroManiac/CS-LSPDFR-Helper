@@ -108,7 +108,7 @@ public class RPHProcess
             if (broken.Length != 0) messageBuilder.AddEmbed(embed3);
             if (embed4.Fields.Count != 0) messageBuilder.AddEmbed(embed4);
             if (outdated.Length == 0 && broken.Length == 0 && embed4.Fields.Count == 0)
-                messageBuilder.AddEmbed(BasicEmbeds.Success("__No Issues Detected__\r\n>>> If you do have any problems, please request help so a TS can take a look for you!", true));
+                messageBuilder.AddEmbed(BasicEmbeds.Success("__No Issues Detected__\r\n>>> If you do have any problems, you may want to post in the public support channels!", true));
             messageBuilder.AddComponents([
                 new DiscordButtonComponent(ButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", false,
                     new DiscordComponentEmoji("📨"))]);
