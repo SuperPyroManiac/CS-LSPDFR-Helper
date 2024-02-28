@@ -20,8 +20,8 @@ public class RPHSpecialErrors
                 Solution = "**Multiple Sessions**" +
                            "\r\nYour log contains multiple sessions. This means you reloaded LSPDFR without restarting the game. " +
                            "This is not an issue, but the log reader cannot provide correct info." +
-                           "\r\nPlugin info is based off the first game session." +
-                           "\r\nError info can only be provided from __**all**__ sessions.",
+                           "\r\nPlugin info is based off the first game session!" +
+                           "\r\nError info is provided from __**all**__ sessions!",
                 Level = "WARN"
             });
         }
@@ -136,7 +136,8 @@ public class RPHSpecialErrors
             ID = "20",
             Solution = "**These plugins threw an error:**" +
                        $"\r\n- {string.Join("\r\n- ", causedCrashName)}" +
-                       "\r\n*You may want to report this to the authors!*",
+                       "\r\nEnsure you follow all other steps listed to fix these!" +
+                       "\r\n*If the issue persists, you may want to report it to the author.*",
             Level = "SEVERE"
             });
 
