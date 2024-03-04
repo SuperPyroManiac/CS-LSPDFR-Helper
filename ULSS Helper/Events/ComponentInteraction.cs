@@ -9,7 +9,6 @@ using ULSS_Helper.Modules.ELS_Modules;
 using ULSS_Helper.Modules.RPH_Modules;
 using ULSS_Helper.Modules.SHVDN_Modules;
 using ULSS_Helper.Objects;
-using ULSS_Helper.Public.AutoHelper;
 using ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 
 namespace ULSS_Helper.Events;
@@ -206,7 +205,7 @@ public class ComponentInteraction
                         if (new Regex(@"ID:\s?\d+\D+").IsMatch(fieldName)) 
                         {
                             var idString = fieldName.Split("ID:")[1].Trim(); // ["__```SEVERE ", " 123``` Troubleshooting Steps:__"]
-                            idString = Regex.Split(idString, @"\D")[0];  // ["123", "``` Troubleshooting Steps:__"]
+                            idString = Regex.Split(idString, @"\D")[0]; // ["123", "``` Troubleshooting Steps:__"]
                             if (int.Parse(idString) == int.Parse(eventArgs.Values.FirstOrDefault()!))
                                 embed.RemoveFieldAt(i);
                         }
