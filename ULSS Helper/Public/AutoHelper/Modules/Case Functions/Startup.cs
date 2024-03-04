@@ -38,7 +38,7 @@ internal class Startup
             "You may use the bot to try and solve your own problems, if things still are not working well, only then can you request TS!");
 
         var dmsg = new DiscordMessageBuilder().AddEmbed(embed);
-        dmsg.AddComponents(new DiscordButtonComponent(ButtonStyle.Success, ComponentInteraction.OpenCase, "Open Case", false));
+        dmsg.AddComponents(new DiscordButtonComponent(ButtonStyle.Success, ComponentInteraction.OpenCase, "Open Case", true));
         
         
         await dmsg.ModifyAsync(origMsg);
