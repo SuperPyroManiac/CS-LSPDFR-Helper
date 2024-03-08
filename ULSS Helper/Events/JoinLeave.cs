@@ -18,9 +18,7 @@ internal class JoinLeave
             {
                 UID = ctx.Member.Id.ToString(),
                 Username = ctx.Member.Username,
-                TS = 0,
-                View = 0,
-                Editor = 0,
+                BotEditor = 0,
                 BotAdmin = 0,
                 Bully = 0,
                 Blocked = 0

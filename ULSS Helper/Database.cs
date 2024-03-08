@@ -1,24 +1,25 @@
 ﻿using System.Data;
-using System.Data.SQLite;
+using MySqlConnector;
 using System.Net;
 using Dapper;
 using ULSS_Helper.Objects;
-using ULSS_Helper.Public.AutoHelper;
 using ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 
 namespace ULSS_Helper;
 
 internal class Database
 {
+    private const string ConnStr = "Server=TownCraftMC.com;User ID=NULLED-PERSONAL-;Password=NULLED-COMPLEXPASS-;Database=ULSSHelper";//TODO MAKE THIS ENV
+
     internal static List<Plugin> LoadPlugins()
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
             var output = cnn.Query<Plugin>("select * from Plugin");
             return output.ToList();
         }
-        catch (SQLiteException e)
+        catch (MySqlException e)
         {
             Console.WriteLine(e);
             Messages.Logging.ErrLog($"SQL Issue: {e}");
@@ -30,7 +31,7 @@ internal class Database
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
             var output = cnn.Query<Plugin>($"select * from Plugin where Name='{pluginName}'");
             output = output.ToList();
             if (output.Count() == 1) 
@@ -43,7 +44,7 @@ internal class Database
             }
             return null;
         }
-        catch (SQLiteException e)
+        catch (MySqlException e)
         {
             Console.WriteLine(e);
             Messages.Logging.ErrLog($"SQL Issue: {e}");
@@ -51,11 +52,11 @@ internal class Database
         }
     }
     
-    internal static List<Plugin> FindPlugins(string name=null, string dName=null, string id=null, State? state=null, string description=null, bool? exactMatch=false)
+    internal static List<Plugin> FindPlugins(string name = null, string dName = null, string id = null, State? state = null, string description = null, bool? exactMatch = false)
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
             List<string> conditions = [];
             var comparisonOperator = " = '";
             var endOfComparison = "'";
@@ -77,7 +78,7 @@ internal class Database
 
             return output.ToList();
         }
-        catch (SQLiteException e)
+        catch (MySqlException e)
         {
             Console.WriteLine(e);
             Messages.Logging.ErrLog($"SQL Issue: {e}");
@@ -95,11 +96,11 @@ internal class Database
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
             var output = cnn.Query<Error>("select * from Error");
             return output.ToList();
         }
-        catch (SQLiteException e)
+        catch (MySqlException e)
         {
             Console.WriteLine(e);
             Messages.Logging.ErrLog($"SQL Issue: {e}");
@@ -111,7 +112,7 @@ internal class Database
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
             var output = cnn.Query<Error>($"select * from Error where ID='{errorId}'");
             output = output.ToList();
             if (output.Count() == 1) 
@@ -124,7 +125,7 @@ internal class Database
             }
             return null;
         }
-        catch (SQLiteException e)
+        catch (MySqlException e)
         {
             Console.WriteLine(e);
             Messages.Logging.ErrLog($"SQL Issue: {e}");
@@ -132,11 +133,11 @@ internal class Database
         }
     }
 
-    internal static List<Error> FindErrors(string id, string regex, string solution, string description, Level? level, bool? exactMatch=false)
+    internal static List<Error> FindErrors(string id, string regex, string solution, string description, Level? level, bool? exactMatch = false)
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
             List<string> conditions = [];
             var comparisonOperator = " = '";
             var endOfComparison = "'";
@@ -158,7 +159,7 @@ internal class Database
 
             return output.ToList();
         }
-        catch (SQLiteException e)
+        catch (MySqlException e)
         {
             Console.WriteLine(e);
             Messages.Logging.ErrLog($"SQL Issue: {e}");
@@ -176,14 +177,14 @@ internal class Database
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
             cnn.Open();
             cnn.Execute("insert into Plugin (Name, DName, Version, EAVersion, ID, State, Description, Link) VALUES (@Name, @DName, @Version, @EAVersion, @ID, @State, @Description, @Link)", plugin);
-            var id = ((SQLiteConnection) cnn).LastInsertRowId;
+            var id = cnn.ExecuteScalar("SELECT LAST_INSERT_ID();")!;
             cnn.Close();
-            return id;
+            return long.Parse(id.ToString()!);
         }
-        catch (SQLiteException e)
+        catch (MySqlException e)
         {
             Console.WriteLine(e);
             Messages.Logging.ErrLog($"SQL Issue: {e}");
@@ -195,14 +196,14 @@ internal class Database
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
             cnn.Open();
             cnn.Execute("insert into Error (Regex, Solution, Description, Level) VALUES (@Regex, @Solution, @Description, @Level)", error);
-            var id = ((SQLiteConnection) cnn).LastInsertRowId;
+            var id = cnn.ExecuteScalar("SELECT LAST_INSERT_ID();")!;
             cnn.Close();
-            return id;    
+            return long.Parse(id.ToString()!);
         }
-        catch (SQLiteException e)
+        catch (MySqlException e)
         {
             Console.WriteLine(e);
             Messages.Logging.ErrLog($"SQL Issue: {e}");
@@ -214,10 +215,10 @@ internal class Database
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
             cnn.Execute("UPDATE Plugin SET (Name, DName, Version, EAVersion, ID, State, Description, Link) = (@Name, @DName, @Version, @EAVersion, @ID, @State, @Description, @Link) WHERE Name = (@Name)", plugin);
         }
-        catch (SQLiteException e)
+        catch (MySqlException e)
         {
             Console.WriteLine(e);
             Messages.Logging.ErrLog($"SQL Issue: {e}");
@@ -229,10 +230,10 @@ internal class Database
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
             cnn.Execute("UPDATE Error SET (Regex, Solution, Description, Level) = (@Regex, @Solution, @Description, @Level) WHERE ID = (@ID)", error);
         }
-        catch (SQLiteException e)
+        catch (MySqlException e)
         {
             Console.WriteLine(e);
             Messages.Logging.ErrLog($"SQL Issue: {e}");
@@ -244,10 +245,10 @@ internal class Database
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
             cnn.Execute("delete from Plugin where Name = (@Name)", plugin);
         }
-        catch (SQLiteException e)
+        catch (MySqlException e)
         {
             Console.WriteLine(e);
             Messages.Logging.ErrLog($"SQL Issue: {e}");
@@ -259,10 +260,10 @@ internal class Database
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
             cnn.Execute("delete from Error where ID = (@ID)", error);
         }
-        catch (SQLiteException e)
+        catch (MySqlException e)
         {
             Console.WriteLine(e);
             Messages.Logging.ErrLog($"SQL Issue: {e}");
@@ -274,11 +275,11 @@ internal class Database
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
             var output = cnn.Query<DiscordUser>("select * from Users");
             return output.ToList();
         }
-        catch (SQLiteException e)
+        catch (MySqlException e)
         {
             Console.WriteLine(e);
             Messages.Logging.ErrLog($"SQL Issue: {e}");
@@ -291,14 +292,14 @@ internal class Database
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
             cnn.Open();
-            cnn.Execute("insert into Users (UID, Username, TS, View, Editor, BotAdmin, Bully, Blocked) VALUES (@UID, @Username, @TS, @View, @Editor, @BotAdmin, @Bully, @Blocked)", user);
-            var id = ((SQLiteConnection) cnn).LastInsertRowId;
+            cnn.Execute("insert into Users (UID, Username, BotEditor, BotAdmin, Bully, Blocked) VALUES (@UID, @Username, @BotEditor, @BotAdmin, @Bully, @Blocked)", user);
+            var id = cnn.ExecuteScalar("SELECT LAST_INSERT_ID();")!;
             cnn.Close();
-            return id;    
+            return long.Parse(id.ToString()!);    
         }
-        catch (SQLiteException e)
+        catch (MySqlException e)
         {
             Console.WriteLine(e);
             Messages.Logging.ErrLog($"SQL Issue: {e}");
@@ -310,10 +311,10 @@ internal class Database
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
-            cnn.Execute("UPDATE Users SET (UID, Username, TS, View, Editor, BotAdmin, Bully, Blocked) = (@UID, @Username, @TS, @View, @Editor, @BotAdmin, @Bully, @Blocked) WHERE UID = (@UID)", user);
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
+            cnn.Execute("UPDATE Users SET (UID, Username, BotEditor, BotAdmin, Bully, Blocked) = (@UID, @Username, @BotEditor, @BotAdmin, @Bully, @Blocked) WHERE UID = (@UID)", user);
         }
-        catch (SQLiteException e)
+        catch (MySqlException e)
         {
             Console.WriteLine(e);
             Messages.Logging.ErrLog($"SQL Issue: {e}");
@@ -325,11 +326,11 @@ internal class Database
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
             var output = cnn.Query<AutoCase>("select * from Cases");
             return output.ToList();
         }
-        catch (SQLiteException e)
+        catch (MySqlException e)
         {
             Console.WriteLine(e);
             Messages.Logging.ErrLog($"SQL Issue: {e}");
@@ -342,15 +343,15 @@ internal class Database
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
             cnn.Open();
-            cnn.Execute("insert into Cases (CaseID, OwnerID, ChannelID, ParentID, Solved, Timer, TsRequested, RequestID) VALUES (@CaseID, @OwnerID, @ChannelID, @ParentID, @Solved, @Timer, @TsRequested, @RequestID)", autocase);
-            var id = ((SQLiteConnection) cnn).LastInsertRowId;
+            cnn.Execute("insert into Cases (CaseID, OwnerID, ChannelID, Solved, Timer, TsRequested, RequestID) VALUES (@CaseID, @OwnerID, @ChannelID, @Solved, @Timer, @TsRequested, @RequestID)", autocase);
+            var id = cnn.ExecuteScalar("SELECT LAST_INSERT_ID();")!;
             cnn.Close();
             Task.Run(CaseMonitor.UpdateMonitor);
-            return id;    
+            return long.Parse(id.ToString()!);    
         }
-        catch (SQLiteException e)
+        catch (MySqlException e)
         {
             Console.WriteLine(e);
             Messages.Logging.ErrLog($"SQL Issue: {e}");
@@ -362,11 +363,11 @@ internal class Database
     {
         try
         {
-            using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
-            cnn.Execute("UPDATE Cases SET (CaseID, OwnerID, ChannelID, ParentID, Solved, Timer, TsRequested, RequestID) = (@CaseID, @OwnerID, @ChannelID, @ParentID, @Solved, @Timer, @TsRequested, @RequestID) WHERE CaseID = (@CaseID)", autocase);
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
+            cnn.Execute("UPDATE Cases SET (CaseID, OwnerID, ChannelID, Solved, Timer, TsRequested, RequestID) = (@CaseID, @OwnerID, @ChannelID, @Solved, @Timer, @TsRequested, @RequestID) WHERE CaseID = (@CaseID)", autocase);
             Task.Run(CaseMonitor.UpdateMonitor);
         }
-        catch (SQLiteException e)
+        catch (MySqlException e)
         {
             Console.WriteLine(e);
             Messages.Logging.ErrLog($"SQL Issue: {e}");
@@ -403,10 +404,10 @@ internal class Database
                     {
                         Console.WriteLine($"Updating Plugin {plugin.Name} from {plugin.Version} to {onlineVersion}");
                         
-                        using IDbConnection cnn = new SQLiteConnection(Program.Settings.DbLocation);
+                        using IDbConnection cnn = new MySqlConnection(ConnStr);
                         cnn.Execute($"UPDATE Plugin SET Version = '{onlineVersion}' WHERE Name = '{plugin.Name}';");
                     }
-                    catch (SQLiteException e)
+                    catch (MySqlException e)
                     {
                         Console.WriteLine(e);
                         Messages.Logging.ErrLog($"SQL Issue: {e}");

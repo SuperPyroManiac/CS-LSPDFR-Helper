@@ -39,7 +39,6 @@ public class OpenCase
             CaseID = caseId,
             OwnerID = ctx.User.Id.ToString(),
             ChannelID = supportthread.Id.ToString(),
-            ParentID = supportthread.Parent.Id.ToString(),
             Solved = 0,
             Timer = 6,
             TsRequested = 0

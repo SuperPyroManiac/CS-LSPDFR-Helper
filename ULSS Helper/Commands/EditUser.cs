@@ -22,13 +22,9 @@ public class EditUser : ApplicationCommandModule
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You're not in the DB, this shouldnt be possible!")));
             return;
         }
-
-        var viewint = 1;
-        if (!view) viewint = 0;
         
         var ts = Database.LoadUsers().FirstOrDefault(x => x.UID.ToString() == ctx.Member.Id.ToString());
-        ts!.View = viewint;
-        ts.Username = ctx.Guild.GetMemberAsync(ulong.Parse(ts.UID)).Result.Username;
+        ts!.Username = ctx.Guild.GetMemberAsync(ulong.Parse(ts.UID)).Result.Username;
         Database.EditUser(ts);
         
         await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Success($"<@{ctx.Member.Id.ToString()}>: You have changed your view type to: {(view ? "Show XTRA Errors" : "Hide XTRA Errors")}")));
@@ -60,18 +56,11 @@ public class EditUser : ApplicationCommandModule
         modal.WithCustomId(ModalSubmit.EditUser);
         modal.WithTitle($"Editing {dUser.Username}!");
         modal.AddComponents(new TextInputComponent(
-            label: "TS:", 
-            customId: "userTs", 
-            required: false, 
-            style: TextInputStyle.Short, 
-            value: dUser.TS.ToString()
-        ));
-        modal.AddComponents(new TextInputComponent(
             label: "Editor:", 
             customId: "userEditor", 
             required: false,
             style: TextInputStyle.Short, 
-            value: dUser.Editor.ToString()
+            value: dUser.BotEditor.ToString()
         ));
         modal.AddComponents(new TextInputComponent(
             label: "BotAdmin:", 
@@ -81,11 +70,11 @@ public class EditUser : ApplicationCommandModule
             value: dUser.BotAdmin.ToString()
         ));
         modal.AddComponents(new TextInputComponent(
-            label: "View Extra:", 
-            customId: "userView", 
+            label: "Blacklisted:", 
+            customId: "userBlacklist", 
             required: false, 
             style: TextInputStyle.Short, 
-            value: dUser.View.ToString()
+            value: dUser.Blocked.ToString()
         ));
         modal.AddComponents(new TextInputComponent(
             label: "Bully:", 

@@ -190,7 +190,6 @@ internal class RPHProcess : SharedLogInfo
         
         embed = AddCommonFields(embed);
 
-        var ts = Database.LoadUsers().FirstOrDefault(ts => ts.UID.ToString().Equals(eventArgs.User.Id.ToString()));
         var errorIds = new List<DiscordSelectComponentOption>();
         var update = false;
         foreach (var error in log.Errors)
@@ -211,14 +210,8 @@ internal class RPHProcess : SharedLogInfo
             }
             if (!update)
             {
-                if (ts == null || ts.View == 1)
-                    embed.AddField($"___```{error.Level} ID: {error.ID}``` Troubleshooting Steps:___",
-                        $"> {error.Solution.Replace("\n", "\n> ")}");
-            
-                // ReSharper disable MergeIntoPattern
-                if (ts != null && ts.View == 0 && error.Level != "XTRA")
-                    embed.AddField($"___```{error.Level} ID: {error.ID}``` Troubleshooting Steps:___",
-                        $"> {error.Solution.Replace("\n", "\n> ")}");
+                embed.AddField($"___```{error.Level} ID: {error.ID}``` Troubleshooting Steps:___",
+                    $"> {error.Solution.Replace("\n", "\n> ")}");
             }
             if (error.Level != "XTRA")
             {
