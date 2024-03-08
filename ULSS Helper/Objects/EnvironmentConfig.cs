@@ -4,7 +4,10 @@ namespace ULSS_Helper.Objects;
 /// An EnvironmentConfig record can be used to change environment and Discord server dependent config settings (e.g. for development environments).
 /// </summary>
 /// <param name="BotToken">The token of the Discord bot that is needed in the DiscordConfiguration object when initializing the bot.</param>
-/// <param name="DbFileName">The name of the local SQLite DB file.</param>
+/// <param name="DbServer">Database location</param>
+/// <param name="DbUser">Database username</param>
+/// <param name="DbPass">Database password</param>
+/// <param name="DbName">Database name</param>
 /// <param name="ServerId">The ID of the Discord server where this bot should be working on (also known as "guild id").</param>
 /// <param name="TsRoleId">The ID of the "Tech Support" role on the Discord server that should be allowed to use advanced bot commands.</param>
 /// <param name="TsIconUrl">The URL of the icon/image asset that should be used in the bot's embed thumbnail fields.</param>
@@ -17,7 +20,10 @@ namespace ULSS_Helper.Objects;
 /// <param name="StaffContactChannelId">The channel ID of the "staff contact" channel on the server.</param>
 public record EnvironmentConfig(
     string BotToken, 
-    string DbFileName, 
+    string DbServer, 
+    string DbUser, 
+    string DbPass, 
+    string DbName, 
     ulong ServerId, 
     ulong TsRoleId, 
     string TsIconUrl, 

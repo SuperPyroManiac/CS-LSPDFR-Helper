@@ -9,7 +9,7 @@ namespace ULSS_Helper;
 
 internal class Database
 {
-    private const string ConnStr = "Server=TownCraftMC.com;User ID=NULLED-PERSONAL-;Password=NULLED-COMPLEXPASS-;Database=ULSSHelper";//TODO MAKE THIS ENV
+    private static readonly string ConnStr = $"Server={Program.Settings.Env.DbServer};User ID={Program.Settings.Env.DbUser};Password={Program.Settings.Env.DbPass};Database={Program.Settings.Env.DbName}";
 
     internal static List<Plugin> LoadPlugins()
     {
@@ -216,7 +216,7 @@ internal class Database
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
-            cnn.Execute("UPDATE Plugin SET (Name, DName, Version, EAVersion, ID, State, Description, Link) = (@Name, @DName, @Version, @EAVersion, @ID, @State, @Description, @Link) WHERE Name = (@Name)", plugin);
+            cnn.Execute("UPDATE Plugin SET Name = @Name, DName = @DName, Version = @Version, EAVersion = @EAVersion, ID = @ID, State = @State, Description = @Description, Link = @Link WHERE Name = (@Name)", plugin);
         }
         catch (MySqlException e)
         {
@@ -231,7 +231,7 @@ internal class Database
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
-            cnn.Execute("UPDATE Error SET (Regex, Solution, Description, Level) = (@Regex, @Solution, @Description, @Level) WHERE ID = (@ID)", error);
+            cnn.Execute("UPDATE Error SET Regex = @Regex, Solution = @Solution, Description = @Description, Level = @Level WHERE ID = (@ID)", error);
         }
         catch (MySqlException e)
         {
@@ -312,7 +312,7 @@ internal class Database
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
-            cnn.Execute("UPDATE Users SET (UID, Username, BotEditor, BotAdmin, Bully, Blocked) = (@UID, @Username, @BotEditor, @BotAdmin, @Bully, @Blocked) WHERE UID = (@UID)", user);
+            cnn.Execute("UPDATE Users SET UID = @UID, Username = @Username, BotEditor = @BotEditor, BotAdmin = @BotAdmin, Bully = @Bully, Blocked = @Blocked WHERE UID = @UID", user);
         }
         catch (MySqlException e)
         {
@@ -364,7 +364,7 @@ internal class Database
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
-            cnn.Execute("UPDATE Cases SET (CaseID, OwnerID, ChannelID, Solved, Timer, TsRequested, RequestID) = (@CaseID, @OwnerID, @ChannelID, @Solved, @Timer, @TsRequested, @RequestID) WHERE CaseID = (@CaseID)", autocase);
+            cnn.Execute("UPDATE Cases SET CaseID = @CaseID, OwnerID = @OwnerID, ChannelID = @ChannelID, Solved = @Solved, Timer = @Timer, TsRequested = @TsRequested, RequestID = @RequestID WHERE CaseID = (@CaseID)", autocase);
             Task.Run(CaseMonitor.UpdateMonitor);
         }
         catch (MySqlException e)

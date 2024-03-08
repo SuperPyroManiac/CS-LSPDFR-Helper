@@ -14,8 +14,6 @@ internal class Settings
     internal Settings()
     {
         Env = LoadEnvConfigFile();
-        DbPath = Path.Combine(Directory.GetCurrentDirectory(), Env.DbFileName);
-        DbLocation = $"Data Source={DbPath};Version=3;";
     }
     
     internal static string GenerateNewFilePath(FileType fileType)
@@ -93,7 +91,10 @@ internal class Settings
     {
         return new EnvironmentConfig(
             BotToken: "INSERT_BOT_TOKEN_HERE",
-            DbFileName: "ULSSDB.db",
+            DbServer: "Example.com",
+            DbUser: "Username",
+            DbPass: "Password",
+            DbName: "Database",
             ServerId: 449706194140135444,
             TsRoleId: 517568233360982017,
             TsIconUrl: "https://cdn.discordapp.com/role-icons/517568233360982017/b69077cfafb6856a0752c863e1bb87f0.webp?size=128&quality=lossless",
