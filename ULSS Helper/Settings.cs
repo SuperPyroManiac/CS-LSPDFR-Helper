@@ -15,39 +15,6 @@ internal class Settings
     {
         Env = LoadEnvConfigFile();
     }
-    
-    internal static string GenerateNewFilePath(FileType fileType)
-    {
-        string fileName;
-        var currentDateTime = DateTime.Now;
-        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd_HH-mm-ss-fff");
-
-        switch(fileType)
-        {
-            case FileType.RPH_LOG:
-                fileName = $"RagePluginHook_{formattedDateTime}.log";
-                return Path.Combine(GetOrCreateFolder("RPHLogs"), fileName);
-
-            case FileType.ELS_LOG:
-                fileName = $"ELS_{formattedDateTime}.log";
-                return Path.Combine(GetOrCreateFolder("ELSLogs"), fileName);
-
-            case FileType.ASI_LOG:
-                fileName = $"asiloader_{formattedDateTime}.log";
-                return Path.Combine(GetOrCreateFolder("ASILogs"), fileName);
-
-            case FileType.SHVDN_LOG:
-                fileName = $"ScriptHookVDotNet_{formattedDateTime}.log";
-                return Path.Combine(GetOrCreateFolder( "SHVDNLogs"), fileName);
-
-            case FileType.DB_BACKUP:
-                fileName = $"ULSSDB_{formattedDateTime}.db";
-                return Path.Combine(GetOrCreateFolder( "Backups"), fileName);
-
-            default:
-                throw new ArgumentException("Invalid FileType!");
-        }
-    }
 
     internal static string GetOrCreateFolder(string folder)
     {
