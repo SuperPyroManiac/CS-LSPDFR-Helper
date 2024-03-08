@@ -14,41 +14,6 @@ internal class Settings
     internal Settings()
     {
         Env = LoadEnvConfigFile();
-        DbPath = Path.Combine(Directory.GetCurrentDirectory(), Env.DbFileName);
-        DbLocation = $"Data Source={DbPath};Version=3;";
-    }
-    
-    internal static string GenerateNewFilePath(FileType fileType)
-    {
-        string fileName;
-        var currentDateTime = DateTime.Now;
-        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd_HH-mm-ss-fff");
-
-        switch(fileType)
-        {
-            case FileType.RPH_LOG:
-                fileName = $"RagePluginHook_{formattedDateTime}.log";
-                return Path.Combine(GetOrCreateFolder("RPHLogs"), fileName);
-
-            case FileType.ELS_LOG:
-                fileName = $"ELS_{formattedDateTime}.log";
-                return Path.Combine(GetOrCreateFolder("ELSLogs"), fileName);
-
-            case FileType.ASI_LOG:
-                fileName = $"asiloader_{formattedDateTime}.log";
-                return Path.Combine(GetOrCreateFolder("ASILogs"), fileName);
-
-            case FileType.SHVDN_LOG:
-                fileName = $"ScriptHookVDotNet_{formattedDateTime}.log";
-                return Path.Combine(GetOrCreateFolder( "SHVDNLogs"), fileName);
-
-            case FileType.DB_BACKUP:
-                fileName = $"ULSSDB_{formattedDateTime}.db";
-                return Path.Combine(GetOrCreateFolder( "Backups"), fileName);
-
-            default:
-                throw new ArgumentException("Invalid FileType!");
-        }
     }
 
     internal static string GetOrCreateFolder(string folder)
@@ -93,7 +58,10 @@ internal class Settings
     {
         return new EnvironmentConfig(
             BotToken: "INSERT_BOT_TOKEN_HERE",
-            DbFileName: "ULSSDB.db",
+            DbServer: "Example.com",
+            DbUser: "Username",
+            DbPass: "Password",
+            DbName: "Database",
             ServerId: 449706194140135444,
             TsRoleId: 517568233360982017,
             TsIconUrl: "https://cdn.discordapp.com/role-icons/517568233360982017/b69077cfafb6856a0752c863e1bb87f0.webp?size=128&quality=lossless",

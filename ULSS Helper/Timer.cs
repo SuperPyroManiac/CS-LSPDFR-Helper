@@ -24,9 +24,6 @@ internal class Timer
         var th = new Thread(Database.UpdatePluginVersions);
         th.Start();
         
-        //Backup DB
-        File.Copy(Program.Settings.DbPath, Settings.GenerateNewFilePath(FileType.DB_BACKUP));
-        
         //Check Cases
         var cases = Database.LoadCases();
         foreach (var ac in cases.Where(x => x.Solved == 0))

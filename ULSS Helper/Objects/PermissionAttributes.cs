@@ -57,7 +57,7 @@ public class RequireAdvancedTsRoleAttribute : SlashCheckBaseAttribute
         var IsWhitelistedForCommands = false;
 
         var ts = Database.LoadUsers().FirstOrDefault(ts => ts.UID.ToString() == ctx.Member.Id.ToString());
-        if (ts != null && ts.Editor == 0)
+        if (ts != null && ts.BotEditor == 0)
             Logging.SendLog(
                 ctx.Interaction.Channel.Id, 
                 ctx.Interaction.User.Id,

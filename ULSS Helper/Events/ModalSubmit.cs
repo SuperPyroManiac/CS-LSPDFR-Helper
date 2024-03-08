@@ -152,10 +152,9 @@ public class ModalSubmit
                 {
                     UID = cache.User.UID,
                     Username = cache.User.Username,
-                    TS = int.Parse(e.Values["userTs"]),
-                    View = int.Parse(e.Values["userView"]),
-                    Editor = int.Parse(e.Values["userEditor"]),
+                    BotEditor = int.Parse(e.Values["userEditor"]),
                     BotAdmin = int.Parse(e.Values["userBotAdmin"]),
+                    Blocked = int.Parse(e.Values["userBlacklist"]),
                     Bully = int.Parse(e.Values["userBully"])
                 };
                 Database.EditUser(user);
@@ -164,10 +163,9 @@ public class ModalSubmit
                     $"__User Updated!__\r\n"
                     + $">>> **UID: **{user.UID}\r\n"
                     + $" **Username: **{user.Username}\r\n"
-                    + $" **Is TS: **{user.TS}\r\n"
-                    + $" **Xtra View: **{user.View}\r\n"
-                    + $" **Is Editor: **{user.Editor}\r\n"
+                    + $" **Is Editor: **{user.BotEditor}\r\n"
                     + $" **Is Bot Admin: **{user.BotAdmin}\r\n"
+                    + $" **Is Blacklisted: **{user.Blocked}\r\n"
                     + $" **Bully Victim: **{user.Bully}\r\n", true);
                 
                 await e.Interaction.CreateResponseAsync(

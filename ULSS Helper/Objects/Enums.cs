@@ -28,12 +28,3 @@ public enum DbOperation
     UPDATE,
     DELETE
 }
-
-internal enum FileType
-{
-    RPH_LOG,
-    ELS_LOG,
-    ASI_LOG,
-    SHVDN_LOG,
-    DB_BACKUP
-}
