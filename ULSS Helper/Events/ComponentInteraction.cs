@@ -330,11 +330,8 @@ public class ComponentInteraction
                     return;
                 }
         
-                AutoCase findCase = null;
-                foreach (var autocase in Database.LoadCases()
-                             .Where(autocase => autocase.OwnerID.Equals(eventArgs.User.Id.ToString()))) findCase = autocase;
-
-                if (findCase != null && findCase.Solved == 0)
+                var findCase = Database.LoadCases().FirstOrDefault(autocase => autocase.OwnerID.Equals(eventArgs.User.Id.ToString()) && autocase.Solved == 0);
+                if (findCase != null)
                 {
                     await eventArgs.Interaction.EditOriginalResponseAsync(msg.AddEmbed(BasicEmbeds.Error($"You already have an open case!\r\nCheck <#{findCase.ChannelID}>")));
                     return;
