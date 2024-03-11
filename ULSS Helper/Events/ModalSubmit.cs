@@ -38,8 +38,14 @@ public class ModalSubmit
             {
                 var plugDName = e.Values["plugDName"];
                 var plugVersion = e.Values["plugVersion"];
+                if (string.IsNullOrEmpty(plugVersion))
+                    plugVersion = null;
                 var plugEaVersion = e.Values["plugEAVersion"];
+                if (string.IsNullOrEmpty(plugEaVersion))
+                    plugEaVersion = null;
                 var plugId = e.Values["plugID"];
+                if (string.IsNullOrEmpty(plugId))
+                    plugId = null;
                 var plugLink = e.Values["plugLink"];
 
                 var plug = new Plugin
@@ -92,8 +98,14 @@ public class ModalSubmit
             {
                 var plugDName = e.Values["plugDName"];
                 var plugVersion = e.Values["plugVersion"];
+                if (string.IsNullOrEmpty(plugVersion))
+                    plugVersion = null;
                 var plugEaVersion = e.Values["plugEAVersion"];
+                if (string.IsNullOrEmpty(plugEaVersion))
+                    plugEaVersion = null;
                 var plugId = e.Values["plugID"];
+                if (string.IsNullOrEmpty(plugId))
+                    plugId = null;
                 var plugLink = e.Values["plugLink"];
 
                 var plug = new Plugin
