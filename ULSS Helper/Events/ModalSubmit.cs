@@ -221,9 +221,11 @@ public class ModalSubmit
                     if (ac.TsRequested == 0)
                     {
                         msg.IsEphemeral = false;
-                        msg.AddEmbed(BasicEmbeds.Info("__Help Requested!__\r\n>>> TS have been sent an alert! " +
-                                                      "Keep in mind they are real people and may not be available at the moment. Patience is key!" +
-                                                      $"\r\n__**Ensure you have explained your issue well!!**__\r\n```{e.Values["issueDsc"]}```", true));
+                        msg.AddEmbed(BasicEmbeds.Info(
+                            "__Help Requested!__\r\n" +
+                            ">>> TS have been sent an alert! " +
+                            "Keep in mind they are real people and may not be available at the moment. Patience is key!" +
+                            $"\r\n__**Ensure you have explained your issue well!!**__\r\n```{e.Values["issueDsc"]}```", true));
                         await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, msg);
                         var tsMsg = new DiscordMessageBuilder();
                         tsMsg.AddEmbed(BasicEmbeds.Info(
