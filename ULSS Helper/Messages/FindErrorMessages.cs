@@ -63,7 +63,7 @@ internal class FindErrorMessages : FindBaseMessages
                     break;
                 }
                 
-                embed = BasicEmbeds.Info(text);
+                embed = BasicEmbeds.Info(text, true);
                 embed.Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{ChangesCount} {(ChangesCount == 1 ? "property has" : "properties have")} been modified."

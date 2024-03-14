@@ -52,7 +52,7 @@ internal class Program
         Client.UseInteractivity(new InteractivityConfiguration());
 
         await Client.ConnectAsync();
-        await Task.Run(() => Program.Cache.UpdatePlugins(Database.LoadPlugins()));
+        await Task.Run(() => Cache.UpdatePlugins(Database.LoadPlugins()));
         await Task.Run(Startup.StartAutoHelper);
         StatusMessages.SendStartupMessage();
         await Task.Delay(-1);

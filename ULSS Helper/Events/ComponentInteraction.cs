@@ -23,6 +23,7 @@ public class ComponentInteraction
     public const string SelectPluginValueToEdit = "SelectPluginValueToEdit";
     public const string SelectErrorValueToEdit = "SelectErrorValueToEdit";
     public const string SelectUserValueToEdit = "SelectErrorUserToEdit";
+    
     // Public
     public const string SendFeedback = "SendFeedback";
     public const string RequestHelp = "RequestHelp";

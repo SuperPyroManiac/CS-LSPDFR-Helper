@@ -216,7 +216,7 @@ public class ModalSubmit
                     InteractionResponseType.ChannelMessageWithSource,
                     new DiscordInteractionResponseBuilder().AddEmbed(embed).AsEphemeral(true));
                 
-                Logging.SendLog(e.Interaction.ChannelId,e.Interaction.User.Id,embed);
+                Logging.SendLog(e.Interaction.ChannelId, e.Interaction.User.Id, embed);
             }
             
 			// delete the cached data of the action that is completed now (which means the cache isn't needed anymore)
