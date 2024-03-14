@@ -19,6 +19,10 @@ public class ComponentInteraction
     public const string SelectAttachmentForAnalysis = "SelectAttachmentForAnalysis";
     public const string SelectIdForRemoval = "SelectIdForRemoval";
     
+    // Editor
+    public const string SelectPluginValueToEdit = "SelectPluginValueToEdit";
+    public const string SelectErrorValueToEdit = "SelectErrorValueToEdit";
+    public const string SelectUserValueToEdit = "SelectErrorUserToEdit";
     // Public
     public const string SendFeedback = "SendFeedback";
     public const string RequestHelp = "RequestHelp";
@@ -57,6 +61,9 @@ public class ComponentInteraction
         [
             SelectAttachmentForAnalysis,
             SelectIdForRemoval,
+            SelectPluginValueToEdit,
+            SelectErrorValueToEdit,
+            SelectUserValueToEdit,
             RphGetQuickInfo,
             RphGetDetailedInfo,
             RphGetAdvancedInfo,
@@ -213,15 +220,60 @@ public class ComponentInteraction
                     
                     await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, db.AddEmbed(embed));
                 }
+                
+                //===//===//===////===//===//===////===//Editor Dropdowns//===////===//===//===////===//===//===//
+                if (eventArgs.Id is SelectErrorValueToEdit)
+                {
+                    var usercache = Program.Cache.GetUserAction(eventArgs.User.Id, eventArgs.Id);
+                    if (!eventArgs.User.Username.Equals(usercache.Msg.Embeds.FirstOrDefault()!.Footer.Text))
+                    {
+                        var bd = new DiscordInteractionResponseBuilder();
+                        bd.IsEphemeral = true;
+                        bd.AddEmbed(BasicEmbeds.Error("Only the command sender can edit this!"));
+                        await eventArgs.Interaction.CreateResponseAsync(
+                            InteractionResponseType.ChannelMessageWithSource, bd);
+                        return;
+                    }
+                    
+                    var value = string.Empty;
+                    var selected = eventArgs.Values.FirstOrDefault();
+                    switch (selected)
+                    {
+                        case "Error Regex":
+                            value = usercache.Error.Regex;
+                            break;
+                        case "Error Solution":
+                            value = usercache.Error.Solution;
+                            break;
+                        case "Error Description":
+                            value = usercache.Error.Description;
+                            break;
+                    }
+                    
+                    DiscordInteractionResponseBuilder modal = new();
+                    modal.WithCustomId(SelectErrorValueToEdit);
+                    modal.WithTitle($"Editing {selected}");
+                    modal.AddComponents(
+                        new TextInputComponent(
+                            label: selected!, 
+                            customId: selected!, 
+                            required: true, 
+                            value: value,
+                            style: TextInputStyle.Paragraph
+                        )
+                    );
+
+                    await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
+                }
                     
                 //===//===//===////===//===//===////===//RPH Buttons//===////===//===//===////===//===//===//
                 if (eventArgs.Id is RphGetQuickInfo) 
                     await cache.RphProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                 
-                if (eventArgs.Id == RphGetDetailedInfo) 
+                if (eventArgs.Id is RphGetDetailedInfo) 
                     await cache.RphProcess.SendDetailedInfoMessage(eventArgs);
                 
-                if (eventArgs.Id == RphGetAdvancedInfo) 
+                if (eventArgs.Id is RphGetAdvancedInfo) 
                     await cache.RphProcess.SendAdvancedInfoMessage(eventArgs);
                 
                 if (eventArgs.Id is RphQuickSendToUser or RphDetailedSendToUser) 

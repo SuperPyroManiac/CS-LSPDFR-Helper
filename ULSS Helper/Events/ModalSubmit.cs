@@ -13,7 +13,7 @@ public class ModalSubmit
     public const string AddError = "add-error";
     public const string EditPlugin = "edit-plugin";
     public const string EditPluginNotes = "edit-pluginnotes";
-    public const string EditError = "edit-error";
+    public const string EditError = ComponentInteraction.SelectErrorValueToEdit;
     public const string EditUser = "edit-user";
     public const string SendFeedback = ComponentInteraction.SendFeedback;
     public const string RequestHelp = ComponentInteraction.RequestHelp;
@@ -142,20 +142,52 @@ public class ModalSubmit
 
             if (e.Interaction.Data.CustomId == EditError)
             {
-                var err = new Error
-                {
-                    ID = cache.Error.ID,
-                    Regex = e.Values["errReg"],
-                    Solution = e.Values["errSol"],
-                    Description = e.Values["errDesc"],
-                    Level = cache.Error.Level
-                };
+                var err = cache.Error;
+                var oldErr = Database.GetError(err.ID);
 
-                var oldError = Database.GetError(err.ID);
+                switch (e.Values.First().Key)
+                {
+                    case "Error Regex":
+                        err.Regex = e.Values["Error Regex"];
+                        break;
+                    case "Error Solution":
+                        err.Solution = e.Values["Error Solution"];
+                        break;
+                    case "Error Description":
+                        err.Description = e.Values["Error Description"];
+                        break;
+                }
 
                 Database.EditError(err);
+                
+                var bd = new DiscordMessageBuilder();
+                var embed = BasicEmbeds.Info(
+                    $"__Editing Error ID: {err.ID}__\r\n" +
+                    $">>> **Regex:**\r\n" +
+                    $"```{err.Regex}```\r\n" +
+                    $"**Solution:**\r\n" +
+                    $"```{err.Solution}```\r\n" +
+                    $"**Description:**\r\n" +
+                    $"```{err.Description}```\r\n" +
+                    $"**Error Level: {err.Level}**", true);
+                embed.Footer = new DiscordEmbedBuilder.EmbedFooter
+                {
+                    Text = e.Interaction.User.Username,
+                    IconUrl = e.Interaction.User.AvatarUrl
+                };
+                bd.AddEmbed(embed);
+                bd.AddComponents(cache.Msg.Components);
+                
+                var msg = await cache.Msg.ModifyAsync(bd);
+                await FindErrorMessages.SendDbOperationConfirmation(newError: err, operation: DbOperation.UPDATE, oldError: oldErr, e: e);
 
-                await FindErrorMessages.SendDbOperationConfirmation(newError: err, operation: DbOperation.UPDATE, oldError: oldError, e: e);
+                Program.Cache.RemoveUserAction(e.Interaction.User.Id, ComponentInteraction.SelectErrorValueToEdit);
+                Program.Cache.SaveUserAction(e.Interaction.User.Id, ComponentInteraction.SelectErrorValueToEdit, new UserActionCache(e.Interaction, err, msg));
+                
+                
+                await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Success("Value updated!")));
+                await e.Interaction.DeleteOriginalResponseAsync();
             }
             
             if (e.Interaction.Data.CustomId == EditUser)

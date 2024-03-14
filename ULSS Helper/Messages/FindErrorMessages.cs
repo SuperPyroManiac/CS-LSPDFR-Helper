@@ -15,9 +15,9 @@ internal class FindErrorMessages : FindBaseMessages
         if (regex != null)
             searchParamsList += $"- **Regex:**\n```\n{regex}\n```\r\n";
         if (solution != null)
-            searchParamsList += $"- **Solution:** {solution}\r\n";
+            searchParamsList += $"- **Solution:** ```{solution}```\r\n";
         if (description != null)
-            searchParamsList += $"- **Description:** {description}\r\n";
+            searchParamsList += $"- **Description:** ```{description}```\r\n";
         if (level != null)
             searchParamsList += $"- **Level:** {level}\r\n";
         if (exactMatch)
@@ -29,8 +29,8 @@ internal class FindErrorMessages : FindBaseMessages
     internal static async Task SendDbOperationConfirmation(Error newError, DbOperation operation, Error oldError=null, ModalSubmitEventArgs e=null)
     {
         var errorRegex = $"**Regex:**\r\n```\n{newError.Regex}\n```\r\n";
-        var errorSolution = $"**Solution:**\n{newError.Solution}\r\n\r\n";
-        var errorDescription = $"**Description:**\n{newError.Description}\r\n\r\n";
+        var errorSolution = $"**Solution:**\n```{newError.Solution}```\r\n\r\n";
+        var errorDescription = $"**Description:**\n```{newError.Description}```\r\n\r\n";
         var errorLevel = $"**Level:** {newError.Level}";
         var errorPropsList = errorRegex + errorSolution + errorDescription + errorLevel;
 
@@ -38,11 +38,11 @@ internal class FindErrorMessages : FindBaseMessages
         switch (operation)
         {
             case DbOperation.CREATE:
-                embed = BasicEmbeds.Info($"**Added a new error with ID {newError.ID}**\r\n" + errorPropsList);
+                embed = BasicEmbeds.Info($"__Added a new error with ID {newError.ID}__\r\n>>> " + errorPropsList, true);
                 break;
             
             case DbOperation.UPDATE:
-                var title = $"**Modified error ID: {newError.ID}!**\r\n";
+                var title = $"__Modified error ID: {newError.ID}!__\r\n>>> ";
                 var text = title;
 
                 List<ModifiedProperty> properties =
@@ -58,7 +58,7 @@ internal class FindErrorMessages : FindBaseMessages
                 }
                 catch (Exception exception)
                 {
-                    embed = BasicEmbeds.Info(title + errorPropsList);
+                    embed = BasicEmbeds.Info(title + errorPropsList, true);
                     Console.WriteLine(value: exception);
                     break;
                 }
@@ -75,7 +75,6 @@ internal class FindErrorMessages : FindBaseMessages
         {
             var bd = new DiscordInteractionResponseBuilder();
             bd.IsEphemeral = true;
-            await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, bd.AddEmbed(embed));
             Logging.SendLog(e.Interaction.Channel.Id, e.Interaction.User.Id, embed);
         }
         else 
