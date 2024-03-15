@@ -47,7 +47,7 @@ public class EditError : ApplicationCommandModule
             $"**Error Level: {error.Level}**", true);
         embed.Footer = new DiscordEmbedBuilder.EmbedFooter
         {
-            Text = ctx.User.Username,
+            Text = $"Current Editor: {ctx.Interaction.User.Username}",
             IconUrl = ctx.User.AvatarUrl
         };
         bd.AddEmbed(embed);

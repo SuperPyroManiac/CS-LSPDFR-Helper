@@ -226,11 +226,11 @@ public class ComponentInteraction
                 if (eventArgs.Id is SelectErrorValueToEdit)
                 {
                     var usercache = Program.Cache.GetUserAction(eventArgs.User.Id, eventArgs.Id);
-                    if (!eventArgs.User.Username.Equals(usercache.Msg.Embeds.FirstOrDefault()!.Footer.Text))
+                    if (usercache == null)
                     {
                         var bd = new DiscordInteractionResponseBuilder();
                         bd.IsEphemeral = true;
-                        bd.AddEmbed(BasicEmbeds.Error("Only the command sender can edit this!"));
+                        bd.AddEmbed(BasicEmbeds.Error("There was a problem!\r\n>>> You are not the original editor, or the bot reset during this editor session!", true));
                         await eventArgs.Interaction.CreateResponseAsync(
                             InteractionResponseType.ChannelMessageWithSource, bd);
                         return;
@@ -252,6 +252,8 @@ public class ComponentInteraction
                         case "Error Done":
                             Program.Cache.RemoveUserAction(eventArgs.User.Id, eventArgs.Id);
                             await eventArgs.Message.DeleteAsync();
+                            await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType
+                                .DeferredMessageUpdate);
                             return;
                     }
                     

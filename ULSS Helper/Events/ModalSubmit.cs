@@ -172,7 +172,7 @@ public class ModalSubmit
                     $"**Error Level: {err.Level}**", true);
                 embed.Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
-                    Text = e.Interaction.User.Username,
+                    Text = $"Current Editor: {e.Interaction.User.Username}",
                     IconUrl = e.Interaction.User.AvatarUrl
                 };
                 bd.AddEmbed(embed);
