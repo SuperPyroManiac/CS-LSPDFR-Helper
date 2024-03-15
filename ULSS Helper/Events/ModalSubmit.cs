@@ -126,7 +126,7 @@ public class ModalSubmit
                     if (Database.LoadErrors().Any(error => error.Regex == err.Regex))
                     {
                         await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                            new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Error("This error already exists in the database!\r\nConsider using /EditError <ID>")));
+                            new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Error("This error already exists!\r\nConsider using /EditError <ID>", true)));
                         return;
                     }
                     err.ID = Database.AddError(err).ToString();

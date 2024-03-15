@@ -20,7 +20,7 @@ public class AddPlugin : ApplicationCommandModule
         {
             var err = new DiscordInteractionResponseBuilder();
             err.IsEphemeral = true;
-            await ctx.CreateResponseAsync(err.AddEmbed(BasicEmbeds.Error("This plugin already exists in the database!\r\nConsider using /EditPlugin <Name> <State>")));
+            await ctx.CreateResponseAsync(err.AddEmbed(BasicEmbeds.Error("This plugin already exists!\r\nConsider using /EditPlugin <Name> <State>", true)));
             return;
         }
 
