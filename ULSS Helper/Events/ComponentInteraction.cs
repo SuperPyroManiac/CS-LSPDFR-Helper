@@ -21,8 +21,9 @@ public class ComponentInteraction
     
     // Editor
     public const string SelectPluginValueToEdit = "SelectPluginValueToEdit";
+    public const string SelectPluginValueToFinish = "SelectPluginValueToFinish";
     public const string SelectErrorValueToEdit = "SelectErrorValueToEdit";
-    public const string SelectUserValueToEdit = "SelectErrorUserToEdit";
+    public const string SelectErrorValueToFinish = "SelectErrorValueToFinish";
     
     // Public
     public const string SendFeedback = "SendFeedback";
@@ -63,8 +64,9 @@ public class ComponentInteraction
             SelectAttachmentForAnalysis,
             SelectIdForRemoval,
             SelectPluginValueToEdit,
+            SelectPluginValueToFinish,
             SelectErrorValueToEdit,
-            SelectUserValueToEdit,
+            SelectErrorValueToFinish,
             RphGetQuickInfo,
             RphGetDetailedInfo,
             RphGetAdvancedInfo,
@@ -223,9 +225,9 @@ public class ComponentInteraction
                 }
                 
                 //===//===//===////===//===//===////===//Editor Dropdowns//===////===//===//===////===//===//===//
-                if (eventArgs.Id is SelectPluginValueToEdit)
+                if (eventArgs.Id is SelectPluginValueToEdit or SelectPluginValueToFinish)
                 {
-                    var usercache = Program.Cache.GetUserAction(eventArgs.User.Id, eventArgs.Id);
+                    var usercache = Program.Cache.GetUserAction(eventArgs.User.Id, SelectPluginValueToEdit);
                     if (usercache == null)
                     {
                         var bd = new DiscordInteractionResponseBuilder();
@@ -233,6 +235,17 @@ public class ComponentInteraction
                         bd.AddEmbed(BasicEmbeds.Error("There was a problem!\r\n>>> You are not the original editor, or the bot reset during this editor session!", true));
                         await eventArgs.Interaction.CreateResponseAsync(
                             InteractionResponseType.ChannelMessageWithSource, bd);
+                        return;
+                    }
+
+                    if (eventArgs.Id == SelectPluginValueToFinish)
+                    {
+                        await FindPluginMessages.SendDbOperationConfirmation(usercache.Plugin, DbOperation.UPDATE, eventArgs.Interaction.ChannelId, eventArgs.Interaction.User.Id, Database.GetPlugin(usercache.Plugin.Name));
+                        Database.EditPlugin(usercache.Plugin);
+                        Program.Cache.RemoveUserAction(eventArgs.User.Id, SelectPluginValueToEdit);
+                        await eventArgs.Message.DeleteAsync();
+                        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType
+                            .DeferredMessageUpdate);
                         return;
                     }
                     
@@ -258,14 +271,6 @@ public class ComponentInteraction
                         case "Plugin Notes":
                             value = usercache.Plugin.Description;
                             break;
-                        case "Error Done":
-                            await FindPluginMessages.SendDbOperationConfirmation(usercache.Plugin, DbOperation.UPDATE, eventArgs.Interaction.ChannelId, eventArgs.Interaction.User.Id, Database.GetPlugin(usercache.Plugin.Name));
-                            Database.EditPlugin(usercache.Plugin);
-                            Program.Cache.RemoveUserAction(eventArgs.User.Id, eventArgs.Id);
-                            await eventArgs.Message.DeleteAsync();
-                            await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType
-                                .DeferredMessageUpdate);
-                            return;
                     }
                     
                     DiscordInteractionResponseBuilder modal = new();
@@ -294,9 +299,9 @@ public class ComponentInteraction
                     await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
                 }
                                 
-                if (eventArgs.Id is SelectErrorValueToEdit)
+                if (eventArgs.Id is SelectErrorValueToEdit or SelectErrorValueToFinish)
                 {
-                    var usercache = Program.Cache.GetUserAction(eventArgs.User.Id, eventArgs.Id);
+                    var usercache = Program.Cache.GetUserAction(eventArgs.User.Id, SelectErrorValueToEdit);
                     if (usercache == null)
                     {
                         var bd = new DiscordInteractionResponseBuilder();
@@ -304,6 +309,17 @@ public class ComponentInteraction
                         bd.AddEmbed(BasicEmbeds.Error("There was a problem!\r\n>>> You are not the original editor, or the bot reset during this editor session!", true));
                         await eventArgs.Interaction.CreateResponseAsync(
                             InteractionResponseType.ChannelMessageWithSource, bd);
+                        return;
+                    }
+
+                    if (eventArgs.Id == SelectErrorValueToFinish)
+                    {
+                        await FindErrorMessages.SendDbOperationConfirmation(usercache.Error, DbOperation.UPDATE, eventArgs.Interaction.ChannelId, eventArgs.Interaction.User.Id, Database.GetError(usercache.Error.ID));
+                        Database.EditError(usercache.Error);
+                        Program.Cache.RemoveUserAction(eventArgs.User.Id, SelectErrorValueToEdit);
+                        await eventArgs.Message.DeleteAsync();
+                        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType
+                            .DeferredMessageUpdate);
                         return;
                     }
                     
@@ -320,14 +336,6 @@ public class ComponentInteraction
                         case "Error Description":
                             value = usercache.Error.Description;
                             break;
-                        case "Error Done":
-                            await FindErrorMessages.SendDbOperationConfirmation(usercache.Error, DbOperation.UPDATE, eventArgs.Interaction.ChannelId, eventArgs.Interaction.User.Id, Database.GetError(usercache.Error.ID));
-                            Database.EditError(usercache.Error);
-                            Program.Cache.RemoveUserAction(eventArgs.User.Id, eventArgs.Id);
-                            await eventArgs.Message.DeleteAsync();
-                            await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType
-                                .DeferredMessageUpdate);
-                            return;
                     }
                     
                     DiscordInteractionResponseBuilder modal = new();

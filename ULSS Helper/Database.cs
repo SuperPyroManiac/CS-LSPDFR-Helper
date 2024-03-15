@@ -384,42 +384,48 @@ internal class Database
         {
             try
             {
-                if (plugin.State == "LSPDFR" && plugin.ID != null)
+                if (plugin.State != "LSPDFR" || string.IsNullOrEmpty(plugin.ID)) continue;
+                
+                string onlineVersion;
+                try
                 {
-                    var onlineVersion = webClient.DownloadString($"https://www.lcpdfr.com/applications/downloadsng/interface/api.php?do=checkForUpdates&fileId={plugin.ID}&textOnly=1");
-                    onlineVersion = onlineVersion.Replace("[a-zA-Z]", "").Split(" ")[0];
-                    var characters = new[]
-                    {
-                        "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q",
-                        "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H",
-                        "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y",
-                        "Z", "(", ")"
-                    };
-                    foreach (var c in characters) onlineVersion = onlineVersion.Replace(c, string.Empty).Trim();
-                    var onlineVersionSplit = onlineVersion.Split(".");
-                    if (onlineVersionSplit.Length == 2) onlineVersion += ".0.0";
-                    if (onlineVersionSplit.Length == 3) onlineVersion += ".0";
+                    onlineVersion = webClient.DownloadString($"https://www.lcpdfr.com/applications/downloadsng/interface/api.php?do=checkForUpdates&fileId={plugin.ID}&textOnly=1");
+                }
+                catch (WebException e)
+                {
+                    Messages.Logging.ErrLog($"Plugin ID for {plugin.Name} invalid!\r\n{e}");
+                    continue;
+                }
+                onlineVersion = onlineVersion.Replace("[a-zA-Z]", "").Split(" ")[0];
+                var characters = new[]
+                {
+                    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q",
+                    "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H",
+                    "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y",
+                    "Z", "(", ")"
+                };
+                onlineVersion = characters.Aggregate(onlineVersion, (current, c) => current.Replace(c, string.Empty).Trim());
+                var onlineVersionSplit = onlineVersion.Split(".");
+                if (onlineVersionSplit.Length == 2) onlineVersion += ".0.0";
+                if (onlineVersionSplit.Length == 3) onlineVersion += ".0";
                     
-                    try
-                    {
-                        Console.WriteLine($"Updating Plugin {plugin.Name} from {plugin.Version} to {onlineVersion}");
+                try
+                {
+                    Console.WriteLine($"Updating Plugin {plugin.Name} from {plugin.Version} to {onlineVersion}");
                         
-                        using IDbConnection cnn = new MySqlConnection(ConnStr);
-                        cnn.Execute($"UPDATE Plugin SET Version = '{onlineVersion}' WHERE Name = '{plugin.Name}';");
-                    }
-                    catch (MySqlException e)
-                    {
-                        Console.WriteLine(e);
-                        Messages.Logging.ErrLog($"SQL Issue: {e}");
-                        throw;
-                    }
+                    using IDbConnection cnn = new MySqlConnection(ConnStr);
+                    cnn.Execute($"UPDATE Plugin SET Version = '{onlineVersion}' WHERE Name = '{plugin.Name}';");
+                }
+                catch (MySqlException e)
+                {
+                    Console.WriteLine(e);
+                    Messages.Logging.ErrLog($"SQL Issue: {e}");
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 Messages.Logging.ErrLog($"SQL Issue: {e}");
-                throw;
             }
         }
         Task.Run(() => Program.Cache.UpdatePlugins(LoadPlugins()));
