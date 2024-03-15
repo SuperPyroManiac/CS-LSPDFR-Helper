@@ -113,8 +113,15 @@ internal class Cache
 
         foreach (var key in expiredUserActionKeys)
         {
-            if (_userActionCacheDict[key].Msg != null)
-                _userActionCacheDict[key].Msg.DeleteAsync().GetAwaiter();
+            try
+            {
+                if (_userActionCacheDict[key].Msg != null)
+                    _userActionCacheDict[key].Msg.DeleteAsync().GetAwaiter();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Editor message was manually deleted!");
+            }
             _userActionCacheDict.Remove(key);
         }
     }
