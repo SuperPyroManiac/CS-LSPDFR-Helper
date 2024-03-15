@@ -223,6 +223,77 @@ public class ComponentInteraction
                 }
                 
                 //===//===//===////===//===//===////===//Editor Dropdowns//===////===//===//===////===//===//===//
+                if (eventArgs.Id is SelectPluginValueToEdit)
+                {
+                    var usercache = Program.Cache.GetUserAction(eventArgs.User.Id, eventArgs.Id);
+                    if (usercache == null)
+                    {
+                        var bd = new DiscordInteractionResponseBuilder();
+                        bd.IsEphemeral = true;
+                        bd.AddEmbed(BasicEmbeds.Error("There was a problem!\r\n>>> You are not the original editor, or the bot reset during this editor session!", true));
+                        await eventArgs.Interaction.CreateResponseAsync(
+                            InteractionResponseType.ChannelMessageWithSource, bd);
+                        return;
+                    }
+                    
+                    var value = string.Empty;
+                    var selected = eventArgs.Values.FirstOrDefault();
+                    switch (selected)
+                    {
+                        case "Plugin DName":
+                            value = usercache.Plugin.DName;
+                            break;
+                        case "Plugin Version":
+                            value = usercache.Plugin.Version;
+                            break;
+                        case "Plugin EAVersion":
+                            value = usercache.Plugin.EAVersion;
+                            break;
+                        case "Plugin ID":
+                            value = usercache.Plugin.ID;
+                            break;
+                        case "Plugin Link":
+                            value = usercache.Plugin.Link;
+                            break;
+                        case "Plugin Notes":
+                            value = usercache.Plugin.Description;
+                            break;
+                        case "Error Done":
+                            await FindPluginMessages.SendDbOperationConfirmation(usercache.Plugin, DbOperation.UPDATE, eventArgs.Interaction.ChannelId, eventArgs.Interaction.User.Id, Database.GetError(usercache.Error.ID));
+                            Database.EditPlugin(usercache.Plugin);
+                            Program.Cache.RemoveUserAction(eventArgs.User.Id, eventArgs.Id);
+                            await eventArgs.Message.DeleteAsync();
+                            await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType
+                                .DeferredMessageUpdate);
+                            return;
+                    }
+                    
+                    DiscordInteractionResponseBuilder modal = new();
+                    modal.WithCustomId(SelectErrorValueToEdit);
+                    modal.WithTitle($"Editing {selected}");
+                    if (selected == "Plugin Notes")
+                    {
+                        modal.AddComponents(
+                            new TextInputComponent(
+                                label: selected!, 
+                                customId: selected!, 
+                                required: true, 
+                                value: value,
+                                style: TextInputStyle.Paragraph));
+                    }else
+                    {
+                        modal.AddComponents(
+                            new TextInputComponent(
+                                label: selected!, 
+                                customId: selected!, 
+                                required: true, 
+                                value: value,
+                                style: TextInputStyle.Short));
+                    }
+
+                    await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
+                }
+                                
                 if (eventArgs.Id is SelectErrorValueToEdit)
                 {
                     var usercache = Program.Cache.GetUserAction(eventArgs.User.Id, eventArgs.Id);
@@ -250,7 +321,7 @@ public class ComponentInteraction
                             value = usercache.Error.Description;
                             break;
                         case "Error Done":
-                            await FindErrorMessages.SendDbOperationConfirmation(newError: usercache.Error, operation: DbOperation.UPDATE, eventArgs.Interaction.ChannelId, eventArgs.Interaction.User.Id, Database.GetError(usercache.Error.ID));
+                            await FindErrorMessages.SendDbOperationConfirmation(usercache.Error, DbOperation.UPDATE, eventArgs.Interaction.ChannelId, eventArgs.Interaction.User.Id, Database.GetError(usercache.Error.ID));
                             Database.EditError(usercache.Error);
                             Program.Cache.RemoveUserAction(eventArgs.User.Id, eventArgs.Id);
                             await eventArgs.Message.DeleteAsync();
