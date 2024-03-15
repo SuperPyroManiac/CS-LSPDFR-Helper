@@ -25,7 +25,7 @@ public class RemovePlugin : ApplicationCommandModule
                 await ctx.CreateResponseAsync(bd.AddEmbed(
                     BasicEmbeds.Success($"**Removed plugin: {pluginName}**")));
                 Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, 
-                    BasicEmbeds.Warning($"Removed plugin: {pluginName}!" +
+                    BasicEmbeds.Warning($"Removed plugin: {pluginName}!\r\n>>> " +
                                         $"**Display Name:** {plugin.DName}\r\n" +
                                         $"**Version:** {plugin.Version}\r\n" +
                                         $"**EA Version:** {plugin.EAVersion}\r\n" +
