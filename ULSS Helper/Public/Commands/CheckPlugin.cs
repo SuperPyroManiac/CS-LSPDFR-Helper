@@ -31,11 +31,11 @@ public class CheckPlugin : ApplicationCommandModule
 		{
 			Description =
 				$"## __{plugin.Name}__\r\n"
-				+ $">>> Display Name: {plugin.DName}\n"
-				+ $"Version: {plugin.Version}\n"
-				+ $"Link: {plugin.Link}\n"
-				+ $"State: {plugin.State}\n"
-				+ $"Notes: \r\n```{plugin.Description}```\r\n",
+				+ $">>> **Display Name:** {plugin.DName}\n"
+				+ $"**Version:** {plugin.Version}\n"
+				+ $"**Link:** {plugin.Link}\n"
+				+ $"**State:** {plugin.State}\n"
+				+ $"**Notes:** \r\n```{plugin.Description}```\r\n",
 			Color = new DiscordColor(243, 154, 18),
 			Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl },
 			Footer = new DiscordEmbedBuilder.EmbedFooter
