@@ -26,7 +26,7 @@ public class RemoveError : ApplicationCommandModule
                 Database.DeleteError(error);
                 isValid = true;
                 await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Success($"**Removed error with id: {errorId}**")));
-                Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Warning($"Removed error: {errorId}!"));
+                Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Warning($"Removed error: {errorId}!", true));
                 return;
             }
         }
