@@ -20,11 +20,21 @@ public class RemovePlugin : ApplicationCommandModule
         {
             if (plugin.Name == pluginName)
             {
-                Database.DeletePlugin(plugin);
                 await Task.Run(() => Program.Cache.UpdatePlugins(Database.LoadPlugins()));
                 isValid = true;
-                await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Success($"**Removed: {pluginName}**")));
-                Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Warning($"Removed plugin: {pluginName}!"));
+                await ctx.CreateResponseAsync(bd.AddEmbed(
+                    BasicEmbeds.Success($"**Removed plugin: {pluginName}**")));
+                Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, 
+                    BasicEmbeds.Warning($"Removed plugin: {pluginName}!" +
+                                        $"**Display Name:** {plugin.DName}\r\n" +
+                                        $"**Version:** {plugin.Version}\r\n" +
+                                        $"**EA Version:** {plugin.EAVersion}\r\n" +
+                                        $"**ID:** {plugin.ID}\r\n" +
+                                        $"**Link:** {plugin.Link}\r\n" +
+                                        $"**Notes:**\r\n" +
+                                        $"```{plugin.Description}```\r\n" +
+                                        $"**State:** {plugin.State}", true));
+                Database.DeletePlugin(plugin);
                 return;
             }
         }

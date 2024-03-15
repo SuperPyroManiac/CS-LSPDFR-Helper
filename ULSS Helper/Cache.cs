@@ -78,7 +78,9 @@ internal class Cache
     /// <param name="actionId">The ID of the action. This is usually the customId of a modal (accessible via <c>eventArgs.Interaction.Data.CustomId</c>).</param>
     internal UserActionCache GetUserAction(ulong userId, string actionId)
     {
-        return _userActionCacheDict[GetUserActionKey(userId, actionId)];
+        if (_userActionCacheDict.ContainsKey(GetUserActionKey(userId, actionId)))
+            return _userActionCacheDict[GetUserActionKey(userId, actionId)];
+        return null;
     }
 
     private string GetUserActionKey(ulong userId, string actionId)
@@ -111,6 +113,15 @@ internal class Cache
 
         foreach (var key in expiredUserActionKeys)
         {
+            try
+            {
+                if (_userActionCacheDict[key].Msg != null)
+                    _userActionCacheDict[key].Msg.DeleteAsync().GetAwaiter();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Editor message was manually deleted!");
+            }
             _userActionCacheDict.Remove(key);
         }
     }
