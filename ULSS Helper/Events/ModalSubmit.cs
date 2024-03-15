@@ -183,9 +183,7 @@ public class ModalSubmit
 
                 Program.Cache.SaveUserAction(e.Interaction.User.Id, ComponentInteraction.SelectErrorValueToEdit, new UserActionCache(e.Interaction, err, msg));
                 
-                await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                    new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Success("Value updated!")));
-                await e.Interaction.DeleteOriginalResponseAsync();
+                await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
             }
             
             if (e.Interaction.Data.CustomId == EditUser)
