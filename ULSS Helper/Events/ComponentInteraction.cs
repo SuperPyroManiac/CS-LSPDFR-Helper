@@ -259,7 +259,7 @@ public class ComponentInteraction
                             value = usercache.Plugin.Description;
                             break;
                         case "Error Done":
-                            await FindPluginMessages.SendDbOperationConfirmation(usercache.Plugin, DbOperation.UPDATE, eventArgs.Interaction.ChannelId, eventArgs.Interaction.User.Id, Database.GetError(usercache.Error.ID));
+                            await FindPluginMessages.SendDbOperationConfirmation(usercache.Plugin, DbOperation.UPDATE, eventArgs.Interaction.ChannelId, eventArgs.Interaction.User.Id, Database.GetPlugin(usercache.Plugin.Name));
                             Database.EditPlugin(usercache.Plugin);
                             Program.Cache.RemoveUserAction(eventArgs.User.Id, eventArgs.Id);
                             await eventArgs.Message.DeleteAsync();
