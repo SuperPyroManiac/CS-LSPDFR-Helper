@@ -249,6 +249,10 @@ public class ComponentInteraction
                         case "Error Description":
                             value = usercache.Error.Description;
                             break;
+                        case "Error Done":
+                            Program.Cache.RemoveUserAction(eventArgs.User.Id, eventArgs.Id);
+                            await eventArgs.Message.DeleteAsync();
+                            return;
                     }
                     
                     DiscordInteractionResponseBuilder modal = new();

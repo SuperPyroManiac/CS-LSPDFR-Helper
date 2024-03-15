@@ -181,9 +181,7 @@ public class ModalSubmit
                 var msg = await cache.Msg.ModifyAsync(bd);
                 await FindErrorMessages.SendDbOperationConfirmation(newError: err, operation: DbOperation.UPDATE, oldError: oldErr, e: e);
 
-                Program.Cache.RemoveUserAction(e.Interaction.User.Id, ComponentInteraction.SelectErrorValueToEdit);
                 Program.Cache.SaveUserAction(e.Interaction.User.Id, ComponentInteraction.SelectErrorValueToEdit, new UserActionCache(e.Interaction, err, msg));
-                
                 
                 await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                     new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Success("Value updated!")));
@@ -220,7 +218,8 @@ public class ModalSubmit
             }
             
 			// delete the cached data of the action that is completed now (which means the cache isn't needed anymore)
-            Program.Cache.RemoveUserAction(e.Interaction.User.Id, e.Interaction.Data.CustomId);
+            //Program.Cache.RemoveUserAction(e.Interaction.User.Id, e.Interaction.Data.CustomId);
+            // We have a timer to clear this after 10 minutes. Don't think we need this? TODO: Check if this causes issues.
         }
 		else // modal submit events that don't require cached data
 		{

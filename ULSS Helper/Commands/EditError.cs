@@ -33,6 +33,7 @@ public class EditError : ApplicationCommandModule
             new DiscordSelectComponentOption("Regex", "Error Regex"),
             new DiscordSelectComponentOption("Solution", "Error Solution"),
             new DiscordSelectComponentOption("Description", "Error Description"),
+            new DiscordSelectComponentOption("Done Editing", "Error Done")
         };
 
         var embed = BasicEmbeds.Info(
@@ -57,11 +58,15 @@ public class EditError : ApplicationCommandModule
                 options: errorValues
             ));
 
-        var oldEditor = Program.Cache.GetUserAction(ctx.Interaction.User.Id, ComponentInteraction.SelectErrorValueToEdit);
-        if (oldEditor != null)
+        try
         {
-            await oldEditor.Msg.DeleteAsync();
-            Program.Cache.RemoveUserAction(ctx.Interaction.User.Id, ComponentInteraction.SelectErrorValueToEdit);
+            var oldEditor = Program.Cache.GetUserAction(ctx.Interaction.User.Id, ComponentInteraction.SelectErrorValueToEdit);
+            if (oldEditor != null)
+                await oldEditor.Msg.DeleteAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Someone manually deleted an editor message!");
         }
         
         await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, bd);
