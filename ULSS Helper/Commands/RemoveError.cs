@@ -23,10 +23,18 @@ public class RemoveError : ApplicationCommandModule
         {
             if (error.ID == errorId)
             {
-                Database.DeleteError(error);
                 isValid = true;
                 await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Success($"**Removed error with id: {errorId}**")));
-                Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Warning($"Removed error: {errorId}!"));
+                Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Warning(
+                    $"Removed error: {errorId}!\r\n" +
+                    $">>> **Regex:**\r\n" +
+                    $"```{error.Regex}```\r\n" +
+                    $"**Solution:**\r\n" +
+                    $"```{error.Solution}```\r\n" +
+                    $"**Description:**\r\n" +
+                    $"```{error.Description}```\r\n" +
+                    $"**Error Level: {error.Level}**", true));
+                Database.DeleteError(error);
                 return;
             }
         }

@@ -14,52 +14,63 @@ public class EditError : ApplicationCommandModule
     public async Task EditErrorCmd
     (
         InteractionContext ctx, 
-        [Option("ID", "Errors ID!")] string errorId, 
-        [Option("NewLevel", "Warning type (PMSG, PIMG, XTRA, WARN, SEVERE, CRITICAL)")] Level? newLevel=null
-    )
+        [Option("ID", "Error ID!")] string errorId,
+        [Option("NewLevel", "Error Level")] Level? newLevel = null)
     {
         var bd = new DiscordInteractionResponseBuilder();
-        bd.IsEphemeral = true;
 
         if (Database.LoadErrors().All(ts => ts.ID.ToString() != errorId))
         {
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error($"No error found with ID: {errorId}")));
             return;
         }
-
+        
         var error = Database.GetError(errorId);
-
-        if (newLevel != null)
+        
+        if (newLevel != null) error.Level = newLevel.ToString()!.ToUpper();
+        var errorValues = new List<DiscordSelectComponentOption>()
         {
-            error.Level = newLevel.ToString().ToUpper();
+            new DiscordSelectComponentOption("Regex", "Error Regex"),
+            new DiscordSelectComponentOption("Solution", "Error Solution"),
+            new DiscordSelectComponentOption("Description", "Error Description"),
+            new DiscordSelectComponentOption("Done Editing", "Error Done")
+        };
+
+        var embed = BasicEmbeds.Info(
+            $"__Editing Error ID: {error.ID}__\r\n" +
+            $">>> **Regex:**\r\n" +
+            $"```{error.Regex}```\r\n" +
+            $"**Solution:**\r\n" +
+            $"```{error.Solution}```\r\n" +
+            $"**Description:**\r\n" +
+            $"```{error.Description}```\r\n" +
+            $"**Error Level: {error.Level}**", true);
+        embed.Footer = new DiscordEmbedBuilder.EmbedFooter
+        {
+            Text = $"Current Editor: {ctx.Interaction.User.Username}",
+            IconUrl = ctx.User.AvatarUrl
+        };
+        bd.AddEmbed(embed);
+        bd.AddComponents(
+            new DiscordSelectComponent(
+                customId: ComponentInteraction.SelectErrorValueToEdit,
+                placeholder: "Edit Value",
+                options: errorValues
+            ));
+
+        try
+        {
+            var oldEditor = Program.Cache.GetUserAction(ctx.Interaction.User.Id, ComponentInteraction.SelectErrorValueToEdit);
+            if (oldEditor != null)
+                await oldEditor.Msg.DeleteAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Someone manually deleted an editor message!");
         }
         
-        DiscordInteractionResponseBuilder modal = new();
-        modal.WithCustomId(ModalSubmit.EditError);
-        modal.WithTitle($"Editing error ID: {error.ID}!");
-        modal.AddComponents(new TextInputComponent(
-            label: "Error Regex:", 
-            customId: "errReg", 
-            required: true, 
-            style: TextInputStyle.Paragraph, 
-            value: error!.Regex
-        ));
-        modal.AddComponents(new TextInputComponent(
-            label: "Error Solution:", 
-            customId: "errSol", 
-            required: true, 
-            style: TextInputStyle.Paragraph, 
-            value: error.Solution
-        ));
-        modal.AddComponents(new TextInputComponent(
-            label: "Error Description:", 
-            customId: "errDesc", 
-            required: true, 
-            style: TextInputStyle.Paragraph, 
-            value: error.Description
-        ));
-        
-		Program.Cache.SaveUserAction(ctx.Interaction.User.Id, modal.CustomId, new UserActionCache(ctx.Interaction, error));
-        await ctx.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
+        await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, bd);
+        var msg = ctx.Interaction.GetOriginalResponseAsync().Result;
+        Program.Cache.SaveUserAction(ctx.Interaction.User.Id, ComponentInteraction.SelectErrorValueToEdit, new UserActionCache(ctx.Interaction, error, msg));
     }
 }
