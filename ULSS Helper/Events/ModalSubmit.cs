@@ -72,28 +72,6 @@ public class ModalSubmit
                 await FindPluginMessages.SendDbOperationConfirmation(newPlugin: plug, operation: DbOperation.CREATE, e: e);
             }
             
-            if (e.Interaction.Data.CustomId == AddError)
-            {
-                var err = new Error
-                {
-                    Regex = e.Values["errReg"],
-                    Solution = e.Values["errSol"],
-                    Description = e.Values["errDesc"],
-                    Level = cache.Error.Level
-                };
-                
-                if (Database.LoadErrors().Any(error => error.Regex == err.Regex))
-                {
-                    await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                        new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Error("This error already exists in the database!\r\nConsider using /EditError <ID>")));
-                    return;
-                }
-
-                err.ID = Database.AddError(err).ToString();
-
-                await FindErrorMessages.SendDbOperationConfirmation(newError: err, operation: DbOperation.CREATE, e: e);
-            }
-            
             if (e.Interaction.Data.CustomId == EditPlugin)
             {
                 var plugDName = e.Values["plugDName"];
@@ -143,7 +121,17 @@ public class ModalSubmit
             if (e.Interaction.Data.CustomId == EditError)
             {
                 var err = cache.Error;
-                var oldErr = Database.GetError(err.ID);
+                if (string.IsNullOrEmpty(err.ID))
+                {
+                    if (Database.LoadErrors().Any(error => error.Regex == err.Regex))
+                    {
+                        await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                            new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Error("This error already exists in the database!\r\nConsider using /EditError <ID>")));
+                        return;
+                    }
+                    err.ID = Database.AddError(err).ToString();
+                    await FindErrorMessages.SendDbOperationConfirmation(newError: err, operation: DbOperation.CREATE, e.Interaction.ChannelId, e.Interaction.User.Id);
+                }
 
                 switch (e.Values.First().Key)
                 {
@@ -157,8 +145,6 @@ public class ModalSubmit
                         err.Description = e.Values["Error Description"];
                         break;
                 }
-
-                Database.EditError(err);
                 
                 var bd = new DiscordMessageBuilder();
                 var embed = BasicEmbeds.Info(
@@ -179,10 +165,7 @@ public class ModalSubmit
                 bd.AddComponents(cache.Msg.Components);
                 
                 var msg = await cache.Msg.ModifyAsync(bd);
-                await FindErrorMessages.SendDbOperationConfirmation(newError: err, operation: DbOperation.UPDATE, oldError: oldErr, e: e);
-
                 Program.Cache.SaveUserAction(e.Interaction.User.Id, ComponentInteraction.SelectErrorValueToEdit, new UserActionCache(e.Interaction, err, msg));
-                
                 await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
             }
             

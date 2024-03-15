@@ -250,6 +250,8 @@ public class ComponentInteraction
                             value = usercache.Error.Description;
                             break;
                         case "Error Done":
+                            await FindErrorMessages.SendDbOperationConfirmation(newError: usercache.Error, operation: DbOperation.UPDATE, eventArgs.Interaction.ChannelId, eventArgs.Interaction.User.Id, Database.GetError(usercache.Error.ID));
+                            Database.EditError(usercache.Error);
                             Program.Cache.RemoveUserAction(eventArgs.User.Id, eventArgs.Id);
                             await eventArgs.Message.DeleteAsync();
                             await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType
