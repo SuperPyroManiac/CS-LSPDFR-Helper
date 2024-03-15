@@ -26,8 +26,8 @@ public class RemoveError : ApplicationCommandModule
                 isValid = true;
                 await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Success($"**Removed error with id: {errorId}**")));
                 Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Warning(
-                    $"Removed error: {errorId}!\r\n" +
-                    $">>> **Regex:**\r\n" +
+                    $"Removed error: {errorId}!\r\n>>> " +
+                    $"**Regex:**\r\n" +
                     $"```{error.Regex}```\r\n" +
                     $"**Solution:**\r\n" +
                     $"```{error.Solution}```\r\n" +
