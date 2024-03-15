@@ -33,7 +33,6 @@ public class EditError : ApplicationCommandModule
             new DiscordSelectComponentOption("Regex", "Error Regex"),
             new DiscordSelectComponentOption("Solution", "Error Solution"),
             new DiscordSelectComponentOption("Description", "Error Description"),
-            new DiscordSelectComponentOption("Done Editing", "Error Done")
         };
 
         var embed = BasicEmbeds.Info(
@@ -55,8 +54,14 @@ public class EditError : ApplicationCommandModule
             new DiscordSelectComponent(
                 customId: ComponentInteraction.SelectErrorValueToEdit,
                 placeholder: "Edit Value",
-                options: errorValues
-            ));
+                options: errorValues));
+        bd.AddComponents(
+            new DiscordButtonComponent(
+                ButtonStyle.Success,
+                ComponentInteraction.SelectErrorValueToFinish,
+                "Done Editing",
+                false,
+                new DiscordComponentEmoji(DiscordEmoji.FromName(Program.Client, ":yes:"))));
 
         try
         {

@@ -38,7 +38,6 @@ public class EditPlugin : ApplicationCommandModule
             new DiscordSelectComponentOption("ID", "Plugin ID"),
             new DiscordSelectComponentOption("Link", "Plugin Link"),
             new DiscordSelectComponentOption("Notes", "Plugin Notes"),
-            new DiscordSelectComponentOption("Done Editing", "Error Done")
         };
         
         var embed = BasicEmbeds.Info(
@@ -63,6 +62,13 @@ public class EditPlugin : ApplicationCommandModule
                 placeholder: "Edit Value",
                 options: pluginValues
             ));
+        bd.AddComponents(
+            new DiscordButtonComponent(
+                ButtonStyle.Success,
+                ComponentInteraction.SelectPluginValueToFinish,
+                "Done Editing",
+                false,
+                new DiscordComponentEmoji(DiscordEmoji.FromName(Program.Client, ":yes:"))));
         
         try
         {
