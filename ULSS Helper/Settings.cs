@@ -71,7 +71,9 @@ internal class Settings
             TsBotLogChannelId: 1173304071084585050,
             PublicBotLogChannelId: 1173304117557477456,
             PublicBotReportsChannelId: 547311030477520896,
-            StaffContactChannelId: 693303741071228938
+            StaffContactChannelId: 693303741071228938,
+            OskaruApiBaseUrl: "https://django.oskaru.net/",
+            OskaruApiKey: "OSKARU_API_KEY"
         );
     } 
 }
