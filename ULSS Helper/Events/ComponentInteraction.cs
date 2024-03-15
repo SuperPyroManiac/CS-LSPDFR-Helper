@@ -269,7 +269,7 @@ public class ComponentInteraction
                     }
                     
                     DiscordInteractionResponseBuilder modal = new();
-                    modal.WithCustomId(SelectErrorValueToEdit);
+                    modal.WithCustomId(SelectPluginValueToEdit);
                     modal.WithTitle($"Editing {selected}");
                     if (selected == "Plugin Notes")
                     {

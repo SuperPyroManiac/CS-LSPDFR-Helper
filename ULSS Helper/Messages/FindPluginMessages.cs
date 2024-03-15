@@ -33,7 +33,7 @@ internal class FindPluginMessages : FindBaseMessages
         var pluginEaVersion = $"**EA Version:** {newPlugin.EAVersion}\r\n";
         var pluginId = $"**ID:** {newPlugin.ID}\r\n";
         var pluginLink = $"**Link:** {newPlugin.Link}\r\n";
-        var pluginDescription = $"**Notes:** \r\n> {newPlugin.Description.Replace("\n", "\n> ")}\r\n";
+        var pluginDescription = $"**Notes:** \r\n```{newPlugin.Description}```\r\n";
         var pluginState = $"**State:** {newPlugin.State}\r\n";
         var pluginPropsList = pluginDName + pluginVersion + pluginEaVersion + pluginId + pluginDescription + pluginLink + pluginState;
         
@@ -68,7 +68,7 @@ internal class FindPluginMessages : FindBaseMessages
                     Console.WriteLine(value: exception);
                     break;
                 }
-                embed = BasicEmbeds.Info(text);
+                embed = BasicEmbeds.Info(text, true);
                 embed.Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{ChangesCount} {(ChangesCount == 1 ? "property has" : "properties have")} been modified."
