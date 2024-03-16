@@ -26,38 +26,37 @@ internal class FindPluginMessages : FindBaseMessages
         return searchParamsList;
     }
 
-    internal static async Task SendDbOperationConfirmation(Plugin newPlugin, DbOperation operation, Plugin oldPlugin=null, ModalSubmitEventArgs e=null)
+    internal static async Task SendDbOperationConfirmation(Plugin newPlugin, DbOperation operation, ulong channel, ulong sender, Plugin oldPlugin = null)
     {
         var pluginDName = $"**Display Name:** {newPlugin.DName}\r\n";
         var pluginVersion = $"**Version:** {newPlugin.Version}\r\n";
-        var pluginEaVersion = $"**Early Access Version:** {newPlugin.EAVersion}\r\n";
-        var pluginId = $"**ID (on lcpdfr.com):** {newPlugin.ID}\r\n";
+        var pluginEaVersion = $"**EA Version:** {newPlugin.EAVersion}\r\n";
+        var pluginId = $"**ID:** {newPlugin.ID}\r\n";
         var pluginLink = $"**Link:** {newPlugin.Link}\r\n";
+        var pluginDescription = $"**Notes:** \r\n```{newPlugin.Description}```\r\n";
         var pluginState = $"**State:** {newPlugin.State}\r\n";
-        var pluginDescription = $"**Notes:** \r\n> {newPlugin.Description.Replace("\n", "\n> ")}\r\n";
         var pluginPropsList = pluginDName + pluginVersion + pluginEaVersion + pluginId + pluginDescription + pluginLink + pluginState;
         
         DiscordEmbedBuilder embed = null;
         switch (operation)
         {
             case DbOperation.CREATE:
-                embed = BasicEmbeds.Info($"**Added {newPlugin.Name}!**\r\n" + pluginPropsList);
+                embed = BasicEmbeds.Info($"**Added new plugin: {newPlugin.Name}**\r\n>>> **State:** {newPlugin.State}", true);
                 break;
             
             case DbOperation.UPDATE:
-                var title = $"**Modified {newPlugin.Name}!**\r\n";
+                var title = $"__Modified {newPlugin.Name}!__\r\n>>> ";
                 var text = title;
 
                 List<ModifiedProperty> properties =
                 [
                     new ModifiedProperty("Display Name", oldPlugin.DName, newPlugin.DName, pluginDName),
                     new ModifiedProperty("Version", oldPlugin.Version, newPlugin.Version, pluginVersion),
-                    new ModifiedProperty("Early Access Version", oldPlugin.EAVersion, newPlugin.EAVersion,
-                        pluginEaVersion),
-                    new ModifiedProperty("ID (on lcpdfr.com)", oldPlugin.ID, newPlugin.ID, pluginId),
+                    new ModifiedProperty("EA Version", oldPlugin.EAVersion, newPlugin.EAVersion, pluginEaVersion),
+                    new ModifiedProperty("ID", oldPlugin.ID, newPlugin.ID, pluginId),
                     new ModifiedProperty("Link", oldPlugin.Link, newPlugin.Link, pluginLink),
-                    new ModifiedProperty("State", oldPlugin.State, newPlugin.State, pluginState),
-                    new ModifiedProperty("Notes", oldPlugin.Description, newPlugin.Description, pluginDescription)
+                    new ModifiedProperty("Notes", oldPlugin.Description, newPlugin.Description, pluginDescription),
+                    new ModifiedProperty("State", oldPlugin.State, newPlugin.State, pluginState)
                 ];
                 try 
                 {
@@ -65,11 +64,11 @@ internal class FindPluginMessages : FindBaseMessages
                 }
                 catch (Exception exception)
                 {
-                    embed = BasicEmbeds.Info(title + pluginPropsList);
+                    embed = BasicEmbeds.Info(title + pluginPropsList, true);
                     Console.WriteLine(value: exception);
                     break;
                 }
-                embed = BasicEmbeds.Info(text);
+                embed = BasicEmbeds.Info(text, true);
                 embed.Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{ChangesCount} {(ChangesCount == 1 ? "property has" : "properties have")} been modified."
@@ -77,12 +76,11 @@ internal class FindPluginMessages : FindBaseMessages
                 ChangesCount = 0;
                 break;
         }
-        if (e != null && embed != null) 
+        if (embed != null) 
         {
             var bd = new DiscordInteractionResponseBuilder();
             bd.IsEphemeral = true;
-            await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, bd.AddEmbed(embed));
-            Logging.SendLog(e.Interaction.Channel.Id, e.Interaction.User.Id, embed);
+            Logging.SendLog(channel, sender, embed);
         }
     }
 } 

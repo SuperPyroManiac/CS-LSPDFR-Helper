@@ -4,6 +4,7 @@ using DSharpPlus.SlashCommands;
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
+using DiscordUser = DSharpPlus.Entities.DiscordUser;
 
 namespace ULSS_Helper.Commands;
 
@@ -39,17 +40,17 @@ public class EditUser : ApplicationCommandModule
     [RequireBotAdmin]
     public async Task EditUserCmd(
         InteractionContext ctx, 
-        [Option("ID", "User ID to edit!")] string userId)
+        [Option("ID", "User ID to edit!")] DiscordUser userId)
     {
         var bd = new DiscordInteractionResponseBuilder();
         bd.IsEphemeral = true;
-        if (Database.LoadUsers().All(x => x.UID.ToString() != userId))
+        if (Database.LoadUsers().All(x => x.UID.ToString() != userId.Id.ToString()))
         {
             await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("User is not in the DB!")));
             return;
         }
 
-        var dUser = Database.LoadUsers().FirstOrDefault(x => x.UID.ToString() == userId);
+        var dUser = Database.LoadUsers().FirstOrDefault(x => x.UID.ToString() == userId.Id.ToString());
         dUser!.Username = ctx.Guild.GetMemberAsync(ulong.Parse(dUser.UID)).Result.Username;
         
         DiscordInteractionResponseBuilder modal = new();

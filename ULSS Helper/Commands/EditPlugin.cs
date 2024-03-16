@@ -14,12 +14,11 @@ public class EditPlugin : ApplicationCommandModule
     public async Task EditPluginCmd
     (
         InteractionContext ctx, 
-        [Autocomplete(typeof(PluginAutoComplete)),Option("Name", "Plugins name as shown in the log!")] string pluginName, 
-        [Option("New_State", "Plugin state, LSPDFR, EXTERNAL, BROKEN, LIB, IGNORE")] State? newState=null
+        [Autocomplete(typeof(PluginAutoComplete)), Option("Name", "Plugins name as shown in the log!")] string pluginName, 
+        [Option("New_State", "Plugin state, LSPDFR, EXTERNAL, BROKEN, LIB, IGNORE")] State? newState = null
     )
     {
         var bd = new DiscordInteractionResponseBuilder();
-        bd.IsEphemeral = true;
 
         if (Database.LoadPlugins().All(x => x.Name != pluginName))
         {
@@ -29,50 +28,61 @@ public class EditPlugin : ApplicationCommandModule
 
         var plugin = Database.GetPlugin(pluginName);
 
-        if (newState != null)
+        if (newState != null) plugin.State = newState.ToString()!.ToUpper();
+        
+        var pluginValues = new List<DiscordSelectComponentOption>()
         {
-            plugin.State = newState.ToString()!.ToUpper();
+            new DiscordSelectComponentOption("Display Name", "Plugin DName"),
+            new DiscordSelectComponentOption("Version", "Plugin Version"),
+            new DiscordSelectComponentOption("EA Version", "Plugin EAVersion"),
+            new DiscordSelectComponentOption("ID", "Plugin ID"),
+            new DiscordSelectComponentOption("Link", "Plugin Link"),
+            new DiscordSelectComponentOption("Notes", "Plugin Notes"),
+        };
+        
+        var embed = BasicEmbeds.Info(
+            $"__Editing Plugin: {plugin.Name}__\r\n>>> " +
+            $"**Display Name:** {plugin.DName}\r\n" +
+            $"**Version:** {plugin.Version}\r\n" +
+            $"**EA Version:** {plugin.EAVersion}\r\n" +
+            $"**ID:** {plugin.ID}\r\n" +
+            $"**Link:** {plugin.Link}\r\n" +
+            $"**Notes:**\r\n" +
+            $"```{plugin.Description}```\r\n" +
+            $"**State:** {plugin.State}", true);
+        embed.Footer = new DiscordEmbedBuilder.EmbedFooter
+        {
+            Text = $"Current Editor: {ctx.Interaction.User.Username}",
+            IconUrl = ctx.User.AvatarUrl
+        };
+        bd.AddEmbed(embed);
+        bd.AddComponents(
+            new DiscordSelectComponent(
+                customId: ComponentInteraction.SelectPluginValueToEdit,
+                placeholder: "Edit Value",
+                options: pluginValues
+            ));
+        bd.AddComponents(
+            new DiscordButtonComponent(
+                ButtonStyle.Success,
+                ComponentInteraction.SelectPluginValueToFinish,
+                "Done Editing",
+                false,
+                new DiscordComponentEmoji(DiscordEmoji.FromName(Program.Client, ":yes:"))));
+        
+        try
+        {
+            var oldEditor = Program.Cache.GetUserAction(ctx.Interaction.User.Id, ComponentInteraction.SelectPluginValueToEdit);
+            if (oldEditor != null)
+                await oldEditor.Msg.DeleteAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Someone manually deleted an editor message!");
         }
         
-        DiscordInteractionResponseBuilder modal = new();
-        modal.WithCustomId(ModalSubmit.EditPlugin);
-        modal.WithTitle($"Editing {plugin.Name} as {plugin.State}");
-        modal.AddComponents(new TextInputComponent(
-            label: "Display Name:", 
-            customId: "plugDName", 
-            required: true, 
-            style: TextInputStyle.Short, 
-            value: plugin.DName
-        ));
-        modal.AddComponents(new TextInputComponent(
-            label: "Version:", 
-            customId: "plugVersion", 
-            required: false,
-            style: TextInputStyle.Short, 
-            value: plugin.Version
-        ));
-        modal.AddComponents(new TextInputComponent(
-            label: "Early Access Version:", 
-            customId: "plugEAVersion", 
-            required: false,
-            style: TextInputStyle.Short, 
-            value: plugin.EAVersion
-        ));
-        modal.AddComponents(new TextInputComponent(
-            label: "ID (on lcpdfr.com):", 
-            customId: "plugID", 
-            required: false, 
-            style: TextInputStyle.Short, 
-            value: plugin.ID
-        ));
-        modal.AddComponents(new TextInputComponent(
-            label: "Link:", 
-            customId: "plugLink", 
-            required: false, 
-            style: TextInputStyle.Short, 
-            value: plugin.Link
-        ));
-		Program.Cache.SaveUserAction(ctx.Interaction.User.Id, modal.CustomId, new UserActionCache(ctx.Interaction, plugin));
-        await ctx.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
+        await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, bd);
+        var msg = ctx.Interaction.GetOriginalResponseAsync().Result;
+        Program.Cache.SaveUserAction(ctx.Interaction.User.Id, ComponentInteraction.SelectPluginValueToEdit, new UserActionCache(ctx.Interaction, plugin, msg));
     }
 }

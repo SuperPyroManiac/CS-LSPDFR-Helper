@@ -19,6 +19,12 @@ public class ComponentInteraction
     public const string SelectAttachmentForAnalysis = "SelectAttachmentForAnalysis";
     public const string SelectIdForRemoval = "SelectIdForRemoval";
     
+    // Editor
+    public const string SelectPluginValueToEdit = "SelectPluginValueToEdit";
+    public const string SelectPluginValueToFinish = "SelectPluginValueToFinish";
+    public const string SelectErrorValueToEdit = "SelectErrorValueToEdit";
+    public const string SelectErrorValueToFinish = "SelectErrorValueToFinish";
+    
     // Public
     public const string SendFeedback = "SendFeedback";
     public const string RequestHelp = "RequestHelp";
@@ -57,6 +63,10 @@ public class ComponentInteraction
         [
             SelectAttachmentForAnalysis,
             SelectIdForRemoval,
+            SelectPluginValueToEdit,
+            SelectPluginValueToFinish,
+            SelectErrorValueToEdit,
+            SelectErrorValueToFinish,
             RphGetQuickInfo,
             RphGetDetailedInfo,
             RphGetAdvancedInfo,
@@ -213,15 +223,145 @@ public class ComponentInteraction
                     
                     await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, db.AddEmbed(embed));
                 }
+                
+                //===//===//===////===//===//===////===//Editor Dropdowns//===////===//===//===////===//===//===//
+                if (eventArgs.Id is SelectPluginValueToEdit or SelectPluginValueToFinish)
+                {
+                    var usercache = Program.Cache.GetUserAction(eventArgs.User.Id, SelectPluginValueToEdit);
+                    if (usercache == null)
+                    {
+                        var bd = new DiscordInteractionResponseBuilder();
+                        bd.IsEphemeral = true;
+                        bd.AddEmbed(BasicEmbeds.Error("There was a problem!\r\n>>> You are not the original editor, or the bot reset during this editor session!", true));
+                        await eventArgs.Interaction.CreateResponseAsync(
+                            InteractionResponseType.ChannelMessageWithSource, bd);
+                        return;
+                    }
+
+                    if (eventArgs.Id == SelectPluginValueToFinish)
+                    {
+                        await FindPluginMessages.SendDbOperationConfirmation(usercache.Plugin, DbOperation.UPDATE, eventArgs.Interaction.ChannelId, eventArgs.Interaction.User.Id, Database.GetPlugin(usercache.Plugin.Name));
+                        Database.EditPlugin(usercache.Plugin);
+                        Program.Cache.RemoveUserAction(eventArgs.User.Id, SelectPluginValueToEdit);
+                        await eventArgs.Message.DeleteAsync();
+                        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType
+                            .DeferredMessageUpdate);
+                        return;
+                    }
+                    
+                    var value = string.Empty;
+                    var selected = eventArgs.Values.FirstOrDefault();
+                    switch (selected)
+                    {
+                        case "Plugin DName":
+                            value = usercache.Plugin.DName;
+                            break;
+                        case "Plugin Version":
+                            value = usercache.Plugin.Version;
+                            break;
+                        case "Plugin EAVersion":
+                            value = usercache.Plugin.EAVersion;
+                            break;
+                        case "Plugin ID":
+                            value = usercache.Plugin.ID;
+                            break;
+                        case "Plugin Link":
+                            value = usercache.Plugin.Link;
+                            break;
+                        case "Plugin Notes":
+                            value = usercache.Plugin.Description;
+                            break;
+                    }
+                    
+                    DiscordInteractionResponseBuilder modal = new();
+                    modal.WithCustomId(SelectPluginValueToEdit);
+                    modal.WithTitle($"Editing {selected}");
+                    if (selected == "Plugin Notes")
+                    {
+                        modal.AddComponents(
+                            new TextInputComponent(
+                                label: selected!, 
+                                customId: selected!, 
+                                required: true, 
+                                value: value,
+                                style: TextInputStyle.Paragraph));
+                    }else
+                    {
+                        modal.AddComponents(
+                            new TextInputComponent(
+                                label: selected!, 
+                                customId: selected!, 
+                                required: true, 
+                                value: value,
+                                style: TextInputStyle.Short));
+                    }
+
+                    await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
+                }
+                                
+                if (eventArgs.Id is SelectErrorValueToEdit or SelectErrorValueToFinish)
+                {
+                    var usercache = Program.Cache.GetUserAction(eventArgs.User.Id, SelectErrorValueToEdit);
+                    if (usercache == null)
+                    {
+                        var bd = new DiscordInteractionResponseBuilder();
+                        bd.IsEphemeral = true;
+                        bd.AddEmbed(BasicEmbeds.Error("There was a problem!\r\n>>> You are not the original editor, or the bot reset during this editor session!", true));
+                        await eventArgs.Interaction.CreateResponseAsync(
+                            InteractionResponseType.ChannelMessageWithSource, bd);
+                        return;
+                    }
+
+                    if (eventArgs.Id == SelectErrorValueToFinish)
+                    {
+                        await FindErrorMessages.SendDbOperationConfirmation(usercache.Error, DbOperation.UPDATE, eventArgs.Interaction.ChannelId, eventArgs.Interaction.User.Id, Database.GetError(usercache.Error.ID));
+                        Database.EditError(usercache.Error);
+                        Program.Cache.RemoveUserAction(eventArgs.User.Id, SelectErrorValueToEdit);
+                        await eventArgs.Message.DeleteAsync();
+                        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType
+                            .DeferredMessageUpdate);
+                        return;
+                    }
+                    
+                    var value = string.Empty;
+                    var selected = eventArgs.Values.FirstOrDefault();
+                    switch (selected)
+                    {
+                        case "Error Regex":
+                            value = usercache.Error.Regex;
+                            break;
+                        case "Error Solution":
+                            value = usercache.Error.Solution;
+                            break;
+                        case "Error Description":
+                            value = usercache.Error.Description;
+                            break;
+                    }
+                    
+                    DiscordInteractionResponseBuilder modal = new();
+                    modal.WithCustomId(SelectErrorValueToEdit);
+                    modal.WithTitle($"Editing {selected}");
+                    modal.AddComponents(
+                        new TextInputComponent(
+                            label: selected!, 
+                            customId: selected!, 
+                            required: true, 
+                            value: value,
+                            style: TextInputStyle.Paragraph
+                        )
+                    );
+
+                    await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
+                }
                     
                 //===//===//===////===//===//===////===//RPH Buttons//===////===//===//===////===//===//===//
                 if (eventArgs.Id is RphGetQuickInfo) 
                     await cache.RphProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
                 
-                if (eventArgs.Id == RphGetDetailedInfo) 
+                if (eventArgs.Id is RphGetDetailedInfo) 
                     await cache.RphProcess.SendDetailedInfoMessage(eventArgs);
                 
-                if (eventArgs.Id == RphGetAdvancedInfo) 
+                if (eventArgs.Id is RphGetAdvancedInfo) 
                     await cache.RphProcess.SendAdvancedInfoMessage(eventArgs);
                 
                 if (eventArgs.Id is RphQuickSendToUser or RphDetailedSendToUser) 

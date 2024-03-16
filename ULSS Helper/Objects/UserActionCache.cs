@@ -11,22 +11,26 @@ internal class UserActionCache : Cache
     internal Plugin Plugin { get; }
     internal Error Error { get; }
     internal DiscordUser User { get; }
+    internal DiscordMessage Msg { get; }
 
-    internal UserActionCache(DiscordInteraction interaction, Plugin plugin)
+    internal UserActionCache(DiscordInteraction interaction, Plugin plugin, DiscordMessage msg = null)
     {
         Interaction = interaction;
         Plugin = plugin;
+        Msg = msg;
     }
 
-    internal UserActionCache(DiscordInteraction interaction, Error error)
+    internal UserActionCache(DiscordInteraction interaction, Error error, DiscordMessage msg = null)
     {
         Interaction = interaction;
         Error = error;
+        Msg = msg;
     }
     
-    internal UserActionCache(DiscordInteraction interaction, DiscordUser user)
+    internal UserActionCache(DiscordInteraction interaction, DiscordUser user, DiscordMessage msg = null)
     {
         Interaction = interaction;
         User = user;
+        Msg = msg;
     }
 }

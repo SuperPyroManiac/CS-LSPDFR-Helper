@@ -13,6 +13,7 @@ internal class FindBaseMessages
         var output = new StringBuilder();
         foreach (var prop in properties)
         {
+            if (prop.OldValue == null) continue;
             if (prop.OldValue.Equals(prop.NewValue))
             {
                 output.Append(prop.DefaultOutput);
