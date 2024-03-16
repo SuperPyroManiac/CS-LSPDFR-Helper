@@ -20,18 +20,18 @@ public class ImageProcess
             var imageText = await oskaruApiService.GetImageText(attachment.Url, ctx.Message.Content);
             var imageTextSanitized = imageText.Replace("\n", " ").Replace("\r", " ").Trim();
             
-            var logEmbedContent = new StringBuilder("**__Uploaded image was processed__**\r\n\r\n");
-            logEmbedContent.Append($"Sender: <@{ctx.Message.Author.Id}>\r\n");
-            logEmbedContent.Append($"Message: {ctx.Message.JumpLink}\r\n");
-            logEmbedContent.Append($"Image: [{attachment.FileName}]({attachment.Url}) ({attachment.FileSize / 1000}KB)\r\n");
+            var logEmbedContent = new StringBuilder("**__Uploaded image was processed__**\r\n\r\n>>> ");
+            logEmbedContent.Append($"**Sender:** <@{ctx.Message.Author.Id}>\r\n");
+            logEmbedContent.Append($"**Message:** {ctx.Message.JumpLink}\r\n");
+            logEmbedContent.Append($"**Image:** [{attachment.FileName}]({attachment.Url}) ({attachment.FileSize / 1000}KB)\r\n");
             if (string.IsNullOrEmpty(imageText))
             {
-                logEmbedContent.Append($"No text recognized in uploaded image\r\n");
+                logEmbedContent.Append($"*No text recognized in uploaded image*\r\n");
                 var logNoTextEmbed = BasicEmbeds.Info(logEmbedContent.ToString());
                 Logging.SendPubLog(logNoTextEmbed);
                 return;
             }
-            logEmbedContent.Append($"Recognized text: ```{imageText}```\r\n");
+            logEmbedContent.Append($"**Recognized text:** ```{imageText}```\r\n");
             
             var pimgErrors = Database.LoadErrors().Where(error => error.Level == "PIMG").ToList();
             var allScores = pimgErrors
@@ -76,7 +76,7 @@ public class ImageProcess
                 logEmbedContent.Append($"Matched with error IDs: None");
             }
             
-            var logEmbed = BasicEmbeds.Info(logEmbedContent.ToString());
+            var logEmbed = BasicEmbeds.Info(logEmbedContent.ToString(), true);
             Logging.SendPubLog(logEmbed);
         }
         catch (Exception e)
