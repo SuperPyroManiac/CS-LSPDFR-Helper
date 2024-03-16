@@ -42,7 +42,7 @@ public class MessageSent
                     }
                     
                     if (ctx.Message.Attachments.Count == 0) return;
-                    foreach (var attach in ctx.Message.Attachments)//TODO: Blacklist over 6MB file size on match
+                    foreach (var attach in ctx.Message.Attachments)
                     {
                         switch (attach.FileName)
                         {
@@ -61,7 +61,7 @@ public class MessageSent
                             default: 
                                 if (attach.FileName.EndsWith(".png") || attach.FileName.EndsWith(".jpg"))
                                      ImageProcess.ProcessImage(attach, ctx).GetAwaiter();
-                                if (attach.FileName.EndsWith(".log"))
+                                if (attach.FileName.EndsWith(".log") || attach.FileName.EndsWith(".txt"))
                                     ctx.Message.RespondAsync(BasicEmbeds.Public(
                                         "## __ULSS AutoHelper__\r\nThis file is not supported or is not named correctly!"));
                                 break;

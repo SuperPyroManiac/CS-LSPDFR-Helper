@@ -78,7 +78,5 @@ internal class FindErrorMessages : FindBaseMessages
             await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, bd.AddEmbed(embed));
             Logging.SendLog(e.Interaction.Channel.Id, e.Interaction.User.Id, embed);
         }
-        else 
-            throw new NotImplementedException("This SendDbOperationConfirmation branch is not implemented yet.");
     }
 }
