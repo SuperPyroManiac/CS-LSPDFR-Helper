@@ -1,8 +1,6 @@
 using System.Text;
-using System.Text.RegularExpressions;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using Tesseract;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 using ULSS_Helper.Services;
@@ -86,27 +84,6 @@ public class ImageProcess
             Logging.ErrLog(e.ToString());
             Console.WriteLine(e);
             throw;
-        }
-    }
-    
-    // requires Tesseract to be installed on the local machine
-    private static async Task<string> getTextFromImageLocally(DiscordAttachment attachment)
-    {
-        var engine = new TesseractEngine(Path.Combine(Directory.GetCurrentDirectory(), "tessdata"), "eng");
-        using (HttpClient client = new HttpClient())
-        { 
-            using (HttpResponseMessage response = await client.GetAsync(attachment.Url))
-            {
-                if (response.IsSuccessStatusCode)
-                {
-                    var imageData = await response.Content.ReadAsByteArrayAsync();
-                    var image = Pix.LoadFromMemory(imageData);
-                    var processedImage = engine.Process(image);
-
-                    return processedImage.GetText().Trim();
-                }
-                throw new Exception("Error downloading image: " + response.StatusCode);
-            }
         }
     }
 }
