@@ -18,6 +18,8 @@ namespace ULSS_Helper.Objects;
 /// <param name="PublicBotLogChannelId">The channel ID of the channel on the server where the bot should log all actions related to public users using the bot commands (checkLog) on their own.</param>
 /// <param name="PublicBotReportsChannelId">The channel ID of the channel on the server where the bot should log reports related to public users using the bot commands (checkLog) on their own.</param>
 /// <param name="StaffContactChannelId">The channel ID of the "staff contact" channel on the server.</param>
+/// <param name="OskaruApiBaseUrl">The base url for the oskaru.net API (mainly used for text recognition in images uploaded to Discord).</param>
+/// <param name="OskaruApiKey">The API access key for connecting to the oskaru.net API.</param>
 public record EnvironmentConfig(
     string BotToken, 
     string DbServer, 
@@ -33,6 +35,8 @@ public record EnvironmentConfig(
     ulong TsBotLogChannelId, 
     ulong PublicBotLogChannelId, 
     ulong PublicBotReportsChannelId, 
-    ulong StaffContactChannelId
+    ulong StaffContactChannelId,
+    string OskaruApiBaseUrl,
+    string OskaruApiKey
 )
 {};

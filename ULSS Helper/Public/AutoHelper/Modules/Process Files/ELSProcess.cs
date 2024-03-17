@@ -58,7 +58,7 @@ public class ELSProcess
         }
         catch (Exception e)
         {
-            Logging.ErrLog(e.ToString());//TODO: Blacklist
+            Logging.ErrLog(e.ToString());
             Console.WriteLine(e);
             throw;
         }

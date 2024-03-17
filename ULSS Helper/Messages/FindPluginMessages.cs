@@ -82,7 +82,5 @@ internal class FindPluginMessages : FindBaseMessages
             bd.IsEphemeral = true;
             Logging.SendLog(channel, sender, embed);
         }
-        else 
-            throw new NotImplementedException("This SendDbOperationConfirmation branch is not implemented yet.");
     }
 } 
