@@ -48,7 +48,7 @@ public class ImageProcess
                 .ToList();
             
             var scoreOverThreshold = allMatches
-                .Where(match => match.Score > 66) // Adjust the threshold as needed. Higher number => exact match. 
+                .Where(match => match.Score > 50) // Adjust the threshold as needed. Higher number => exact match. 
                 .ToList();
             
             Error closestMatch = scoreOverThreshold 
