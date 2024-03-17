@@ -49,7 +49,6 @@ public class OskaruApiService
 
         try
         {
-            Console.WriteLine("o4.5");
             // Send the POST request
             HttpResponseMessage response = await this._httpClient.PostAsync("v1/gta-helper/analyse-image/link", content);
             Console.WriteLine("o5");
