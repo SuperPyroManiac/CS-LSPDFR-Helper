@@ -6,6 +6,7 @@ namespace ULSS_Helper.Services;
 
 record AnalyseImageLinkRequest
 {
+    Console.WriteLine("1hukilhku");
     public String downloadLink { get; set; }
     public String caption { get; set; }
 }
@@ -35,7 +36,6 @@ public class OskaruApiService
             downloadLink = imageUrl,
             caption = caption
         };
-        Console.WriteLine("o2");
         var serializeOptions = new JsonSerializerOptions
         {
             WriteIndented = true,
