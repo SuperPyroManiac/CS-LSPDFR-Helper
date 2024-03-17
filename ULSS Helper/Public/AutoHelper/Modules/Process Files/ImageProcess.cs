@@ -13,6 +13,7 @@ public class ImageProcess
     {
         try
         {
+            Console.WriteLine("1");
             DiscordMessageBuilder messageBuilder = new();
             var publicEmbed = BasicEmbeds.Public("## __ULSS AutoHelper__");
 
@@ -26,6 +27,7 @@ public class ImageProcess
             logEmbedContent.Append($"**Image:** [{attachment.FileName}]({attachment.Url}) ({attachment.FileSize / 1000}KB)\r\n");
             if (string.IsNullOrEmpty(imageText))
             {
+                Console.WriteLine("2");
                 logEmbedContent.Append($"*No text recognized in uploaded image*\r\n");
                 var logNoTextEmbed = BasicEmbeds.Info(logEmbedContent.ToString());
                 Logging.SendPubLog(logNoTextEmbed);
@@ -41,7 +43,7 @@ public class ImageProcess
                         Score = Fuzz.PartialRatio(imageTextSanitized, error.Regex)
                     }
                 ).ToList();
-            
+            Console.WriteLine("3");
             var allMatches = allScores
                 .Where(match => match.Score > 0)
                 .OrderByDescending(match => match.Score)
@@ -57,6 +59,7 @@ public class ImageProcess
 
             if (closestMatch != null)
             {
+                Console.WriteLine("4");
                 publicEmbed.AddField(
                     "\r\nCommon issue detected in uploaded image:", 
                     $"> {closestMatch.Regex.Replace("\n", "\n> ")}"
@@ -68,8 +71,10 @@ public class ImageProcess
             {
                 var matchedErrorIds = scoreOverThreshold.Select(match => $"{match.Error.ID} ({match.Score}%)").ToList();
                 logEmbedContent.Append($"Matched with error IDs: {string.Join(", ", matchedErrorIds)}");
+                Console.WriteLine("5");
                 messageBuilder.AddEmbed(publicEmbed);
                 await ctx.Message.RespondAsync(messageBuilder);
+                Console.WriteLine("6");
             }
             else
             {
