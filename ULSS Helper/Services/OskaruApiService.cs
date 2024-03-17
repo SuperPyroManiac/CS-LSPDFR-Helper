@@ -41,19 +41,24 @@ public class OskaruApiService
             WriteIndented = true,
             Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         };
+        Console.WriteLine("o3");
         string jsonContent = JsonSerializer.Serialize(requestBody, serializeOptions);
         var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
         content.Headers.ContentLength = jsonContent.Length;
+        Console.WriteLine("o4");
 
         try
         {
             // Send the POST request
             HttpResponseMessage response = await this._httpClient.PostAsync("v1/gta-helper/analyse-image/link", content);
+            Console.WriteLine("o5");
 
             if (response.IsSuccessStatusCode)
             {
+                Console.WriteLine("o6");
                 string responseBody = await response.Content.ReadAsStringAsync();
                 AnalyseImageLinkResponse responseObj = JsonSerializer.Deserialize<AnalyseImageLinkResponse>(responseBody);
+                Console.WriteLine("o7");
                 return responseObj.ocrResult;
             }
             else
