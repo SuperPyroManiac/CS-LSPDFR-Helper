@@ -119,7 +119,6 @@ public class RPHProcess
         {
             await Logging.ErrLog(e.ToString());
             Console.WriteLine(e);
-            throw;
         }
     }
 }

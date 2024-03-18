@@ -35,7 +35,7 @@ internal class Cache
     /// <summary>Saves the error list to the cache replacing any old ones.</summary>
     internal void UpdateErrors(List<Error> errors)
     {
-        _pluginCacheDict.Clear();
+        _errorCacheDict.Clear();
         foreach (var error in errors) _errorCacheDict.Add(error.ID, error);
     }
     
