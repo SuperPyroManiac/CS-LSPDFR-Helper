@@ -9,7 +9,7 @@ internal class MessageSent
 {
     internal static async Task MessageSentEvent(DiscordClient s, MessageCreateEventArgs ctx)
     {
-        var dbUsers = Database.LoadUsers();
+        var dbUsers = Program.Cache.GetUsers();
         //Bully
         if (dbUsers.Any(x => x.UID == ctx.Author.Id.ToString() && x.Bully == 1))
         {

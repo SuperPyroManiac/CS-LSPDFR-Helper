@@ -11,7 +11,7 @@ public class RPHAnalyzer
     internal static async Task<RPHLog> Run(string attachmentUrl)
     {
         var pluginData = Program.Cache.GetPlugins();
-        var errorData = Database.LoadErrors();
+        var errorData = Program.Cache.GetErrors();
         var log = new RPHLog();
         var wholeLog = await new HttpClient().GetStringAsync(attachmentUrl);
         var reader = wholeLog.Split("\r\n").Distinct().ToArray();

@@ -7,7 +7,7 @@ public class RPHSpecialErrors
 {
     internal static RPHLog ProcessSpecialErrors(RPHLog log, string wholeLog)
     {
-        var errorData = Database.LoadErrors();
+        var errorData = Program.Cache.GetErrors();
         var pluginData = Program.Cache.GetPlugins();
         
         //===//===//===////===//===//===////===//Multi Session Detection//===////===//===//===////===//===//===//

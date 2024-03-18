@@ -35,7 +35,7 @@ public class ImageProcess
             }
             logEmbedContent.Append($"**Recognized text:** ```{imageText}```\r\n");
             
-            var pimgErrors = Database.LoadErrors().Where(error => error.Level == "PIMG").ToList();
+            var pimgErrors = Program.Cache.GetErrors().Where(error => error.Level == "PIMG").ToList();
             var allScores = pimgErrors
                 .Select(error => new
                     {

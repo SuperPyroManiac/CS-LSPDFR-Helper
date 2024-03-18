@@ -54,9 +54,9 @@ public class RequireAdvancedTsRoleAttribute : SlashCheckBaseAttribute
     public override async Task<bool> ExecuteChecksAsync(InteractionContext ctx)
     {
         var hasTsRole = ctx.Member.Roles.Any(role => role.Id == Program.Settings.Env.TsRoleId);
-        var IsWhitelistedForCommands = false;
+        var isWhitelistedForCommands = false;
 
-        var ts = Database.LoadUsers().FirstOrDefault(ts => ts.UID.ToString() == ctx.Member.Id.ToString());
+        var ts = Program.Cache.GetUsers().FirstOrDefault(ts => ts.UID.ToString() == ctx.Member.Id.ToString());
         if (ts != null && ts.BotEditor == 0)
             await Logging.SendLog(
                 ctx.Interaction.Channel.Id, 
@@ -64,9 +64,9 @@ public class RequireAdvancedTsRoleAttribute : SlashCheckBaseAttribute
                 BasicEmbeds.Warning($"**TS attempted to use an advanced command without permission!**\r\nCommand name: {ctx.CommandName}")
             );
         else 
-            IsWhitelistedForCommands = ts == null ? false : true;
+            isWhitelistedForCommands = ts == null ? false : true;
         
-        if (hasTsRole && IsWhitelistedForCommands)
+        if (hasTsRole && isWhitelistedForCommands)
             return true;
         await PermissionMessages.SendNoPermissionError(ctx);
         return false;
@@ -80,7 +80,7 @@ public class RequireBotAdminAttribute : SlashCheckBaseAttribute
 {
     public override async Task<bool> ExecuteChecksAsync(InteractionContext ctx)
     {
-        if (Database.LoadUsers().Any(x => x.UID == ctx.Member.Id.ToString() && x.BotAdmin == 1))
+        if (Program.Cache.GetUsers().Any(x => x.UID == ctx.Member.Id.ToString() && x.BotAdmin == 1))
             return true;
         await PermissionMessages.SendNoPermissionError(ctx);
         return false;
@@ -94,7 +94,7 @@ public class RequireNotOnBotBlacklist : SlashCheckBaseAttribute
 {
     public override async Task<bool> ExecuteChecksAsync(InteractionContext ctx)
     {
-        if (Database.LoadUsers().Any(x => x.UID == ctx.User.Id.ToString() && x.Blocked == 1))
+        if (Program.Cache.GetUsers().Any(x => x.UID == ctx.User.Id.ToString() && x.Blocked == 1))
         {
             var responseBuilder = new DiscordInteractionResponseBuilder { IsEphemeral = true };
             responseBuilder.AddEmbed(BasicEmbeds.Error(

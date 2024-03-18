@@ -437,7 +437,7 @@ public class ComponentInteraction
             {
                 var msg = new DiscordInteractionResponseBuilder();
                 msg.IsEphemeral = true;
-                var ac = Database.LoadCases().First(x => x.ChannelID.Equals(eventArgs.Channel.Id.ToString()));
+                var ac = Program.Cache.GetCasess().First(x => x.ChannelID.Equals(eventArgs.Channel.Id.ToString()));
                 var tmpuser = await eventArgs.Guild.GetMemberAsync(eventArgs.User.Id);
 
                 if (eventArgs.User.Id.ToString().Equals(ac.OwnerID) || tmpuser.Roles.Any(role => role.Id == Program.Settings.Env.TsRoleId))
@@ -454,7 +454,7 @@ public class ComponentInteraction
             //===//===//===////===//===//===////===//Join Case Button//===////===//===//===////===//===//===//
             if (eventArgs.Id == JoinCase)
             {
-                var ac = Database.LoadCases().First(x => x.CaseID.Equals(
+                var ac = Program.Cache.GetCasess().First(x => x.CaseID.Equals(
                     eventArgs.Message.Embeds.First().Description.Split("Case: ")[1].Split("_").First()));
                 await Public.AutoHelper.Modules.Case_Functions.JoinCase.Join(ac, eventArgs.User.Id.ToString());
             }
@@ -470,7 +470,7 @@ public class ComponentInteraction
                     return;
                 }
         
-                var findCase = Database.LoadCases().FirstOrDefault(autocase => autocase.OwnerID.Equals(eventArgs.User.Id.ToString()) && autocase.Solved == 0);
+                var findCase = Program.Cache.GetCasess().FirstOrDefault(autocase => autocase.OwnerID.Equals(eventArgs.User.Id.ToString()) && autocase.Solved == 0);
                 if (findCase != null)
                 {
                     await eventArgs.Interaction.EditOriginalResponseAsync(msg.AddEmbed(BasicEmbeds.Error($"You already have an open case!\r\nCheck <#{findCase.ChannelID}>")));

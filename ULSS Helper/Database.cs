@@ -173,21 +173,18 @@ internal class Database
         }
     }
 
-    internal static long AddPlugin(Plugin plugin)
+    internal static async void AddPlugin(Plugin plugin)
     {
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
-            cnn.Open();
             cnn.Execute("insert into Plugin (Name, DName, Version, EAVersion, ID, State, Description, Link) VALUES (@Name, @DName, @Version, @EAVersion, @ID, @State, @Description, @Link)", plugin);
-            var id = cnn.ExecuteScalar("SELECT LAST_INSERT_ID();")!;
-            cnn.Close();
-            return long.Parse(id.ToString()!);
+            await Task.Run(() => Program.Cache.UpdatePlugins(Database.LoadPlugins()));
         }
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+            await Messages.Logging.ErrLog($"SQL Issue: {e}");
             throw;
         }
     }
@@ -201,6 +198,7 @@ internal class Database
             cnn.Execute("insert into Error (Regex, Solution, Description, Level) VALUES (@Regex, @Solution, @Description, @Level)", error);
             var id = cnn.ExecuteScalar("SELECT LAST_INSERT_ID();")!;
             cnn.Close();
+            Task.Run(() => Program.Cache.UpdateErrors(Database.LoadErrors())).GetAwaiter();
             return long.Parse(id.ToString()!);
         }
         catch (MySqlException e)
@@ -211,62 +209,66 @@ internal class Database
         }
     }
     
-    internal static void EditPlugin(Plugin plugin)
+    internal static async void EditPlugin(Plugin plugin)
     {
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             cnn.Execute("UPDATE Plugin SET Name = @Name, DName = @DName, Version = @Version, EAVersion = @EAVersion, ID = @ID, State = @State, Description = @Description, Link = @Link WHERE Name = (@Name)", plugin);
+            await Task.Run(() => Program.Cache.UpdatePlugins(Database.LoadPlugins()));
         }
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+            await Messages.Logging.ErrLog($"SQL Issue: {e}");
             throw;
         }
     }
     
-    internal static void EditError(Error error)
+    internal static async void EditError(Error error)
     {
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             cnn.Execute("UPDATE Error SET Regex = @Regex, Solution = @Solution, Description = @Description, Level = @Level WHERE ID = (@ID)", error);
+            await Task.Run(() => Program.Cache.UpdateErrors(Database.LoadErrors()));
         }
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+            await Messages.Logging.ErrLog($"SQL Issue: {e}");
             throw;
         }
     }
 
-    internal static void DeletePlugin(Plugin plugin)
+    internal static async void DeletePlugin(Plugin plugin)
     {
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             cnn.Execute("delete from Plugin where Name = (@Name)", plugin);
+            await Task.Run(() => Program.Cache.UpdatePlugins(Database.LoadPlugins()));
         }
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+            await Messages.Logging.ErrLog($"SQL Issue: {e}");
             throw;
         }
     }
     
-    internal static void DeleteError(Error error)
+    internal static async void DeleteError(Error error)
     {
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             cnn.Execute("delete from Error where ID = (@ID)", error);
+            await Task.Run(() => Program.Cache.UpdateErrors(Database.LoadErrors()));
         }
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+            await Messages.Logging.ErrLog($"SQL Issue: {e}");
             throw;
         }
     }
@@ -288,36 +290,34 @@ internal class Database
     }
     
     
-    internal static long AddUser(DiscordUser user)
+    internal static async void AddUser(DiscordUser user)
     {
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
-            cnn.Open();
             cnn.Execute("insert into Users (UID, Username, BotEditor, BotAdmin, Bully, Blocked) VALUES (@UID, @Username, @BotEditor, @BotAdmin, @Bully, @Blocked)", user);
-            var id = cnn.ExecuteScalar("SELECT LAST_INSERT_ID();")!;
-            cnn.Close();
-            return long.Parse(id.ToString()!);    
+            await Task.Run(() => Program.Cache.UpdateUsers(Database.LoadUsers()));
         }
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+            await Messages.Logging.ErrLog($"SQL Issue: {e}");
             throw;
         }
     }
     
-    internal static void EditUser(DiscordUser user)
+    internal static async void EditUser(DiscordUser user)
     {
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             cnn.Execute("UPDATE Users SET UID = @UID, Username = @Username, BotEditor = @BotEditor, BotAdmin = @BotAdmin, Bully = @Bully, Blocked = @Blocked WHERE UID = @UID", user);
+            await Task.Run(() => Program.Cache.UpdateUsers(Database.LoadUsers()));
         }
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+            await Messages.Logging.ErrLog($"SQL Issue: {e}");
             throw;
         }
     }
@@ -339,43 +339,41 @@ internal class Database
     }
     
     
-    internal static long AddCase(AutoCase autocase)
+    internal static async void AddCase(AutoCase autocase)
     {
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
-            cnn.Open();
             cnn.Execute("insert into Cases (CaseID, OwnerID, ChannelID, Solved, Timer, TsRequested, RequestID) VALUES (@CaseID, @OwnerID, @ChannelID, @Solved, @Timer, @TsRequested, @RequestID)", autocase);
-            var id = cnn.ExecuteScalar("SELECT LAST_INSERT_ID();")!;
-            cnn.Close();
-            Task.Run(CaseMonitor.UpdateMonitor);
-            return long.Parse(id.ToString()!);    
+            await Task.Run(() => Program.Cache.UpdateCases(Database.LoadCases()));
+            await Task.Run(CaseMonitor.UpdateMonitor);
         }
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+            await Messages.Logging.ErrLog($"SQL Issue: {e}");
             throw;
         }
     }
     
-    internal static void EditCase(AutoCase autocase)
+    internal static async void EditCase(AutoCase autocase)
     {
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             cnn.Execute("UPDATE Cases SET CaseID = @CaseID, OwnerID = @OwnerID, ChannelID = @ChannelID, Solved = @Solved, Timer = @Timer, TsRequested = @TsRequested, RequestID = @RequestID WHERE CaseID = (@CaseID)", autocase);
-            Task.Run(CaseMonitor.UpdateMonitor);
+            await Task.Run(() => Program.Cache.UpdateCases(Database.LoadCases()));
+            await Task.Run(CaseMonitor.UpdateMonitor);
         }
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+            await Messages.Logging.ErrLog($"SQL Issue: {e}");
             throw;
         }
     }
     
-    internal static void UpdatePluginVersions()
+    internal static async void UpdatePluginVersions()
     {
         #pragma warning disable SYSLIB0014
 	    var webClient = new WebClient();
@@ -425,9 +423,9 @@ internal class Database
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+                await Messages.Logging.ErrLog($"SQL Issue: {e}");
             }
         }
-        Task.Run(() => Program.Cache.UpdatePlugins(LoadPlugins()));
+        await Task.Run(() => Program.Cache.UpdatePlugins(LoadPlugins()));
     }
 }

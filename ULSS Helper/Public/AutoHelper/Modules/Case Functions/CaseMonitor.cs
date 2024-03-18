@@ -34,7 +34,7 @@ internal class CaseMonitor
         }
         if (origMsg == null) origMsg = await ch.SendMessageAsync("Starting...");
 
-        var allCases = Database.LoadCases().Where(ac => ac.Solved == 0).ToList().OrderBy(ac => ac.Timer);
+        var allCases = Program.Cache.GetCasess().Where(ac => ac.Solved == 0).ToList().OrderBy(ac => ac.Timer);
         foreach (var ac in allCases.TakeWhile(ac => embed.Fields.Count < 16))
         {
             if (embed.Fields.Count == 15)

@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices.JavaScript;
 using ULSS_Helper.Modules;
 using ULSS_Helper.Objects;
 
@@ -8,6 +9,9 @@ internal class Cache
     private Dictionary<ulong, ProcessCache> _processCacheDict = new();
     private Dictionary<string, UserActionCache> _userActionCacheDict = new();
     private Dictionary<string, Plugin> _pluginCacheDict = new();
+    private Dictionary<string, Error> _errorCacheDict = new();
+    private Dictionary<string, AutoCase> _caseCacheDict = new();
+    private Dictionary<string, DiscordUser> _userCacheDict = new();
 
     /// <summary>Saves the plugin list to the cache replacing any old ones.</summary>
     internal void UpdatePlugins(List<Plugin> plugins)
@@ -26,6 +30,63 @@ internal class Cache
     internal Plugin GetPlugin(string pluginName)
     {
         return _pluginCacheDict.GetValueOrDefault(pluginName);
+    }
+    
+    /// <summary>Saves the error list to the cache replacing any old ones.</summary>
+    internal void UpdateErrors(List<Error> errors)
+    {
+        _pluginCacheDict.Clear();
+        foreach (var error in errors) _errorCacheDict.Add(error.ID, error);
+    }
+    
+    /// <summary>Returns a list of all cached errors.</summary>
+    internal List<Error> GetErrors()
+    {
+        return _errorCacheDict.Values.ToList();
+    }
+    
+    /// <summary>Returns a single error based off the name.</summary>
+    internal Error GetError(string errorId)
+    {
+        return _errorCacheDict.GetValueOrDefault(errorId);
+    }
+    
+    /// <summary>Saves the case list to the cache replacing any old ones.</summary>
+    internal void UpdateCases(List<AutoCase> cases)
+    {
+        _caseCacheDict.Clear();
+        foreach (var acase in cases) _caseCacheDict.Add(acase.CaseID, acase);
+    }
+    
+    /// <summary>Returns a list of all cached cases.</summary>
+    internal List<AutoCase> GetCasess()
+    {
+        return _caseCacheDict.Values.ToList();
+    }
+    
+    /// <summary>Returns a single case based off the caseid.</summary>
+    internal AutoCase GetCase(string caseId)
+    {
+        return _caseCacheDict.GetValueOrDefault(caseId);
+    }
+    
+    /// <summary>Saves the user list to the cache replacing any old ones.</summary>
+    internal void UpdateUsers(List<DiscordUser> users)
+    {
+        _userCacheDict.Clear();
+        foreach (var user in users) _userCacheDict.Add(user.UID, user);
+    }
+    
+    /// <summary>Returns a list of all cached users.</summary>
+    internal List<DiscordUser> GetUsers()
+    {
+        return _userCacheDict.Values.ToList();
+    }
+    
+    /// <summary>Returns a single user based off the uid.</summary>
+    internal DiscordUser GetUser(string userId)
+    {
+        return _userCacheDict.GetValueOrDefault(userId);
     }
     
     /// <summary>Saves the current state of a log analysis process.</summary>

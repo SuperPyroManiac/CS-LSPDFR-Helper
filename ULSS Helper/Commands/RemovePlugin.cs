@@ -20,7 +20,6 @@ public class RemovePlugin : ApplicationCommandModule
         {
             if (plugin.Name == pluginName)
             {
-                await Task.Run(() => Program.Cache.UpdatePlugins(Database.LoadPlugins()));
                 isValid = true;
                 await ctx.CreateResponseAsync(bd.AddEmbed(
                     BasicEmbeds.Success($"**Removed plugin: {pluginName}**")));
