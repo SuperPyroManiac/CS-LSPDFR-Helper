@@ -190,7 +190,7 @@ public class ModalSubmit
             {
                 var msg = new DiscordInteractionResponseBuilder();
                 msg.IsEphemeral = true;
-                var ac = Database.LoadCases().First(x => x.ChannelID.Equals(e.Interaction.Channel.Id.ToString()));
+                var ac = Program.Cache.GetCasess().First(x => x.ChannelID.Equals(e.Interaction.Channel.Id.ToString()));
                 var tmpusr = await e.Interaction.Guild.GetMemberAsync(e.Interaction.User.Id);
 
                 if (e.Interaction.User.Id.ToString().Equals(ac.OwnerID) || tmpusr.Roles.Any(role => role.Id == Program.Settings.Env.TsRoleId))

@@ -34,10 +34,13 @@ internal class Timer
         }
     }
 
-    private static void OnShortTimedEvent(object source, ElapsedEventArgs e)
+    private static async void OnShortTimedEvent(object source, ElapsedEventArgs e)
     {
         //Clean & Update Caches
-        Task.Run(() => Program.Cache.RemoveExpiredCacheEntries(TimeSpan.FromMinutes(10)));
-        Task.Run(() => Program.Cache.UpdatePlugins(Database.LoadPlugins()));
+        await Task.Run(() => Program.Cache.RemoveExpiredCacheEntries(TimeSpan.FromMinutes(10)));
+        await Task.Run(() => Program.Cache.UpdatePlugins(Database.LoadPlugins()));
+        await Task.Run(() => Program.Cache.UpdateErrors(Database.LoadErrors()));
+        await Task.Run(() => Program.Cache.UpdateCases(Database.LoadCases()));
+        await Task.Run(() => Program.Cache.UpdateUsers(Database.LoadUsers()));
     }
 }

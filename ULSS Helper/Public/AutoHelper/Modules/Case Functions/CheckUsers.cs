@@ -4,7 +4,7 @@ internal class CheckUsers
 {
     internal static async Task Validate()
     {
-        var cases = Database.LoadCases().Where(x => x.Solved == 0).ToList();
+        var cases = Program.Cache.GetCasess().Where(x => x.Solved == 0).ToList();
         var server = await Program.Client.GetGuildAsync(Program.Settings.Env.ServerId);
         var users = server.Members;
 
@@ -14,7 +14,7 @@ internal class CheckUsers
     
     internal static async Task CloseCases(string uid)
     {
-        var cases = Database.LoadCases().Where(x => x.Solved == 0).ToList();
+        var cases = Program.Cache.GetCasess().Where(x => x.Solved == 0).ToList();
         
         foreach (var ac in cases.Where(ac => ac.OwnerID == uid))
             await CloseCase.Close(ac);

@@ -15,9 +15,9 @@ public class MessageSent
         {
             if (ctx.Channel.IsPrivate) return;
             if (ctx.Message.MessageType == MessageType.ThreadCreated) await ctx.Channel.DeleteMessageAsync(ctx.Message);
-            if (Database.LoadCases().Any(x => x.ChannelID == ctx.Channel.Id.ToString()) && !ctx.Author.IsBot)
+            if (Program.Cache.GetCasess().Any(x => x.ChannelID == ctx.Channel.Id.ToString()) && !ctx.Author.IsBot)
             {
-                var ac = Database.LoadCases().First(x => x.ChannelID == ctx.Channel.Id.ToString());
+                var ac = Program.Cache.GetCasess().First(x => x.ChannelID == ctx.Channel.Id.ToString());
                 if (ac.OwnerID == ctx.Author.Id.ToString())
                 {
                     ac.Timer = ac.TsRequested switch
@@ -28,7 +28,7 @@ public class MessageSent
                     };
                     Database.EditCase(ac);
 
-                    foreach (var error in Database.LoadErrors().Where(error => error.Level == "PMSG"))
+                    foreach (var error in Program.Cache.GetErrors().Where(error => error.Level == "PMSG"))
                     {
                         var errregex = new Regex(error.Regex, RegexOptions.IgnoreCase | RegexOptions.Multiline);
                         var errmatch = errregex.Match(ctx.Message.Content);

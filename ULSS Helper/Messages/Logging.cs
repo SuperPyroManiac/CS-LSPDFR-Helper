@@ -9,9 +9,9 @@ internal class Logging
     {
         var tsBotLogCh = await Program.Client.GetChannelAsync(Program.Settings.Env.TsBotLogChannelId);
 
-        if (e.Length >= 4000)
+        if (e.Length >= 2000)
         {
-            var ee = e.Substring(0, 3800);
+            var ee = e[..1850];
             await new DiscordMessageBuilder().WithContent($"### Error Detected\r\n```{ee}...+more```\r\n**Over character limit! See log for details!").SendAsync(tsBotLogCh);
             return;
         }
