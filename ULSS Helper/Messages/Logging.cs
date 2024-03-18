@@ -11,7 +11,7 @@ internal class Logging
 
         if (e.Length >= 4000)
         {
-            var ee = e.Substring(0, 3800);
+            var ee = e[..3800];
             await new DiscordMessageBuilder().WithContent($"### Error Detected\r\n```{ee}...+more```\r\n**Over character limit! See log for details!").SendAsync(tsBotLogCh);
             return;
         }
