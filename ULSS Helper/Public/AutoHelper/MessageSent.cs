@@ -59,8 +59,8 @@ public class MessageSent
                                 SHVDNProcess.ProcessLog(attach, ctx).GetAwaiter();
                                 break;
                             default: 
-                                if (attach.FileName.EndsWith(".png") || attach.FileName.EndsWith(".jpg"))
-                                     ImageProcess.ProcessImage(attach, ctx).GetAwaiter();
+                                // if (attach.FileName.EndsWith(".png") || attach.FileName.EndsWith(".jpg"))
+                                //      ImageProcess.ProcessImage(attach, ctx).GetAwaiter();
                                 if (attach.FileName.EndsWith(".log") || attach.FileName.EndsWith(".txt"))
                                     ctx.Message.RespondAsync(BasicEmbeds.Public(
                                         "## __ULSS AutoHelper__\r\nThis file is not supported or is not named correctly!"));
