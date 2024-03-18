@@ -19,7 +19,7 @@ public class SHVDNProcess
     {
         try
         {
-            var log = SHVDNAnalyzer.Run(attach.Url).Result;
+            var log = await SHVDNAnalyzer.Run(attach.Url);
             
             DiscordMessageBuilder messageBuilder = new();
             DiscordEmbedBuilder embed = new()
@@ -68,7 +68,7 @@ public class SHVDNProcess
         }
         catch (Exception e)
         {
-            Logging.ErrLog(e.ToString());
+            await Logging.ErrLog(e.ToString());
             Console.WriteLine(e);
             throw;
         }

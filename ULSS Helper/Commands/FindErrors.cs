@@ -39,7 +39,7 @@ public class FindErrors : ApplicationCommandModule
                 level,
                 exactMatch
             );
-            Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info(searchParamsListForLog));
+            await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info(searchParamsListForLog));
 
             var errorsFound = Database.FindErrors(errId, regex, solution, description, level, exactMatch);
 

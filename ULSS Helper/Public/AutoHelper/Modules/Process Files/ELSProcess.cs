@@ -13,7 +13,7 @@ public class ELSProcess
     {
         try
         {
-            var log = ELSAnalyzer.Run(attach.Url).Result;
+            var log = await ELSAnalyzer.Run(attach.Url);
 
             DiscordMessageBuilder messageBuilder = new();
             DiscordEmbedBuilder embed = new()
@@ -58,7 +58,7 @@ public class ELSProcess
         }
         catch (Exception e)
         {
-            Logging.ErrLog(e.ToString());
+            await Logging.ErrLog(e.ToString());
             Console.WriteLine(e);
             throw;
         }

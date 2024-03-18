@@ -5,7 +5,8 @@ internal class CheckUsers
     internal static async Task Validate()
     {
         var cases = Database.LoadCases().Where(x => x.Solved == 0).ToList();
-        var users = Program.Client.GetGuildAsync(Program.Settings.Env.ServerId).Result.Members;
+        var server = await Program.Client.GetGuildAsync(Program.Settings.Env.ServerId);
+        var users = server.Members;
 
         foreach (var ac in cases.Where(ac => !users.ContainsKey(ulong.Parse(ac.OwnerID))))
             await CloseCase.Close(ac);

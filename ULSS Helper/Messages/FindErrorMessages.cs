@@ -76,7 +76,7 @@ internal class FindErrorMessages : FindBaseMessages
         {
             var bd = new DiscordInteractionResponseBuilder();
             bd.IsEphemeral = true;
-            Logging.SendLog(channel, sender, embed);
+            await Logging.SendLog(channel, sender, embed);
         }
     }
 }

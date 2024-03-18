@@ -103,7 +103,7 @@ internal class RPHProcess : SharedLogInfo
         embed = AddTsViewFields(embed, cache, log);
 
 
-        if (missmatch.Length > 0 || missing.Length > 0) SendUnknownPluginsLog(cache.OriginalMessage.Channel.Id, cache.OriginalMessage.Author.Id);
+        if (missmatch.Length > 0 || missing.Length > 0) await SendUnknownPluginsLog(cache.OriginalMessage.Channel.Id, cache.OriginalMessage.Author.Id);
         
         if (outdated.Length >= 1024 || broken.Length >= 1024)
         {
@@ -320,7 +320,7 @@ internal class RPHProcess : SharedLogInfo
         await newMessage.SendAsync(eventArgs.Channel);
     }
 
-    internal void SendUnknownPluginsLog(ulong originalMsgChannelId, ulong originalMsgUserId)
+    internal async Task SendUnknownPluginsLog(ulong originalMsgChannelId, ulong originalMsgUserId)
     {
         var embedDescription = "__Unknown plugins or plugin versions!__\r\n\r\n>>> ";
         var rphLogLink = log.DownloadLink != null && log.DownloadLink.StartsWith("http")
@@ -347,6 +347,6 @@ internal class RPHProcess : SharedLogInfo
         if (missingDashListStr.Length >= 1024 || missmatchDashListStr.Length >= 1024)
             embed.AddField("Attention!", "Too many unknown plugins to display them in this message. Please check the log manually.");
 
-        Logging.SendLog(originalMsgChannelId, originalMsgUserId, embed);
+        await Logging.SendLog(originalMsgChannelId, originalMsgUserId, embed);
     }
 }

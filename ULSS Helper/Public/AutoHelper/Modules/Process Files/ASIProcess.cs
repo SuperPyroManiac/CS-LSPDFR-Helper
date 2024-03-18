@@ -13,7 +13,7 @@ public class ASIProcess
     {
         try
         {
-            var log = ASIAnalyzer.Run(attach.Url).Result;
+            var log = await ASIAnalyzer.Run(attach.Url);
             
             DiscordMessageBuilder messageBuilder = new();
             DiscordEmbedBuilder embed = new()
@@ -53,7 +53,7 @@ public class ASIProcess
         }
         catch (Exception e)
         {
-            Logging.ErrLog(e.ToString());
+            await Logging.ErrLog(e.ToString());
             Console.WriteLine(e);
             throw;
         }

@@ -16,7 +16,7 @@ internal class Startup
     internal static async Task UpdateMsg()
     {
         var cl = Program.Client;
-        var ch = cl.GetChannelAsync(Program.Settings.Env.AutoHelperChannelId).Result;
+        var ch = await cl.GetChannelAsync(Program.Settings.Env.AutoHelperChannelId);
         List<DiscordMessage> msgPurge = [];
         DiscordMessage origMsg = null;
         var embed = BasicEmbeds.Public("# __ULSS AutoHelper__");

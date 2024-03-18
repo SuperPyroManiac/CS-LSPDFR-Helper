@@ -160,7 +160,7 @@ public class ModalSubmit
                     InteractionResponseType.ChannelMessageWithSource,
                     new DiscordInteractionResponseBuilder().AddEmbed(embed).AsEphemeral(true));
                 
-                Logging.SendLog(e.Interaction.ChannelId, e.Interaction.User.Id, embed);
+                await Logging.SendLog(e.Interaction.ChannelId, e.Interaction.User.Id, embed);
             }
             
 			// delete the cached data of the action that is completed now (which means the cache isn't needed anymore)
@@ -179,7 +179,7 @@ public class ModalSubmit
 					+ $"<@{e.Interaction.User.Id}> ({e.Interaction.User.Username}) in: <#{e.Interaction.ChannelId}>",
 					DiscordColor.SapGreen
 					);
-				Logging.SendPubLog(embed);
+				await Logging.SendPubLog(embed);
 				await e.Interaction.CreateResponseAsync(
 					InteractionResponseType.ChannelMessageWithSource,
 					new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Feedback sent!")).AsEphemeral(true)
@@ -191,9 +191,9 @@ public class ModalSubmit
                 var msg = new DiscordInteractionResponseBuilder();
                 msg.IsEphemeral = true;
                 var ac = Database.LoadCases().First(x => x.ChannelID.Equals(e.Interaction.Channel.Id.ToString()));
+                var tmpusr = await e.Interaction.Guild.GetMemberAsync(e.Interaction.User.Id);
 
-                if (e.Interaction.User.Id.ToString().Equals(ac.OwnerID) || e.Interaction.Guild.GetMemberAsync(e.Interaction.User.Id)
-                        .Result.Roles.Any(role => role.Id == Program.Settings.Env.TsRoleId))
+                if (e.Interaction.User.Id.ToString().Equals(ac.OwnerID) || tmpusr.Roles.Any(role => role.Id == Program.Settings.Env.TsRoleId))
                 {
                     if (ac.TsRequested == 0)
                     {
@@ -205,9 +205,10 @@ public class ModalSubmit
                             $"\r\n__**Ensure you have explained your issue well!!**__\r\n```{e.Values["issueDsc"]}```", true));
                         await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, msg);
                         var tsMsg = new DiscordMessageBuilder();
+                        var tmpownr = await e.Interaction.Guild.GetMemberAsync(ulong.Parse(ac.OwnerID));
                         tsMsg.AddEmbed(BasicEmbeds.Info(
                             $"__Help Requested! Case: {ac.CaseID}__\r\n" +
-                            $">>> Author: <@{ac.OwnerID}> ({e.Interaction.Guild.GetMemberAsync(ulong.Parse(ac.OwnerID)).Result.DisplayName})\r\n" +
+                            $">>> Author: <@{ac.OwnerID}> ({tmpownr.DisplayName})\r\n" +
                             $"Thread: <#{ac.ChannelID}>\r\n" +
                             $"Reason:\r\n```{e.Values["issueDsc"]}```\r\n" +
                             $"Created: <t:{e.Interaction.Channel.CreationTimestamp.ToUnixTimeSeconds()}:R>", true));

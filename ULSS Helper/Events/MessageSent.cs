@@ -39,7 +39,8 @@ internal class MessageSent
         }
         
         //Activate Public MessageSentEvent
-        var th = new Thread(() => Public.AutoHelper.MessageSent.MessageSentEvent(s, ctx));
-        th.Start();
+        await Public.AutoHelper.MessageSent.MessageSentEvent(s, ctx);
+        // var th = new Thread(() => Public.AutoHelper.MessageSent.MessageSentEvent(s, ctx).GetAwaiter());
+        // th.Start();
     }
 }

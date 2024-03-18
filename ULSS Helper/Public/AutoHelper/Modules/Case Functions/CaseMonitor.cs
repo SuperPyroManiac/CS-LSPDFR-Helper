@@ -8,7 +8,7 @@ internal class CaseMonitor
     internal static async Task UpdateMonitor()
     {
         var cl = Program.Client;
-        var ch = cl.GetChannelAsync(Program.Settings.Env.RequestHelpChannelId).Result;
+        var ch = await cl.GetChannelAsync(Program.Settings.Env.RequestHelpChannelId);
         List<DiscordMessage> msgPurge = [];
         DiscordMessage origMsg = null;
         var embed = BasicEmbeds.Public("# __AutoHelper Active Cases__");
@@ -42,12 +42,16 @@ internal class CaseMonitor
                 embed.AddField("..And More", "There are too many cases to show!");
                 break;
             }
+
+            var tmpclg = await cl.GetGuildAsync(Program.Settings.Env.ServerId);
+            var tmpclc = await cl.GetChannelAsync(ulong.Parse(ac.ChannelID));
+            var tmpusr = await tmpclg.GetMemberAsync(ulong.Parse(ac.OwnerID));
             
             if (ac.Solved == 0)
                 embed.AddField($"__<#{ac.ChannelID}>__",
-                    $">>> Author: {cl.GetGuildAsync(Program.Settings.Env.ServerId).Result.GetMemberAsync(ulong.Parse(ac.OwnerID)).Result.DisplayName}"
+                    $">>> Author: {tmpusr.DisplayName}"
                     + $"\r\nHelp Requested: {Convert.ToBoolean(ac.TsRequested)}"
-                    + $"\r\nCreated: <t:{cl.GetChannelAsync(ulong.Parse(ac.ChannelID)).Result.CreationTimestamp.ToUnixTimeSeconds()}:R> | AutoClose: `{ac.Timer}` hours");
+                    + $"\r\nCreated: <t:{tmpclc.CreationTimestamp.ToUnixTimeSeconds()}:R> | AutoClose: `{ac.Timer}` hours");
         }
         if (embed.Fields.Count == 0) embed.AddField("None", "No open cases!");
 

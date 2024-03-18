@@ -13,7 +13,7 @@ public class RPHProcess
     {
         try
         {
-            var log = RPHAnalyzer.Run(attach.Url).Result;
+            var log = await RPHAnalyzer.Run(attach.Url);
         
             DiscordMessageBuilder messageBuilder = new();
             var gtAver = "❌";
@@ -38,7 +38,7 @@ public class RPHProcess
             {
                 var rphProcess = new ULSS_Helper.Modules.RPH_Modules.RPHProcess();
                 rphProcess.log = log;
-                rphProcess.SendUnknownPluginsLog(ctx.Channel.Id, ctx.Author.Id);
+                await rphProcess.SendUnknownPluginsLog(ctx.Channel.Id, ctx.Author.Id);
             }
 
             var embdesc = $"## __ULSS AutoHelper__\r\n**{log.DownloadLink}**";
@@ -117,7 +117,7 @@ public class RPHProcess
         }
         catch (Exception e)
         {
-            Logging.ErrLog(e.ToString());
+            await Logging.ErrLog(e.ToString());
             Console.WriteLine(e);
             throw;
         }

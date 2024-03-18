@@ -58,7 +58,7 @@ public class RequireAdvancedTsRoleAttribute : SlashCheckBaseAttribute
 
         var ts = Database.LoadUsers().FirstOrDefault(ts => ts.UID.ToString() == ctx.Member.Id.ToString());
         if (ts != null && ts.BotEditor == 0)
-            Logging.SendLog(
+            await Logging.SendLog(
                 ctx.Interaction.Channel.Id, 
                 ctx.Interaction.User.Id,
                 BasicEmbeds.Warning($"**TS attempted to use an advanced command without permission!**\r\nCommand name: {ctx.CommandName}")

@@ -114,7 +114,7 @@ internal class ContextMenu : ApplicationCommandModule
         else 
         {
             rphProcess = new RPHProcess();
-            rphProcess.log = RPHAnalyzer.Run(attachmentForAnalysis.Url).Result;
+            rphProcess.log = await RPHAnalyzer.Run(attachmentForAnalysis.Url);
             rphProcess.log.MsgId = context.TargetMessage.Id;
             Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, rphProcess));
         }
@@ -133,7 +133,7 @@ internal class ContextMenu : ApplicationCommandModule
         else
         {
             elsProcess = new ELSProcess();
-            elsProcess.log = ELSAnalyzer.Run(attachmentForAnalysis.Url).Result;
+            elsProcess.log = await ELSAnalyzer.Run(attachmentForAnalysis.Url);
             elsProcess.log.MsgId = context.TargetMessage.Id;
             Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, elsProcess));
         }
@@ -152,7 +152,7 @@ internal class ContextMenu : ApplicationCommandModule
         else 
         {
             asiProcess = new ASIProcess();
-            asiProcess.log = ASIAnalyzer.Run(attachmentForAnalysis.Url).Result;
+            asiProcess.log = await ASIAnalyzer.Run(attachmentForAnalysis.Url);
             asiProcess.log.MsgId = context.TargetMessage.Id;
             Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, asiProcess));
         }
@@ -171,7 +171,7 @@ internal class ContextMenu : ApplicationCommandModule
         else
         {
             shvdnProcess = new SHVDNProcess();
-            shvdnProcess.log = SHVDNAnalyzer.Run(attachmentForAnalysis.Url).Result;
+            shvdnProcess.log = await SHVDNAnalyzer.Run(attachmentForAnalysis.Url);
             shvdnProcess.log.MsgId = context.TargetMessage.Id;
             Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, shvdnProcess));
         }

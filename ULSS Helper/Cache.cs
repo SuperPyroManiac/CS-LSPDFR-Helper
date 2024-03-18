@@ -94,7 +94,7 @@ internal class Cache
     }
 
     /// <summary>Removes all cache entries from the dictionaries that are older than the maxCacheAge parameter.</summary>
-    internal void RemoveExpiredCacheEntries(TimeSpan maxCacheAge)
+    internal async Task RemoveExpiredCacheEntries(TimeSpan maxCacheAge)
     {
         var expiredProcessKeys = _processCacheDict
             .Where(cache => (DateTime.Now - cache.Value.ModifiedAt) > maxCacheAge)
@@ -116,7 +116,7 @@ internal class Cache
             try
             {
                 if (_userActionCacheDict[key].Msg != null)
-                    _userActionCacheDict[key].Msg.DeleteAsync().GetAwaiter();
+                    await _userActionCacheDict[key].Msg.DeleteAsync();
             }
             catch (Exception e)
             {

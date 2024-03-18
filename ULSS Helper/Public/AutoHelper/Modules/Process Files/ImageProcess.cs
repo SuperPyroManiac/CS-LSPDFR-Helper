@@ -30,7 +30,7 @@ public class ImageProcess
                 Console.WriteLine("2");
                 logEmbedContent.Append($"*No text recognized in uploaded image*\r\n");
                 var logNoTextEmbed = BasicEmbeds.Info(logEmbedContent.ToString());
-                Logging.SendPubLog(logNoTextEmbed);
+                await Logging.SendPubLog(logNoTextEmbed);
                 return;
             }
             logEmbedContent.Append($"**Recognized text:** ```{imageText}```\r\n");
@@ -82,11 +82,11 @@ public class ImageProcess
             }
             
             var logEmbed = BasicEmbeds.Info(logEmbedContent.ToString(), true);
-            Logging.SendPubLog(logEmbed);
+            await Logging.SendPubLog(logEmbed);
         }
         catch (Exception e)
         {
-            Logging.ErrLog(e.ToString());
+            await Logging.ErrLog(e.ToString());
             Console.WriteLine(e);
             throw;
         }

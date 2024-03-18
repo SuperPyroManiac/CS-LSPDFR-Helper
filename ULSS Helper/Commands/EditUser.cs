@@ -10,32 +10,6 @@ namespace ULSS_Helper.Commands;
 
 public class EditUser : ApplicationCommandModule
 {
-    [SlashCommand("ChangeErrorView", "Edits what you see in more details!")]
-    [RequireTsRoleSlash]
-    public async Task EditViewCmd(
-        InteractionContext ctx, 
-        [Option("View", "True shows XTRA errors, False does not.")] bool view)
-    {
-        var bd = new DiscordInteractionResponseBuilder();
-        bd.IsEphemeral = true;
-        if (Database.LoadUsers().All(ts => ts.UID.ToString() != ctx.Member.Id.ToString()))
-        {
-            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error("You're not in the DB, this shouldnt be possible!")));
-            return;
-        }
-        
-        var ts = Database.LoadUsers().FirstOrDefault(x => x.UID.ToString() == ctx.Member.Id.ToString());
-        ts!.Username = ctx.Guild.GetMemberAsync(ulong.Parse(ts.UID)).Result.Username;
-        Database.EditUser(ts);
-        
-        await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Success($"<@{ctx.Member.Id.ToString()}>: You have changed your view type to: {(view ? "Show XTRA Errors" : "Hide XTRA Errors")}")));
-        Logging.SendLog(
-            ctx.Interaction.Channel.Id, 
-            ctx.Interaction.User.Id,
-            BasicEmbeds.Info($"**<@{ctx.Member.Id.ToString()}> has changed their view type to: {(view ? "Show XTRA errors" : "Hide XTRA Errors")}**")
-        );
-    }
-    
     [SlashCommand("EditUser", "Edits a user!")]
     [RequireBotAdmin]
     public async Task EditUserCmd(
@@ -51,7 +25,8 @@ public class EditUser : ApplicationCommandModule
         }
 
         var dUser = Database.LoadUsers().FirstOrDefault(x => x.UID.ToString() == userId.Id.ToString());
-        dUser!.Username = ctx.Guild.GetMemberAsync(ulong.Parse(dUser.UID)).Result.Username;
+        var tmpusr = await ctx.Guild.GetMemberAsync(ulong.Parse(dUser.UID));
+        dUser!.Username = tmpusr.Username;
         
         DiscordInteractionResponseBuilder modal = new();
         modal.WithCustomId(ModalSubmit.EditUser);

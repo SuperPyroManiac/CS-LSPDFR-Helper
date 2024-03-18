@@ -22,7 +22,7 @@ internal class Database
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
             throw;
         }
     }
@@ -47,7 +47,7 @@ internal class Database
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
             throw;
         }
     }
@@ -81,13 +81,13 @@ internal class Database
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
             throw;
         }
         catch (InvalidDataException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
             throw;
         }
     }
@@ -103,7 +103,7 @@ internal class Database
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
             throw;
         }
     }
@@ -128,7 +128,7 @@ internal class Database
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
             throw;
         }
     }
@@ -162,13 +162,13 @@ internal class Database
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
             throw;
         }
         catch (InvalidDataException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
             throw;
         }
     }
@@ -187,7 +187,7 @@ internal class Database
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
             throw;
         }
     }
@@ -206,7 +206,7 @@ internal class Database
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
             throw;
         }
     }
@@ -221,7 +221,7 @@ internal class Database
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
             throw;
         }
     }
@@ -236,7 +236,7 @@ internal class Database
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
             throw;
         }
     }
@@ -251,7 +251,7 @@ internal class Database
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
             throw;
         }
     }
@@ -266,7 +266,7 @@ internal class Database
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
             throw;
         }
     }
@@ -282,7 +282,7 @@ internal class Database
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
             throw;
         }
     }
@@ -302,7 +302,7 @@ internal class Database
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
             throw;
         }
     }
@@ -317,7 +317,7 @@ internal class Database
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
             throw;
         }
     }
@@ -333,7 +333,7 @@ internal class Database
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
             throw;
         }
     }
@@ -354,7 +354,7 @@ internal class Database
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
             throw;
         }
     }
@@ -370,7 +370,7 @@ internal class Database
         catch (MySqlException e)
         {
             Console.WriteLine(e);
-            Messages.Logging.ErrLog($"SQL Issue: {e}");
+            Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
             throw;
         }
     }
@@ -393,7 +393,7 @@ internal class Database
                 }
                 catch (WebException e)
                 {
-                    Messages.Logging.ErrLog($"Plugin ID for {plugin.Name} invalid!\r\n{e}");
+                    Messages.Logging.ErrLog($"Plugin ID for {plugin.Name} invalid!\r\n{e}").GetAwaiter();
                     continue;
                 }
                 onlineVersion = onlineVersion.Replace("[a-zA-Z]", "").Split(" ")[0];
@@ -419,13 +419,13 @@ internal class Database
                 catch (MySqlException e)
                 {
                     Console.WriteLine(e);
-                    Messages.Logging.ErrLog($"SQL Issue: {e}");
+                    Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                Messages.Logging.ErrLog($"SQL Issue: {e}");
+                Messages.Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
             }
         }
         Task.Run(() => Program.Cache.UpdatePlugins(LoadPlugins()));

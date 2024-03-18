@@ -4,7 +4,7 @@ namespace ULSS_Helper.Messages;
 
 internal class StatusMessages
 {
-    internal static void SendStartupMessage()
+    internal static async Task SendStartupMessage()
     {
         var branchName = "";
         var commitHash = "";
@@ -23,15 +23,14 @@ internal class StatusMessages
         catch (Exception e)
         {
             Console.WriteLine(e);
-            Logging.ErrLog(e.ToString());
+            await Logging.ErrLog(e.ToString());
         }
         var msgText = "**Tara Helper woke up from her beauty sleep!**\n\n";
         if (!string.IsNullOrEmpty(commitHash))
             msgText += $"Build is based on commit with hash [`{commitHashShort}`](https://github.com/SuperPyroManiac/ULSS-Helper/commit/{commitHash}) (branch: `{branchName}`)\n";
         
         var embed = BasicEmbeds.Success(msgText);
-        new DiscordMessageBuilder()
-	        .WithEmbed(embed)
-	        .SendAsync(Program.Client.GetChannelAsync(Program.Settings.Env.TsBotLogChannelId).Result);
+        var tmplogchnl = await Program.Client.GetChannelAsync(Program.Settings.Env.TsBotLogChannelId);
+        await new DiscordMessageBuilder().WithEmbed(embed).SendAsync(tmplogchnl);
     }
 }

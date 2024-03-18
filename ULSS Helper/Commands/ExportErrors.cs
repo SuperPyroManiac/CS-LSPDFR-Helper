@@ -26,6 +26,6 @@ public class ExportErrors : ApplicationCommandModule
         bd.AddFile(fs, AddFileOptions.CloseStream);
         bd.AddEmbed(BasicEmbeds.Success("Errors Exported.."));
         await ctx.CreateResponseAsync(bd);
-        Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info("Exported errors!"));
+        await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info("Exported errors!"));
     }
 }

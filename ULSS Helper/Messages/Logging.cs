@@ -4,33 +4,28 @@ namespace ULSS_Helper.Messages;
 
 internal class Logging
 {
+    private static readonly DiscordChannel TsBotLogCh = await Program.Client.GetChannelAsync(Program.Settings.Env.TsBotLogChannelId);
+    private static readonly DiscordChannel PubBotLogCh = await Program.Client.GetChannelAsync(Program.Settings.Env.PublicBotLogChannelId);
+    
     //Standard Logging
-    internal static void ErrLog(string e)
+    internal static async Task ErrLog(string e)
     {
-        new DiscordMessageBuilder()
-            .WithContent($"### Error Detected\r\n```{e}```")
-            .SendAsync(Program.Client.GetChannelAsync(Program.Settings.Env.TsBotLogChannelId).Result);
+        await new DiscordMessageBuilder().WithContent($"### Error Detected\r\n```{e}```").SendAsync(TsBotLogCh);//TODO: Check msg size
     }
     
-    internal static void SendLog(ulong chLink, ulong msgSender, DiscordEmbedBuilder e)
+    internal static async Task SendLog(ulong chLink, ulong msgSender, DiscordEmbedBuilder e)
     {
         e.AddField("Sent By", $"<@{msgSender}> in: <#{chLink}>");
-        new DiscordMessageBuilder()
-            .WithEmbed(e)
-            .SendAsync(Program.Client.GetChannelAsync(Program.Settings.Env.TsBotLogChannelId).Result);
+        await new DiscordMessageBuilder().WithEmbed(e).SendAsync(TsBotLogCh);
     }
     
     //Public Logging
-    internal static void SendPubLog(DiscordEmbedBuilder e)
+    internal static async Task SendPubLog(DiscordEmbedBuilder e)
     {
-        new DiscordMessageBuilder()
-            .WithEmbed(e)
-            .SendAsync(Program.Client.GetChannelAsync(Program.Settings.Env.PublicBotLogChannelId).Result);
+        await new DiscordMessageBuilder().WithEmbed(e).SendAsync(PubBotLogCh);
     }
-    internal static void ReportPubLog(DiscordEmbedBuilder e)
+    internal static async Task ReportPubLog(DiscordEmbedBuilder e)
     {
-        new DiscordMessageBuilder()
-            .WithEmbed(e)
-            .SendAsync(Program.Client.GetChannelAsync(Program.Settings.Env.PublicBotReportsChannelId).Result);
+        await new DiscordMessageBuilder().WithEmbed(e).SendAsync(PubBotLogCh);
     }
 }

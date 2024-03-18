@@ -32,7 +32,8 @@ public class OpenCase
                 new DiscordComponentEmoji("❓")),
             new DiscordButtonComponent(ButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", false,
                 new DiscordComponentEmoji("📨"))]);
-        await supportthread.AddThreadMemberAsync(ctx.Guild.GetMemberAsync(ctx.User.Id).Result);
+        var tmpuser = await ctx.Guild.GetMemberAsync(ctx.User.Id);
+        await supportthread.AddThreadMemberAsync(tmpuser);
         
         var newCase = new AutoCase()
         {
@@ -45,7 +46,8 @@ public class OpenCase
         };
         Database.AddCase(newCase);
 
-        await supportthread.SendMessageAsync(caseMsg).Result.PinAsync();
+        var smsg = await supportthread.SendMessageAsync(caseMsg);
+        await smsg.PinAsync();
         return supportthread;
     }
 }

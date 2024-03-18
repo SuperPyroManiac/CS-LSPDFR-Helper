@@ -9,12 +9,12 @@ namespace ULSS_Helper.Public.AutoHelper;
 
 public class MessageSent
 {
-    internal static void MessageSentEvent(DiscordClient s, MessageCreateEventArgs ctx)
+    internal static async Task MessageSentEvent(DiscordClient s, MessageCreateEventArgs ctx)
     {
         try
         {
             if (ctx.Channel.IsPrivate) return;
-            if (ctx.Message.MessageType == MessageType.ThreadCreated) ctx.Channel.DeleteMessageAsync(ctx.Message).GetAwaiter();
+            if (ctx.Message.MessageType == MessageType.ThreadCreated) await ctx.Channel.DeleteMessageAsync(ctx.Message);
             if (Database.LoadCases().Any(x => x.ChannelID == ctx.Channel.Id.ToString()) && !ctx.Author.IsBot)
             {
                 var ac = Database.LoadCases().First(x => x.ChannelID == ctx.Channel.Id.ToString());
@@ -37,7 +37,7 @@ public class MessageSent
                             var emb = BasicEmbeds.Public(
                                 $"## __ULSS AutoHelper__\r\n>>> {error.Solution}");
                             emb.Footer.Text = emb.Footer.Text + $" - ID: {error.ID}";
-                            ctx.Message.RespondAsync(emb).GetAwaiter();
+                            await ctx.Message.RespondAsync(emb);
                         }
                     }
                     
@@ -47,22 +47,22 @@ public class MessageSent
                         switch (attach.FileName)
                         {
                             case "RagePluginHook.log":
-                                RPHProcess.ProcessLog(attach, ctx).GetAwaiter();
+                                await RPHProcess.ProcessLog(attach, ctx);
                                 break;
                             case "ELS.log":
-                                ELSProcess.ProcessLog(attach, ctx).GetAwaiter();
+                                await ELSProcess.ProcessLog(attach, ctx);
                                 break;
                             case "asiloader.log":
-                                ASIProcess.ProcessLog(attach, ctx).GetAwaiter();
+                                await ASIProcess.ProcessLog(attach, ctx);
                                 break;
                             case "ScriptHookVDotNet.log":
-                                SHVDNProcess.ProcessLog(attach, ctx).GetAwaiter();
+                                await SHVDNProcess.ProcessLog(attach, ctx);
                                 break;
                             default: 
                                 // if (attach.FileName.EndsWith(".png") || attach.FileName.EndsWith(".jpg"))
-                                //      ImageProcess.ProcessImage(attach, ctx).GetAwaiter();
+                                //      await ImageProcess.ProcessImage(attach, ctx);
                                 if (attach.FileName.EndsWith(".log") || attach.FileName.EndsWith(".txt"))
-                                    ctx.Message.RespondAsync(BasicEmbeds.Public(
+                                    await ctx.Message.RespondAsync(BasicEmbeds.Public(
                                         "## __ULSS AutoHelper__\r\nThis file is not supported or is not named correctly!"));
                                 break;
                         }
@@ -72,7 +72,7 @@ public class MessageSent
         }
         catch (Exception e)
         {
-            Logging.ErrLog(e.ToString());
+            await Logging.ErrLog(e.ToString());
             Console.WriteLine(e);
             throw;
         }

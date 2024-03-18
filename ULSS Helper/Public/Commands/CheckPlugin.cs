@@ -49,7 +49,7 @@ public class CheckPlugin : ApplicationCommandModule
 		]);
 		
 		await ctx.CreateResponseAsync(response.AddEmbed(embed));
-		Logging.SendPubLog(BasicEmbeds.Info(
+		await Logging.SendPubLog(BasicEmbeds.Info(
 			$"__User checked a plugin!__\r\n"
 			+ $">>> Sender: {ctx.Member.Mention} ({ctx.Member.Username})\r\n"
 			+ $"Channel: <#{ctx.Channel.Id}>\r\n"

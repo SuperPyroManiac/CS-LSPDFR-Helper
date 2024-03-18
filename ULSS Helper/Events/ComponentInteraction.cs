@@ -110,7 +110,7 @@ public class ComponentInteraction
                         else
                         {
                             rphProcess = new RPHProcess();
-                            rphProcess.log = RPHAnalyzer.Run(targetAttachment.Url).Result;
+                            rphProcess.log = await RPHAnalyzer.Run(targetAttachment.Url);
                             rphProcess.log.MsgId = cache.OriginalMessage.Id;
                             Program.Cache.SaveProcess(messageId: eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, rphProcess));
                         }
@@ -128,7 +128,7 @@ public class ComponentInteraction
                         else
                         {
                             elsProcess = new ELSProcess();
-                            elsProcess.log = ELSAnalyzer.Run(targetAttachment.Url).Result;
+                            elsProcess.log = await ELSAnalyzer.Run(targetAttachment.Url);
                             elsProcess.log.MsgId = cache.OriginalMessage.Id;
                             Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, elsProcess));
                         }
@@ -146,7 +146,7 @@ public class ComponentInteraction
                         else 
                         {
                             asiProcess = new ASIProcess();
-                            asiProcess.log = ASIAnalyzer.Run(targetAttachment.Url).Result;
+                            asiProcess.log = await ASIAnalyzer.Run(targetAttachment.Url);
                             asiProcess.log.MsgId = cache.OriginalMessage.Id;
                             Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, asiProcess));
                         }
@@ -164,7 +164,7 @@ public class ComponentInteraction
                         else
                         {
                             shvdnProcess = new SHVDNProcess();
-                            shvdnProcess.log = SHVDNAnalyzer.Run(targetAttachment.Url).Result;
+                            shvdnProcess.log = await SHVDNAnalyzer.Run(targetAttachment.Url);
                             shvdnProcess.log.MsgId = cache.OriginalMessage.Id;
                             Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, shvdnProcess));
                         }
@@ -438,9 +438,9 @@ public class ComponentInteraction
                 var msg = new DiscordInteractionResponseBuilder();
                 msg.IsEphemeral = true;
                 var ac = Database.LoadCases().First(x => x.ChannelID.Equals(eventArgs.Channel.Id.ToString()));
+                var tmpuser = await eventArgs.Guild.GetMemberAsync(eventArgs.User.Id);
 
-                if (eventArgs.User.Id.ToString().Equals(ac.OwnerID) || eventArgs.Guild.GetMemberAsync(eventArgs.User.Id)
-                        .Result.Roles.Any(role => role.Id == Program.Settings.Env.TsRoleId))
+                if (eventArgs.User.Id.ToString().Equals(ac.OwnerID) || tmpuser.Roles.Any(role => role.Id == Program.Settings.Env.TsRoleId))
                 {
                     msg.AddEmbed(BasicEmbeds.Info("Closing case!"));
                     await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, msg);
@@ -477,13 +477,14 @@ public class ComponentInteraction
                     return;
                 }
 
-                msg.AddEmbed(BasicEmbeds.Success($"Created new case! {Public.AutoHelper.Modules.Case_Functions.OpenCase.CreateCase(eventArgs).Result.Mention}"));
+                var newcase = await Public.AutoHelper.Modules.Case_Functions.OpenCase.CreateCase(eventArgs);
+                msg.AddEmbed(BasicEmbeds.Success($"Created new case! {newcase.Mention}"));
                 await eventArgs.Interaction.EditOriginalResponseAsync(msg);
             }
         }
         catch (Exception exception)
         {
-            Logging.ErrLog(exception.ToString());
+            await Logging.ErrLog(exception.ToString());
             Console.WriteLine(exception);
             throw;
         }

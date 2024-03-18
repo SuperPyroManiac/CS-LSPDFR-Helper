@@ -37,7 +37,7 @@ public class FindPlugins : ApplicationCommandModule
                 plugDescription,
                 exactMatch
             );
-            Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info(searchParamsListForLog));
+            await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info(searchParamsListForLog));
             
             var pluginsFound = Database.FindPlugins(plugName, plugDName, plugId, plugState, plugDescription, exactMatch);
 

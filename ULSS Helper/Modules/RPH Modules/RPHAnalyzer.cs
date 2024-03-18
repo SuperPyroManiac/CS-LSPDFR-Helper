@@ -166,7 +166,7 @@ public class RPHAnalyzer
             }
             catch (Exception e)
             {
-                Logging.ErrLog(e.ToString());
+                await Logging.ErrLog(e.ToString());
                 Console.WriteLine(e);
                 throw;
             }

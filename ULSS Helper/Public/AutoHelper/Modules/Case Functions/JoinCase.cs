@@ -10,15 +10,19 @@ internal class JoinCase
     {
         if (ac.TsRequested == 1 && ac.RequestID != null)
         {
-            var chTs = Program.Client.GetChannelAsync(Program.Settings.Env.RequestHelpChannelId).Result;
-            await chTs.DeleteMessageAsync(chTs.GetMessageAsync(ulong.Parse(ac.RequestID)).Result);
+            var chTs = await Program.Client.GetChannelAsync(Program.Settings.Env.RequestHelpChannelId);
+            var tmpmsg = await chTs.GetMessageAsync(ulong.Parse(ac.RequestID));
+            await chTs.DeleteMessageAsync(tmpmsg);
             ac.RequestID = null;
             Database.EditCase(ac);
         }
-        var ch = (DiscordThreadChannel)Program.Client.GetChannelAsync(ulong.Parse(ac.ChannelID)).Result;
-        await Program.Client.GetChannelAsync(ch.Id).Result.SendMessageAsync(BasicEmbeds.Success(
+
+        var tmpch = await Program.Client.GetChannelAsync(ulong.Parse(ac.ChannelID));
+        var ch = (DiscordThreadChannel)tmpch;
+        await ch.SendMessageAsync(BasicEmbeds.Success(
             $"__TS has joined!__\r\n" +
             $"> <@{tsID}> is here to help!", true));
-        await ch.AddThreadMemberAsync(Program.Client.Guilds[Program.Settings.Env.ServerId].GetMemberAsync(ulong.Parse(tsID)).Result);
+        var tmpusr = await Program.Client.Guilds[Program.Settings.Env.ServerId].GetMemberAsync(ulong.Parse(tsID));
+        await ch.AddThreadMemberAsync(tmpusr);
     }
 }

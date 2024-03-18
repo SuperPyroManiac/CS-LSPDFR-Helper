@@ -85,7 +85,7 @@ public class AddPlugin : ApplicationCommandModule
         }
         
         await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, bd);
-        var msg = ctx.Interaction.GetOriginalResponseAsync().Result;
+        var msg = await ctx.Interaction.GetOriginalResponseAsync();
         Program.Cache.SaveUserAction(ctx.Interaction.User.Id, ComponentInteraction.SelectPluginValueToEdit, new UserActionCache(ctx.Interaction, plugin, msg));
     }
 }
