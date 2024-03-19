@@ -12,9 +12,8 @@ public class EditUser : ApplicationCommandModule
 {
     [SlashCommand("EditUser", "Edits a user!")]
     [RequireBotAdmin]
-    public async Task EditUserCmd(
-        InteractionContext ctx, 
-        [Option("ID", "User ID to edit!")] DiscordUser userId)
+    public async Task EditUserCmd(InteractionContext ctx, 
+        [Option("User", "User to edit!")] DiscordUser userId)
     {
         var bd = new DiscordInteractionResponseBuilder();
         bd.IsEphemeral = true;

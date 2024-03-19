@@ -25,4 +25,15 @@ internal class JoinCase
         var tmpusr = await Program.Client.Guilds[Program.Settings.Env.ServerId].GetMemberAsync(ulong.Parse(tsID));
         await ch.AddThreadMemberAsync(tmpusr);
     }
+    
+    internal static async Task PubJoin(AutoCase ac, string userId)
+    {
+        var tmpch = await Program.Client.GetChannelAsync(ulong.Parse(ac.ChannelID));
+        var ch = (DiscordThreadChannel)tmpch;
+        await ch.SendMessageAsync(BasicEmbeds.Success(
+            $"__User has joined!__\r\n" +
+            $"> <@{userId}> has joined this case!", true));
+        var tmpusr = await Program.Client.Guilds[Program.Settings.Env.ServerId].GetMemberAsync(ulong.Parse(userId));
+        await ch.AddThreadMemberAsync(tmpusr);
+    }
 }
