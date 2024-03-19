@@ -5,7 +5,7 @@ using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Commands;
+namespace ULSS_Helper.Commands.Plugin;
 
 public class AddPlugin : ApplicationCommandModule
 {
@@ -24,7 +24,7 @@ public class AddPlugin : ApplicationCommandModule
             return;
         }
 
-        Plugin plugin = new()
+        Objects.Plugin plugin = new()
         {
             Name = pluginName,
             DName = pluginName,

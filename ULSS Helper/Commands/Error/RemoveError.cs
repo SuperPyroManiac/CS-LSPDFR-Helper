@@ -3,7 +3,7 @@ using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Commands;
+namespace ULSS_Helper.Commands.Error;
 
 public class RemoveError : ApplicationCommandModule
 {
