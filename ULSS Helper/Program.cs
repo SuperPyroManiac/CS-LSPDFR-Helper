@@ -18,6 +18,7 @@ internal class Program
     internal static DiscordClient Client {get; set;}
     internal static Settings Settings;
     internal static Cache Cache = new();
+    internal static bool StartupMsg = false;
     
     static async Task Main()
     {
