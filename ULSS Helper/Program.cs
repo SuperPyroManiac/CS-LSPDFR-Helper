@@ -8,7 +8,6 @@ using DSharpPlus.SlashCommands.EventArgs;
 using Microsoft.Extensions.Logging;
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
-using ULSS_Helper.Public.AutoHelper;
 using ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 using MessageSent = ULSS_Helper.Events.MessageSent;
 
@@ -19,6 +18,7 @@ internal class Program
     internal static DiscordClient Client {get; set;}
     internal static Settings Settings;
     internal static Cache Cache = new();
+    internal static bool StartupMsg = false;
     
     static async Task Main()
     {

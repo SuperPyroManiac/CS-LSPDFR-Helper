@@ -4,7 +4,7 @@ using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Commands;
+namespace ULSS_Helper.Commands.Plugin;
 
 public class ExportPlugins : ApplicationCommandModule
 {
@@ -16,7 +16,7 @@ public class ExportPlugins : ApplicationCommandModule
         bd.IsEphemeral = true;
         
         var plugins = Database.LoadPlugins().ToArray();
-        var serializer = new XmlSerializer(typeof(Plugin[]));
+        var serializer = new XmlSerializer(typeof(Objects.Plugin[]));
         await using (var writer = new StreamWriter(Path.Combine(Settings.GetOrCreateFolder( "Exports"), "PluginExport.xml")))
         {
             serializer.Serialize(writer, plugins);

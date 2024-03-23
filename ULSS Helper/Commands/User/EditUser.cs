@@ -6,15 +6,14 @@ using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 using DiscordUser = DSharpPlus.Entities.DiscordUser;
 
-namespace ULSS_Helper.Commands;
+namespace ULSS_Helper.Commands.User;
 
 public class EditUser : ApplicationCommandModule
 {
     [SlashCommand("EditUser", "Edits a user!")]
     [RequireBotAdmin]
-    public async Task EditUserCmd(
-        InteractionContext ctx, 
-        [Option("ID", "User ID to edit!")] DiscordUser userId)
+    public async Task EditUserCmd(InteractionContext ctx, 
+        [Option("User", "User to edit!")] DiscordUser userId)
     {
         var bd = new DiscordInteractionResponseBuilder();
         bd.IsEphemeral = true;

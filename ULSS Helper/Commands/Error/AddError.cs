@@ -5,7 +5,7 @@ using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Commands;
+namespace ULSS_Helper.Commands.Error;
 
 public class AddError : ApplicationCommandModule
 {
@@ -13,7 +13,7 @@ public class AddError : ApplicationCommandModule
     [RequireAdvancedTsRole]
     public async Task AddErrorCmd(InteractionContext ctx, [Option("Level", "Warning type (PMSG, PIMG, XTRA, WARN, SEVERE, CRITICAL)")] Level level)
     {
-        var error = new Error
+        var error = new Objects.Error
         {
             Regex = "- REQUIRED -",
             Solution = "- REQUIRED -",

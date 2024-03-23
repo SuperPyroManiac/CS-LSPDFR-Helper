@@ -4,7 +4,7 @@ using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
-namespace ULSS_Helper.Commands;
+namespace ULSS_Helper.Commands.Error;
 
 public class ExportErrors : ApplicationCommandModule
 {
@@ -16,7 +16,7 @@ public class ExportErrors : ApplicationCommandModule
         bd.IsEphemeral = true;
         
         var errors = Database.LoadErrors().ToArray();
-        var serializer = new XmlSerializer(typeof(Error[]));
+        var serializer = new XmlSerializer(typeof(Objects.Error[]));
         await using (var writer = new StreamWriter(Path.Combine(Settings.GetOrCreateFolder( "Exports"), "ErrorExport.xml")))
         {
             serializer.Serialize(writer, errors);
