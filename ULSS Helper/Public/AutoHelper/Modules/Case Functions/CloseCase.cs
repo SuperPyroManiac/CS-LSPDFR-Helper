@@ -8,24 +8,32 @@ internal class CloseCase
 {
     internal static async Task Close(AutoCase ac)
     {
-        ac.Solved = 1;
-        ac.Timer = 0;
-        if (ac.TsRequested == 1 && ac.RequestID != null)
+        try
         {
-            var chTs = await Program.Client.GetChannelAsync(Program.Settings.Env.RequestHelpChannelId);
-            var tmpmsg = await chTs.GetMessageAsync(ulong.Parse(ac.RequestID));
-            await chTs.DeleteMessageAsync(tmpmsg);
-            ac.RequestID = null;
-        }
-        Database.EditCase(ac);
+            ac.Solved = 1;
+            ac.Timer = 0;
+            if (ac.TsRequested == 1 && ac.RequestID != null)
+            {
+                var chTs = await Program.Client.GetChannelAsync(Program.Settings.Env.RequestHelpChannelId);
+                var tmpmsg = await chTs.GetMessageAsync(ulong.Parse(ac.RequestID));
+                await chTs.DeleteMessageAsync(tmpmsg);
+                ac.RequestID = null;
+            }
+            Database.EditCase(ac);
 
-        var tmpch = await Program.Client.GetChannelAsync(ulong.Parse(ac.ChannelID));
-        var ch = (DiscordThreadChannel)tmpch;
-        await ch.SendMessageAsync(BasicEmbeds.Warning(
-            "__Thread has been archived!__\r\n" +
-            "> It is now closed to replies. If you need further help start a new one or ask in the public support channels!",
-            true));
-        await ch.ModifyAsync(model => model.Locked = true);
-        await ch.ModifyAsync(model => model.IsArchived = true);
+            var tmpch = await Program.Client.GetChannelAsync(ulong.Parse(ac.ChannelID));
+            var ch = (DiscordThreadChannel)tmpch;
+            await ch.SendMessageAsync(BasicEmbeds.Warning(
+                "__Thread has been archived!__\r\n" +
+                "> It is now closed to replies. If you need further help start a new one or ask in the public support channels!",
+                true));
+            await ch.ModifyAsync(model => model.Locked = true);
+            await ch.ModifyAsync(model => model.IsArchived = true);
+        }
+        catch (Exception e)
+        {
+            await Logging.ErrLog(e.ToString());
+            Console.WriteLine(e);
+        }
     }
 }
