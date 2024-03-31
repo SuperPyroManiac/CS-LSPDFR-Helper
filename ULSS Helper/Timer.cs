@@ -30,7 +30,7 @@ internal class Timer
         {
             if (ac.Timer > 0) ac.Timer--;
             Database.EditCase(ac);
-            if (ac.Timer <= 0) Task.Run(() => CloseCase.Close(ac));
+            Task.Run(CheckCases.Validate);
         }
     }
 

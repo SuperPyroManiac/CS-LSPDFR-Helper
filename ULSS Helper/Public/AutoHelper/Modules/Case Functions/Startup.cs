@@ -11,6 +11,7 @@ internal class Startup
     {
         await UpdateMsg();
         await CheckUsers.Validate();
+        await CheckCases.Validate();
         await CaseMonitor.UpdateMonitor();
     }
     internal static async Task UpdateMsg()
