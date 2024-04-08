@@ -9,11 +9,11 @@ internal class CheckCases
         var parentCh = await Program.Client.GetChannelAsync(Program.Settings.Env.AutoHelperChannelId);
         foreach (var th in parentCh.Threads)
         {
-            await Logging.SendPubLog(BasicEmbeds.Error("Detected broken thread\r\n" + th.Id.ToString(), true));
             if (th.ThreadMetadata.IsArchived) continue;
             foreach (var ac in Program.Cache.GetCasess())
             {
                 if (!ac.ChannelID.Equals(th.Id.ToString())) continue;
+                await Logging.SendPubLog(BasicEmbeds.Error("Detected broken thread\r\n" + th.Id, true));
                 if (ac.Solved == 1 || ac.Timer == 0) await CloseCase.Close(ac);
             }
         }
