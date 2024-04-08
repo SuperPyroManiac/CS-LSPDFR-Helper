@@ -10,9 +10,10 @@ internal class CheckCases
         foreach (var th in parentCh.Threads)
         {
             if (th.ThreadMetadata.IsArchived) continue;
-            foreach (var ac in Program.Cache.GetCasess().Where(c => c.ChannelID.Equals(th.Id.ToString())))
+            await Logging.SendPubLog(BasicEmbeds.Error("Detected broken thread\r\n" + th.Id.ToString(), true));
+            foreach (var ac in Program.Cache.GetCasess())
             {
-                await Logging.SendPubLog(BasicEmbeds.Error("Detected broken thread\r\n" + ac.ChannelID, true));
+                if (!ac.ChannelID.Equals(th.Id.ToString())) continue;
                 if (ac.Solved == 1 || ac.Timer == 0) await CloseCase.Close(ac);
             }
         }
