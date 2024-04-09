@@ -13,7 +13,6 @@ internal class CheckCases
             foreach (var ac in Program.Cache.GetCasess())
             {
                 if (!ac.ChannelID.Equals(th.Id.ToString())) continue;
-                await Logging.SendPubLog(BasicEmbeds.Error("Detected broken thread\r\n" + th.Id, true));
                 if (ac.Solved == 1 || ac.Timer == 0) await CloseCase.Close(ac);
             }
         }
