@@ -178,7 +178,7 @@ internal class Database
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
-            cnn.Execute("insert into Plugin (Name, DName, Version, EAVersion, ID, State, Description, Link) VALUES (@Name, @DName, @Version, @EAVersion, @ID, @State, @Description, @Link)", plugin);
+            await cnn.ExecuteAsync("insert into Plugin (Name, DName, Version, EAVersion, ID, State, Description, Link) VALUES (@Name, @DName, @Version, @EAVersion, @ID, @State, @Description, @Link)", plugin);
             await Task.Run(() => Program.Cache.UpdatePlugins(Database.LoadPlugins()));
         }
         catch (MySqlException e)
@@ -214,7 +214,7 @@ internal class Database
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
-            cnn.Execute("UPDATE Plugin SET Name = @Name, DName = @DName, Version = @Version, EAVersion = @EAVersion, ID = @ID, State = @State, Description = @Description, Link = @Link WHERE Name = (@Name)", plugin);
+            await cnn.ExecuteAsync("UPDATE Plugin SET Name = @Name, DName = @DName, Version = @Version, EAVersion = @EAVersion, ID = @ID, State = @State, Description = @Description, Link = @Link WHERE Name = (@Name)", plugin);
             await Task.Run(() => Program.Cache.UpdatePlugins(Database.LoadPlugins()));
         }
         catch (MySqlException e)
@@ -230,7 +230,7 @@ internal class Database
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
-            cnn.Execute("UPDATE Error SET Regex = @Regex, Solution = @Solution, Description = @Description, Level = @Level WHERE ID = (@ID)", error);
+            await cnn.ExecuteAsync("UPDATE Error SET Regex = @Regex, Solution = @Solution, Description = @Description, Level = @Level WHERE ID = (@ID)", error);
             await Task.Run(() => Program.Cache.UpdateErrors(Database.LoadErrors()));
         }
         catch (MySqlException e)
@@ -246,7 +246,7 @@ internal class Database
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
-            cnn.Execute("delete from Plugin where Name = (@Name)", plugin);
+            await cnn.ExecuteAsync("delete from Plugin where Name = (@Name)", plugin);
             await Task.Run(() => Program.Cache.UpdatePlugins(Database.LoadPlugins()));
         }
         catch (MySqlException e)
@@ -262,7 +262,7 @@ internal class Database
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
-            cnn.Execute("delete from Error where ID = (@ID)", error);
+            await cnn.ExecuteAsync("delete from Error where ID = (@ID)", error);
             await Task.Run(() => Program.Cache.UpdateErrors(Database.LoadErrors()));
         }
         catch (MySqlException e)
@@ -295,7 +295,7 @@ internal class Database
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
-            cnn.Execute("insert into Users (UID, Username, BotEditor, BotAdmin, Bully, Blocked) VALUES (@UID, @Username, @BotEditor, @BotAdmin, @Bully, @Blocked)", user);
+            await cnn.ExecuteAsync("insert into Users (UID, Username, BotEditor, BotAdmin, Bully, Blocked) VALUES (@UID, @Username, @BotEditor, @BotAdmin, @Bully, @Blocked)", user);
             await Task.Run(() => Program.Cache.UpdateUsers(Database.LoadUsers()));
         }
         catch (MySqlException e)
@@ -311,7 +311,7 @@ internal class Database
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
-            cnn.Execute("UPDATE Users SET UID = @UID, Username = @Username, BotEditor = @BotEditor, BotAdmin = @BotAdmin, Bully = @Bully, Blocked = @Blocked WHERE UID = @UID", user);
+            await cnn.ExecuteAsync("UPDATE Users SET UID = @UID, Username = @Username, BotEditor = @BotEditor, BotAdmin = @BotAdmin, Bully = @Bully, Blocked = @Blocked WHERE UID = @UID", user);
             await Task.Run(() => Program.Cache.UpdateUsers(Database.LoadUsers()));
         }
         catch (MySqlException e)
@@ -344,7 +344,7 @@ internal class Database
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
-            cnn.Execute("insert into Cases (CaseID, OwnerID, ChannelID, Solved, Timer, TsRequested, RequestID) VALUES (@CaseID, @OwnerID, @ChannelID, @Solved, @Timer, @TsRequested, @RequestID)", autocase);
+            await cnn.ExecuteAsync("insert into Cases (CaseID, OwnerID, ChannelID, Solved, Timer, TsRequested, RequestID) VALUES (@CaseID, @OwnerID, @ChannelID, @Solved, @Timer, @TsRequested, @RequestID)", autocase);
             await Task.Run(() => Program.Cache.UpdateCases(Database.LoadCases()));
             await Task.Run(CaseMonitor.UpdateMonitor);
         }
@@ -361,7 +361,7 @@ internal class Database
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
-            cnn.Execute("UPDATE Cases SET CaseID = @CaseID, OwnerID = @OwnerID, ChannelID = @ChannelID, Solved = @Solved, Timer = @Timer, TsRequested = @TsRequested, RequestID = @RequestID WHERE CaseID = (@CaseID)", autocase);
+            await cnn.ExecuteAsync("UPDATE Cases SET CaseID = @CaseID, OwnerID = @OwnerID, ChannelID = @ChannelID, Solved = @Solved, Timer = @Timer, TsRequested = @TsRequested, RequestID = @RequestID WHERE CaseID = (@CaseID)", autocase);
             await Task.Run(() => Program.Cache.UpdateCases(Database.LoadCases()));
             await Task.Run(CaseMonitor.UpdateMonitor);
         }
@@ -382,7 +382,7 @@ internal class Database
         {
             try
             {
-                if (plugin.State != "LSPDFR" || string.IsNullOrEmpty(plugin.ID)) continue;
+                if (plugin.ID == "0" || string.IsNullOrEmpty(plugin.ID)) continue;
                 
                 string onlineVersion;
                 try
@@ -412,7 +412,7 @@ internal class Database
                     Console.WriteLine($"Updating Plugin {plugin.Name} from {plugin.Version} to {onlineVersion}");
                         
                     using IDbConnection cnn = new MySqlConnection(ConnStr);
-                    cnn.Execute($"UPDATE Plugin SET Version = '{onlineVersion}' WHERE Name = '{plugin.Name}';");
+                    await cnn.ExecuteAsync($"UPDATE Plugin SET Version = '{onlineVersion}' WHERE Name = '{plugin.Name}';");
                 }
                 catch (MySqlException e)
                 {
