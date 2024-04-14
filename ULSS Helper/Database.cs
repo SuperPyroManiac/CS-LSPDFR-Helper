@@ -412,7 +412,7 @@ internal class Database
                 {
                     if (plugin.Version == onlineVersion) continue;
                     Console.WriteLine($"Updating Plugin {plugin.Name} from {plugin.Version} to {onlineVersion}");
-                    if (!string.IsNullOrEmpty(plugin.EAVersion) || plugin.EAVersion == "0")
+                    if (string.IsNullOrEmpty(plugin.EAVersion) || plugin.EAVersion == "0")
                         await Logging.SendLog(0, 0, BasicEmbeds.Info($"Updating Plugin!\r\n{plugin.Name} from {plugin.Version} to {onlineVersion}", true), false);
                     else
                         await Logging.SendLog(0, 0, BasicEmbeds.Warning($"Updating Plugin!\r\n{plugin.Name} from {plugin.Version} to {onlineVersion}\r\nThis plugin has an EA version of {plugin.EAVersion} please double check it now!", true), false);
