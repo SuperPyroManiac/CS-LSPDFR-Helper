@@ -21,10 +21,10 @@ public class OskaruApiService
     
     public OskaruApiService()
     {
-        this._httpClient = new HttpClient();
-        this._httpClient.BaseAddress = new Uri(Program.Settings.Env.OskaruApiBaseUrl);
-        this._httpClient.DefaultRequestHeaders.ConnectionClose = true;
-        this._httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Api-Key", Program.Settings.Env.OskaruApiKey);
+        _httpClient = new HttpClient();
+        _httpClient.BaseAddress = new Uri(Program.Settings.Env.OskaruApiBaseUrl);
+        _httpClient.DefaultRequestHeaders.ConnectionClose = true;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Api-Key", Program.Settings.Env.OskaruApiKey);
     }
 
     public async Task<String> GetImageText(String imageUrl, String? caption = null)
@@ -47,7 +47,7 @@ public class OskaruApiService
         try
         {
             // Send the POST request
-            HttpResponseMessage response = await this._httpClient.PostAsync("v1/gta-helper/analyse-image/link", content);
+            HttpResponseMessage response = await _httpClient.PostAsync("v1/gta-helper/analyse-image/link", content);
 
             if (response.IsSuccessStatusCode)
             {

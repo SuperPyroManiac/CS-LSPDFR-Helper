@@ -196,7 +196,7 @@ public class ComponentInteraction
                     if (options.Count > 0)
                         db.AddComponents(
                             new DiscordSelectComponent(
-                                customId: ComponentInteraction.SelectIdForRemoval,
+                                customId: SelectIdForRemoval,
                                 placeholder: "Remove Error",
                                 options: options
                             )

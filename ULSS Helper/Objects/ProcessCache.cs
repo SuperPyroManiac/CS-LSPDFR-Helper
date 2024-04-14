@@ -50,15 +50,15 @@ internal class ProcessCache : Cache
 
     internal ProcessCache Update(ProcessCache newCache)
     {
-        if ((this.OriginalMessage ?? newCache.OriginalMessage) != null && this.OriginalMessage.Id != newCache.OriginalMessage.Id)
+        if ((OriginalMessage ?? newCache.OriginalMessage) != null && OriginalMessage.Id != newCache.OriginalMessage.Id)
             throw new InvalidOperationException("Cannot update ProcessCache that belongs to a different message!");
         
-        this.Interaction = newCache.Interaction ?? this.Interaction;
-        this.OriginalMessage = newCache.OriginalMessage ?? this.OriginalMessage;
-        this.ElsProcess = newCache.ElsProcess ?? this.ElsProcess;
-        this.RphProcess = newCache.RphProcess ?? this.RphProcess;
-        this.AsiProcess = newCache.AsiProcess ?? this.AsiProcess;
-        this.ShvdnProcess = newCache.ShvdnProcess ?? this.ShvdnProcess;
+        Interaction = newCache.Interaction ?? Interaction;
+        OriginalMessage = newCache.OriginalMessage ?? OriginalMessage;
+        ElsProcess = newCache.ElsProcess ?? ElsProcess;
+        RphProcess = newCache.RphProcess ?? RphProcess;
+        AsiProcess = newCache.AsiProcess ?? AsiProcess;
+        ShvdnProcess = newCache.ShvdnProcess ?? ShvdnProcess;
         base.Update();
         return this;
     }
