@@ -15,9 +15,13 @@ public enum Level
 public enum State
 {
     [ChoiceName("LSPDFR")] LSPDFR,
+    [ChoiceName("RPH")] RPH,
+    [ChoiceName("ASI")] ASI,
+    [ChoiceName("SHV")] SHV,
+    [ChoiceName("SHVDN")] SHVDN,
+    [ChoiceName("LIB")] LIB,
     [ChoiceName("EXTERNAL")] EXTERNAL,
     [ChoiceName("BROKEN")] BROKEN,
-    [ChoiceName("LIB")] LIB,
     [ChoiceName("IGNORE")] IGNORE
 }
 

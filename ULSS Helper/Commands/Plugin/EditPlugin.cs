@@ -15,7 +15,7 @@ public class EditPlugin : ApplicationCommandModule
     (
         InteractionContext ctx, 
         [Autocomplete(typeof(PluginAutoComplete)), Option("Name", "Plugins name as shown in the log!")] string pluginName, 
-        [Option("New_State", "Plugin state, LSPDFR, EXTERNAL, BROKEN, LIB, IGNORE")] State? newState = null
+        [Option("New_State", "Plugin state")] State? newState = null
     )
     {
         var bd = new DiscordInteractionResponseBuilder();
