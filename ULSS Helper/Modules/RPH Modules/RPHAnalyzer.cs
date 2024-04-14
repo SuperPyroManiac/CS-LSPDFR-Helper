@@ -144,7 +144,7 @@ public class RPHAnalyzer
                         }
                         break;
                     }
-                    case "LIB":
+                    case "LIB" or "RPH" or "ASI" or "SHV" or "SHVDN":
                     {
                         if (logPlug.Name == plugin.Name)
                         {
