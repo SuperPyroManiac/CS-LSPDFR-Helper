@@ -1,9 +1,7 @@
-using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
-using DiscordUser = DSharpPlus.Entities.DiscordUser;
 
 namespace ULSS_Helper.Commands.Case;
 
