@@ -392,7 +392,7 @@ internal class Database
                 }
                 catch (WebException e)
                 {
-                    Logging.ErrLog($"__**Plugin ID for {plugin.Name} invalid!**__\r\n{e}").GetAwaiter();
+                    await Logging.ErrLog($"Plugin ID for {plugin.Name} invalid!\r\n\r\n{e}");
                     continue;
                 }
                 onlineVersion = onlineVersion.Replace("[a-zA-Z]", "").Split(" ")[0];
