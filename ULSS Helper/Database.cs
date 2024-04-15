@@ -383,7 +383,7 @@ internal class Database
         {
             try
             {
-                if (plugin.ID == "0" || string.IsNullOrEmpty(plugin.ID)) continue;
+                if (plugin.ID == "0" || string.IsNullOrEmpty(plugin.ID) || plugin.State == "EXTERNAL") continue;
                 
                 string onlineVersion;
                 try
