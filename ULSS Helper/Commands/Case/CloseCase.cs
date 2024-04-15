@@ -7,11 +7,11 @@ using DiscordUser = DSharpPlus.Entities.DiscordUser;
 
 namespace ULSS_Helper.Commands.Case;
 
-public class JoinCase : ApplicationCommandModule
+public class CloseCase : ApplicationCommandModule
 {
-    [SlashCommand("JoinCase", "Joins an autohelper case!")]
-    [RequireNotOnBotBlacklist]
-    public async Task JoinCaseCmd(InteractionContext ctx,
+    [SlashCommand("CloseCase", "Closes an autohelper case!")]
+    [RequireTsRoleSlash]
+    public async Task CloseCaseCmd(InteractionContext ctx,
         [Autocomplete(typeof(CaseAutoComplete)),Option("Case", "Must match an open case!")] string caseId)
     {
         await ctx.Interaction.DeferAsync(true);
@@ -24,6 +24,7 @@ public class JoinCase : ApplicationCommandModule
                 $"Case: `{caseId}` does not exist!", true)));
             return;
         }
+        
         if (acase.Solved == 1)
         {
             await ctx.Interaction.EditOriginalResponseAsync(msg.AddEmbed(BasicEmbeds.Error(
@@ -32,23 +33,9 @@ public class JoinCase : ApplicationCommandModule
             return;
         }
 
-        var ch = await Program.Client.GetChannelAsync(ulong.Parse(acase.ChannelID));
-        var th = (DiscordThreadChannel)ch;
-        var usrs = await th.ListJoinedMembersAsync();
-        var check = usrs.FirstOrDefault(usr => usr.Id == ctx.User.Id);
-        if (check != null)
-        {
-            await ctx.Interaction.EditOriginalResponseAsync(msg.AddEmbed(BasicEmbeds.Error(
-                $"__Already joined!__\r\n" +
-                $"You have already joined Case: `{caseId}`!\r\n" +
-                $"See: <#{acase.ChannelID}>", true)));
-            return;
-        }
-        
-        await Public.AutoHelper.Modules.Case_Functions.JoinCase.PubJoin(acase, ctx.User.Id.ToString());
+        await Public.AutoHelper.Modules.Case_Functions.CloseCase.Close(acase);
         await ctx.Interaction.EditOriginalResponseAsync(msg.AddEmbed(BasicEmbeds.Success(
-            $"__Joined case!__\r\n" +
-            $"You have been added to:\r\n" +
-            $"<#{acase.ChannelID}>", true)));
+            $"__Case closed!__\r\n" +
+            $"Case: <#{acase.ChannelID}> was closed successfully!", true)));
     }
 }
