@@ -2,6 +2,7 @@ using System.Text.RegularExpressions;
 using DSharpPlus;
 using DSharpPlus.EventArgs;
 using ULSS_Helper.Messages;
+using ULSS_Helper.Modules.XML_Modules;
 using ULSS_Helper.Public.AutoHelper.Modules.Process_Files;
 using RPHProcess = ULSS_Helper.Public.AutoHelper.Modules.Process_Files.RPHProcess;
 
@@ -58,10 +59,16 @@ public class MessageSent
                             case "ScriptHookVDotNet.log":
                                 await SHVDNProcess.ProcessLog(attach, ctx);
                                 break;
-                            default: 
+                            default:
+                                if (attach.FileName.EndsWith(".xml") || attach.FileName.EndsWith(".meta"))
+                                {
+                                    var xmlMsg = await XMLValidator.Run(attach.Url);
+                                    await ctx.Message.RespondAsync(BasicEmbeds.Public(
+                                        $"## __ULSS AutoHelper__\r\n```{xmlMsg}```"));
+                                }
                                 // if (attach.FileName.EndsWith(".png") || attach.FileName.EndsWith(".jpg"))
                                 //      await ImageProcess.ProcessImage(attach, ctx);
-                                if (attach.FileName.EndsWith(".log") || attach.FileName.EndsWith(".txt"))
+                                if (attach.FileName.EndsWith(".log") || attach.FileName.EndsWith(".txt" ) || attach.FileName.EndsWith(".rcr" ))
                                     await ctx.Message.RespondAsync(BasicEmbeds.Public(
                                         "## __ULSS AutoHelper__\r\nThis file is not supported or is not named correctly!"));
                                 break;
