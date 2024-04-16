@@ -37,9 +37,10 @@ internal class Startup
             "This is considered proxy support, your access will be revoked!");
         embed.AddField("This is not a ticket system!",
             "You may use the bot to try and solve your own problems, if things still are not working well, only then can you request TS!");
+        embed.AddField("CLOSED FOR UPDATE", "System will be restored when LSPDFR/RPH has an update!");
 
         var dmsg = new DiscordMessageBuilder().AddEmbed(embed);
-        dmsg.AddComponents(new DiscordButtonComponent(ButtonStyle.Success, ComponentInteraction.OpenCase, "Open Case", false));
+        dmsg.AddComponents(new DiscordButtonComponent(ButtonStyle.Success, ComponentInteraction.OpenCase, "Open Case", true));
         
         
         await dmsg.ModifyAsync(origMsg);
