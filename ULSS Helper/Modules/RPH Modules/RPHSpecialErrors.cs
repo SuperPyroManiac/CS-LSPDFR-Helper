@@ -140,17 +140,6 @@ public class RPHSpecialErrors
                        "\r\n*If the issue persists, you may want to report it to the author.*",
             Level = "SEVERE"
             });
-
-        //===//===//===////===//===//===////===//RNUI Dupes//===////===//===//===////===//===//===//
-        var rmvdupe = new List<Error>();
-        if (log.Errors.Any(x => x.ID == "113"))
-            foreach (var error in log.Errors)
-            {
-                if (error.ID is "120" or "131")
-                    rmvdupe.Add(error);
-            }
-        foreach (var dupe in rmvdupe) 
-            log.Errors.Remove(dupe);
         
         return log;
     }
