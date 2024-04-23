@@ -69,7 +69,7 @@ internal class FindErrorMessages : FindBaseMessages
                 ChangesCount = 0;
                 break;
         }
-        if (embed != null) 
+        if (embed != null && !embed.Footer.Text.Contains('0')) 
         {
             var bd = new DiscordInteractionResponseBuilder();
             bd.IsEphemeral = true;

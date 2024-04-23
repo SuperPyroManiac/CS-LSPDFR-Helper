@@ -14,17 +14,11 @@ internal class FindBaseMessages
         foreach (var prop in properties)
         {
             if (prop.OldValue == null) continue;
-            if (prop.OldValue.Equals(prop.NewValue))
-            {
-                output.Append(prop.DefaultOutput);
-            }
-            else 
-            {
-                output.Append($"**{prop.Label}:**\r\n```diff\r\n");
-                var diffText = GenerateDiff(prop.OldValue, prop.NewValue);
-                output.Append(diffText + "```\r\n");
-                ChangesCount++;
-            }
+            if (prop.OldValue.Equals(prop.NewValue)) continue;
+            output.Append($"**{prop.Label}:**\r\n```diff\r\n");
+            var diffText = GenerateDiff(prop.OldValue, prop.NewValue);
+            output.Append(diffText + "```\r\n");
+            ChangesCount++;
         }
         return output.ToString();
     }
