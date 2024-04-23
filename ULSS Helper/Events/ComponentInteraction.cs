@@ -232,7 +232,7 @@ public class ComponentInteraction
                     {
                         var bd = new DiscordInteractionResponseBuilder();
                         bd.IsEphemeral = true;
-                        bd.AddEmbed(BasicEmbeds.Error("There was a problem!\r\n>>> You are not the original editor, or the bot reset during this editor session!", true));
+                        bd.AddEmbed(BasicEmbeds.Error("There was a problem!\r\n>>> You are not the original editor!", true));
                         await eventArgs.Interaction.CreateResponseAsync(
                             InteractionResponseType.ChannelMessageWithSource, bd);
                         return;
