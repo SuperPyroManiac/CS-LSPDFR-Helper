@@ -6,6 +6,7 @@ using ULSS_Helper.Messages;
 using ULSS_Helper.Modules;
 using ULSS_Helper.Modules.ASI_Modules;
 using ULSS_Helper.Modules.ELS_Modules;
+using ULSS_Helper.Modules.Functions;
 using ULSS_Helper.Modules.RPH_Modules;
 using ULSS_Helper.Modules.SHVDN_Modules;
 using ULSS_Helper.Objects;
@@ -112,6 +113,7 @@ public class ComponentInteraction
                             rphProcess = new RPHProcess();
                             rphProcess.log = await RPHAnalyzer.Run(targetAttachment.Url);
                             rphProcess.log.MsgId = cache.OriginalMessage.Id;
+                            ProxyCheck.Run(rphProcess.log, Program.Cache.GetUser(eventArgs.Message.Author.Id.ToString()), eventArgs.Message);
                             Program.Cache.SaveProcess(messageId: eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, rphProcess));
                         }
 

@@ -37,6 +37,10 @@ public class RPHAnalyzer
 
         var timer = new Stopwatch();
         timer.Start();
+
+        var lp = new Regex(@"Log path: (.+)RagePluginHook\.log");
+        log.LogPath = lp.Match(wholeLog).Groups[1].Value;
+        Console.WriteLine(log.LogPath);
         
         foreach (var lineReader in reader)
         {

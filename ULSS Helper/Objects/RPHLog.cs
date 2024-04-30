@@ -3,6 +3,7 @@ namespace ULSS_Helper.Objects;
 // ReSharper disable InconsistentNaming
 public class RPHLog : Log
 {
+    public string LogPath { get; set; }
     public bool FilePossiblyOutdated { get; set; }
     public List<Plugin> RPHPlugin { get; set; }
     public List<Plugin> Current { get; set; }
