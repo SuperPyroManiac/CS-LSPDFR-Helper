@@ -8,4 +8,5 @@ public class DiscordUser
     public int BotAdmin { get; set; }
     public int Bully { get; set; }
     public int Blocked { get; set; }
+    public string LogPath { get; set; }
 }

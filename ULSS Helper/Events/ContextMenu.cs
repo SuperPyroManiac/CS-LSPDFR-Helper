@@ -5,6 +5,7 @@ using ULSS_Helper.Messages;
 using ULSS_Helper.Modules;
 using ULSS_Helper.Modules.ASI_Modules;
 using ULSS_Helper.Modules.ELS_Modules;
+using ULSS_Helper.Modules.Functions;
 using ULSS_Helper.Modules.RPH_Modules;
 using ULSS_Helper.Modules.SHVDN_Modules;
 using ULSS_Helper.Objects;
@@ -116,6 +117,7 @@ internal class ContextMenu : ApplicationCommandModule
             rphProcess = new RPHProcess();
             rphProcess.log = await RPHAnalyzer.Run(attachmentForAnalysis.Url);
             rphProcess.log.MsgId = context.TargetMessage.Id;
+            ProxyCheck.Run(rphProcess.log, Program.Cache.GetUser(context.TargetMessage.Author.Id.ToString()), context.TargetMessage);
             Program.Cache.SaveProcess(context.TargetMessage.Id, new(context.Interaction, context.TargetMessage, rphProcess));
         }
         

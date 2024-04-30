@@ -3,6 +3,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
+using ULSS_Helper.Modules.Functions;
 using ULSS_Helper.Modules.RPH_Modules;
 
 namespace ULSS_Helper.Public.AutoHelper.Modules.Process_Files;
@@ -14,6 +15,7 @@ public class RPHProcess
         try
         {
             var log = await RPHAnalyzer.Run(attach.Url);
+            ProxyCheck.Run(log, Program.Cache.GetUser(ctx.Author.Id.ToString()), ctx.Message);
         
             DiscordMessageBuilder messageBuilder = new();
             var gtAver = "❌";

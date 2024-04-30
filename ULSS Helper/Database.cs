@@ -296,7 +296,7 @@ internal class Database
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
-            await cnn.ExecuteAsync("insert into Users (UID, Username, BotEditor, BotAdmin, Bully, Blocked) VALUES (@UID, @Username, @BotEditor, @BotAdmin, @Bully, @Blocked)", user);
+            await cnn.ExecuteAsync("insert into Users (UID, Username, BotEditor, BotAdmin, Bully, Blocked, LogPath) VALUES (@UID, @Username, @BotEditor, @BotAdmin, @Bully, @Blocked, @LogPath)", user);
             await Task.Run(() => Program.Cache.UpdateUsers(LoadUsers()));
         }
         catch (MySqlException e)
@@ -312,7 +312,7 @@ internal class Database
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
-            await cnn.ExecuteAsync("UPDATE Users SET UID = @UID, Username = @Username, BotEditor = @BotEditor, BotAdmin = @BotAdmin, Bully = @Bully, Blocked = @Blocked WHERE UID = @UID", user);
+            await cnn.ExecuteAsync("UPDATE Users SET UID = @UID, Username = @Username, BotEditor = @BotEditor, BotAdmin = @BotAdmin, Bully = @Bully, Blocked = @Blocked, LogPath = @LogPath WHERE UID = @UID", user);
             await Task.Run(() => Program.Cache.UpdateUsers(LoadUsers()));
         }
         catch (MySqlException e)
