@@ -21,22 +21,21 @@ namespace ULSS_Helper.Objects;
 /// <param name="OskaruApiBaseUrl">The base url for the oskaru.net API (mainly used for text recognition in images uploaded to Discord).</param>
 /// <param name="OskaruApiKey">The API access key for connecting to the oskaru.net API.</param>
 public record EnvironmentConfig(
-    string BotToken, 
-    string DbServer, 
-    string DbUser, 
-    string DbPass, 
-    string DbName, 
-    ulong ServerId, 
-    ulong TsRoleId, 
-    string TsIconUrl, 
-    List<ulong> PublicUsageAllowedChannelIds, 
+    string BotToken,
+    string DbServer,
+    string DbUser,
+    string DbPass,
+    string DbName,
+    ulong ServerId,
+    ulong TsRoleId,
+    string TsIconUrl,
+    List<ulong> PublicUsageAllowedChannelIds,
     ulong AutoHelperChannelId,
     ulong RequestHelpChannelId,
-    ulong TsBotLogChannelId, 
-    ulong PublicBotLogChannelId, 
-    ulong PublicBotReportsChannelId, 
+    ulong TsBotLogChannelId,
+    ulong PublicBotLogChannelId,
+    ulong PublicBotReportsChannelId,
     ulong StaffContactChannelId,
     string OskaruApiBaseUrl,
     string OskaruApiKey
-)
-{};
+);
