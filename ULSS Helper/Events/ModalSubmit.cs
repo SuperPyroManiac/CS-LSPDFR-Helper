@@ -176,7 +176,8 @@ public class ModalSubmit
 					$"### :grey_exclamation: __Feedback received!__\r\n"
 					+ $">>> ```{feedback}```\r\n"
 					+ $"Sent By:\r\n"
-					+ $"<@{e.Interaction.User.Id}> ({e.Interaction.User.Username}) in: <#{e.Interaction.ChannelId}>",
+					+ $"User: <@{e.Interaction.User.Id}> ({e.Interaction.User.Username})\r\n" 
+                    + $"Channel: {e.Interaction.Channel.Mention}",
 					DiscordColor.SapGreen
 					);
 				await Logging.SendPubLog(embed);
