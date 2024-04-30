@@ -33,7 +33,7 @@ internal class Logging
     }
     internal static async Task ReportPubLog(DiscordEmbedBuilder e)
     {
-        var pubBotLogCh = await Program.Client.GetChannelAsync(Program.Settings.Env.StaffContactChannelId);
+        var pubBotLogCh = await Program.Client.GetChannelAsync(Program.Settings.Env.PublicBotReportsChannelId);
         await new DiscordMessageBuilder().WithEmbed(e).SendAsync(pubBotLogCh);
     }
 }
