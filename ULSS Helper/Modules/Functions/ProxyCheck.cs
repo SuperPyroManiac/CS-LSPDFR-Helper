@@ -19,10 +19,8 @@ public class ProxyCheck
         }
         if (user.LogPath == log.LogPath) return true;
 
-        var e = new DiscordEmbedBuilder();
-        e.Color = DiscordColor.Red;
-        e.Description = 
-            "### :no_entry: __Possible Proxy Support!__\r\n" +
+        var e = BasicEmbeds.Error("__Possible Proxy Support!__\r\n", true);
+        e.Description = e.Description +
             ">>> **User uploaded a log with a different path than usual.**\r\n" +
             $"User: <@{user.UID}> ({user.Username})\r\n" +
             $"Log: {msg.JumpLink}";

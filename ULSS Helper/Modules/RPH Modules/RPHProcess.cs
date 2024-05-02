@@ -23,7 +23,7 @@ internal class RPHProcess : SharedLogInfo
     internal string LspdfRver = "❌";
     internal string RpHver = "❌";
 
-    private DiscordEmbedBuilder GetBaseLogInfoEmbed(string description)
+    internal DiscordEmbedBuilder GetBaseLogInfoEmbed(string description)
     {
         if (Program.Cache.GetPlugin("GrandTheftAuto5").Version.Equals(log.GTAVersion)) GtAver = "\u2713";
         if (Program.Cache.GetPlugin("LSPDFR").Version.Equals(log.LSPDFRVersion)) LspdfRver = "\u2713";

@@ -24,12 +24,13 @@ public class OpenCase
             $"\r\n> - ScriptHookVDotNet.log" +
             $"\r\n> - .xml and .meta files" +
             //$"\r\n> - Screenshots of .png or .jpg - BETA" +
-            $"\r\n\r\nThis is not to be used as general use tickets! It may be closed at any time if TS deem it so. If you need help with something else, it may be faster to ask in the public support channels!" +
+            $"\r\n\r\nDo not abuse the request help button! Only use it if you have tried all the steps provided and " +
+            $"have exhausted your own options. Abuse of this feature may result in your access being revoked!" +
             $"\r\n\r\n__Please check the FAQ for common issues!__"));
         caseMsg.AddComponents([
             new DiscordButtonComponent(ButtonStyle.Success, ComponentInteraction.MarkSolved, "Mark Solved", false,
                 new DiscordComponentEmoji("👍")),
-            new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.RequestHelp, "Request Help", true,
+            new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.RequestHelp, "Request Help", false,
                 new DiscordComponentEmoji("❓")),
             new DiscordButtonComponent(ButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", false,
                 new DiscordComponentEmoji("📨"))]);
