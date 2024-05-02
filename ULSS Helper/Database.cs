@@ -12,6 +12,39 @@ internal class Database
 {
     private static readonly string ConnStr = $"Server={Program.Settings.Env.DbServer};User ID={Program.Settings.Env.DbUser};Password={Program.Settings.Env.DbPass};Database={Program.Settings.Env.DbName}";
 
+    internal static bool AutoHelperStatus(string state = null)
+    {
+        if (state == null)
+        {
+            try
+            {
+                using IDbConnection cnn = new MySqlConnection(ConnStr);
+                var output = cnn.Query<string>($"select Value from GlobalValues where Name = 'AHStatus'");
+                return output.First() == "1";
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e);
+                Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+                throw;
+            }
+        }
+        try
+        {
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
+            cnn.Execute($"UPDATE GlobalValues SET Value = '{state}' WHERE Name = 'AHStatus'");
+            var output = state == "1";
+            return output;
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine(e);
+            Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+            throw;
+        }
+        return false;
+    }
+    
     internal static List<Plugin> LoadPlugins()
     {
         try

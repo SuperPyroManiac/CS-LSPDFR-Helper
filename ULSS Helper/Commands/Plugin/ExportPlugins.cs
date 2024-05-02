@@ -26,6 +26,6 @@ public class ExportPlugins : ApplicationCommandModule
         bd.AddFile(fs, AddFileOptions.CloseStream);
         bd.AddEmbed(BasicEmbeds.Success("Plugins Exported.."));
         await ctx.CreateResponseAsync(bd);
-        await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info("Exported plugins!"));
+        await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info("Exported plugins!", true));
     }
 }
