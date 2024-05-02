@@ -18,6 +18,7 @@ internal class Startup
     {
         var cl = Program.Client;
         var ch = await cl.GetChannelAsync(Program.Settings.Env.AutoHelperChannelId);
+        var st = Database.AutoHelperStatus();
         List<DiscordMessage> msgPurge = [];
         DiscordMessage origMsg = null;
         var embed = BasicEmbeds.Public("# __ULSS AutoHelper__");
@@ -27,19 +28,26 @@ internal class Startup
             if (msg.Embeds.FirstOrDefault()!.Description.Contains("ULSS AutoHelper")) origMsg = msg;
         }
         if (origMsg == null) origMsg = await ch.SendMessageAsync("Starting...");
-        embed.AddField("Early Access",
-            "AutoHelper is still a work in progress! It is not perfect and can never fully replace people!");
-        embed.AddField("Do not abuse the bot!",
-            "This is broad, sending altered logs, other files, etc. Your access will be revoked!");
-        embed.AddField("No proxy support!",
-            "Do not use information from this bot to help others. Instead redirect them here themselves.");
-        embed.AddField("Do not upload other peoples logs!",
-            "This is considered proxy support, your access will be revoked!");
-        embed.AddField("This is not a ticket system!",
-            "You may use the bot to try and solve your own problems, if things still are not working well, only then can you request TS!");
+
+        embed.Description = embed.Description + 
+                            "\r\n> *AutoHelper accepts a variety of file types and will attempt to find any issues. " +
+                            "Accepted file types are RPH, ASI, ELS, SHV, SHVDN logs, XML and META files.*" +
+                            "\r\n> This can solve a lot of standard issues, but for more advanced problems, " +
+                            "you may wish to use the support channels to ask for human help." +
+                            "\r\n\r\n## __Rules Of Use__" +
+                            "\r\n> - Do not use the bot for proxy support! This includes uploading logs that are not yours!" +
+                            "\r\n> - Do not send modified logs to 'test' the bot. We already have, it wont crash." +
+                            "\r\n> - Do not upload logs or files greater than 3MB! Access will instantly be revoked." +
+                            "\r\n> - Do not spam cases. You can upload multiple logs to a single case." +
+                            "\r\n\r\n## __Other Info__" +
+                            "\r\n>>> Anyone can join and assist in cases! use **/JoinCase** to do so! " +
+                            "You may request help from a TS in a case using the button, " +
+                            "but only do this if you have tried all the steps the bot has given you. " +
+                            "If you just instantly request help without trying, your access will be revoked!";
+        if (!st) embed.AddField("AutoHelper Disabled!", "System has been disabled by staff temporarily!");
 
         var dmsg = new DiscordMessageBuilder().AddEmbed(embed);
-        dmsg.AddComponents(new DiscordButtonComponent(ButtonStyle.Success, ComponentInteraction.OpenCase, "Open Case", false));
+        dmsg.AddComponents(new DiscordButtonComponent(ButtonStyle.Success, ComponentInteraction.OpenCase, "Open Case", !st));
         
         
         await dmsg.ModifyAsync(origMsg);
