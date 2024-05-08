@@ -60,7 +60,7 @@ public class RPHProcess
                 };
                 var embed3 = new DiscordEmbedBuilder
                 {
-                    Title = ":red_circle:     **Unstable:**",
+                    Title = ":red_circle:     **Remove:**",
                     Description = "\r\n>>> " + string.Join(" - ", brokenList),
                     Color = new DiscordColor(243, 154, 18),
                     Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
@@ -112,7 +112,7 @@ public class RPHProcess
                 if (current.Length != 0 && outdated.Length != 0 && broken.Length == 0) broken = "**None**";
 
                 if (outdated.Length > 0) embed.AddField(":orange_circle:     **Update:**", "\r\n>>> - " + outdated, true);
-                if (broken.Length > 0) embed.AddField(":red_circle:     **Unstable:**", "\r\n>>> - " + broken, true);
+                if (broken.Length > 0) embed.AddField(":red_circle:     **Remove:**", "\r\n>>> - " + broken, true);
 
                 if (current.Length > 0 && outdated.Length == 0 && broken.Length == 0 && !string.IsNullOrEmpty(log.LSPDFRVersion))
                     embed.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
