@@ -31,7 +31,7 @@ internal class Startup
 
         embed.Description = embed.Description + 
                             "\r\n> *AutoHelper accepts a variety of file types and will attempt to find any issues. " +
-                            "Accepted file types are RPH, ASI, ELS, SHV, SHVDN logs, XML and META files.*" +
+                            "Accepted file types are RPH, ASI, ELS, SHVDN logs, XML and META files.*" +
                             "\r\n> This can solve a lot of standard issues, but for more advanced problems, " +
                             "you may wish to use the support channels to ask for human help." +
                             "\r\n\r\n## __Rules Of Use__" +

@@ -48,7 +48,7 @@ internal class RPHProcess : SharedLogInfo
         if (current.Length != 0 && outdated.Length != 0 && broken.Length == 0) broken = "**None**";
 
         if (outdated.Length > 0) embed.AddField(":orange_circle:     **Update:**", "\r\n>>> - " + outdated, true);
-        if (broken.Length > 0) embed.AddField(":red_circle:     **Unstable:**", "\r\n>>> - " + broken, true);
+        if (broken.Length > 0) embed.AddField(":red_circle:     **Remove:**", "\r\n>>> - " + broken, true);
         if (missing.Length > 0) embed.AddField(":bangbang:  **Plugins not recognized:**", missing);
         if (missmatch.Length > 0) embed.AddField(":bangbang:  **Plugin version newer than DB:**", missmatch);
 
@@ -117,7 +117,7 @@ internal class RPHProcess : SharedLogInfo
             };
             var embed3 = new DiscordEmbedBuilder
             {
-                Title = ":red_circle:     **Unstable:**",
+                Title = ":red_circle:     **Remove:**",
                 Description = "\r\n>>> " + string.Join(" - ", brokenList),
                 Color = new DiscordColor(243, 154, 18),
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl }
@@ -267,8 +267,8 @@ internal class RPHProcess : SharedLogInfo
         if (current.Length >= 1024) current = "Too many plugins to show!";
         if (rph.Length >= 1024) current = "Too many plugins to show!";
         
-        embed.AddField(":jigsaw:     **Up To Date:**", "\r\n>>> - " + current, false);
-        embed.AddField(":purple_circle:     **RPH Plugins:**", "\r\n>>> - " + rph, false);
+        embed.AddField(":jigsaw:     **Up To Date:**", "\r\n>>> - " + current);
+        embed.AddField(":purple_circle:     **RPH Plugins:**", "\r\n>>> - " + rph);
 
         var responseBuilder = new DiscordInteractionResponseBuilder();
         responseBuilder.AddEmbed(embed);
