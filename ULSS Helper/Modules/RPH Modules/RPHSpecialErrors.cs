@@ -104,6 +104,17 @@ public class RPHSpecialErrors
             log.Errors.Add(plugOth);
         }
         
+        //===//===//===////===//===//===////===//Outdated RPH Plugins to Outdated list//===////===//===//===////===//===//===//
+        var rph1Match = Regex.Match(wholeLog, @"DamageTrackingFramework: \[VERSION OUTDATED\]");
+        if (rph1Match.Success && log.Outdated.All(x => x.Name != "DamageTrackingFramework")) 
+            log.Outdated.Add(
+                new Plugin
+                {
+                    Name = "DamageTrackingFramework", 
+                    DName = "DamageTrackingFramework", 
+                    Link = "https://www.lcpdfr.com/downloads/gta5mods/scripts/42767-damage-tracker-framework/"
+                });
+        
         //===//===//===////===//===//===////===//Exception Detection//===////===//===//===////===//===//===//
         var crashMatch = Regex.Matches(wholeLog, @"Stack trace:.*\n(?:.+at (\w+)\..+\n)+");
         var causedCrash = new List<Plugin>();
