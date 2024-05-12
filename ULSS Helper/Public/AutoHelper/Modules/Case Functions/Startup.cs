@@ -19,7 +19,6 @@ internal class Startup
         var cl = Program.Client;
         var ch = await cl.GetChannelAsync(Program.Settings.Env.AutoHelperChannelId);
         var st = Database.AutoHelperStatus();
-        List<DiscordMessage> msgPurge = [];
         DiscordMessage origMsg = null;
         var embed = BasicEmbeds.Public("# __ULSS AutoHelper__");
         await foreach (var msg in ch.GetMessagesAsync(100))
@@ -35,15 +34,16 @@ internal class Startup
                             "\r\n> This can solve a lot of standard issues, but for more advanced problems, " +
                             "you may wish to use the support channels to ask for human help." +
                             "\r\n\r\n## __Rules Of Use__" +
-                            "\r\n> - Do not use the bot for proxy support! This includes uploading logs that are not yours!" +
-                            "\r\n> - Do not send modified logs to 'test' the bot. We already have, it wont crash." +
+                            "\r\n> - Do not use the bot for proxy support. This includes uploading logs that are not yours." +
+                            "\r\n> - Do not send modified logs to 'test' the bot. We already have, it won't crash." +
                             "\r\n> - Do not upload logs or files greater than 3MB! Access will instantly be revoked." +
                             "\r\n> - Do not spam cases. You can upload multiple logs to a single case." +
                             "\r\n\r\n## __Other Info__" +
                             "\r\n>>> Anyone can join and assist in cases! use **/JoinCase** to do so! " +
                             "You may request help from a TS in a case using the button, " +
                             "but only do this if you have tried all the steps the bot has given you. " +
-                            "If you just instantly request help without trying, your access will be revoked!";
+                            "If you just instantly request help without trying, your access may be revoked!" +
+                            "\r\n\r\nCreated by: SuperPyroManiac, Hendrik, Hammer";
         if (!st) embed.AddField("AutoHelper Disabled!", "System has been disabled by staff temporarily!");
 
         var dmsg = new DiscordMessageBuilder().AddEmbed(embed);
