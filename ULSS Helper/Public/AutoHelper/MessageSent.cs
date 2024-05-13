@@ -58,11 +58,13 @@ public class MessageSent
                     {
                         var rs = $">>> User: {ctx.Author.Mention} ({ctx.Author.Id.ToString()})\r\nLog: {ctx.Message.JumpLink}\r\n" +
                                  $"User sent a log greater than 3MB!\r\nFile Size: {attach.FileSize/1000000}MB)";
+                        var os = "__AutoBlacklisted!__\r\nYou have sent a log bigger than 3MB! You may not use the AutoHelper until staff review this!";
                         switch (attach.FileName)
                         {
                             case "RagePluginHook.log":
                                 if (attach.FileSize / 1000000 > 3)
                                 {
+                                    await ctx.Message.RespondAsync(BasicEmbeds.Error(os, true));
                                     AutoBlacklist.Add(ctx.Author.Id.ToString(), rs);
                                     return;
                                 }
@@ -71,6 +73,7 @@ public class MessageSent
                             case "ELS.log":
                                 if (attach.FileSize / 1000000 > 3)
                                 {
+                                    await ctx.Message.RespondAsync(BasicEmbeds.Error(os, true));
                                     AutoBlacklist.Add(ctx.Author.Id.ToString(), rs);
                                     return;
                                 }
@@ -79,6 +82,7 @@ public class MessageSent
                             case "asiloader.log":
                                 if (attach.FileSize / 1000000 > 3)
                                 {
+                                    await ctx.Message.RespondAsync(BasicEmbeds.Error(os, true));
                                     AutoBlacklist.Add(ctx.Author.Id.ToString(), rs);
                                     return;
                                 }
@@ -87,6 +91,7 @@ public class MessageSent
                             case "ScriptHookVDotNet.log":
                                 if (attach.FileSize / 1000000 > 3)
                                 {
+                                    await ctx.Message.RespondAsync(BasicEmbeds.Error(os, true));
                                     AutoBlacklist.Add(ctx.Author.Id.ToString(), rs);
                                     return;
                                 }
@@ -97,6 +102,7 @@ public class MessageSent
                                 {
                                     if (attach.FileSize / 1000000 > 5)
                                     {
+                                        await ctx.Message.RespondAsync(BasicEmbeds.Error(os, true));
                                         AutoBlacklist.Add(ctx.Author.Id.ToString(), rs);
                                         return;
                                     }
