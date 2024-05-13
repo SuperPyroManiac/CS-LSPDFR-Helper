@@ -2,6 +2,7 @@ using System.Text.RegularExpressions;
 using DSharpPlus;
 using DSharpPlus.EventArgs;
 using ULSS_Helper.Messages;
+using ULSS_Helper.Modules.Functions;
 using ULSS_Helper.Modules.XML_Modules;
 using ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 using ULSS_Helper.Public.AutoHelper.Modules.Process_Files;
@@ -55,23 +56,50 @@ public class MessageSent
                     if (ctx.Message.Attachments.Count == 0) return;
                     foreach (var attach in ctx.Message.Attachments)
                     {
+                        var rs = $">>> User: {ctx.Author.Mention} ({ctx.Author.Id.ToString()})\r\nLog: {ctx.Message.JumpLink}\r\n" +
+                                 $"User sent a log greater than 3MB!\r\nFile Size: {attach.FileSize/1000000}MB)";
                         switch (attach.FileName)
                         {
                             case "RagePluginHook.log":
+                                if (attach.FileSize / 1000000 > 3)
+                                {
+                                    AutoBlacklist.Add(ctx.Author.Id.ToString(), rs);
+                                    return;
+                                }
                                 await RPHProcess.ProcessLog(attach, ctx);
                                 break;
                             case "ELS.log":
+                                if (attach.FileSize / 1000000 > 3)
+                                {
+                                    AutoBlacklist.Add(ctx.Author.Id.ToString(), rs);
+                                    return;
+                                }
                                 await ELSProcess.ProcessLog(attach, ctx);
                                 break;
                             case "asiloader.log":
+                                if (attach.FileSize / 1000000 > 3)
+                                {
+                                    AutoBlacklist.Add(ctx.Author.Id.ToString(), rs);
+                                    return;
+                                }
                                 await ASIProcess.ProcessLog(attach, ctx);
                                 break;
                             case "ScriptHookVDotNet.log":
+                                if (attach.FileSize / 1000000 > 3)
+                                {
+                                    AutoBlacklist.Add(ctx.Author.Id.ToString(), rs);
+                                    return;
+                                }
                                 await SHVDNProcess.ProcessLog(attach, ctx);
                                 break;
                             default:
                                 if (attach.FileName.EndsWith(".xml") || attach.FileName.EndsWith(".meta"))
                                 {
+                                    if (attach.FileSize / 1000000 > 5)
+                                    {
+                                        AutoBlacklist.Add(ctx.Author.Id.ToString(), rs);
+                                        return;
+                                    }
                                     var xmlMsg = await XMLValidator.Run(attach.Url);
                                     await ctx.Message.RespondAsync(BasicEmbeds.Public(
                                         $"## __ULSS AutoHelper__\r\n```{xmlMsg}```"));
