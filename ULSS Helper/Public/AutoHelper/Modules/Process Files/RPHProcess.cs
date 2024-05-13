@@ -16,6 +16,16 @@ public class RPHProcess
         {
             var log = await RPHAnalyzer.Run(attach.Url);
             ProxyCheck.Run(log, Program.Cache.GetUser(ctx.Author.Id.ToString()), ctx.Message);
+
+            if (log.LogModified)
+            {
+                await ctx.Message.RespondAsync(
+                    BasicEmbeds.Error("__AutoBlacklisted!__\r\n" +
+                                      "You have sent a modified log! You may not use the AutoHelper until staff review this!", true));
+                AutoBlacklist.Add(ctx.Author.Id.ToString(),
+                    $">>> User: {ctx.Author.Mention} ({ctx.Author.Id.ToString()})\r\nLog: {ctx.Message.JumpLink}\r\nUser sent a modified log!");
+                return;
+            }
         
             var gtAver = "❌";
             var lspdfRver = "❌";
