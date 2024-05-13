@@ -3,6 +3,7 @@ using DSharpPlus;
 using DSharpPlus.EventArgs;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Modules.XML_Modules;
+using ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 using ULSS_Helper.Public.AutoHelper.Modules.Process_Files;
 using RPHProcess = ULSS_Helper.Public.AutoHelper.Modules.Process_Files.RPHProcess;
 
@@ -19,6 +20,15 @@ public class MessageSent
             if (Program.Cache.GetCasess().Any(x => x.ChannelID == ctx.Channel.Id.ToString()) && !ctx.Author.IsBot)
             {
                 var ac = Program.Cache.GetCasess().First(x => x.ChannelID == ctx.Channel.Id.ToString());
+
+                if (Program.Cache.GetUser(ac.OwnerID).Blocked == 1)
+                {
+                    await ctx.Message.RespondAsync(BasicEmbeds.Error(
+                        $"__You are blacklisted from the bot!__\r\nContact server staff in <#{Program.Settings.Env.StaffContactChannelId}> if you think this is an error!", true));
+                    await CloseCase.Close(ac);
+                    return;
+                }
+                
                 if (ac.OwnerID == ctx.Author.Id.ToString())
                 {
                     ac.Timer = ac.TsRequested switch
