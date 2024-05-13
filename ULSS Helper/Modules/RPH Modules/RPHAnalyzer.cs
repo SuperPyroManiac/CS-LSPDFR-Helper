@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using ULSS_Helper.Messages;
+using ULSS_Helper.Modules.Functions;
 using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Modules.RPH_Modules;
@@ -33,7 +34,20 @@ public class RPHAnalyzer
         log.DownloadLink = attachmentUrl;
 
         if (reader.Length > 0)
+        {
+            if (!reader[0].Contains("Started new log on"))
+            {
+                log.LogModified = true;
+                log.Errors.Add(new Error()
+                {
+                    ID = "666",
+                    Level = "CRITICAL",
+                    Solution = "**This log has been modified! It is invalid and should not be used! Analyze canceled!**"
+                });
+                return log;
+            }
             log.FilePossiblyOutdated = IsPossiblyOutdatedFile(reader[0]);
+        }
 
         var timer = new Stopwatch();
         timer.Start();
@@ -263,8 +277,7 @@ public class RPHAnalyzer
     {
         var dateLineRegex = new Regex(@".+Started new log on \D*(\d+\W{1,2}\d+\W{1,2}\d+\S{0,1}|\d+\W[a-zA-Z]{3}\W\d+)\D*(\d{1,2}\W\d{1,2}\W\d{1,2})\s*\D*\.\d{1,3}");
         var dateLineMatch = dateLineRegex.Match(dateLine);
-        if (!dateLineMatch.Success) 
-            return false;
+        if (!dateLineMatch.Success) return false;
         
         var dateString = dateLineMatch.Groups[1].Value; 
         var timeString = dateLineMatch.Groups[2].Value;

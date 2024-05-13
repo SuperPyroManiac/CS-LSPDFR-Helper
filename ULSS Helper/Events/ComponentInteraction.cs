@@ -468,7 +468,8 @@ public class ComponentInteraction
                 var msg = new DiscordWebhookBuilder();
                 if (Database.LoadUsers().FirstOrDefault(x => x.UID == eventArgs.User.Id.ToString())!.Blocked == 1)
                 {
-                    await eventArgs.Interaction.EditOriginalResponseAsync(msg.AddEmbed(BasicEmbeds.Error($"You are blacklisted from the bot!\r\nContact server staff in <#{Program.Settings.Env.StaffContactChannelId}> if you think this is an error!")));
+                    await eventArgs.Interaction.EditOriginalResponseAsync(msg.AddEmbed(BasicEmbeds.Error(
+                        $"__You are blacklisted from the bot!__\r\nContact server staff in <#{Program.Settings.Env.StaffContactChannelId}> if you think this is an error!", true)));
                     return;
                 }
         

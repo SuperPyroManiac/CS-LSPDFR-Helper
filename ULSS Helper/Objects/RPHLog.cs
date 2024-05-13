@@ -5,6 +5,7 @@ public class RPHLog : Log
 {
     public string LogPath { get; set; }
     public bool FilePossiblyOutdated { get; set; }
+    public bool LogModified { get; set; }
     public List<Plugin> RPHPlugin { get; set; }
     public List<Plugin> Current { get; set; }
     public List<Plugin> Outdated { get; set; }
