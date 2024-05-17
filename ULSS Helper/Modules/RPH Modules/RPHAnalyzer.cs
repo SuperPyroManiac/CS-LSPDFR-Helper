@@ -35,7 +35,7 @@ public class RPHAnalyzer
 
         if (reader.Length > 0)
         {
-            if (!reader[0].Contains("Started new log on"))
+            if (!reader[0].Contains("Started new log on") || !wholeLog.Contains("Cleaning temp folder"))
             {
                 log.LogModified = true;
                 log.Errors.Add(new Error()
