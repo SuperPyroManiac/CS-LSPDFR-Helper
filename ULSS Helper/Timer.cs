@@ -7,7 +7,7 @@ internal class Timer
 {
     internal static void StartTimer()
     {
-        var aTimer = new System.Timers.Timer(TimeSpan.FromMinutes(45));
+        var aTimer = new System.Timers.Timer(TimeSpan.FromHours(1));
         aTimer.Elapsed += OnLongTimedEvent;
         aTimer.Start();
 
