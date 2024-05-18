@@ -30,7 +30,7 @@ public class OpenCase
         caseMsg.AddComponents([
             new DiscordButtonComponent(ButtonStyle.Success, ComponentInteraction.MarkSolved, "Mark Solved", false,
                 new DiscordComponentEmoji("👍")),
-            new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.RequestHelp, "Request Help", false,
+            new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.RequestHelp, "Request Help", true,
                 new DiscordComponentEmoji("❓")),
             new DiscordButtonComponent(ButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", false,
                 new DiscordComponentEmoji("📨"))]);
