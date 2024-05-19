@@ -9,4 +9,10 @@ public class DiscordUser
     public int Bully { get; set; }
     public int Blocked { get; set; }
     public string LogPath { get; set; }
+
+    private async Task<bool> IsTs()
+    {
+        var usr = await Program.GetUser(UID);
+        return usr.Roles.Any(role => role.Id == Program.Settings.Env.TsRoleId);
+    }
 }

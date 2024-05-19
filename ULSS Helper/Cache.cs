@@ -177,7 +177,7 @@ internal class Cache
                 if (_userActionCacheDict[key].Msg != null)
                     await _userActionCacheDict[key].Msg.DeleteAsync();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Console.WriteLine("Editor message was manually deleted!");
             }

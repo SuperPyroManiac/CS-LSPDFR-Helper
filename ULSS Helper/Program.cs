@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using DSharpPlus;
 using DSharpPlus.AsyncEvents;
+using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
@@ -68,5 +69,11 @@ internal class Program
 	        Console.WriteLine(e.Exception);
 	        return Task.CompletedTask;
         };
+    }
+
+    internal static async Task<DiscordMember> GetUser(string uid)
+    {
+        var serv = await Client.GetGuildAsync(Settings.Env.ServerId);
+        return await serv.GetMemberAsync(ulong.Parse(uid));
     }
 }

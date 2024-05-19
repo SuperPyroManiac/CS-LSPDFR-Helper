@@ -26,18 +26,11 @@ public class RPHProcess
                     $">>> User: {ctx.Author.Mention} ({ctx.Author.Id.ToString()})\r\nLog: {ctx.Message.JumpLink}\r\nUser sent a modified log!");
                 return;
             }
-        
-            var gtAver = "❌";
-            var lspdfRver = "❌";
-            var rpHver = "❌";
-            if (Program.Cache.GetPlugin("GrandTheftAuto5").Version.Equals(log.GTAVersion)) gtAver = "\u2713";
-            if (Program.Cache.GetPlugin("LSPDFR").Version.Equals(log.LSPDFRVersion)) lspdfRver = "\u2713";
-            if (Program.Cache.GetPlugin("RagePluginHook").Version.Equals(log.RPHVersion)) rpHver = "\u2713";
+            
             var linkedOutdated = log.Outdated.Select(
                     i => !string.IsNullOrEmpty(i?.Link)
                         ? $"[{i.DName}]({i.Link})"
-                        : $"[{i?.DName}](https://www.google.com/search?q=lspdfr+{i!.DName.Replace(" ", "+")})")
-                .ToList();
+                        : $"[{i?.DName}](https://www.google.com/search?q=lspdfr+{i!.DName.Replace(" ", "+")})").ToList();
             var currentList = log.Current.Select(i => i?.DName).ToList();
             var brokenList = log.Broken.Select(i => i?.DName).ToList();
             brokenList.AddRange(log.Library.Select(i => i?.DName).ToList());

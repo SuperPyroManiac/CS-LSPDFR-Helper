@@ -42,7 +42,6 @@ internal class Database
             Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
             throw;
         }
-        return false;
     }
     
     internal static List<Plugin> LoadPlugins()
@@ -397,7 +396,6 @@ internal class Database
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("UPDATE Cases SET CaseID = @CaseID, OwnerID = @OwnerID, ChannelID = @ChannelID, Solved = @Solved, Timer = @Timer, TsRequested = @TsRequested, RequestID = @RequestID WHERE CaseID = (@CaseID)", autocase);
             await Task.Run(() => Program.Cache.UpdateCases(LoadCases()));
-            await Task.Run(CaseMonitor.UpdateMonitor);
         }
         catch (MySqlException e)
         {

@@ -69,7 +69,7 @@ public class EditError : ApplicationCommandModule
             if (oldEditor != null)
                 await oldEditor.Msg.DeleteAsync();
         }
-        catch (Exception e)
+        catch (Exception)
         {
             Console.WriteLine("Someone manually deleted an editor message!");
         }
