@@ -14,6 +14,10 @@ internal class Timer
         var bTimer = new System.Timers.Timer(TimeSpan.FromMinutes(10));
         bTimer.Elapsed += OnShortTimedEvent;
         bTimer.Start();
+        
+        var cTimer = new System.Timers.Timer(TimeSpan.FromMinutes(1));
+        cTimer.Elapsed += SuperShortTimedEvent;
+        cTimer.Start();
     }
 
     private static void OnLongTimedEvent(object source, ElapsedEventArgs e)
@@ -28,8 +32,8 @@ internal class Timer
         {
             if (ac.Timer > 0) ac.Timer--;
             Database.EditCase(ac);
-            Task.Run(CheckCases.Validate);
         }
+        Task.Run(CheckCases.Validate);
     }
 
     private static async void OnShortTimedEvent(object source, ElapsedEventArgs e)
@@ -40,5 +44,11 @@ internal class Timer
         Program.Cache.UpdateErrors(Database.LoadErrors());
         Program.Cache.UpdateCases(Database.LoadCases());
         Program.Cache.UpdateUsers(Database.LoadUsers());
+    }
+    
+    private static async void SuperShortTimedEvent(object source, ElapsedEventArgs e)
+    {
+        //Update CaseMonitor
+        await Task.Run(CaseMonitor.UpdateMonitor);
     }
 }
