@@ -39,11 +39,11 @@ internal class Timer
     private static async void OnShortTimedEvent(object source, ElapsedEventArgs e)
     {
         //Clean & Update Caches
-        await Task.Run(() => Program.Cache.RemoveExpiredCacheEntries(TimeSpan.FromMinutes(10)));
-        await Task.Run(() => Program.Cache.UpdatePlugins(Database.LoadPlugins()));
-        await Task.Run(() => Program.Cache.UpdateErrors(Database.LoadErrors()));
-        await Task.Run(() => Program.Cache.UpdateCases(Database.LoadCases()));
-        await Task.Run(() => Program.Cache.UpdateUsers(Database.LoadUsers()));
+        await Program.Cache.RemoveExpiredCacheEntries(TimeSpan.FromMinutes(10));
+        Program.Cache.UpdatePlugins(Database.LoadPlugins());
+        Program.Cache.UpdateErrors(Database.LoadErrors());
+        Program.Cache.UpdateCases(Database.LoadCases());
+        Program.Cache.UpdateUsers(Database.LoadUsers());
     }
 
     private static async void SuperShortTimedEvent(object source, ElapsedEventArgs e)

@@ -212,7 +212,7 @@ internal class Database
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("insert into Plugin (Name, DName, Version, EAVersion, ID, State, Description, Link) VALUES (@Name, @DName, @Version, @EAVersion, @ID, @State, @Description, @Link)", plugin);
-            await Task.Run(() => Program.Cache.UpdatePlugins(LoadPlugins()));
+            Program.Cache.UpdatePlugins(LoadPlugins());
         }
         catch (MySqlException e)
         {
@@ -248,7 +248,7 @@ internal class Database
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("UPDATE Plugin SET Name = @Name, DName = @DName, Version = @Version, EAVersion = @EAVersion, ID = @ID, State = @State, Description = @Description, Link = @Link WHERE Name = (@Name)", plugin);
-            await Task.Run(() => Program.Cache.UpdatePlugins(LoadPlugins()));
+            Program.Cache.UpdatePlugins(LoadPlugins());
         }
         catch (MySqlException e)
         {
@@ -264,7 +264,7 @@ internal class Database
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("UPDATE Error SET Regex = @Regex, Solution = @Solution, Description = @Description, Level = @Level WHERE ID = (@ID)", error);
-            await Task.Run(() => Program.Cache.UpdateErrors(LoadErrors()));
+            Program.Cache.UpdateErrors(LoadErrors());
         }
         catch (MySqlException e)
         {
@@ -280,7 +280,7 @@ internal class Database
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("delete from Plugin where Name = (@Name)", plugin);
-            await Task.Run(() => Program.Cache.UpdatePlugins(LoadPlugins()));
+            Program.Cache.UpdatePlugins(LoadPlugins());
         }
         catch (MySqlException e)
         {
@@ -296,7 +296,7 @@ internal class Database
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("delete from Error where ID = (@ID)", error);
-            await Task.Run(() => Program.Cache.UpdateErrors(LoadErrors()));
+            Program.Cache.UpdateErrors(LoadErrors());
         }
         catch (MySqlException e)
         {
@@ -329,7 +329,7 @@ internal class Database
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("insert into Users (UID, Username, BotEditor, BotAdmin, Bully, Blocked, LogPath) VALUES (@UID, @Username, @BotEditor, @BotAdmin, @Bully, @Blocked, @LogPath)", user);
-            await Task.Run(() => Program.Cache.UpdateUsers(LoadUsers()));
+            Program.Cache.UpdateUsers(LoadUsers());
         }
         catch (MySqlException e)
         {
@@ -345,7 +345,7 @@ internal class Database
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("UPDATE Users SET UID = @UID, Username = @Username, BotEditor = @BotEditor, BotAdmin = @BotAdmin, Bully = @Bully, Blocked = @Blocked, LogPath = @LogPath WHERE UID = @UID", user);
-            await Task.Run(() => Program.Cache.UpdateUsers(LoadUsers()));
+            Program.Cache.UpdateUsers(LoadUsers());
         }
         catch (MySqlException e)
         {
@@ -378,7 +378,7 @@ internal class Database
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("insert into Cases (CaseID, OwnerID, ChannelID, Solved, Timer, TsRequested, RequestID) VALUES (@CaseID, @OwnerID, @ChannelID, @Solved, @Timer, @TsRequested, @RequestID)", autocase);
-            await Task.Run(() => Program.Cache.UpdateCases(LoadCases()));
+            Program.Cache.UpdateCases(LoadCases());
             await Task.Run(CaseMonitor.UpdateMonitor);
         }
         catch (MySqlException e)
@@ -395,7 +395,7 @@ internal class Database
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("UPDATE Cases SET CaseID = @CaseID, OwnerID = @OwnerID, ChannelID = @ChannelID, Solved = @Solved, Timer = @Timer, TsRequested = @TsRequested, RequestID = @RequestID WHERE CaseID = (@CaseID)", autocase);
-            await Task.Run(() => Program.Cache.UpdateCases(LoadCases()));
+            Program.Cache.UpdateCases(LoadCases());
         }
         catch (MySqlException e)
         {
@@ -462,6 +462,6 @@ internal class Database
                 await Logging.ErrLog($"SQL Issue: {e}");
             }
         }
-        await Task.Run(() => Program.Cache.UpdatePlugins(LoadPlugins()));
+        Program.Cache.UpdatePlugins(LoadPlugins());
     }
 }
