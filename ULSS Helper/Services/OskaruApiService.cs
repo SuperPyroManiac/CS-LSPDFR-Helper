@@ -6,13 +6,13 @@ namespace ULSS_Helper.Services;
 
 record AnalyseImageLinkRequest
 {
-    public String downloadLink { get; set; }
-    public String caption { get; set; }
+    public string downloadLink { get; set; }
+    public string caption { get; set; }
 }
 
 record AnalyseImageLinkResponse
 {
-    public String ocrResult { get; set; }
+    public string ocrResult { get; set; }
 }
 
 public class OskaruApiService
@@ -27,7 +27,7 @@ public class OskaruApiService
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Api-Key", Program.Settings.Env.OskaruApiKey);
     }
 
-    public async Task<String> GetImageText(String imageUrl, String? caption = null)
+    public async Task<string> GetImageText(string imageUrl, string caption = null)
     {
         Console.WriteLine("Got to oska");
         var requestBody = new AnalyseImageLinkRequest()
