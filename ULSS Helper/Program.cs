@@ -53,10 +53,10 @@ internal class Program
         Client.UseInteractivity(new InteractivityConfiguration());
 
         await Client.ConnectAsync();
-        await Task.Run(() => Cache.UpdatePlugins(Database.LoadPlugins()));
-        await Task.Run(() => Cache.UpdateErrors(Database.LoadErrors()));
-        await Task.Run(() => Cache.UpdateCases(Database.LoadCases()));
-        await Task.Run(() => Cache.UpdateUsers(Database.LoadUsers()));
+        Cache.UpdatePlugins(Database.LoadPlugins());
+        Cache.UpdateErrors(Database.LoadErrors());
+        Cache.UpdateCases(Database.LoadCases());
+        Cache.UpdateUsers(Database.LoadUsers());
         await Task.Run(Startup.StartAutoHelper);
         await StatusMessages.SendStartupMessage();
         await Task.Delay(-1);
