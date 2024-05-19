@@ -21,11 +21,10 @@ public class CloseCase : ApplicationCommandModule
             var count = 0;
             foreach (var aacase in Program.Cache.GetCasess())
             {
-                if (aacase.Solved == 0)
-                {
-                    await Public.AutoHelper.Modules.Case_Functions.CloseCase.Close(aacase);
-                    count++;
-                }
+                if (aacase.Solved != 0) continue;
+                Task.Delay(1000).GetAwaiter();
+                await Public.AutoHelper.Modules.Case_Functions.CloseCase.Close(aacase);
+                count++;
             }
             await ctx.Interaction.EditOriginalResponseAsync(msg.AddEmbed(BasicEmbeds.Success(
                 $"__All cases closed!__\r\n" +
