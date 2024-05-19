@@ -10,6 +10,7 @@ internal class CheckCases
             if (th.ThreadMetadata.IsArchived) continue;
             foreach (var ac in Program.Cache.GetCasess())
             {
+                await Task.Delay(3000);
                 if (!ac.ChannelID.Equals(th.Id.ToString())) continue;
                 if (ac.Solved == 1 || ac.Timer == 0) await CloseCase.Close(ac);
             }
