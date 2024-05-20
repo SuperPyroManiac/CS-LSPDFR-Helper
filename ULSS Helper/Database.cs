@@ -407,19 +407,18 @@ internal class Database
     
     internal static async void UpdatePluginVersions()
     {
-        #pragma warning disable SYSLIB0014
-	    var webClient = new WebClient();
+        HttpClient webClient = new();
 	    var plugins = LoadPlugins();
         foreach (var plugin in plugins)
         {
             try
             {
-                if (plugin.ID == "0" || string.IsNullOrEmpty(plugin.ID) || plugin.State == "EXTERNAL") continue;
+                if (plugin.ID == "0" || string.IsNullOrEmpty(plugin.ID) || plugin.State != "LSPDFR") continue;
                 
                 string onlineVersion;
                 try
                 {
-                    onlineVersion = webClient.DownloadString($"https://www.lcpdfr.com/applications/downloadsng/interface/api.php?do=checkForUpdates&fileId={plugin.ID}&textOnly=1");
+                    onlineVersion = await webClient.GetStringAsync($"https://www.lcpdfr.com/applications/downloadsng/interface/api.php?do=checkForUpdates&fileId={plugin.ID}&textOnly=1");
                 }
                 catch (WebException e)
                 {
