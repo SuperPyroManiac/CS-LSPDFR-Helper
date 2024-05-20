@@ -407,9 +407,8 @@ internal class Database
     
     internal static async void UpdatePluginVersions()
     {
-        await Logging.SendLog(1173304071084585050, 339550607847194624, BasicEmbeds.Info("__Updater Started!__\r\nThis message is for testing purposes and will eventually be removed!", true));
         HttpClient webClient = new();
-        webClient.Timeout = TimeSpan.FromMinutes(10);
+        webClient.Timeout = TimeSpan.FromMinutes(1);
 	    var plugins = LoadPlugins();
         foreach (var plugin in plugins)
         {
@@ -424,7 +423,8 @@ internal class Database
                 }
                 catch (TaskCanceledException e)
                 {
-                    await Logging.ErrLog($"Plugin ID for {plugin.Name} invalid or LSPDFR is down/timed out!\r\n\r\n{e}");
+                    //await Logging.ErrLog($"Plugin ID for {plugin.Name} invalid or LSPDFR is down/timed out!\r\n\r\n{e}");
+                    Console.WriteLine($"Version checker timed out for: {plugin.Name}");
                     continue;
                 }
                 onlineVersion = onlineVersion.Replace("[a-zA-Z]", "").Split(" ")[0];
@@ -464,7 +464,5 @@ internal class Database
             }
         }
         Program.Cache.UpdatePlugins(LoadPlugins());
-        await Logging.SendLog(1173304071084585050, 339550607847194624, BasicEmbeds.Info("__Updater Finished!__", true));
-
     }
 }
