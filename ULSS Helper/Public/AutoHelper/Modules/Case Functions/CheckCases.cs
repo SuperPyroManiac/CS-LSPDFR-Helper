@@ -11,7 +11,6 @@ internal class CheckCases
             foreach (var ac in Program.Cache.GetCasess())
             {
                 if (!ac.ChannelID.Equals(th.Id.ToString())) continue;
-                Console.WriteLine(ac.CaseID);
                 if (ac.Solved == 1 || ac.Timer == 0) await CloseCase.Close(ac);
             }
         }
