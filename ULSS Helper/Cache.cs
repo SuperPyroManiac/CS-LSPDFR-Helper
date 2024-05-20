@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using ULSS_Helper.Objects;
 
 namespace ULSS_Helper;
@@ -6,16 +7,16 @@ internal class Cache
 {
     private Dictionary<ulong, ProcessCache> _processCacheDict = new();
     private Dictionary<string, UserActionCache> _userActionCacheDict = new();
-    private Dictionary<string, Plugin> _pluginCacheDict = new();
-    private Dictionary<string, Error> _errorCacheDict = new();
-    private Dictionary<string, AutoCase> _caseCacheDict = new();
-    private Dictionary<string, DiscordUser> _userCacheDict = new();
+    private ConcurrentDictionary<string, Plugin> _pluginCacheDict = new();
+    private ConcurrentDictionary<string, Error> _errorCacheDict = new();
+    private ConcurrentDictionary<string, AutoCase> _caseCacheDict = new();
+    private ConcurrentDictionary<string, DiscordUser> _userCacheDict = new();
 
     /// <summary>Saves the plugin list to the cache replacing any old ones.</summary>
     internal void UpdatePlugins(List<Plugin> plugins)
     {
         _pluginCacheDict.Clear();
-        foreach (var plugin in plugins) _pluginCacheDict.Add(plugin.Name, plugin);
+        foreach (var plugin in plugins) _pluginCacheDict.TryAdd(plugin.Name, plugin);
     }
     
     /// <summary>Returns a list of all cached plugins.</summary>
@@ -34,7 +35,7 @@ internal class Cache
     internal void UpdateErrors(List<Error> errors)
     {
         _errorCacheDict.Clear();
-        foreach (var error in errors) _errorCacheDict.Add(error.ID, error);
+        foreach (var error in errors) _errorCacheDict.TryAdd(error.ID, error);
     }
     
     /// <summary>Returns a list of all cached errors.</summary>
@@ -53,7 +54,7 @@ internal class Cache
     internal void UpdateCases(List<AutoCase> cases)
     {
         _caseCacheDict.Clear();
-        foreach (var acase in cases) _caseCacheDict.Add(acase.CaseID, acase);
+        foreach (var acase in cases) _caseCacheDict.TryAdd(acase.CaseID, acase);
     }
     
     /// <summary>Returns a list of all cached cases.</summary>
@@ -72,7 +73,7 @@ internal class Cache
     internal void UpdateUsers(List<DiscordUser> users)
     {
         _userCacheDict.Clear();
-        foreach (var user in users) _userCacheDict.Add(user.UID, user);
+        foreach (var user in users) _userCacheDict.TryAdd(user.UID, user);
     }
     
     /// <summary>Returns a list of all cached users.</summary>
@@ -129,7 +130,7 @@ internal class Cache
         if (_userActionCacheDict.ContainsKey(key))
             _userActionCacheDict[key] = newCache;
         else
-            _userActionCacheDict.Add(key, newCache);
+            _userActionCacheDict.TryAdd(key, newCache);
     }
 
     /// <summary>Gets the UserActionCache object for the given combination of user and action.</summary>
