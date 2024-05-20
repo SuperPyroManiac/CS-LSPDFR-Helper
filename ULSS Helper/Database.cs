@@ -414,6 +414,7 @@ internal class Database
         {
             try
             {
+                Thread.Sleep(1500);
                 if (plugin.ID == "0" || string.IsNullOrEmpty(plugin.ID) || plugin.State != "LSPDFR") continue;
                 
                 string onlineVersion;
@@ -423,7 +424,7 @@ internal class Database
                 }
                 catch (TaskCanceledException e)
                 {
-                    //await Logging.ErrLog($"Plugin ID for {plugin.Name} invalid or LSPDFR is down/timed out!\r\n\r\n{e}");
+                    await Logging.ErrLog($"Plugin ID for {plugin.Name} invalid or LSPDFR is down/timed out!\r\n\r\n{e}");
                     Console.WriteLine($"Version checker timed out for: {plugin.Name}");
                     continue;
                 }
