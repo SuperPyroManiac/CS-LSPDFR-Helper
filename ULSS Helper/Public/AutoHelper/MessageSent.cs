@@ -54,6 +54,7 @@ public class MessageSent
                     }
                     
                     if (ctx.Message.Attachments.Count == 0) return;
+                    var dltMsg = false;
                     foreach (var attach in ctx.Message.Attachments)
                     {
                         var rs = $">>> User: {ctx.Author.Mention} ({ctx.Author.Id.ToString()})\r\nLog: {ctx.Message.JumpLink}\r\n" +
@@ -114,10 +115,16 @@ public class MessageSent
                                 //      await ImageProcess.ProcessImage(attach, ctx);
                                 if (attach.FileName.EndsWith(".log") || attach.FileName.EndsWith(".txt" ) || attach.FileName.EndsWith(".rcr" ))
                                     await ctx.Message.RespondAsync(BasicEmbeds.Public(
-                                        "## __ULSS AutoHelper__\r\nThis file is not supported or is not named correctly!"));
+                                        "## __ULSS AutoHelper__\r\nThis file is not supported or is not named correctly!")); 
+                                if (attach.FileName.EndsWith(".exe") || attach.FileName.EndsWith(".dll") || attach.FileName.EndsWith(".asi"))
+                                {
+                                    await ctx.Message.RespondAsync(BasicEmbeds.Error($"__ULSS AutoHelper__\r\n>>> Do not upload executable files!\r\nFile: {attach.FileName}", true));
+                                    dltMsg = true;
+                                }
                                 break;
                         }
                     }
+                    if (dltMsg) await ctx.Message.DeleteAsync();
                 }
             }
         }

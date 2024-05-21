@@ -10,7 +10,6 @@ internal class Startup
     internal static async Task StartAutoHelper()
     {
         await CheckUsers.Validate();
-        await CheckCases.Validate();
         await UpdateMsg();
         await CaseMonitor.UpdateMonitor();
     }

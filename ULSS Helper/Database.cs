@@ -408,8 +408,8 @@ internal class Database
     internal static async void UpdatePluginVersions()
     {
         HttpClient webClient = new();
-        webClient.Timeout = TimeSpan.FromMinutes(1);
 	    var plugins = LoadPlugins();
+        //TODO: webClient.DefaultRequestHeaders.ConnectionClose = true;
         foreach (var plugin in plugins)
         {
             try
@@ -455,13 +455,13 @@ internal class Database
                 catch (MySqlException e)
                 {
                     Console.WriteLine(e);
-                    Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+                    Logging.ErrLog($"SQL Issue:\r\n {e}").GetAwaiter();
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                await Logging.ErrLog($"SQL Issue: {e}");
+                await Logging.ErrLog($"Version Updater Exception:\r\n {e}");
             }
         }
         Program.Cache.UpdatePlugins(LoadPlugins());
