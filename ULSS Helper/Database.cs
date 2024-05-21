@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using MySqlConnector;
 using System.Net;
+using System.Text.RegularExpressions;
 using Dapper;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
@@ -414,29 +415,13 @@ internal class Database
         {
             try
             {
-                Thread.Sleep(1500);
                 if (plugin.ID == "0" || string.IsNullOrEmpty(plugin.ID) || plugin.State != "LSPDFR") continue;
+                Thread.Sleep(3500);
                 
-                string onlineVersion;
-                try
-                {
-                    onlineVersion = await webClient.GetStringAsync($"https://www.lcpdfr.com/applications/downloadsng/interface/api.php?do=checkForUpdates&fileId={plugin.ID}&textOnly=1");
-                }
-                catch (TaskCanceledException e)
-                {
-                    await Logging.ErrLog($"Plugin ID for {plugin.Name} invalid or LSPDFR is down/timed out!\r\n\r\n{e}");
-                    Console.WriteLine($"Version checker timed out for: {plugin.Name}");
-                    continue;
-                }
-                onlineVersion = onlineVersion.Replace("[a-zA-Z]", "").Split(" ")[0];
-                var characters = new[]
-                {
-                    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q",
-                    "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H",
-                    "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y",
-                    "Z", "(", ")"
-                };
-                onlineVersion = characters.Aggregate(onlineVersion, (current, c) => current.Replace(c, string.Empty).Trim());
+                var onlineVersion = await webClient.GetStringAsync($"https://www.lcpdfr.com/applications/downloadsng/interface/api.php?do=checkForUpdates&fileId={plugin.ID}&textOnly=1");
+                onlineVersion = onlineVersion.Trim();
+                onlineVersion = Regex.Replace(onlineVersion, "[^0-9.]", "");
+                
                 var onlineVersionSplit = onlineVersion.Split(".");
                 if (onlineVersionSplit.Length == 2) onlineVersion += ".0.0";
                 if (onlineVersionSplit.Length == 3) onlineVersion += ".0";
