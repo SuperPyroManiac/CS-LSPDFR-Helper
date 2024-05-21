@@ -41,7 +41,6 @@ internal class Program
 
         sCommands.RegisterCommands(Assembly.GetExecutingAssembly(), Settings.Env.ServerId);
         sCommands.RegisterCommands<ContextMenu>(Settings.Env.ServerId);
-        sCommands.AutocompleteErrored += Oops();
 
         Client.ModalSubmitted += ModalSubmit.HandleModalSubmit;
         Client.ComponentInteractionCreated += ComponentInteraction.HandleInteraction;
@@ -62,16 +61,7 @@ internal class Program
         await Task.Delay(-1);
     }
 
-    private static AsyncEventHandler<SlashCommandsExtension, AutocompleteErrorEventArgs> Oops()
-    {
-        return (s, e) =>
-        {
-	        Console.WriteLine(e.Exception);
-	        return Task.CompletedTask;
-        };
-    }
-
-    internal static async Task<DiscordMember> GetUser(string uid)
+    internal static async Task<DiscordMember> GetMember(string uid)
     {
         var serv = await Client.GetGuildAsync(Settings.Env.ServerId);
         return await serv.GetMemberAsync(ulong.Parse(uid));

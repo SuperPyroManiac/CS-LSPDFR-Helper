@@ -162,10 +162,6 @@ public class ModalSubmit
                 
                 await Logging.SendLog(e.Interaction.ChannelId, e.Interaction.User.Id, embed);
             }
-            
-			// delete the cached data of the action that is completed now (which means the cache isn't needed anymore)
-            //Program.Cache.RemoveUserAction(e.Interaction.User.Id, e.Interaction.Data.CustomId);
-            // We have a timer to clear this after 10 minutes. Don't think we need this? TODO: Check if this causes issues.
         }
 		else // modal submit events that don't require cached data
 		{

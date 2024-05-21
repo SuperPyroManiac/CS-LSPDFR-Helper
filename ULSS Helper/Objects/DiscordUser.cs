@@ -12,7 +12,7 @@ public class DiscordUser
 
     private async Task<bool> IsTs()
     {
-        var usr = await Program.GetUser(UID);
+        var usr = await Program.GetMember(UID);
         return usr.Roles.Any(role => role.Id == Program.Settings.Env.TsRoleId);
     }
 }
