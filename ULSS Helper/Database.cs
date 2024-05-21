@@ -416,31 +416,43 @@ internal class Database
             {
                 if (plugin.ID == "0" || string.IsNullOrEmpty(plugin.ID) || plugin.State != "LSPDFR") continue;
                 Thread.Sleep(3500);
-                
-                var onlineVersion = await webClient.GetStringAsync($"https://www.lcpdfr.com/applications/downloadsng/interface/api.php?do=checkForUpdates&fileId={plugin.ID}&textOnly=1");
-                onlineVersion = onlineVersion.Trim();
+
+                var onlineVersion = await webClient.GetStringAsync(
+                    $"https://www.lcpdfr.com/applications/downloadsng/interface/api.php?do=checkForUpdates&fileId={plugin.ID}&textOnly=1");
+                onlineVersion = onlineVersion.Split(" ")[0].Trim();
                 onlineVersion = Regex.Replace(onlineVersion, "[^0-9.]", "");
-                
+
                 var onlineVersionSplit = onlineVersion.Split(".");
                 if (onlineVersionSplit.Length == 2) onlineVersion += ".0.0";
                 if (onlineVersionSplit.Length == 3) onlineVersion += ".0";
-                    
+
                 try
                 {
                     if (plugin.Version == onlineVersion) continue;
                     Console.WriteLine($"Updating Plugin {plugin.Name} from {plugin.Version} to {onlineVersion}");
                     if (string.IsNullOrEmpty(plugin.EAVersion) || plugin.EAVersion == "0")
-                        await Logging.SendLog(0, 0, BasicEmbeds.Info($"Updating Plugin!\r\n{plugin.Name} from {plugin.Version} to {onlineVersion}", true), false);
+                        await Logging.SendLog(0, 0,
+                            BasicEmbeds.Info(
+                                $"Updating Plugin!\r\n{plugin.Name} from {plugin.Version} to {onlineVersion}", true),
+                            false);
                     else
-                        await Logging.SendLog(0, 0, BasicEmbeds.Warning($"Updating Plugin!\r\n{plugin.Name} from {plugin.Version} to {onlineVersion}\r\nThis plugin has an EA version of {plugin.EAVersion} please double check it now!", true), false);
+                        await Logging.SendLog(0, 0,
+                            BasicEmbeds.Warning(
+                                $"Updating Plugin!\r\n{plugin.Name} from {plugin.Version} to {onlineVersion}\r\nThis plugin has an EA version of {plugin.EAVersion} please double check it now!",
+                                true), false);
                     using IDbConnection cnn = new MySqlConnection(ConnStr);
-                    await cnn.ExecuteAsync($"UPDATE Plugin SET Version = '{onlineVersion}' WHERE Name = '{plugin.Name}';");
+                    await cnn.ExecuteAsync(
+                        $"UPDATE Plugin SET Version = '{onlineVersion}' WHERE Name = '{plugin.Name}';");
                 }
                 catch (MySqlException e)
                 {
                     Console.WriteLine(e);
                     Logging.ErrLog($"SQL Issue:\r\n {e}").GetAwaiter();
                 }
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine($"{plugin.Name} skipped.\r\n{e}");
             }
             catch (Exception e)
             {
