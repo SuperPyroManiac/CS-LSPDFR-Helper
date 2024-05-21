@@ -409,7 +409,7 @@ internal class Database
     {
         HttpClient webClient = new();
 	    var plugins = LoadPlugins();
-        //TODO: webClient.DefaultRequestHeaders.ConnectionClose = true;
+        webClient.DefaultRequestHeaders.ConnectionClose = true;
         foreach (var plugin in plugins)
         {
             try
