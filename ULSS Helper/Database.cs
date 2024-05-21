@@ -446,7 +446,7 @@ internal class Database
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                await Logging.ErrLog($"Version Updater Exception:\r\n {e}");
+                //await Logging.ErrLog($"Version Updater Exception:\r\n {e}");
             }
         }
         Program.Cache.UpdatePlugins(LoadPlugins());
