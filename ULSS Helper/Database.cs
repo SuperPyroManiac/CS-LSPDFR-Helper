@@ -454,6 +454,10 @@ internal class Database
             {
                 Console.WriteLine($"{plugin.Name} skipped.\r\n{e}");
             }
+            catch (TaskCanceledException e)
+            {
+                Console.WriteLine($"{plugin.Name} skipped.\r\n{e}");
+            }
             catch (Exception e)
             {
                 Console.WriteLine(e);
