@@ -9,6 +9,8 @@ internal class MessageSent
 {
     internal static async Task MessageSentEvent(DiscordClient s, MessageCreateEventArgs ctx)
     {
+        if (ctx.Channel.IsPrivate) return;
+        
         var dbUsers = Program.Cache.GetUsers();
         //Bully
         if (dbUsers.Any(x => x.UID == ctx.Author.Id.ToString() && x.Bully == 1))
@@ -38,9 +40,11 @@ internal class MessageSent
             Database.AddUser(newUser);
         }
         
-        //Activate Public MessageSentEvent
+        //Activate PublicSupport MessageSentEvent
+        await Modules.Functions.PublicSupportManager.MessageSentEvent(s, ctx);
+        
+        //Activate AutoHelper MessageSentEvent
         await Public.AutoHelper.MessageSent.MessageSentEvent(s, ctx);
-        // var th = new Thread(() => Public.AutoHelper.MessageSent.MessageSentEvent(s, ctx).GetAwaiter());
-        // th.Start();
+
     }
 }

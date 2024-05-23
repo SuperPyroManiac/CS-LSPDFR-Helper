@@ -13,6 +13,7 @@ namespace ULSS_Helper.Objects;
 /// <param name="TsIconUrl">The URL of the icon/image asset that should be used in the bot's embed thumbnail fields.</param>
 /// <param name="PublicUsageAllowedChannelIds">A list of channel IDs where the public users are allowed to use the bot commands (/checkLog, etc.).</param>
 /// <param name="AutoHelperChannelId">The channel that the autohelper will run in.</param>
+/// <param name="SupportChannelId">The public support channel the bot will monitor.</param>
 /// <param name="RequestHelpChannelId">The channel that the autohelper will request help in.</param>
 /// <param name="TsBotLogChannelId">The channel ID of the channel on the server where the bot should log everything that should be visible to users with the TS role.</param>
 /// <param name="PublicBotLogChannelId">The channel ID of the channel on the server where the bot should log all actions related to public users using the bot commands (checkLog) on their own.</param>
@@ -31,6 +32,7 @@ public record EnvironmentConfig(
     string TsIconUrl,
     List<ulong> PublicUsageAllowedChannelIds,
     ulong AutoHelperChannelId,
+    ulong SupportChannelId,
     ulong RequestHelpChannelId,
     ulong TsBotLogChannelId,
     ulong PublicBotLogChannelId,
