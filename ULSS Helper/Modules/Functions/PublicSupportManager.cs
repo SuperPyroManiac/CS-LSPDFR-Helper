@@ -29,6 +29,10 @@ public class PublicSupportManager
                     true));
                 dltMsg = true;
             }
+
+            if (attach.FileName.Equals("message.txt"))
+                await ctx.Message.RespondAsync(BasicEmbeds.Public("## __ULSS AutoHelper__\r\nPlease don't copy and paste the log! Send your `RagePluginHook.log` from your main GTA directory instead by dragging it into Discord."));
+
         }
         if (dltMsg) await ctx.Message.DeleteAsync();
     }
