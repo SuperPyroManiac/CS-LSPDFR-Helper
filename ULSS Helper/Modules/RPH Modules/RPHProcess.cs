@@ -36,8 +36,7 @@ internal class RPHProcess : SharedLogInfo
             Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.Env.TsIconUrl },
             Footer = new DiscordEmbedBuilder.EmbedFooter
             {
-                Text = $"GTA: {GtAver} - RPH: {RpHver}" +
-                       $" - LSPDFR: {LspdfRver} - Notes: {log.Errors.Count}"
+                Text = $"GTA: {GtAver} - RPH: {RpHver} - LSPDFR: {LspdfRver} - Notes: {log.Errors.Count} - Try /CheckPlugin"
             }
         };
     }
