@@ -378,7 +378,7 @@ internal class Database
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
-            await cnn.ExecuteAsync("insert into Cases (CaseID, OwnerID, ChannelID, Solved, Timer, TsRequested, RequestID) VALUES (@CaseID, @OwnerID, @ChannelID, @Solved, @Timer, @TsRequested, @RequestID)", autocase);
+            await cnn.ExecuteAsync("insert into Cases (CaseID, OwnerID, ChannelID, Solved, Timer, TsRequested, RequestID, CreateDate) VALUES (@CaseID, @OwnerID, @ChannelID, @Solved, @Timer, @TsRequested, @RequestID, @CreateDate)", autocase);
             Program.Cache.UpdateCases(LoadCases());
             await Task.Run(CaseMonitor.UpdateMonitor);
         }
@@ -395,7 +395,23 @@ internal class Database
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
-            await cnn.ExecuteAsync("UPDATE Cases SET CaseID = @CaseID, OwnerID = @OwnerID, ChannelID = @ChannelID, Solved = @Solved, Timer = @Timer, TsRequested = @TsRequested, RequestID = @RequestID WHERE CaseID = (@CaseID)", autocase);
+            await cnn.ExecuteAsync("UPDATE Cases SET CaseID = @CaseID, OwnerID = @OwnerID, ChannelID = @ChannelID, Solved = @Solved, Timer = @Timer, TsRequested = @TsRequested, RequestID = @RequestID, CreateDate = @CreateDate WHERE CaseID = (@CaseID)", autocase);
+            Program.Cache.UpdateCases(LoadCases());
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine(e);
+            await Logging.ErrLog($"SQL Issue: {e}");
+            throw;
+        }
+    }
+    
+    internal static async void DeleteCase(AutoCase ac)
+    {
+        try
+        {
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
+            await cnn.ExecuteAsync("delete from Cases where CaseID = (@CaseID)", ac);
             Program.Cache.UpdateCases(LoadCases());
         }
         catch (MySqlException e)

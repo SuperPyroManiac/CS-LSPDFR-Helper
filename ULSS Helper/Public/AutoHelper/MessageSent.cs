@@ -34,7 +34,7 @@ public class MessageSent
                 {
                     ac.Timer = ac.TsRequested switch
                     {
-                        1 => 24,
+                        1 => 12,
                         0 => 6,
                         _ => ac.Timer
                     };

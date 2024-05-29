@@ -19,7 +19,6 @@ internal class CheckCases
             caseChannelDict.TryAdd(th, Program.Cache.GetCase(th.Name.Split(": ")[1]));
             //Console.WriteLine($"{th.Name} --- {th.Name.Split(": ")[1]}");
         }
-        Console.WriteLine($"================={thList.Count} Threads==================");
 
         foreach (var pair in caseChannelDict.Where(c => c.Value != null))
         {
