@@ -1,3 +1,4 @@
+using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
@@ -32,10 +33,9 @@ public class FindCases : ApplicationCommandModule
         foreach (var ucase in acase)
         {
             if (embed.Fields.Count >= 24) break;
-            var ch = await Program.Client.GetChannelAsync(ulong.Parse(ucase.ChannelID));
             embed.AddField($"__Case: {ucase.CaseID}__", 
-                $">>> {ch.Mention}\r\n" +
-                $"<t:{ch.CreationTimestamp.ToUnixTimeSeconds()}:R>\r\n" +
+                $">>> <#{ucase.ChannelID}>\r\n" +
+                $"{Formatter.Timestamp(ucase.CreateDate)}\r\n" +
                 $"TS Request: {Convert.ToBoolean(ucase.TsRequested)}", true);
         }
         
