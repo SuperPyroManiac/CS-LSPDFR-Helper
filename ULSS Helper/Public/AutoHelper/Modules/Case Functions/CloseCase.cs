@@ -1,3 +1,4 @@
+using DSharpPlus;
 using DSharpPlus.Entities;
 using FuzzySharp.SimilarityRatio.Scorer.StrategySensitive;
 using ULSS_Helper.Messages;
@@ -7,7 +8,7 @@ namespace ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 
 internal class CloseCase
 {
-    internal static async Task Close(AutoCase ac)
+    internal static async Task Close(AutoCase ac, bool validate = true)
     {
         try
         {
@@ -23,13 +24,16 @@ internal class CloseCase
 
             var tmp = await Program.Client.GetChannelAsync(ulong.Parse(ac.ChannelID));
             var ch = (DiscordThreadChannel)tmp;
-            var send = false;
+            var send = true;
 
             await foreach (var msg in tmp.GetMessagesAsync(5))
             {
-                if (msg.Content.Contains("Thread has been archived!")) continue;
-                send = true;
-                break;
+                if (msg.Embeds.Count <= 0) continue;
+                if (msg.Embeds[0].Description.Contains("If you need further help start a new one or ask"))
+                {
+                    send = false;
+                    break;
+                }
             }
             
             if (send)
@@ -40,8 +44,8 @@ internal class CloseCase
             await ch.ModifyAsync(model => model.Locked = true);
             await ch.ModifyAsync(model => model.IsArchived = true);
 
-            Database.EditCase(ac);
-            await CheckCases.Validate();
+            await Database.EditCase(ac);
+            if (validate) await CheckCases.Validate();
         }
         catch (Exception e)
         {

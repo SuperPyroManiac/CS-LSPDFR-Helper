@@ -38,7 +38,7 @@ public class MessageSent
                         0 => 6,
                         _ => ac.Timer
                     };
-                    Database.EditCase(ac);
+                    await Database.EditCase(ac);
 
                     foreach (var error in Program.Cache.GetErrors().Where(error => error.Level == "PMSG"))
                     {

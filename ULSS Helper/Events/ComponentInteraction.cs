@@ -483,6 +483,7 @@ public class ComponentInteraction
                 var newcase = await Public.AutoHelper.Modules.Case_Functions.OpenCase.CreateCase(eventArgs);
                 msg.AddEmbed(BasicEmbeds.Success($"Created new case! {newcase.Mention}"));
                 await eventArgs.Interaction.EditOriginalResponseAsync(msg);
+                await CheckCases.Validate();
             }
         }
         catch (Exception exception)

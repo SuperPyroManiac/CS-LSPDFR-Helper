@@ -9,23 +9,22 @@ internal class CheckCases
     internal static async Task Validate()
     {
     ConcurrentDictionary<DiscordThreadChannel, AutoCase> caseChannelDict = new();
-        
+    
         var parentCh = await Program.Client.GetChannelAsync(Program.Settings.Env.AutoHelperChannelId);
-        foreach (var th in parentCh.Threads)
-            caseChannelDict.TryAdd(th, Program.Cache.GetCase(th.Name.Split(": ")[1]));
-
-        foreach (var pair in caseChannelDict)
+        var parentChTh = await parentCh.ListPublicArchivedThreadsAsync(null, 100);
+        var thList = parentChTh.Threads.ToList();
+        thList.AddRange(parentCh.Threads);
+        foreach (var th in thList)
         {
-            if (pair.Key.ThreadMetadata.IsArchived && pair.Value.Solved == 0)
-            {
-                await CloseCase.Close(pair.Value);
-                break;
-            }
-            if (!pair.Key.ThreadMetadata.IsArchived && pair.Value.Solved == 1)
-            {
-                await CloseCase.Close(pair.Value);
-                break;
-            }
+            caseChannelDict.TryAdd(th, Program.Cache.GetCase(th.Name.Split(": ")[1]));
+            //Console.WriteLine($"{th.Name} --- {th.Name.Split(": ")[1]}");
+        }
+        Console.WriteLine($"================={thList.Count} Threads==================");
+
+        foreach (var pair in caseChannelDict.Where(c => c.Value != null))
+        {
+            if (pair.Key.ThreadMetadata.IsArchived && pair.Value.Solved == 0) await CloseCase.Close(pair.Value);
+            if (pair.Key.ThreadMetadata.IsArchived == false && pair.Value.Solved == 1) await CloseCase.Close(pair.Value);
             if (pair.Key.ThreadMetadata.IsArchived) continue;
             if (pair.Value.Solved == 1 || pair.Value.Timer == 0) await CloseCase.Close(pair.Value);
         }

@@ -390,7 +390,7 @@ internal class Database
         }
     }
     
-    internal static async void EditCase(AutoCase autocase)
+    internal static async Task EditCase(AutoCase autocase)
     {
         try
         {

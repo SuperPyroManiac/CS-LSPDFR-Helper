@@ -51,7 +51,6 @@ public class OpenCase
 
         var smsg = await supportthread.SendMessageAsync(caseMsg);
         await smsg.PinAsync();
-        await CheckCases.Validate();
         return supportthread;
     }
 }

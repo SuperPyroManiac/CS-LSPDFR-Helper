@@ -217,7 +217,7 @@ public class ModalSubmit
                         ac.TsRequested = 1;
                         ac.RequestID = tsMsgSent.Id.ToString();
                         ac.Timer = 24;
-                        Database.EditCase(ac);
+                        await Database.EditCase(ac);
                         return;
                     }
                     if (ac.TsRequested == 1)
