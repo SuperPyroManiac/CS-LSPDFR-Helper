@@ -45,7 +45,8 @@ public class OpenCase
             ChannelID = supportthread.Id.ToString(),
             Solved = 0,
             Timer = 6,
-            TsRequested = 0
+            TsRequested = 0,
+            CreateDate = supportthread.CreationTimestamp.DateTime
         };
         await Database.AddCase(newCase);
 

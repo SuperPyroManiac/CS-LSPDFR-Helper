@@ -9,4 +9,5 @@ public class AutoCase
     public int Solved { get; set; }
     public int Timer { get; set; }
     public int TsRequested { get; set; }
+    public DateTime CreateDate { get; set; }
 }

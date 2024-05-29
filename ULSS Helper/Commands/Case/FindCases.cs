@@ -23,13 +23,20 @@ public class FindCases : ApplicationCommandModule
             return;
         }
         
+        acase.Sort((x, y) => DateTime.Compare(y.CreateDate, x.CreateDate));
+        
         var embed = BasicEmbeds.Info(
             $"__Cases found!__\r\n" 
-            + $"User: {userId.Mention} has opened {acase.Count} cases!", true);
+            + $"User: {userId.Mention} has opened {acase.Count} cases! Showing the most recent!", true);
         
         foreach (var ucase in acase)
         {
-            embed.Description = embed.Description + $"\r\n> - <#{ucase.ChannelID}>";
+            if (embed.Fields.Count >= 24) break;
+            var ch = await Program.Client.GetChannelAsync(ulong.Parse(ucase.ChannelID));
+            embed.AddField($"__Case: {ucase.CaseID}__", 
+                $">>> {ch.Mention}\r\n" +
+                $"<t:{ch.CreationTimestamp.ToUnixTimeSeconds()}:R>\r\n" +
+                $"TS Request: {Convert.ToBoolean(ucase.TsRequested)}", true);
         }
         
         await ctx.Interaction.EditOriginalResponseAsync(msg.AddEmbed(embed));
