@@ -16,7 +16,8 @@ public class MessageSent
     {
         try
         {
-            if (ctx.Message.MessageType == MessageType.ThreadCreated) await ctx.Channel.DeleteMessageAsync(ctx.Message);
+            if (ctx.Message.MessageType == MessageType.ThreadCreated && ctx.Message.ChannelId == Program.Settings.Env.AutoHelperChannelId) 
+                await ctx.Channel.DeleteMessageAsync(ctx.Message);
             if (Program.Cache.GetCasess().Any(x => x.ChannelID == ctx.Channel.Id.ToString()) && !ctx.Author.IsBot)
             {
                 var ac = Program.Cache.GetCasess().First(x => x.ChannelID == ctx.Channel.Id.ToString());

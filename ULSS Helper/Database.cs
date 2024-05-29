@@ -373,7 +373,7 @@ internal class Database
     }
     
     
-    internal static async void AddCase(AutoCase autocase)
+    internal static async Task AddCase(AutoCase autocase)
     {
         try
         {

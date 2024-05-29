@@ -1,4 +1,5 @@
 using DSharpPlus.Entities;
+using FuzzySharp.SimilarityRatio.Scorer.StrategySensitive;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
@@ -15,23 +16,37 @@ internal class CloseCase
             if (ac.TsRequested == 1 && ac.RequestID != null)
             {
                 var chTs = await Program.Client.GetChannelAsync(Program.Settings.Env.RequestHelpChannelId);
-                var tmpmsg = await chTs.GetMessageAsync(ulong.Parse(ac.RequestID));
-                await chTs.DeleteMessageAsync(tmpmsg);
+                var msg = await chTs.GetMessageAsync(ulong.Parse(ac.RequestID));
+                await chTs.DeleteMessageAsync(msg);
                 ac.RequestID = null;
             }
-            Database.EditCase(ac);
 
-            var tmpch = await Program.Client.GetChannelAsync(ulong.Parse(ac.ChannelID));
-            var ch = (DiscordThreadChannel)tmpch;
-            await ch.SendMessageAsync(BasicEmbeds.Warning(
+            var tmp = await Program.Client.GetChannelAsync(ulong.Parse(ac.ChannelID));
+            var ch = (DiscordThreadChannel)tmp;
+            var send = false;
+
+            await foreach (var msg in tmp.GetMessagesAsync(5))
+            {
+                if (msg.Content.Contains("Thread has been archived!")) continue;
+                send = true;
+                break;
+            }
+            
+            if (send)
+                await ch.SendMessageAsync(BasicEmbeds.Warning(
                 "__Thread has been archived!__\r\n" +
                 "> It is now closed to replies. If you need further help start a new one or ask in the public support channels!", true));
+            
             await ch.ModifyAsync(model => model.Locked = true);
             await ch.ModifyAsync(model => model.IsArchived = true);
+
+            Database.EditCase(ac);
+            await CheckCases.Validate();
         }
         catch (Exception e)
         {
-            await Logging.ErrLog($"Ayyoo pyro, the stupid bug happened.\r\nCase: {ac.CaseID}\r\nChanne: <#{ac.ChannelID}>\r\nOwner: <@{ac.OwnerID}>\r\n{e}");
+            await Logging.ErrLog($"Pyro, the stupid bug happened.\r\nCase: {ac.CaseID}\r\nChannel: <#{ac.ChannelID}>\r\nOwner: <@{ac.OwnerID}>\r\n{e}");
+            //TODO: Change this message.
             Console.WriteLine(e);
         }
     }
