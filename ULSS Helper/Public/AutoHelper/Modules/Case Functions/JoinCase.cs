@@ -14,7 +14,7 @@ internal class JoinCase
             var tmpmsg = await chTs.GetMessageAsync(ulong.Parse(ac.RequestID));
             await chTs.DeleteMessageAsync(tmpmsg);
             ac.RequestID = null;
-            Database.EditCase(ac);
+            await Database.EditCase(ac);
         }
 
         var tmpch = await Program.Client.GetChannelAsync(ulong.Parse(ac.ChannelID));

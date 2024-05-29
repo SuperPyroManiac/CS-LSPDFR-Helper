@@ -31,7 +31,7 @@ internal class Timer
         foreach (var ac in cases.Where(x => x.Solved == 0))
         {
             if (ac.Timer > 0) ac.Timer--;
-            Database.EditCase(ac);
+            Task.Run(() => Database.EditCase(ac));
         }
         Task.Run(CheckCases.Validate);
     }

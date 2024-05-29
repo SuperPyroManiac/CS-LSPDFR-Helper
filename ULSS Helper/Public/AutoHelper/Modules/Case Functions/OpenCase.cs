@@ -4,6 +4,7 @@ using DSharpPlus.EventArgs;
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
+// ReSharper disable IdentifierTypo
 
 namespace ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 
@@ -34,7 +35,7 @@ public class OpenCase
                 new DiscordComponentEmoji("❓")),
             new DiscordButtonComponent(ButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", false,
                 new DiscordComponentEmoji("📨"))]);
-        var tmpuser = await ctx.Guild.GetMemberAsync(ctx.User.Id);
+        var tmpuser = await Program.GetMember(ctx.User.Id.ToString());
         await supportthread.AddThreadMemberAsync(tmpuser);
         
         var newCase = new AutoCase()
@@ -46,7 +47,7 @@ public class OpenCase
             Timer = 6,
             TsRequested = 0
         };
-        Database.AddCase(newCase);
+        await Database.AddCase(newCase);
 
         var smsg = await supportthread.SendMessageAsync(caseMsg);
         await smsg.PinAsync();

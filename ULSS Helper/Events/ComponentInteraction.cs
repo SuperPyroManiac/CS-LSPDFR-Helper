@@ -473,16 +473,17 @@ public class ComponentInteraction
                     return;
                 }
         
-                var findCase = Program.Cache.GetCasess().FirstOrDefault(autocase => autocase.OwnerID.Equals(eventArgs.User.Id.ToString()) && autocase.Solved == 0);
-                if (findCase != null)
-                {
-                    await eventArgs.Interaction.EditOriginalResponseAsync(msg.AddEmbed(BasicEmbeds.Error($"You already have an open case!\r\nCheck <#{findCase.ChannelID}>")));
-                    return;
-                }
+                // var findCase = Program.Cache.GetCasess().FirstOrDefault(autocase => autocase.OwnerID.Equals(eventArgs.User.Id.ToString()) && autocase.Solved == 0);
+                // if (findCase != null)
+                // {
+                //     await eventArgs.Interaction.EditOriginalResponseAsync(msg.AddEmbed(BasicEmbeds.Error($"__You already have an open case!__\r\nCheck <#{findCase.ChannelID}>", true)));
+                //     return;
+                // }
 
                 var newcase = await Public.AutoHelper.Modules.Case_Functions.OpenCase.CreateCase(eventArgs);
                 msg.AddEmbed(BasicEmbeds.Success($"Created new case! {newcase.Mention}"));
                 await eventArgs.Interaction.EditOriginalResponseAsync(msg);
+                await CheckCases.Validate();
             }
         }
         catch (Exception exception)

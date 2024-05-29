@@ -2,6 +2,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
+using ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 
 namespace ULSS_Helper.Commands.Case;
 
@@ -23,9 +24,11 @@ public class CloseCase : ApplicationCommandModule
             {
                 if (aacase.Solved != 0) continue;
                 Task.Delay(1000).GetAwaiter();
-                await Public.AutoHelper.Modules.Case_Functions.CloseCase.Close(aacase);
+                await Public.AutoHelper.Modules.Case_Functions.CloseCase.Close(aacase, false);
                 count++;
             }
+
+            await CheckCases.Validate();
             await ctx.Interaction.EditOriginalResponseAsync(msg.AddEmbed(BasicEmbeds.Success(
                 $"__All cases closed!__\r\n" +
                 $"{count} cases were closed successfully!", true)));
