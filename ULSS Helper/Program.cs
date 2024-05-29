@@ -48,7 +48,6 @@ internal class Program
         Client.GuildMemberAdded += JoinLeave.JoinEvent;
         Client.GuildMemberRemoved += JoinLeave.LeaveEvent;
         //Client.VoiceStateUpdated += VoiceChatManager.OnMemberJoinLeaveVC;
-
         Client.UseInteractivity(new InteractivityConfiguration());
 
         await Client.ConnectAsync();

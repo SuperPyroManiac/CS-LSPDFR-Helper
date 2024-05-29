@@ -27,7 +27,7 @@ public class RPHSpecialErrors
         }
         
         //===//===//===////===//===//===////===//Combined Error Lists//===////===//===//===////===//===//===//
-        var dependmatch = new Regex(@errorData[0].Regex, RegexOptions.Multiline).Matches(wholeLog);
+        var dependmatch = new Regex(@errorData.Find(x => x.ID == "1").Regex, RegexOptions.Multiline).Matches(wholeLog);
         foreach (Match match in dependmatch)
         {
             if (log.MissingDepend.Any(x => x.Name.Equals(match.Groups[2].Value))) continue;
@@ -46,8 +46,8 @@ public class RPHSpecialErrors
 		            : $"[{plugin?.DName}](https://www.google.com/search?q=lspdfr+{plugin.Name.Replace(" ", "+")})"
             ).ToList();
             var linkedDependstring = string.Join("\r\n- ", linkedDepend);
-            var dependErr = errorData[0];
-            dependErr.Solution = $"{errorData[0].Solution}\r\n- {linkedDependstring}";
+            var dependErr = errorData.Find(x => x.ID == "1");
+            dependErr.Solution = $"{errorData.Find(x => x.ID == "1").Solution}\r\n- {linkedDependstring}";
             if (dependErr.Solution.Length >= 1024) dependErr.Solution = "Too many to show! God damn!";
             log.Errors.Add(dependErr);
         }
