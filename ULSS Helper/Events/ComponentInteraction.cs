@@ -467,8 +467,8 @@ public class ComponentInteraction
                 var ac = Program.Cache.GetCasess().First(x => x.CaseID.Equals(
                     eventArgs.Message.Embeds.First().Description.Split("Case: ")[1].Split("_").First()));
                 var ch = await Program.Client.GetChannelAsync(ulong.Parse(ac.ChannelID));
-                await ch.SendMessageAsync(BasicEmbeds.Error("__Request Ignored!__\r\n>>> This is likely due to you not providing any info, " + 
-                "or you have not tried any steps to help yourself. Direct basic support questions to: <#672541961969729540>", true));
+                await ch.SendMessageAsync(BasicEmbeds.Error("__Request Denied!__\r\n>>> This is likely due to you not providing any info, " + 
+                "or you have not tried any steps to help yourself.\r\nDirect basic support questions to: <#672541961969729540>", true));
                 var chTs = await Program.Client.GetChannelAsync(Program.Settings.Env.RequestHelpChannelId);
                 var tmpmsg = await chTs.GetMessageAsync(ulong.Parse(ac.RequestID));
                 await chTs.DeleteMessageAsync(tmpmsg);

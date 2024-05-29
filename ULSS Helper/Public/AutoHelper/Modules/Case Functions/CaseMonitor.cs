@@ -1,3 +1,4 @@
+using DSharpPlus;
 using DSharpPlus.Entities;
 using ULSS_Helper.Messages;
 
@@ -42,16 +43,12 @@ internal class CaseMonitor
                 embed.AddField("..And More", "There are too many cases to show!");
                 break;
             }
-
-            var tmpclg = await cl.GetGuildAsync(Program.Settings.Env.ServerId);
-            var tmpclc = await cl.GetChannelAsync(ulong.Parse(ac.ChannelID));
-            var tmpusr = await tmpclg.GetMemberAsync(ulong.Parse(ac.OwnerID));
             
             if (ac.Solved == 0)
                 embed.AddField($"__<#{ac.ChannelID}>__",
-                    $">>> Author: {tmpusr.DisplayName}"
+                    $">>> Author: <@{ac.OwnerID}>"
                     + $"\r\nHelp Requested: {Convert.ToBoolean(ac.TsRequested)}"
-                    + $"\r\nCreated: <t:{tmpclc.CreationTimestamp.ToUnixTimeSeconds()}:R> | AutoClose: `{ac.Timer}` hours");
+                    + $"\r\nCreated: {Formatter.Timestamp(ac.CreateDate)} | AutoClose: `{ac.Timer}` hours");
         }
         if (embed.Fields.Count == 0) embed.AddField("None", "No open cases!");
 
