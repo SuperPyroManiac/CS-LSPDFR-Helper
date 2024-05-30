@@ -6,7 +6,6 @@ public class DiscordUser
     public string Username { get; set; }
     public int BotEditor { get; set; }
     public int BotAdmin { get; set; }
-    public int Bully { get; set; }
     public int Blocked { get; set; }
     public string LogPath { get; set; }
 
