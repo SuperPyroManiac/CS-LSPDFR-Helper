@@ -143,7 +143,6 @@ public class ModalSubmit
                     BotEditor = int.Parse(e.Values["userEditor"]),
                     BotAdmin = int.Parse(e.Values["userBotAdmin"]),
                     Blocked = int.Parse(e.Values["userBlacklist"]),
-                    Bully = int.Parse(e.Values["userBully"])
                 };
                 Database.EditUser(user);
 
@@ -153,8 +152,7 @@ public class ModalSubmit
                     + $" **Username: **{user.Username}\r\n"
                     + $" **Is Editor: **{user.BotEditor}\r\n"
                     + $" **Is Bot Admin: **{user.BotAdmin}\r\n"
-                    + $" **Is Blacklisted: **{user.Blocked}\r\n"
-                    + $" **Bully Victim: **{user.Bully}\r\n", true);
+                    + $" **Is Blacklisted: **{user.Blocked}\r\n", true);
                 
                 await e.Interaction.CreateResponseAsync(
                     InteractionResponseType.ChannelMessageWithSource,

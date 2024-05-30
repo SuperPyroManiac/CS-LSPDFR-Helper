@@ -51,13 +51,6 @@ public class EditUser : ApplicationCommandModule
             style: TextInputStyle.Short, 
             value: dUser.Blocked.ToString()
         ));
-        modal.AddComponents(new TextInputComponent(
-            label: "Bully:", 
-            customId: "userBully", 
-            required: false, 
-            style: TextInputStyle.Short, 
-            value: dUser.Bully.ToString()
-        ));
         
         Program.Cache.SaveUserAction(ctx.Interaction.User.Id, modal.CustomId, new UserActionCache(ctx.Interaction, dUser));
         await ctx.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);

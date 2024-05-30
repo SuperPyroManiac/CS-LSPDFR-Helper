@@ -11,22 +11,8 @@ internal class MessageSent
     {
         if (ctx.Channel.IsPrivate) return;
         
-        var dbUsers = Program.Cache.GetUsers();
-        //Bully
-        if (dbUsers.Any(x => x.UID == ctx.Author.Id.ToString() && x.Bully == 1))
-        {
-            var rNd = new Random().Next(4);
-            if (rNd == 1) await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":tarabruh:"));
-            if (rNd == 2) await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":middle_finger:"));
-            if (rNd == 0)
-            {
-                await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":tarabruh:"));
-                await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(s, ":middle_finger:"));
-            }
-        }
-        
         //Add Users
-        if (dbUsers.All(x => x.UID.ToString() != ctx.Author.Id.ToString()))
+        if (Program.Cache.GetUsers().All(x => x.UID.ToString() != ctx.Author.Id.ToString()))
         {
             var newUser = new DiscordUser()
             {
@@ -34,7 +20,6 @@ internal class MessageSent
                 Username = ctx.Author.Username,
                 BotEditor = 0,
                 BotAdmin = 0,
-                Bully = 0,
                 Blocked = 0
             };
             Database.AddUser(newUser);
