@@ -44,7 +44,7 @@ public class CheckPlugin : ApplicationCommandModule
 			}
 		};
 		response.AddComponents([
-			new DiscordButtonComponent(DiscordButtonStyle.Secondary, "SendFeedback", "Send Feedback", false,
+			new DiscordButtonComponent(ButtonStyle.Secondary, "SendFeedback", "Send Feedback", false,
 				new DiscordComponentEmoji("📨"))
 		]);
 		

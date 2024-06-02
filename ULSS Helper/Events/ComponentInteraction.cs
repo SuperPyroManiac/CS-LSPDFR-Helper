@@ -224,7 +224,7 @@ public class ComponentInteraction
                         }
                     }
                     
-                    await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage, db.AddEmbed(embed));
+                    await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, db.AddEmbed(embed));
                 }
                 
                 //===//===//===////===//===//===////===//Editor Dropdowns//===////===//===//===////===//===//===//
@@ -237,7 +237,7 @@ public class ComponentInteraction
                         bd.IsEphemeral = true;
                         bd.AddEmbed(BasicEmbeds.Error("There was a problem!\r\n>>> You are not the original editor!", true));
                         await eventArgs.Interaction.CreateResponseAsync(
-                            DiscordInteractionResponseType.ChannelMessageWithSource, bd);
+                            InteractionResponseType.ChannelMessageWithSource, bd);
                         return;
                     }
 
@@ -247,7 +247,7 @@ public class ComponentInteraction
                         Database.EditPlugin(usercache.Plugin);
                         Program.Cache.RemoveUserAction(eventArgs.User.Id, SelectPluginValueToEdit);
                         await eventArgs.Message.DeleteAsync();
-                        await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType
+                        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType
                             .DeferredMessageUpdate);
                         return;
                     }
@@ -282,24 +282,24 @@ public class ComponentInteraction
                     if (selected == "Plugin Notes")
                     {
                         modal.AddComponents(
-                            new DiscordTextInputComponent(
+                            new TextInputComponent(
                                 label: selected!, 
                                 customId: selected!, 
                                 required: true, 
                                 value: value,
-                                style: DiscordTextInputStyle.Paragraph));
+                                style: TextInputStyle.Paragraph));
                     }else
                     {
                         modal.AddComponents(
-                            new DiscordTextInputComponent(
+                            new TextInputComponent(
                                 label: selected!, 
                                 customId: selected!, 
                                 required: true, 
                                 value: value,
-                                style: DiscordTextInputStyle.Short));
+                                style: TextInputStyle.Short));
                     }
 
-                    await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.Modal, modal);
+                    await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
                 }
                                 
                 if (eventArgs.Id is SelectErrorValueToEdit or SelectErrorValueToFinish)
@@ -311,7 +311,7 @@ public class ComponentInteraction
                         bd.IsEphemeral = true;
                         bd.AddEmbed(BasicEmbeds.Error("There was a problem!\r\n>>> You are not the original editor, or the bot reset during this editor session!", true));
                         await eventArgs.Interaction.CreateResponseAsync(
-                            DiscordInteractionResponseType.ChannelMessageWithSource, bd);
+                            InteractionResponseType.ChannelMessageWithSource, bd);
                         return;
                     }
 
@@ -321,7 +321,7 @@ public class ComponentInteraction
                         Database.EditError(usercache.Error);
                         Program.Cache.RemoveUserAction(eventArgs.User.Id, SelectErrorValueToEdit);
                         await eventArgs.Message.DeleteAsync();
-                        await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType
+                        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType
                             .DeferredMessageUpdate);
                         return;
                     }
@@ -345,16 +345,16 @@ public class ComponentInteraction
                     modal.WithCustomId(SelectErrorValueToEdit);
                     modal.WithTitle($"Editing {selected}");
                     modal.AddComponents(
-                        new DiscordTextInputComponent(
+                        new TextInputComponent(
                             label: selected!, 
                             customId: selected!, 
                             required: true, 
                             value: value,
-                            style: DiscordTextInputStyle.Paragraph
+                            style: TextInputStyle.Paragraph
                         )
                     );
 
-                    await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.Modal, modal);
+                    await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
                 }
                     
                 //===//===//===////===//===//===////===//RPH Buttons//===////===//===//===////===//===//===//
@@ -408,15 +408,15 @@ public class ComponentInteraction
                 modal.WithCustomId(SendFeedback);
                 modal.WithTitle("Send Feedback");
                 modal.AddComponents(
-                    new DiscordTextInputComponent(
+                    new TextInputComponent(
                         label: "Feedback:", 
                         customId: "feedback", 
                         required: true, 
-                        style: DiscordTextInputStyle.Paragraph
+                        style: TextInputStyle.Paragraph
                     )
                 );
 
-                await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.Modal, modal);
+                await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
             }
             
             //===//===//===////===//===//===////===//Request Help Button//===////===//===//===////===//===//===//
@@ -425,14 +425,14 @@ public class ComponentInteraction
                 DiscordInteractionResponseBuilder modal = new();
                 modal.WithCustomId(ModalSubmit.RequestHelp);
                 modal.WithTitle($"Requesting help!");
-                modal.AddComponents(new DiscordTextInputComponent(
+                modal.AddComponents(new TextInputComponent(
                     label: "Explain your issue in detail:",
                     customId: "issueDsc",
                     required: true,
-                    style: DiscordTextInputStyle.Paragraph
+                    style: TextInputStyle.Paragraph
                 ));
         
-                await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.Modal, modal);
+                await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
             }
             
             //===//===//===////===//===//===////===//Mark Solved Button//===////===//===//===////===//===//===//
@@ -446,12 +446,12 @@ public class ComponentInteraction
                 if (eventArgs.User.Id.ToString().Equals(ac.OwnerID) || tmpuser.Roles.Any(role => role.Id == Program.Settings.Env.TsRoleId))
                 {
                     msg.AddEmbed(BasicEmbeds.Info("Closing case!"));
-                    await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, msg);
+                    await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, msg);
                     await CloseCase.Close(ac);
                     return;
                 }
                 msg.AddEmbed(BasicEmbeds.Error("You do not own this case!"));
-                await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, msg);
+                await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, msg);
             }
             
             //===//===//===////===//===//===////===//Join Case Buttons//===////===//===//===////===//===//===//

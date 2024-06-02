@@ -24,7 +24,7 @@ public class FindErrors : ApplicationCommandModule
     )
     {
         await ctx.CreateResponseAsync(
-            DiscordInteractionResponseType.DeferredChannelMessageWithSource,
+            InteractionResponseType.DeferredChannelMessageWithSource,
             new DiscordInteractionResponseBuilder { IsEphemeral = true }
         );
         

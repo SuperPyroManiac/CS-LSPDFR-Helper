@@ -104,7 +104,7 @@ public class RPHProcess
                 if (embed4.Fields.Count != 0) overflowBuilder.AddEmbed(embed4);
                 // ReSharper disable RedundantExplicitParamsArrayCreation
                 overflowBuilder.AddComponents([
-                    new DiscordButtonComponent(DiscordButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", false, new DiscordComponentEmoji("📨"))]);
+                    new DiscordButtonComponent(ButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", false, new DiscordComponentEmoji("📨"))]);
                 
                 await ctx.Message.RespondAsync(overflowBuilder);
                  
@@ -160,7 +160,7 @@ public class RPHProcess
                 }
                 webhookBuilder.AddComponents(
                     [
-                        new DiscordButtonComponent(DiscordButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", false, new DiscordComponentEmoji("📨"))
+                        new DiscordButtonComponent(ButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", false, new DiscordComponentEmoji("📨"))
                     ]
                 );
                 await ctx.Message.RespondAsync(webhookBuilder);

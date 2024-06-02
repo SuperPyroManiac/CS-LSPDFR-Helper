@@ -128,7 +128,7 @@ internal class RPHProcess : SharedLogInfo
             if (broken.Length != 0) overflowBuilder.AddEmbed(embed3);
             // ReSharper disable RedundantExplicitParamsArrayCreation
             overflowBuilder.AddComponents([
-                new DiscordButtonComponent(DiscordButtonStyle.Danger, ComponentInteraction.RphQuickSendToUser, "Send To User", false,
+                new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.RphQuickSendToUser, "Send To User", false,
                     new DiscordComponentEmoji("📨"))
             ]);
             
@@ -138,7 +138,7 @@ internal class RPHProcess : SharedLogInfo
             else if (eventArgs.Id == ComponentInteraction.RphGetQuickInfo)
             {
                 var responseBuilder = new DiscordInteractionResponseBuilder(overflowBuilder);
-                await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage, responseBuilder);
+                await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, responseBuilder);
                 sentOverflowMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
             }
             else
@@ -154,9 +154,9 @@ internal class RPHProcess : SharedLogInfo
             webhookBuilder.AddEmbed(embed);
             webhookBuilder.AddComponents(
                 [
-                    new DiscordButtonComponent(DiscordButtonStyle.Primary, ComponentInteraction.RphGetDetailedInfo, "Error Info", false, new DiscordComponentEmoji("❗")),
-                    new DiscordButtonComponent(DiscordButtonStyle.Primary, ComponentInteraction.RphGetAdvancedInfo, "Plugin Info", false, new DiscordComponentEmoji("❓")),
-                    new DiscordButtonComponent(DiscordButtonStyle.Danger, ComponentInteraction.RphQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
+                    new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.RphGetDetailedInfo, "Error Info", false, new DiscordComponentEmoji("❗")),
+                    new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.RphGetAdvancedInfo, "Plugin Info", false, new DiscordComponentEmoji("❓")),
+                    new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.RphQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
                 ]
             );
 
@@ -166,7 +166,7 @@ internal class RPHProcess : SharedLogInfo
             else if (eventArgs.Id == ComponentInteraction.RphGetQuickInfo)
             {
                 var responseBuilder = new DiscordInteractionResponseBuilder(webhookBuilder);
-                await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage, responseBuilder);
+                await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, responseBuilder);
                 sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
             }
             else
@@ -231,14 +231,14 @@ internal class RPHProcess : SharedLogInfo
         responseBuilder.AddComponents(
             [
                 new DiscordButtonComponent(
-                    DiscordButtonStyle.Secondary,
+                    ButtonStyle.Secondary,
                     ComponentInteraction.RphGetQuickInfo,
                     "Back to Quick Info", 
                     false,
                     new DiscordComponentEmoji("⬅️")
                 ),
                 new DiscordButtonComponent(
-                    DiscordButtonStyle.Danger,
+                    ButtonStyle.Danger,
                     ComponentInteraction.RphDetailedSendToUser,
                     "Send To User", 
                     false,
@@ -247,7 +247,7 @@ internal class RPHProcess : SharedLogInfo
             ]
         );
 
-        await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage, responseBuilder);
+        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, responseBuilder);
         var sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
         Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
     }
@@ -275,7 +275,7 @@ internal class RPHProcess : SharedLogInfo
         responseBuilder.AddComponents(
             [
                 new DiscordButtonComponent(
-                    DiscordButtonStyle.Secondary,
+                    ButtonStyle.Secondary,
                     ComponentInteraction.RphGetQuickInfo,
                     "Back to Quick Info", 
                     false,
@@ -284,7 +284,7 @@ internal class RPHProcess : SharedLogInfo
             ]
         );
 
-        await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage, responseBuilder);
+        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, responseBuilder);
         var sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
         Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
     }
@@ -310,9 +310,9 @@ internal class RPHProcess : SharedLogInfo
         var newMessage = new DiscordMessageBuilder();
         newMessage.AddEmbeds(newEmbList);
         newMessage.WithReply(log.MsgId, true);
-        newMessage.AddComponents(new DiscordButtonComponent(DiscordButtonStyle.Secondary, ComponentInteraction.SendFeedback,
+        newMessage.AddComponents(new DiscordButtonComponent(ButtonStyle.Secondary, ComponentInteraction.SendFeedback,
             "Send Feedback", false, new DiscordComponentEmoji("📨")));
-        await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage,
+        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
             new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Sent!")));
         await eventArgs.Interaction.DeleteOriginalResponseAsync();
         await newMessage.SendAsync(eventArgs.Channel);

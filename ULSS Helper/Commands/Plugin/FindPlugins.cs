@@ -22,7 +22,7 @@ public class FindPlugins : ApplicationCommandModule
         )
     {
         await ctx.CreateResponseAsync(
-            DiscordInteractionResponseType.DeferredChannelMessageWithSource,
+            InteractionResponseType.DeferredChannelMessageWithSource,
             new DiscordInteractionResponseBuilder { IsEphemeral = true }
         );
         

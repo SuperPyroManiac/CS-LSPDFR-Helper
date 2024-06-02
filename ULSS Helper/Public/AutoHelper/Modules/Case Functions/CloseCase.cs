@@ -26,7 +26,7 @@ internal class CloseCase
             var ch = (DiscordThreadChannel)tmp;
             var send = true;
 
-            await foreach (var msg in ch.GetMessagesAsync(5))
+            await foreach (var msg in tmp.GetMessagesAsync(5))
             {
                 if (msg.Embeds.Count <= 0) continue;
                 if (msg.Embeds[0].Description.Contains("If you need further help start a new one or ask"))

@@ -39,7 +39,7 @@ public class RequireTsRoleContext : ContextMenuCheckBaseAttribute
         if (ctx.Member.Roles.Any(role => role.Id == Program.Settings.Env.TsRoleId))
             return true;
         var responseBuilder = new DiscordInteractionResponseBuilder { IsEphemeral = true };
-        await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, 
+        await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, 
             responseBuilder.AddEmbed(BasicEmbeds.Error("You do not have permission for this!")));
 
         return false;
