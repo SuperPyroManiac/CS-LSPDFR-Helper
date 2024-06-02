@@ -61,7 +61,7 @@ public class SHVDNProcess
             if (log.FrozenScripts.Count == 0)
                 messageBuilder.AddEmbed(BasicEmbeds.Success("__No Issues Detected__\r\n>>> If you do have any problems, you may want to post in the public support channels!", true));
             messageBuilder.AddComponents([
-                new DiscordButtonComponent(ButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", false,
+                new DiscordButtonComponent(DiscordButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", false,
                     new DiscordComponentEmoji("📨"))]);
             
             await ctx.Message.RespondAsync(messageBuilder);

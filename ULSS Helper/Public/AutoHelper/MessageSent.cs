@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using DSharpPlus;
+using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Modules.Functions;
@@ -16,7 +17,7 @@ public class MessageSent
     {
         try
         {
-            if (ctx.Message.MessageType == MessageType.ThreadCreated && ctx.Message.ChannelId == Program.Settings.Env.AutoHelperChannelId) 
+            if (ctx.Message.MessageType == DiscordMessageType.ThreadCreated && ctx.Message.ChannelId == Program.Settings.Env.AutoHelperChannelId) 
                 await ctx.Channel.DeleteMessageAsync(ctx.Message);
             if (Program.Cache.GetCasess().Any(x => x.ChannelID == ctx.Channel.Id.ToString()) && !ctx.Author.IsBot)
             {

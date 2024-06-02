@@ -14,7 +14,7 @@ namespace ULSS_Helper.Events;
 
 internal class ContextMenu : ApplicationCommandModule
 {    
-    [ContextMenu(ApplicationCommandType.MessageContextMenu, "Analyze Log")]
+    [ContextMenu(DiscordApplicationCommandType.MessageContextMenu, "Analyze Log")]
     [RequireTsRoleSlash]
     // ReSharper disable once UnusedMember.Global
     public async Task OnMenuSelect(ContextMenuContext context)

@@ -19,7 +19,7 @@ internal class SharedLogInfo
             IsEphemeral = true
         };
         response.AddEmbed(BasicEmbeds.Error(message));
-        await context.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
+        await context.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, response);
     }
     
     internal async Task SendSelectFileForAnalysisMessage(ContextMenuContext context, List<DiscordAttachment> acceptedAttachments)
