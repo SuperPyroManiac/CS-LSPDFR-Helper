@@ -51,8 +51,8 @@ internal class ASIProcess : SharedLogInfo
             .AddComponents(
 	            // ReSharper disable RedundantExplicitParamsArrayCreation
                 [
-                    new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.AsiGetDetailedInfo, "More Info", false, new DiscordComponentEmoji("❗")),
-                    new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.AsiQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
+                    new DiscordButtonComponent(DiscordButtonStyle.Primary, ComponentInteraction.AsiGetDetailedInfo, "More Info", false, new DiscordComponentEmoji("❗")),
+                    new DiscordButtonComponent(DiscordButtonStyle.Danger, ComponentInteraction.AsiQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
                 ]
             );
 
@@ -62,7 +62,7 @@ internal class ASIProcess : SharedLogInfo
         else if (eventArgs.Id == ComponentInteraction.AsiGetQuickInfo)
         {
             var responseBuilder = new DiscordInteractionResponseBuilder(webhookBuilder);
-            await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, responseBuilder);
+            await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage, responseBuilder);
             sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
         }
         else
@@ -90,14 +90,14 @@ internal class ASIProcess : SharedLogInfo
         var buttonComponents = new DiscordComponent[]
         {
             new DiscordButtonComponent(
-                ButtonStyle.Secondary,
+                DiscordButtonStyle.Secondary,
                 ComponentInteraction.AsiGetQuickInfo,
                 "Back to Quick Info", 
                 false,
                 new DiscordComponentEmoji("⬅️")
             ),
             new DiscordButtonComponent(
-                ButtonStyle.Danger, 
+                DiscordButtonStyle.Danger, 
                 ComponentInteraction.AsiDetailedSendToUser, 
                 "Send To User", 
                 false,
@@ -143,7 +143,7 @@ internal class ASIProcess : SharedLogInfo
         var responseBuilder = new DiscordInteractionResponseBuilder();
         responseBuilder.AddEmbed(embed);
         responseBuilder.AddComponents(buttonComponents);
-        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, responseBuilder);
+        await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage, responseBuilder);
         var sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
         Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
     }
@@ -165,7 +165,7 @@ internal class ASIProcess : SharedLogInfo
         var newMessage = new DiscordMessageBuilder();
         newMessage.AddEmbeds(newEmbList);
         newMessage.WithReply(log.MsgId, true);
-        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
+        await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage,
             new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Sent!")));
         await eventArgs.Interaction.DeleteOriginalResponseAsync();
         await newMessage.SendAsync(eventArgs.Channel);
