@@ -1,14 +1,15 @@
 ﻿using System.Reflection;
 using DSharpPlus;
-using DSharpPlus.AsyncEvents;
+using DSharpPlus.Commands;
 using DSharpPlus.Entities;
-using DSharpPlus.SlashCommands;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
-using DSharpPlus.SlashCommands.EventArgs;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
+using ULSS_Helper.Modules.Functions;
+using ULSS_Helper.Objects;
 using ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 using MessageSent = ULSS_Helper.Events.MessageSent;
 
@@ -36,10 +37,10 @@ internal class Program
             
         Client = builder.Build();
         
-        var sCommands = Client.UseSlashCommands();
+        IServiceProvider serviceProvider = new ServiceCollection().AddLogging(x => x.AddConsole()).BuildServiceProvider();
 
-        sCommands.RegisterCommands(Assembly.GetExecutingAssembly(), Settings.Env.ServerId);
-        sCommands.RegisterCommands<ContextMenu>(Settings.Env.ServerId);
+        var commandsExtension = Client.UseCommands(new CommandsConfiguration());
+        commandsExtension.AddCommands(Assembly.GetExecutingAssembly(), Settings.Env.ServerId);
         
         Client.UseInteractivity(new InteractivityConfiguration());
 

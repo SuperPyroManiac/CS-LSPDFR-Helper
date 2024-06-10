@@ -1,6 +1,4 @@
-using DSharpPlus;
 using DSharpPlus.Entities;
-using FuzzySharp.SimilarityRatio.Scorer.StrategySensitive;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 

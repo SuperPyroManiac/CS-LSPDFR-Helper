@@ -1,6 +1,5 @@
-using DSharpPlus;
 using DSharpPlus.Entities;
-using DSharpPlus.SlashCommands;
+using DSharpPlus.EventArgs;
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
@@ -12,17 +11,17 @@ internal class SharedLogInfo
     internal const string OptionValueSeparator = "&";
 
     // ReSharper disable once ReplaceAsyncWithTaskReturn
-    internal async Task SendAttachmentErrorMessage(ContextMenuContext context, string message)
+    internal async Task SendAttachmentErrorMessage(ContextMenuInteractionCreatedEventArgs context, string message)
     {
         var response = new DiscordInteractionResponseBuilder
         {
             IsEphemeral = true
         };
         response.AddEmbed(BasicEmbeds.Error(message));
-        await context.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, response);
+        await context.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, response);
     }
     
-    internal async Task SendSelectFileForAnalysisMessage(ContextMenuContext context, List<DiscordAttachment> acceptedAttachments)
+    internal async Task SendSelectFileForAnalysisMessage(ContextMenuInteractionCreatedEventArgs context, List<DiscordAttachment> acceptedAttachments)
     {
         var embed = BasicEmbeds.Warning(" There were multiple attachments detected for log analysis!\r\n Please select the one you would like to be analyzed!");
         
@@ -47,7 +46,7 @@ internal class SharedLogInfo
                 ]
             );  
 
-        var sentMessage = await context.EditResponseAsync(webhookBuilder);
+        var sentMessage = await context.Interaction.EditOriginalResponseAsync(webhookBuilder);
         Program.Cache.SaveProcess(sentMessage.Id, new(context.Interaction, context.TargetMessage));
 
     }

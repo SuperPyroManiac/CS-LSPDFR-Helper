@@ -1,7 +1,6 @@
-using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using DSharpPlus.SlashCommands;
+
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
@@ -30,7 +29,7 @@ internal class SHVDNProcess : SharedLogInfo
             }
         };
     }
-    internal async Task SendQuickLogInfoMessage(ContextMenuContext context = null, ComponentInteractionCreatedEventArgs eventArgs = null)
+    internal async Task SendQuickLogInfoMessage(ContextMenuInteractionCreatedEventArgs context = null, ComponentInteractionCreatedEventArgs eventArgs = null)
     {
         if (context == null && eventArgs == null)
             throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
@@ -62,7 +61,7 @@ internal class SHVDNProcess : SharedLogInfo
 
         DiscordMessage sentMessage;
         if (context != null)
-            sentMessage = await context.EditResponseAsync(webhookBuilder);
+            sentMessage = await context.Interaction.EditOriginalResponseAsync(webhookBuilder);
         else if (eventArgs.Id == ComponentInteraction.ShvdnGetQuickInfo)
         {
             var responseBuilder = new DiscordInteractionResponseBuilder(webhookBuilder);

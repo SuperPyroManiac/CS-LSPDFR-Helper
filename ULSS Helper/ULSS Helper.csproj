@@ -17,16 +17,16 @@
     <ItemGroup>
       <PackageReference Include="Dapper" Version="2.1.11" />
       <PackageReference Include="DSharpPlus" Version="5.0.0-nightly-02287" />
+      <PackageReference Include="DSharpPlus.Commands" Version="5.0.0-nightly-02287" />
       <PackageReference Include="DSharpPlus.CommandsNext" Version="5.0.0-nightly-02287" />
       <PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-02287" />
       <PackageReference Include="DSharpPlus.Lavalink" Version="5.0.0-nightly-02287" />
       <PackageReference Include="DSharpPlus.Rest" Version="5.0.0-nightly-02287" />
-      <PackageReference Include="DSharpPlus.SlashCommands" Version="5.0.0-nightly-02287" />
       <PackageReference Include="DSharpPlus.VoiceNext" Version="5.0.0-nightly-02287" />
       <PackageReference Include="DSharpPlus.VoiceNext.Natives" Version="1.0.0" />
       <PackageReference Include="FuzzySharp" Version="2.0.2" />
       <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0-preview.4.24266.19" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0-preview.4.24266.19" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.0-preview.4.24266.19" />
       <PackageReference Include="MySqlConnector" Version="2.3.5" />
       <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
 
@@ -49,6 +49,40 @@
 
 
 
+    </ItemGroup>
+
+
+
+
+    <ItemGroup>
+      <Compile Remove="Commands\Error\**" />
+      <Compile Remove="Commands\Global\**" />
+      <Compile Remove="Commands\Plugin\**" />
+      <Compile Remove="Commands\User\**" />
+      <Compile Remove="Commands\Case\FindCases.cs" />
+      <Compile Remove="Commands\Case\JoinCase.cs" />
+      <Compile Remove="Events\ContextMenu.cs" />
+      <Compile Remove="Objects\PluginAutoComplete.cs" />
+    </ItemGroup>
+
+
+
+
+    <ItemGroup>
+      <EmbeddedResource Remove="Commands\Error\**" />
+      <EmbeddedResource Remove="Commands\Global\**" />
+      <EmbeddedResource Remove="Commands\Plugin\**" />
+      <EmbeddedResource Remove="Commands\User\**" />
+    </ItemGroup>
+
+
+
+
+    <ItemGroup>
+      <None Remove="Commands\Error\**" />
+      <None Remove="Commands\Global\**" />
+      <None Remove="Commands\Plugin\**" />
+      <None Remove="Commands\User\**" />
     </ItemGroup>
 
 

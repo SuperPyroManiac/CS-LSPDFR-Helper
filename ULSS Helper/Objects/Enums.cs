@@ -1,28 +1,26 @@
-using DSharpPlus.SlashCommands;
-
 namespace ULSS_Helper.Objects;
 
 public enum Level
 {
-    [ChoiceName("PMSG")] PMSG,
-    [ChoiceName("PIMG")] PIMG,
-    [ChoiceName("XTRA")] XTRA,
-    [ChoiceName("WARN")] WARN,
-    [ChoiceName("SEVERE")] SEVERE,
-    [ChoiceName("CRITICAL")] CRITICAL
+    PMSG,
+    PIMG,
+    XTRA,
+    WARN,
+    SEVERE,
+    CRITICAL
 }
 
 public enum State
 {
-    [ChoiceName("LSPDFR")] LSPDFR,
-    [ChoiceName("RPH")] RPH,
-    [ChoiceName("ASI")] ASI,
-    [ChoiceName("SHV")] SHV,
-    [ChoiceName("SHVDN")] SHVDN,
-    [ChoiceName("LIB")] LIB,
-    [ChoiceName("EXTERNAL")] EXTERNAL,
-    [ChoiceName("BROKEN")] BROKEN,
-    [ChoiceName("IGNORE")] IGNORE
+    LSPDFR,
+    RPH,
+    ASI,
+    SHV,
+    SHVDN,
+    LIB,
+    EXTERNAL,
+    BROKEN,
+    IGNORE
 }
 
 public enum DbOperation

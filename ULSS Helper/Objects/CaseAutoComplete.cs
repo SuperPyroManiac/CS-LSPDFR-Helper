@@ -1,20 +1,21 @@
-using DSharpPlus.Entities;
-using DSharpPlus.SlashCommands;
+using DSharpPlus.Commands.Processors.SlashCommands;
+using DSharpPlus.Commands.Processors.SlashCommands.ArgumentModifiers;
 
 namespace ULSS_Helper.Objects;
 
-public class CaseAutoComplete : IAutocompleteProvider
+public class CaseAutoComplete : IAutoCompleteProvider
 {
-    public Task<IEnumerable<DiscordAutoCompleteChoice>> Provider(AutocompleteContext ctx)
+    public ValueTask<IReadOnlyDictionary<string, object>> AutoCompleteAsync(AutoCompleteContext ctx)
     {
-        List<DiscordAutoCompleteChoice> cases = [];
+        Dictionary<string, object> cases = new Dictionary<string, object>();
         foreach (var acase in Program.Cache.GetCasess().Where(c => c.Solved == 0))
         {
-            if (cases.Count < 25 && acase.CaseID.ToLower().Contains(ctx.FocusedOption.Value.ToString()!.ToLower()))
+            if (cases.Count < 25 && acase.CaseID.ToLower().Contains(ctx.Options.First().Value!.ToString()!.ToLower()))
             {
-                cases.Add(new DiscordAutoCompleteChoice($"{Program.Cache.GetUser(acase.OwnerID).Username} - Case: {acase.CaseID}", acase.CaseID));
+                cases.Add($"{Program.Cache.GetUser(acase.OwnerID).Username} - Case: {acase.CaseID}", acase.CaseID);
             }
         }
-        return Task.FromResult<IEnumerable<DiscordAutoCompleteChoice>>(cases);
+        
+        return ValueTask.FromResult((IReadOnlyDictionary<string, object>)cases);
     }
 }

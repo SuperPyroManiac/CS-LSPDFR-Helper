@@ -43,11 +43,13 @@ internal class Timer
         Program.Cache.UpdatePlugins(Database.LoadPlugins());
         Program.Cache.UpdateErrors(Database.LoadErrors());
         Program.Cache.UpdateCases(Database.LoadCases());
-        Program.Cache.UpdateUsers(Database.LoadUsers());
     }
     
     private static async void SuperShortTimedEvent(object source, ElapsedEventArgs e)
     {
+        //Clean & Update User Cache
+        Program.Cache.UpdateUsers(Database.LoadUsers());
+        
         //Update CaseMonitor
         await Task.Run(CaseMonitor.UpdateMonitor);
     }

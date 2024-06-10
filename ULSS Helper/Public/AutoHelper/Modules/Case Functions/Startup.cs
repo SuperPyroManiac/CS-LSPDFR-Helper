@@ -1,4 +1,3 @@
-using DSharpPlus;
 using DSharpPlus.Entities;
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
