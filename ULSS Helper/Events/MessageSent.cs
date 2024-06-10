@@ -7,7 +7,7 @@ namespace ULSS_Helper.Events;
 
 internal class MessageSent
 {
-    internal static async Task MessageSentEvent(DiscordClient s, MessageCreateEventArgs ctx)
+    internal static async Task MessageSentEvent(DiscordClient s, MessageCreatedEventArgs ctx)
     {
         if (ctx.Channel.IsPrivate) return;
         

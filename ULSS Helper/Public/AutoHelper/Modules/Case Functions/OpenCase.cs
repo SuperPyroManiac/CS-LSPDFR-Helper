@@ -10,11 +10,11 @@ namespace ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 
 public class OpenCase
 {
-    internal static async Task<DiscordThreadChannel> CreateCase(ComponentInteractionCreateEventArgs ctx)
+    internal static async Task<DiscordThreadChannel> CreateCase(ComponentInteractionCreatedEventArgs ctx)
     {
         var caseId = new Random().Next(int.MaxValue).ToString("x");
         var supportthread = await ctx.Channel.CreateThreadAsync($"AutoHelper - Case: {caseId}",
-            AutoArchiveDuration.ThreeDays, ChannelType.PublicThread);
+            DiscordAutoArchiveDuration.ThreeDays, DiscordChannelType.PublicThread);
         var caseMsg = new DiscordMessageBuilder();
         caseMsg.AddEmbed(BasicEmbeds.Public(
             $"# __AutoHelper Case: {caseId}__" +
@@ -29,11 +29,11 @@ public class OpenCase
             $"\r\n\r\n*Do not abuse the request help button. Only use it if you have tried all the steps provided and have exhausted your own options. Abuse of this feature may result in your access being revoked!*" +
             $"\r\n\r\n__Please check the FAQ for common issues!__"));
         caseMsg.AddComponents([
-            new DiscordButtonComponent(ButtonStyle.Success, ComponentInteraction.MarkSolved, "Mark Solved", false,
+            new DiscordButtonComponent(DiscordButtonStyle.Success, ComponentInteraction.MarkSolved, "Mark Solved", false,
                 new DiscordComponentEmoji("👍")),
-            new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.RequestHelp, "Request Help", false,
+            new DiscordButtonComponent(DiscordButtonStyle.Danger, ComponentInteraction.RequestHelp, "Request Help", false,
                 new DiscordComponentEmoji("❓")),
-            new DiscordButtonComponent(ButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", false,
+            new DiscordButtonComponent(DiscordButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", false,
                 new DiscordComponentEmoji("📨"))]);
         var tmpuser = await Program.GetMember(ctx.User.Id.ToString());
         await supportthread.AddThreadMemberAsync(tmpuser);

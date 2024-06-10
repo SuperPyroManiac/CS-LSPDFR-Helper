@@ -30,29 +30,29 @@ public class EditUser : ApplicationCommandModule
         DiscordInteractionResponseBuilder modal = new();
         modal.WithCustomId(ModalSubmit.EditUser);
         modal.WithTitle($"Editing {dUser.Username}!");
-        modal.AddComponents(new TextInputComponent(
+        modal.AddComponents(new DiscordTextInputComponent(
             label: "Editor:", 
             customId: "userEditor", 
             required: false,
-            style: TextInputStyle.Short, 
+            style: DiscordTextInputStyle.Short, 
             value: dUser.BotEditor.ToString()
         ));
-        modal.AddComponents(new TextInputComponent(
+        modal.AddComponents(new DiscordTextInputComponent(
             label: "BotAdmin:", 
             customId: "userBotAdmin", 
             required: false,
-            style: TextInputStyle.Short, 
+            style: DiscordTextInputStyle.Short, 
             value: dUser.BotAdmin.ToString()
         ));
-        modal.AddComponents(new TextInputComponent(
+        modal.AddComponents(new DiscordTextInputComponent(
             label: "Blacklisted:", 
             customId: "userBlacklist", 
             required: false, 
-            style: TextInputStyle.Short, 
+            style: DiscordTextInputStyle.Short, 
             value: dUser.Blocked.ToString()
         ));
         
         Program.Cache.SaveUserAction(ctx.Interaction.User.Id, modal.CustomId, new UserActionCache(ctx.Interaction, dUser));
-        await ctx.Interaction.CreateResponseAsync(InteractionResponseType.Modal, modal);
+        await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.Modal, modal);
     }
 }

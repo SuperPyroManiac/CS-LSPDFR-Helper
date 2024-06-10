@@ -34,6 +34,6 @@ internal class StatusMessages
         
         var embed = BasicEmbeds.Success(msgText);
         var tmplogchnl = await Program.Client.GetChannelAsync(Program.Settings.Env.TsBotLogChannelId);
-        await new DiscordMessageBuilder().WithEmbed(embed).SendAsync(tmplogchnl);
+        await new DiscordMessageBuilder().AddEmbed(embed).SendAsync(tmplogchnl);
     }
 }

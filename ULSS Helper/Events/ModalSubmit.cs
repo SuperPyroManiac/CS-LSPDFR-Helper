@@ -15,7 +15,7 @@ public class ModalSubmit
     public const string SendFeedback = ComponentInteraction.SendFeedback;
     public const string RequestHelp = ComponentInteraction.RequestHelp;
 
-    public static async Task HandleModalSubmit(DiscordClient s, ModalSubmitEventArgs e)
+    public static async Task HandleModalSubmit(DiscordClient s, ModalSubmittedEventArgs e)
     {
         List<string> cacheEventIds =
         [
@@ -80,7 +80,7 @@ public class ModalSubmit
                 
                 var msg = await cache.Msg.ModifyAsync(bd);
                 Program.Cache.SaveUserAction(e.Interaction.User.Id, ComponentInteraction.SelectPluginValueToEdit, new UserActionCache(e.Interaction, plugin, msg));
-                await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
+                await e.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate);
             }
 
             if (e.Interaction.Data.CustomId == EditError)
@@ -90,7 +90,7 @@ public class ModalSubmit
                 {
                     if (Database.LoadErrors().Any(error => error.Regex == err.Regex))
                     {
-                        await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                        await e.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
                             new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Error("This error already exists!\r\nConsider using /EditError <ID>", true)));
                         return;
                     }
@@ -131,7 +131,7 @@ public class ModalSubmit
                 
                 var msg = await cache.Msg.ModifyAsync(bd);
                 Program.Cache.SaveUserAction(e.Interaction.User.Id, ComponentInteraction.SelectErrorValueToEdit, new UserActionCache(e.Interaction, err, msg));
-                await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
+                await e.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate);
             }
             
             if (e.Interaction.Data.CustomId == EditUser)
@@ -155,7 +155,7 @@ public class ModalSubmit
                     + $" **Is Blacklisted: **{user.Blocked}\r\n", true);
                 
                 await e.Interaction.CreateResponseAsync(
-                    InteractionResponseType.ChannelMessageWithSource,
+                    DiscordInteractionResponseType.ChannelMessageWithSource,
                     new DiscordInteractionResponseBuilder().AddEmbed(embed).AsEphemeral(true));
                 
                 await Logging.SendLog(e.Interaction.ChannelId, e.Interaction.User.Id, embed);
@@ -176,7 +176,7 @@ public class ModalSubmit
 					);
 				await Logging.SendPubLog(embed);
 				await e.Interaction.CreateResponseAsync(
-					InteractionResponseType.ChannelMessageWithSource,
+					DiscordInteractionResponseType.ChannelMessageWithSource,
 					new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Feedback sent!")).AsEphemeral(true)
 					);
 			}
@@ -198,7 +198,7 @@ public class ModalSubmit
                             ">>> TS have been sent an alert! " +
                             "Keep in mind they are real people and may not be available at the moment. Patience is key!" +
                             $"\r\n__**Ensure you have explained your issue well!!**__\r\n```{e.Values["issueDsc"]}```", true));
-                        await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, msg);
+                        await e.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, msg);
                         var tsMsg = new DiscordMessageBuilder();
                         var tmpownr = await e.Interaction.Guild.GetMemberAsync(ulong.Parse(ac.OwnerID));
                         tsMsg.AddEmbed(BasicEmbeds.Info(
@@ -208,14 +208,14 @@ public class ModalSubmit
                             $"Reason:\r\n```{e.Values["issueDsc"]}```\r\n" +
                             $"Created: <t:{e.Interaction.Channel.CreationTimestamp.ToUnixTimeSeconds()}:R>", true));
                         tsMsg.AddComponents([
-                            new DiscordButtonComponent(ButtonStyle.Secondary, ComponentInteraction.JoinCase,
+                            new DiscordButtonComponent(DiscordButtonStyle.Secondary, ComponentInteraction.JoinCase,
                                 "Join Case", false,
                                 new DiscordComponentEmoji("💢")),
-                            new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.IgnoreRequest,
+                            new DiscordButtonComponent(DiscordButtonStyle.Danger, ComponentInteraction.IgnoreRequest,
                                 "Ignore", false,
                                 new DiscordComponentEmoji("🪠"))]);
-                        var tsMsgSent = await e.Interaction.Guild.GetChannel(Program.Settings.Env.RequestHelpChannelId)
-                            .SendMessageAsync(tsMsg);
+                        var tsMsgSent = await e.Interaction.Guild.GetChannelAsync(Program.Settings.Env.RequestHelpChannelId);
+                        await tsMsgSent.SendMessageAsync(tsMsg);
                         ac.TsRequested = 1;
                         ac.RequestID = tsMsgSent.Id.ToString();
                         ac.Timer = 24;
@@ -225,12 +225,12 @@ public class ModalSubmit
                     if (ac.TsRequested == 1)
                     {
                         msg.AddEmbed(BasicEmbeds.Error("Help has already been requested!"));
-                        await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, msg);
+                        await e.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, msg);
                         return;
                     }
                 }
                 msg.AddEmbed(BasicEmbeds.Error("You do not own this case!"));
-                await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, msg);
+                await e.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, msg);
             }
 		}
     }

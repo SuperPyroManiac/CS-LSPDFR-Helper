@@ -22,18 +22,18 @@ internal class Logging
     {
         var tsBotLogCh = await Program.Client.GetChannelAsync(Program.Settings.Env.TsBotLogChannelId);
         if (blame) e.AddField("Sent By", $"<@{msgSender}> in: <#{chLink}>");
-        await new DiscordMessageBuilder().WithEmbed(e).SendAsync(tsBotLogCh);
+        await new DiscordMessageBuilder().AddEmbed(e).SendAsync(tsBotLogCh);
     }
     
     //Public Logging
     internal static async Task SendPubLog(DiscordEmbedBuilder e)
     {
         var pubBotLogCh = await Program.Client.GetChannelAsync(Program.Settings.Env.PublicBotLogChannelId);
-        await new DiscordMessageBuilder().WithEmbed(e).SendAsync(pubBotLogCh);
+        await new DiscordMessageBuilder().AddEmbed(e).SendAsync(pubBotLogCh);
     }
     internal static async Task ReportPubLog(DiscordEmbedBuilder e)
     {
         var pubBotLogCh = await Program.Client.GetChannelAsync(Program.Settings.Env.PublicBotReportsChannelId);
-        await new DiscordMessageBuilder().WithEmbed(e).SendAsync(pubBotLogCh);
+        await new DiscordMessageBuilder().AddEmbed(e).SendAsync(pubBotLogCh);
     }
 }

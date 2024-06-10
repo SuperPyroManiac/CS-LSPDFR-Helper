@@ -9,7 +9,7 @@ using FuzzySharp;
 namespace ULSS_Helper.Public.AutoHelper.Modules.Process_Files;
 public class ImageProcess
 {
-    internal static async Task ProcessImage(DiscordAttachment attachment, MessageCreateEventArgs ctx)
+    internal static async Task ProcessImage(DiscordAttachment attachment, MessageCreatedEventArgs ctx)
     {
         try
         {

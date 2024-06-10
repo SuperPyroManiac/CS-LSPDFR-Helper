@@ -30,7 +30,7 @@ internal class SHVDNProcess : SharedLogInfo
             }
         };
     }
-    internal async Task SendQuickLogInfoMessage(ContextMenuContext context = null, ComponentInteractionCreateEventArgs eventArgs = null)
+    internal async Task SendQuickLogInfoMessage(ContextMenuContext context = null, ComponentInteractionCreatedEventArgs eventArgs = null)
     {
         if (context == null && eventArgs == null)
             throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
@@ -55,8 +55,8 @@ internal class SHVDNProcess : SharedLogInfo
             .AddComponents(
 	            // ReSharper disable RedundantExplicitParamsArrayCreation
                 [
-                    new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.ShvdnGetDetailedInfo, "More Info", false, new DiscordComponentEmoji("❗")),
-                    new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.ShvdnQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
+                    new DiscordButtonComponent(DiscordButtonStyle.Primary, ComponentInteraction.ShvdnGetDetailedInfo, "More Info", false, new DiscordComponentEmoji("❗")),
+                    new DiscordButtonComponent(DiscordButtonStyle.Danger, ComponentInteraction.ShvdnQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
                 ]
             );
 
@@ -66,7 +66,7 @@ internal class SHVDNProcess : SharedLogInfo
         else if (eventArgs.Id == ComponentInteraction.ShvdnGetQuickInfo)
         {
             var responseBuilder = new DiscordInteractionResponseBuilder(webhookBuilder);
-            await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, responseBuilder);
+            await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage, responseBuilder);
             sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
         }
         else
@@ -75,7 +75,7 @@ internal class SHVDNProcess : SharedLogInfo
         Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this));
     }
     
-    internal async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs eventArgs)
+    internal async Task SendDetailedInfoMessage(ComponentInteractionCreatedEventArgs eventArgs)
     {
         var frozenScriptsList = "\r\n> - " + string.Join("\r\n> - ", log.FrozenScripts);
         var scriptDependsList = "\r\n> - " + string.Join("\r\n> - ", log.ScriptDepends);
@@ -94,14 +94,14 @@ internal class SHVDNProcess : SharedLogInfo
         var buttonComponents = new DiscordComponent[]
         {
             new DiscordButtonComponent(
-                ButtonStyle.Secondary,
+                DiscordButtonStyle.Secondary,
                 ComponentInteraction.ShvdnGetQuickInfo,
                 "Back to Quick Info", 
                 false,
                 new DiscordComponentEmoji("⬅️")
             ),
             new DiscordButtonComponent(
-                ButtonStyle.Danger, 
+                DiscordButtonStyle.Danger, 
                 ComponentInteraction.ShvdnDetailedSendToUser, 
                 "Send To User", 
                 false,
@@ -149,12 +149,12 @@ internal class SHVDNProcess : SharedLogInfo
         var responseBuilder = new DiscordInteractionResponseBuilder();
         responseBuilder.AddEmbed(embed);
         responseBuilder.AddComponents(buttonComponents);
-        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, responseBuilder);
+        await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage, responseBuilder);
         var sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
         Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
     }
 
-    internal async Task SendMessageToUser(ComponentInteractionCreateEventArgs eventArgs)
+    internal async Task SendMessageToUser(ComponentInteractionCreatedEventArgs eventArgs)
     {
         var newEmbList = new List<DiscordEmbed>();
         var newEmb = GetBaseLogInfoEmbed(eventArgs.Message.Embeds[0].Description);
@@ -171,7 +171,7 @@ internal class SHVDNProcess : SharedLogInfo
         var newMessage = new DiscordMessageBuilder();
         newMessage.AddEmbeds(newEmbList);
         newMessage.WithReply(log.MsgId, true);
-        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
+        await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage,
             new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Sent!")));
         await eventArgs.Interaction.DeleteOriginalResponseAsync();
         await newMessage.SendAsync(eventArgs.Channel);

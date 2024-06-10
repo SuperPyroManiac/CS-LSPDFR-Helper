@@ -51,7 +51,7 @@ public class AddError : ApplicationCommandModule
             ));
         bd.AddComponents(
             new DiscordButtonComponent(
-                ButtonStyle.Success,
+                DiscordButtonStyle.Success,
                 ComponentInteraction.SelectErrorValueToFinish,
                 "Done Editing",
                 false,
@@ -68,7 +68,7 @@ public class AddError : ApplicationCommandModule
             Console.WriteLine("Someone manually deleted an editor message!");
         }
         
-        await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, bd);
+        await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, bd);
         var msg = await ctx.Interaction.GetOriginalResponseAsync();
         Program.Cache.SaveUserAction(ctx.Interaction.User.Id, ComponentInteraction.SelectErrorValueToEdit, new UserActionCache(ctx.Interaction, error, msg));
     }

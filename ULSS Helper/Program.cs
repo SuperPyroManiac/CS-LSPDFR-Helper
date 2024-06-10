@@ -17,40 +17,34 @@ namespace ULSS_Helper;
 internal class Program
 {
     internal static DiscordClient Client {get; set;}
-    internal static Settings Settings;
+    internal static Settings Settings = new();
     internal static Cache Cache = new();
     internal static bool StartupMsg = false;
     
     static async Task Main()
     {
-        Timer.StartTimer();
+        var builder = DiscordClientBuilder.CreateDefault(Settings.Env.BotToken, DiscordIntents.All);
+        builder.SetLogLevel(LogLevel.Error);
 
-        Settings = new Settings();
-        
-        var discordConfig = new DiscordConfiguration
-        {
-            Intents = DiscordIntents.All,
-            Token = Settings.Env.BotToken,
-            TokenType = TokenType.Bot,
-            AutoReconnect = true,
-            MinimumLogLevel = LogLevel.Error
-        };
-        Client = new DiscordClient(discordConfig);
+        builder.ConfigureEventHandlers(
+            e => e
+                .HandleModalSubmitted(ModalSubmit.HandleModalSubmit)
+                .HandleComponentInteractionCreated(ComponentInteraction.HandleInteraction)
+                .HandleMessageCreated(MessageSent.MessageSentEvent)
+                .HandleGuildMemberAdded(JoinLeave.JoinEvent)
+                .HandleGuildMemberRemoved(JoinLeave.LeaveEvent));
+            
+        Client = builder.Build();
         
         var sCommands = Client.UseSlashCommands();
 
         sCommands.RegisterCommands(Assembly.GetExecutingAssembly(), Settings.Env.ServerId);
         sCommands.RegisterCommands<ContextMenu>(Settings.Env.ServerId);
-
-        Client.ModalSubmitted += ModalSubmit.HandleModalSubmit;
-        Client.ComponentInteractionCreated += ComponentInteraction.HandleInteraction;
-        Client.MessageCreated += MessageSent.MessageSentEvent;
-        Client.GuildMemberAdded += JoinLeave.JoinEvent;
-        Client.GuildMemberRemoved += JoinLeave.LeaveEvent;
-        //Client.VoiceStateUpdated += VoiceChatManager.OnMemberJoinLeaveVC;
+        
         Client.UseInteractivity(new InteractivityConfiguration());
 
         await Client.ConnectAsync();
+        Timer.StartTimer();
         Cache.UpdatePlugins(Database.LoadPlugins());
         Cache.UpdateErrors(Database.LoadErrors());
         Cache.UpdateCases(Database.LoadCases());

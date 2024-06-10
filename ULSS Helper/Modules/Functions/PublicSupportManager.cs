@@ -6,7 +6,7 @@ namespace ULSS_Helper.Modules.Functions;
 
 public class PublicSupportManager
 {
-    internal static async Task MessageSentEvent(DiscordClient s, MessageCreateEventArgs ctx)
+    internal static async Task MessageSentEvent(DiscordClient s, MessageCreatedEventArgs ctx)
     {
         if (Program.Settings.Env.SupportChannelId != ctx.Channel.Id) return;
         
