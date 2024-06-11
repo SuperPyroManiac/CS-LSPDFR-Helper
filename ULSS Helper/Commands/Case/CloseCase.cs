@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using DSharpPlus.Commands;
+using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Commands.Processors.SlashCommands.ArgumentModifiers;
 using DSharpPlus.Entities;
 using ULSS_Helper.Messages;
@@ -13,10 +14,10 @@ public class CloseCase
 {
     [Command("CloseCase")]
     [Description("Close a case.")]
-    public async Task CloseCaseCmd(CommandContext ctx, [Description("The case - Type 'all' to close all cases!"), SlashAutoCompleteProvider<CaseAutoComplete>] string caseId)
+    public async Task CloseCaseCmd(SlashCommandContext ctx, [Description("The case - Type 'all' to close all cases!"), SlashAutoCompleteProvider<CaseAutoComplete>] string caseId)
     {
         if (!await PermissionManager.RequireTs(ctx)) return;
-        await ctx.DeferResponseAsync();
+        await ctx.Interaction.DeferAsync(true);
         var acase = Program.Cache.GetCase(caseId);
         var msg = new DiscordInteractionResponseBuilder();
         msg.IsEphemeral = true;

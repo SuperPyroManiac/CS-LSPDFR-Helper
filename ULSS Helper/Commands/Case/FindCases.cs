@@ -1,18 +1,20 @@
+using System.ComponentModel;
 using DSharpPlus;
+using DSharpPlus.Commands;
+using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Entities;
-using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
 using DiscordUser = DSharpPlus.Entities.DiscordUser;
 
 namespace ULSS_Helper.Commands.Case;
 
-public class FindCases : ApplicationCommandModule
+public class FindCases
 {
-    [SlashCommand("FindCases", "Finds autohelper cases a user opened!")]
-    public async Task CloseCaseCmd(InteractionContext ctx,
-        [Option("User", "User to search!")] DiscordUser userId)
+    [Command("FindCases")]
+    [Description("Finds autohelper cases a user opened!")]
+    public async Task CloseCaseCmd(SlashCommandContext ctx, [Description("The user to check.")] DiscordUser userId)
     {
-        await ctx.Interaction.DeferAsync(true);
+        await ctx. Interaction.DeferAsync(true);
         var acase = Program.Cache.GetCasess().Where(ac => ac.OwnerID.Equals(userId.Id.ToString())).ToList();
         var msg = new DiscordWebhookBuilder();
         

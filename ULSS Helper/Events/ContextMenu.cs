@@ -18,7 +18,7 @@ internal class ContextMenu
 {    
     [Command("Analyze Log")]
     [SlashCommandTypes(DiscordApplicationCommandType.MessageContextMenu)]
-    public async Task OnMenuSelect(CommandContext context, DiscordMessage targetMessage)
+    public async Task OnMenuSelect(SlashCommandContext context, DiscordMessage targetMessage)
     {
         if (!await PermissionManager.RequireTs(context)) return;
         //===//===//===////===//===//===////===//Attachment Checks/===////===//===//===////===//===//===//
@@ -55,7 +55,7 @@ internal class ContextMenu
                             attachmentForAnalysis = acceptedAttachments[0];
                             break;
                         case > 1:
-                            await context.DeferResponseAsync();
+                            await context.Interaction.DeferAsync(true);
                             await sharedLogInfo.SendSelectFileForAnalysisMessage(context, acceptedAttachments, targetMessage);
                             return;
                     }
@@ -106,9 +106,9 @@ internal class ContextMenu
         }
     }
     
-    private async Task RphThread(CommandContext context, DiscordAttachment attachmentForAnalysis, DiscordMessage targetMessage)
+    private async Task RphThread(SlashCommandContext context, DiscordAttachment attachmentForAnalysis, DiscordMessage targetMessage)
     {
-        await context.DeferResponseAsync();
+        await context.Interaction.DeferAsync(true);
         var cache = Program.Cache.GetProcess(targetMessage.Id);
         RPHProcess rphProcess;
         if (ProcessCache.IsCacheUsagePossible("RagePluginHook", cache))
@@ -125,9 +125,9 @@ internal class ContextMenu
         await rphProcess.SendQuickLogInfoMessage(targetMessage, context);
     }
 
-    private async Task ElsThread(CommandContext context, DiscordAttachment attachmentForAnalysis, DiscordMessage targetMessage)
+    private async Task ElsThread(SlashCommandContext context, DiscordAttachment attachmentForAnalysis, DiscordMessage targetMessage)
     {
-        await context.DeferResponseAsync();
+        context.Interaction.DeferAsync(true);
         var cache = Program.Cache.GetProcess(targetMessage.Id);
         ELSProcess elsProcess;
         if (ProcessCache.IsCacheUsagePossible("ELS", cache))
@@ -143,9 +143,9 @@ internal class ContextMenu
         await elsProcess.SendQuickLogInfoMessage(targetMessage, context);
     }
 
-    private async Task AsiThread(CommandContext context, DiscordAttachment attachmentForAnalysis, DiscordMessage targetMessage)
+    private async Task AsiThread(SlashCommandContext context, DiscordAttachment attachmentForAnalysis, DiscordMessage targetMessage)
     {
-        await context.DeferResponseAsync();
+        context.Interaction.DeferAsync(true);
         var cache = Program.Cache.GetProcess(targetMessage.Id);
         ASIProcess asiProcess;
         if (ProcessCache.IsCacheUsagePossible("asiloader", cache))
@@ -161,9 +161,9 @@ internal class ContextMenu
         await asiProcess.SendQuickLogInfoMessage(targetMessage, context);
     }
 
-    private async Task ShvdnThread(CommandContext context, DiscordAttachment attachmentForAnalysis, DiscordMessage targetMessage)
+    private async Task ShvdnThread(SlashCommandContext context, DiscordAttachment attachmentForAnalysis, DiscordMessage targetMessage)
     {
-        await context.DeferResponseAsync();
+        await context.Interaction.DeferAsync(true);
         var cache = Program.Cache.GetProcess(targetMessage.Id);
         SHVDNProcess shvdnProcess;
         if (ProcessCache.IsCacheUsagePossible("ScriptHookVDotNet", cache))

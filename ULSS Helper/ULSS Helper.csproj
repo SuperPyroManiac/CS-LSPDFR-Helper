@@ -55,32 +55,34 @@
 
 
     <ItemGroup>
-      <Compile Remove="Commands\Error\**" />
+      <Compile Include="Commands\Error\AddError.cs" />
+      <Compile Include="Commands\Global\ToggleAH.cs" />
+      <Compile Include="Commands\Plugin\AddPlugin.cs" />
+      <Compile Include="Commands\User\EditUser.cs" />
       <Compile Remove="Commands\Global\**" />
-      <Compile Remove="Commands\Plugin\**" />
       <Compile Remove="Commands\User\**" />
-      <Compile Remove="Commands\Case\FindCases.cs" />
-      <Compile Remove="Commands\Case\JoinCase.cs" />
+      <Compile Remove="Commands\Error\**" />
+      <Compile Remove="Commands\Plugin\**" />
     </ItemGroup>
 
 
 
 
     <ItemGroup>
-      <EmbeddedResource Remove="Commands\Error\**" />
       <EmbeddedResource Remove="Commands\Global\**" />
-      <EmbeddedResource Remove="Commands\Plugin\**" />
       <EmbeddedResource Remove="Commands\User\**" />
+      <EmbeddedResource Remove="Commands\Error\**" />
+      <EmbeddedResource Remove="Commands\Plugin\**" />
     </ItemGroup>
 
 
 
 
     <ItemGroup>
-      <None Remove="Commands\Error\**" />
       <None Remove="Commands\Global\**" />
-      <None Remove="Commands\Plugin\**" />
       <None Remove="Commands\User\**" />
+      <None Remove="Commands\Error\**" />
+      <None Remove="Commands\Plugin\**" />
     </ItemGroup>
 
 

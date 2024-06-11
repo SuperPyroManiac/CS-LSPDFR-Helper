@@ -1,5 +1,6 @@
 using DSharpPlus.Commands;
 using DSharpPlus.Commands.ContextChecks;
+using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Entities;
 using ULSS_Helper.Messages;
 
@@ -7,21 +8,21 @@ namespace ULSS_Helper.Modules.Functions;
 
 public static class PermissionManager
 {
-    private static async Task SendNoPermissionError(CommandContext ctx)
+    private static async Task SendNoPermissionError(SlashCommandContext ctx)
     {
-        await ctx.DeferResponseAsync();
+        await ctx.Interaction.DeferAsync(true);
         var responseBuilder = new DiscordInteractionResponseBuilder { IsEphemeral = true };
         await ctx.EditResponseAsync(responseBuilder.AddEmbed(BasicEmbeds.Error($"__Permission Denied!__\r\n>>> You cannot use: `{ctx.Command.Name}`", true)));
     }
     
-    private static async Task SendBlacklistPermissionError(CommandContext ctx)
+    private static async Task SendBlacklistPermissionError(SlashCommandContext ctx)
     {
-        await ctx.DeferResponseAsync();
+        await ctx.Interaction.DeferAsync(true);
         var responseBuilder = new DiscordInteractionResponseBuilder { IsEphemeral = true };
         await ctx.EditResponseAsync(responseBuilder.AddEmbed(BasicEmbeds.Error($"__You are blacklisted!__\r\n>>> Contact server staff in <#{Program.Settings.Env.StaffContactChannelId}> if you think this is an error!", true)));
     }
     
-    private static async Task SendNoAdvancedPermissionError(CommandContext ctx)
+    private static async Task SendNoAdvancedPermissionError(SlashCommandContext ctx)
     {
         await Logging.SendLog(
             ctx.Channel.Id, 
@@ -33,7 +34,7 @@ public static class PermissionManager
     /// <summary>
     /// Checks whether the user has the TS role for commands.
     /// </summary>
-    public static async Task<bool> RequireTs(CommandContext ctx)
+    public static async Task<bool> RequireTs(SlashCommandContext ctx)
     {
         if (await Program.Cache.GetUser(ctx.User.Id.ToString()).IsTs()) return true;
         await SendNoPermissionError(ctx);
@@ -43,7 +44,7 @@ public static class PermissionManager
     /// <summary>
     /// Checks whether the user has the TS role and is allowed to use advanced commands.
     /// </summary>
-    public static async Task<bool> RequireAdvancedTs(CommandContext ctx)
+    public static async Task<bool> RequireAdvancedTs(SlashCommandContext ctx)
     {
         var isWhitelistedForCommands = false;
         var ts = Program.Cache.GetUser(ctx.User.Id.ToString());
@@ -60,7 +61,7 @@ public static class PermissionManager
     /// <summary>
     /// Checks whether the user is part of the list of bot admins.
     /// </summary>
-    public static async Task<bool> RequireBotAdmin(CommandContext ctx)
+    public static async Task<bool> RequireBotAdmin(SlashCommandContext ctx)
     {
         if (Convert.ToBoolean(Program.Cache.GetUser(ctx.User.Id.ToString()).BotAdmin)) return true;
         await SendNoPermissionError(ctx);
@@ -71,7 +72,7 @@ public static class PermissionManager
     /// <summary>
     /// Checks whether the user is blocked from public usage.
     /// </summary>
-    public static async Task<bool> RequireNotBlacklisted(CommandContext ctx)
+    public static async Task<bool> RequireNotBlacklisted(SlashCommandContext ctx)
     {
         if (!Convert.ToBoolean(Program.Cache.GetUser(ctx.User.Id.ToString()).Blocked)) return true;
         await SendBlacklistPermissionError(ctx);
