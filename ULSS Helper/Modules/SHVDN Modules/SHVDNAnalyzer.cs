@@ -52,16 +52,6 @@ public class SHVDNAnalyzer
         log.ElapsedTime = timer.ElapsedMilliseconds.ToString();
         log.AnalysisCompletedAt = DateTime.Now;
         
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("SHVDN Log Processed...");
-        Console.WriteLine($"Time: {log.ElapsedTime}MS");
-        Console.WriteLine("");
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine($"Missing: {log.ScriptDepends.Count}");
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.WriteLine("");
-        Console.WriteLine("");
-        Console.WriteLine("");
         return log;
     }
 }
