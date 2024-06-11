@@ -23,7 +23,7 @@ internal class Program
     static async Task Main()
     {
         var builder = DiscordClientBuilder.CreateDefault(Settings.Env.BotToken, DiscordIntents.All);
-        builder.SetLogLevel(LogLevel.Error);
+        builder.SetLogLevel(LogLevel.Trace);
 
         builder.ConfigureEventHandlers(
             e => e
