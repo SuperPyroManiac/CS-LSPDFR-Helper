@@ -1,26 +1,31 @@
-using DSharpPlus;
+using System.ComponentModel;
+using DSharpPlus.Commands;
+using DSharpPlus.Commands.Processors.SlashCommands;
+using DSharpPlus.Commands.Processors.SlashCommands.ArgumentModifiers;
 using DSharpPlus.Entities;
-using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
+using ULSS_Helper.Modules.Functions;
 using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Commands.Plugin;
 
-public class CheckPlugin : ApplicationCommandModule
+public class CheckPlugin
 {
-	[SlashCommand("CheckPlugin", "Get info on a specific plugin.")]
-	[RequireNotOnBotBlacklist]
-	public async Task CheckPluginCmd(InteractionContext ctx,
-		[Autocomplete(typeof(PluginAutoComplete)),
-		Option("Plugin", "Plugin Name", true)] string plug)
+	[Command("CheckPlugin")]
+	[Description("Get info on a specific plugin.")]
+	public async Task CheckPluginCmd(SlashCommandContext ctx, 
+		[Description("Must match an existing plugin name!"), 
+		 SlashAutoCompleteProvider<PluginAutoComplete>] string plug)
 	{
+		if (!await PermissionManager.RequireNotBlacklisted(ctx)) return;
 		var response = new DiscordInteractionResponseBuilder();
 		response.IsEphemeral = true;
 		var plugin = Program.Cache.GetPlugin(plug);
 		
 		if (plugin == null)
 		{
-			await ctx.CreateResponseAsync(response.AddEmbed(BasicEmbeds.Error($"No plugin found with name {plug}")));
+			await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
+				response.AddEmbed(BasicEmbeds.Error($"No plugin found with name {plug}")));
 			return;
 		}
 		
@@ -48,7 +53,7 @@ public class CheckPlugin : ApplicationCommandModule
 				new DiscordComponentEmoji("📨"))
 		]);
 		
-		await ctx.CreateResponseAsync(response.AddEmbed(embed));
+		await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, response.AddEmbed(embed));
 		await Logging.SendPubLog(BasicEmbeds.Info(
 			$"__User checked a plugin!__\r\n"
 			+ $">>> Sender: {ctx.Member.Mention} ({ctx.Member.Username})\r\n"

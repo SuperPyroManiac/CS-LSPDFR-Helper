@@ -1,17 +1,20 @@
+using System.ComponentModel;
 using System.Xml.Serialization;
+using DSharpPlus.Commands;
+using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Entities;
-using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
-using ULSS_Helper.Objects;
+using ULSS_Helper.Modules.Functions;
 
 namespace ULSS_Helper.Commands.Plugin;
 
-public class ExportPlugins : ApplicationCommandModule
+public class ExportPlugins
 {
-    [SlashCommand("ExportPlugins", "Exports all plugins as an xml!")]
-    [RequireAdvancedTsRole]
-    public async Task ExportPluginsCmd(InteractionContext ctx)
+    [Command("ExportPlugins")]
+    [Description("Exports all plugins as an xml!")]
+    public async Task ExportPluginsCmd(SlashCommandContext ctx)
     {
+        if (!await PermissionManager.RequireAdvancedTs(ctx)) return;
         var bd = new DiscordInteractionResponseBuilder();
         bd.IsEphemeral = true;
         
@@ -25,7 +28,7 @@ public class ExportPlugins : ApplicationCommandModule
         var fs = new FileStream(Path.Combine(Directory.GetCurrentDirectory(), "Exports", "PluginExport.xml"), FileMode.Open, FileAccess.Read);
         bd.AddFile(fs, AddFileOptions.CloseStream);
         bd.AddEmbed(BasicEmbeds.Success("Plugins Exported.."));
-        await ctx.CreateResponseAsync(bd);
-        await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info("Exported plugins!", true));
+        await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, bd);
+        await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info("__Exported plugins!__", true));
     }
 }

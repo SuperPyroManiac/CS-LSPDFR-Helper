@@ -1,29 +1,30 @@
-using DSharpPlus;
+using System.ComponentModel;
+using DSharpPlus.Commands;
+using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
-using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
+using ULSS_Helper.Modules.Functions;
 using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Commands.Error;
 
-public class FindErrors : ApplicationCommandModule
+public class FindErrors
 {
-    [SlashCommand("FindErrors", "Returns a list of all errors in the database that match the search parameters!")]
-    [RequireTsRoleSlash]
+    [Command("FindErrors")]
+    [Description("Returns a list of all errors in the database that match the search parameters!")]
     public static async Task FindErrorsCmd
-    (
-        InteractionContext ctx,
-        [Option("ID", "The error id in the bot's database.")] string errId=null,
-        [Option("Regex", "Regex for detecting the error.")] string regex=null,
-        [Option("Solution", "Solution for the error.")] string solution=null,
-        [Option("Description", "Description for the error.")] string description=null,
-        [Option("Level", "Error level (WARN, SEVERE, CRITICAL).")] Level? level=null,
-        [Option("Strict_Search", "true = enabled, false = disabled (approximate search)")] bool exactMatch=false
-    )
+    (SlashCommandContext ctx,
+        [Description("The error id in the bot's database.")] string errId=null,
+        [Description("Regex for detecting the error.")] string regex=null,
+        [Description("Solution for the error.")] string solution=null,
+        [Description("Description for the error.")] string description=null,
+        [Description("Error level (WARN, SEVERE, CRITICAL).")] Level? level=null,
+        [Description("true = enabled, false = disabled (approximate search)")] bool exactMatch=false)
     {
-        await ctx.CreateResponseAsync(
+        if (!await PermissionManager.RequireTs(ctx)) return;
+        await ctx.Interaction.CreateResponseAsync(
             DiscordInteractionResponseType.DeferredChannelMessageWithSource,
             new DiscordInteractionResponseBuilder { IsEphemeral = true }
         );

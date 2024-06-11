@@ -1,28 +1,35 @@
-using DSharpPlus;
+using System.ComponentModel;
+using DSharpPlus.Commands;
+using DSharpPlus.Commands.Processors.SlashCommands;
+using DSharpPlus.Commands.Processors.SlashCommands.ArgumentModifiers;
 using DSharpPlus.Entities;
-using DSharpPlus.SlashCommands;
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
+using ULSS_Helper.Modules.Functions;
 using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Commands.Plugin;
 
-public class EditPlugin : ApplicationCommandModule
+public class EditPlugin
 {
-    [SlashCommand("EditPlugin", "Edits a plugin in the database!")]
-    [RequireAdvancedTsRole]
+    [Command("EditPlugin")]
+    [Description("Edits a plugin in the database!")]
     public async Task EditPluginCmd
     (
-        InteractionContext ctx, 
-        [Autocomplete(typeof(PluginAutoComplete)), Option("Name", "Plugins name as shown in the log!")] string pluginName, 
-        [Option("New_State", "Plugin state")] State? newState = null
+        SlashCommandContext ctx, 
+        [Description("Must match an existing plugin name!"), 
+         SlashAutoCompleteProvider<PluginAutoComplete>] string pluginName, 
+        [Description("Plugin state.")] State? newState = null
     )
     {
+        if (!await PermissionManager.RequireAdvancedTs(ctx)) return;
         var bd = new DiscordInteractionResponseBuilder();
 
         if (Database.LoadPlugins().All(x => x.Name != pluginName))
         {
-            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error($"No plugin found with name {pluginName}")));
+            bd.IsEphemeral = true;
+            await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
+                bd.AddEmbed(BasicEmbeds.Error($"No plugin found with name {pluginName}")));
             return;
         }
 

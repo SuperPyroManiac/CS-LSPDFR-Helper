@@ -1,18 +1,21 @@
-using DSharpPlus;
+using System.ComponentModel;
+using DSharpPlus.Commands;
+using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Entities;
-using DSharpPlus.SlashCommands;
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
+using ULSS_Helper.Modules.Functions;
 using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Commands.Error;
 
-public class AddError : ApplicationCommandModule
+public class AddError
 {
-    [SlashCommand("AddError", "Adds an error to the database!")]
-    [RequireAdvancedTsRole]
-    public async Task AddErrorCmd(InteractionContext ctx, [Option("Level", "Warning type (PMSG, PIMG, XTRA, WARN, SEVERE, CRITICAL)")] Level level)
+    [Command("AddError")]
+    [Description("Adds an error to the database!")]
+    public async Task AddErrorCmd(SlashCommandContext ctx, [Description("Error Level")] Level level)
     {
+        if (!await PermissionManager.RequireAdvancedTs(ctx)) return;
         var error = new Objects.Error
         {
             Regex = "- REQUIRED -",
