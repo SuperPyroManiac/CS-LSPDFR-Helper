@@ -73,23 +73,7 @@ public class ELSAnalyzer
         timer.Stop();
         log.ElapsedTime = timer.ElapsedMilliseconds.ToString();
         log.AnalysisCompletedAt = DateTime.Now;
-        
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("ELS Log Processed...");
-        Console.WriteLine($"Time: {log.ElapsedTime}MS");
-        Console.WriteLine("");
-        Console.WriteLine($"Valid: {log.ValidElsVcfFiles.Count}");
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine($"Invalid ELS XML Files: {log.InvalidElsVcfFiles.Count}");
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine($"The ELS VCF (XML) file that caused the crash is {log.FaultyVcfFile}");
-        Console.WriteLine("");
-        Console.ForegroundColor = ConsoleColor.Blue;
-        Console.WriteLine($"Total amount of ELS-enabled models: {log.TotalAmountElsModels}");
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.WriteLine("");
-        Console.WriteLine("");
-        Console.WriteLine("");
+
         return log;
     }
 }

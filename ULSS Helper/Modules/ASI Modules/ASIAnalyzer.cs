@@ -34,18 +34,7 @@ public class ASIAnalyzer
         timer.Stop();
         log.ElapsedTime = timer.ElapsedMilliseconds.ToString();
         log.AnalysisCompletedAt = DateTime.Now;
-        
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("ASI Log Processed...");
-        Console.WriteLine($"Time: {log.ElapsedTime}MS");
-        Console.WriteLine("");
-        Console.WriteLine($"Loaded: {log.LoadedAsiFiles.Count}");
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine($"Failed: {log.FailedAsiFiles.Count}");
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.WriteLine("");
-        Console.WriteLine("");
-        Console.WriteLine("");
+
         return log;
     }
 }

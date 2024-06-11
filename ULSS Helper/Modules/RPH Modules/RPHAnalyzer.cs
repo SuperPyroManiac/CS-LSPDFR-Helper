@@ -215,25 +215,6 @@ public class RPHAnalyzer
         log.ElapsedTime = timer.ElapsedMilliseconds.ToString();
         log.AnalysisCompletedAt = DateTime.Now;
 
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("RPH Log Processed...");
-        Console.WriteLine($"Time: {log.ElapsedTime}MS");
-        Console.WriteLine("");
-        Console.WriteLine($"Current: {log.Current.Count}");
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine($"Outdated: {log.Outdated.Count}");
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine($"Broken: {log.Broken.Count}");
-        Console.WriteLine($"Incorrect Library: {log.Library.Count}");
-        Console.WriteLine($"Missing Library: {log.MissingDepend.Count}");
-        Console.WriteLine($"Errors: {log.Errors.Count}");
-        Console.ForegroundColor = ConsoleColor.Blue;
-        Console.WriteLine($"Missing: {log.Missing.Count}");
-        Console.WriteLine($"Newer: {log.Missmatch.Count}");
-        Console.WriteLine("");
-        Console.WriteLine("");
-        Console.WriteLine("");
-        Console.ForegroundColor = ConsoleColor.White;
         return log;
     }
     
