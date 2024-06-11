@@ -218,7 +218,7 @@ public class ModalSubmit
                         await tsMsgSent.SendMessageAsync(tsMsg);
                         ac.TsRequested = 1;
                         ac.RequestID = tsMsgSent.Id.ToString();
-                        ac.Timer = 24;
+                        ac.ExpireDate = DateTime.Now.ToUniversalTime().AddHours(12);
                         await Database.EditCase(ac);
                         return;
                     }

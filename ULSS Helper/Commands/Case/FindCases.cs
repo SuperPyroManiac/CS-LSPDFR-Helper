@@ -37,7 +37,7 @@ public class FindCases
             if (embed.Fields.Count >= 24) break;
             embed.AddField($"__Case: {ucase.CaseID}__", 
                 $">>> <#{ucase.ChannelID}>\r\n" +
-                $"{Formatter.Timestamp(ucase.CreateDate)}\r\n" +
+                $"{Formatter.Timestamp(ucase.CreateDate.ToLocalTime())}\r\n" +
                 $"TS Request: {Convert.ToBoolean(ucase.TsRequested)}", true);
         }
         

@@ -35,7 +35,7 @@ internal class CaseMonitor
         }
         if (origMsg == null) origMsg = await ch.SendMessageAsync("Starting...");
 
-        var allCases = Program.Cache.GetCasess().Where(ac => ac.Solved == 0).ToList().OrderBy(ac => ac.Timer);
+        var allCases = Program.Cache.GetCasess().Where(ac => ac.Solved == 0).ToList().OrderBy(ac => ac.ExpireDate);
         foreach (var ac in allCases.TakeWhile(ac => embed.Fields.Count < 16))
         {
             if (embed.Fields.Count == 15)
@@ -48,7 +48,7 @@ internal class CaseMonitor
                 embed.AddField($"__<#{ac.ChannelID}>__",
                     $">>> Author: <@{ac.OwnerID}>"
                     + $"\r\nHelp Requested: {Convert.ToBoolean(ac.TsRequested)}"
-                    + $"\r\nCreated: {Formatter.Timestamp(ac.CreateDate)} | AutoClose: `{ac.Timer}` hours");
+                    + $"\r\nCreated: {Formatter.Timestamp(ac.CreateDate.ToLocalTime())} | AutoClose: {Formatter.Timestamp(ac.ExpireDate.ToLocalTime())}");
         }
         if (embed.Fields.Count == 0) embed.AddField("None", "No open cases!");
 

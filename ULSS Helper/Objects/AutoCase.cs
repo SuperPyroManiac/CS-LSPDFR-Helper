@@ -7,7 +7,7 @@ public class AutoCase
     public string ChannelID { get; set; }
     public string RequestID { get; set; }
     public int Solved { get; set; }
-    public int Timer { get; set; }
     public int TsRequested { get; set; }
     public DateTime CreateDate { get; set; }
+    public DateTime ExpireDate { get; set; }
 }

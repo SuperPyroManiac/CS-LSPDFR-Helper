@@ -17,7 +17,6 @@ internal class CheckCases
         foreach (var th in thList)
         {
             caseChannelDict.TryAdd(th, Program.Cache.GetCase(th.Name.Split(": ")[1]));
-            //Console.WriteLine($"{th.Name} --- {th.Name.Split(": ")[1]}");
         }
 
         foreach (var pair in caseChannelDict.Where(c => c.Value != null))
@@ -25,7 +24,7 @@ internal class CheckCases
             if (pair.Key.ThreadMetadata.IsArchived && pair.Value.Solved == 0) await CloseCase.Close(pair.Value);
             if (pair.Key.ThreadMetadata.IsArchived == false && pair.Value.Solved == 1) await CloseCase.Close(pair.Value);
             if (pair.Key.ThreadMetadata.IsArchived) continue;
-            if (pair.Value.Solved == 1 || pair.Value.Timer == 0) await CloseCase.Close(pair.Value);
+            if (pair.Value.Solved == 1 || pair.Value.ExpireDate <= DateTime.Now.ToUniversalTime()) await CloseCase.Close(pair.Value);
         }
         await CaseMonitor.UpdateMonitor();
     }
