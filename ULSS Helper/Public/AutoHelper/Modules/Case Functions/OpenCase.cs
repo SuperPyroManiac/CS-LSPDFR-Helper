@@ -36,16 +36,16 @@ public class OpenCase
                 new DiscordComponentEmoji("📨"))]);
         var tmpuser = await Program.GetMember(ctx.User.Id.ToString());
         await supportthread.AddThreadMemberAsync(tmpuser);
-        
+
         var newCase = new AutoCase()
         {
             CaseID = caseId,
             OwnerID = ctx.User.Id.ToString(),
             ChannelID = supportthread.Id.ToString(),
             Solved = 0,
-            Timer = 6,
             TsRequested = 0,
-            CreateDate = supportthread.CreationTimestamp.DateTime
+            CreateDate = DateTime.Now.ToUniversalTime(),
+            ExpireDate = DateTime.Now.ToUniversalTime().AddHours(6)
         };
         await Database.AddCase(newCase);
 

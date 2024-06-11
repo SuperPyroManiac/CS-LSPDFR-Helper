@@ -33,11 +33,11 @@ public class MessageSent
                 
                 if (ac.OwnerID == ctx.Author.Id.ToString())
                 {
-                    ac.Timer = ac.TsRequested switch
+                    ac.ExpireDate = ac.TsRequested switch
                     {
-                        1 => 12,
-                        0 => 6,
-                        _ => ac.Timer
+                        1 => DateTime.Now.ToUniversalTime().AddHours(12),
+                        0 => DateTime.Now.ToUniversalTime().AddHours(6),
+                        _ => ac.ExpireDate
                     };
                     await Database.EditCase(ac);
 

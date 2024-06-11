@@ -8,12 +8,12 @@ using ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 
 namespace ULSS_Helper.Commands.Global;
 
-public class ToggleAH
+public class ToggleAh
 {
-    [Command("ToggleAH")]
+    [Command("ToggleAh")]
     [Description("Toggles if the AutoHelper is enabled or not!")]
     
-    public async Task ToggleAHCmd(SlashCommandContext ctx)
+    public async Task ToggleAhCmd(SlashCommandContext ctx)
     {
         if (!await PermissionManager.RequireBotAdmin(ctx)) return;
         var ahStatus = Database.AutoHelperStatus();

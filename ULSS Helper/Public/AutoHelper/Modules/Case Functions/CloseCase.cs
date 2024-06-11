@@ -11,7 +11,7 @@ internal class CloseCase
         try
         {
             ac.Solved = 1;
-            ac.Timer = 0;
+            ac.ExpireDate = DateTime.Now.ToUniversalTime();
             if (ac.TsRequested == 1 && ac.RequestID != null)
             {
                 var chTs = await Program.Client.GetChannelAsync(Program.Settings.Env.RequestHelpChannelId);
@@ -47,8 +47,7 @@ internal class CloseCase
         }
         catch (Exception e)
         {
-            await Logging.ErrLog($"Pyro, the stupid bug happened.\r\nCase: {ac.CaseID}\r\nChannel: <#{ac.ChannelID}>\r\nOwner: <@{ac.OwnerID}>\r\n{e}");
-            //TODO: Change this message.
+            await Logging.ErrLog(e.ToString());
             Console.WriteLine(e);
         }
     }
