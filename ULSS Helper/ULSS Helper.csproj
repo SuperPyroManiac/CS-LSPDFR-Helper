@@ -61,8 +61,6 @@
       <Compile Remove="Commands\User\**" />
       <Compile Remove="Commands\Case\FindCases.cs" />
       <Compile Remove="Commands\Case\JoinCase.cs" />
-      <Compile Remove="Events\ContextMenu.cs" />
-      <Compile Remove="Objects\PluginAutoComplete.cs" />
     </ItemGroup>
 
 

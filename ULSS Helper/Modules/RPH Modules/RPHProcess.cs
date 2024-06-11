@@ -1,3 +1,4 @@
+using DSharpPlus.Commands;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using ULSS_Helper.Events;
@@ -62,7 +63,7 @@ internal class RPHProcess : SharedLogInfo
         return embed;
     }
 
-    internal async Task SendQuickLogInfoMessage(ContextMenuInteractionCreatedEventArgs context=null, ComponentInteractionCreatedEventArgs eventArgs=null)
+    internal async Task SendQuickLogInfoMessage(DiscordMessage targetMessage = null, CommandContext context=null, ComponentInteractionCreatedEventArgs eventArgs=null)
     {
         if (context == null && eventArgs == null)
             throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
@@ -94,7 +95,7 @@ internal class RPHProcess : SharedLogInfo
 
         var embed = GetBaseLogInfoEmbed(embedDescription);
 
-        var targetMessage = context?.TargetMessage ?? eventArgs.Message;
+        if (targetMessage == null) targetMessage = eventArgs!.Message;
         var cache = Program.Cache.GetProcess(targetMessage.Id);
         embed = AddTsViewFields(embed, cache, log);
 
@@ -132,7 +133,7 @@ internal class RPHProcess : SharedLogInfo
             
             DiscordMessage sentOverflowMessage;
             if (context != null)
-                sentOverflowMessage = await context.Interaction.EditOriginalResponseAsync(overflowBuilder);
+                sentOverflowMessage = await context.EditResponseAsync(overflowBuilder);
             else if (eventArgs.Id == ComponentInteraction.RphGetQuickInfo)
             {
                 var responseBuilder = new DiscordInteractionResponseBuilder(overflowBuilder);
@@ -142,7 +143,7 @@ internal class RPHProcess : SharedLogInfo
             else
                 sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflowBuilder);
                  
-            Program.Cache.SaveProcess(sentOverflowMessage.Id, new(cache.Interaction, cache.OriginalMessage, this));
+            Program.Cache.SaveProcess(sentOverflowMessage.Id, new ProcessCache(cache.Interaction, cache.OriginalMessage, this));
         }
         else
         {
@@ -160,7 +161,7 @@ internal class RPHProcess : SharedLogInfo
 
             DiscordMessage sentMessage;
             if (context != null)
-                sentMessage = await context.Interaction.EditOriginalResponseAsync(webhookBuilder);
+                sentMessage = await context.EditResponseAsync(webhookBuilder);
             else if (eventArgs.Id == ComponentInteraction.RphGetQuickInfo)
             {
                 var responseBuilder = new DiscordInteractionResponseBuilder(webhookBuilder);
@@ -170,7 +171,7 @@ internal class RPHProcess : SharedLogInfo
             else
                 sentMessage = await eventArgs.Interaction.EditOriginalResponseAsync(webhookBuilder);
                 
-            Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
+            Program.Cache.SaveProcess(sentMessage.Id, new ProcessCache(cache.Interaction, cache.OriginalMessage, this)); 
         }
     }
 
@@ -247,7 +248,7 @@ internal class RPHProcess : SharedLogInfo
 
         await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage, responseBuilder);
         var sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
-        Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
+        Program.Cache.SaveProcess(sentMessage.Id, new ProcessCache(cache.Interaction, cache.OriginalMessage, this)); 
     }
     
     internal async Task SendAdvancedInfoMessage(ComponentInteractionCreatedEventArgs eventArgs)
@@ -284,7 +285,7 @@ internal class RPHProcess : SharedLogInfo
 
         await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage, responseBuilder);
         var sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
-        Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
+        Program.Cache.SaveProcess(sentMessage.Id, new ProcessCache(cache.Interaction, cache.OriginalMessage, this)); 
     }
     
     internal async Task SendMessageToUser(ComponentInteractionCreatedEventArgs eventArgs)

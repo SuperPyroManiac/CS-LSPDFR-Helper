@@ -1,17 +1,20 @@
+using DSharpPlus.Commands.Processors.SlashCommands;
+using DSharpPlus.Commands.Processors.SlashCommands.ArgumentModifiers;
 using DSharpPlus.Entities;
-using DSharpPlus.SlashCommands;
 
 namespace ULSS_Helper.Objects;
 
-public class PluginAutoComplete : IAutocompleteProvider
+public class PluginAutoComplete : IAutoCompleteProvider
 {
-	public Task<IEnumerable<DiscordAutoCompleteChoice>> Provider(AutocompleteContext ctx)
+	public ValueTask<IReadOnlyDictionary<string, object>> AutoCompleteAsync(AutoCompleteContext ctx)
 	{
-		List<DiscordAutoCompleteChoice> plugins = [];
+		Dictionary<string, object> plugins = new Dictionary<string, object>();
 		foreach (var plug in Program.Cache.GetPlugins())
 		{
-			if (plugins.Count < 25 && plug.Name.ToLower().Contains(ctx.FocusedOption.Value.ToString()!.ToLower())) plugins.Add(new DiscordAutoCompleteChoice(plug.Name, plug.Name));
+			if (plugins.Count < 25 && plug.Name.ToLower().Contains(ctx.Options.First().Value!.ToString()!.ToLower())) 
+				plugins.Add(plug.Name, plug.Name);
 		}
-		return Task.FromResult<IEnumerable<DiscordAutoCompleteChoice>>(plugins);
+        
+		return ValueTask.FromResult((IReadOnlyDictionary<string, object>)plugins);
 	}
 }

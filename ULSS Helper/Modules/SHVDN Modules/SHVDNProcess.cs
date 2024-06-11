@@ -1,3 +1,4 @@
+using DSharpPlus.Commands;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 
@@ -29,14 +30,14 @@ internal class SHVDNProcess : SharedLogInfo
             }
         };
     }
-    internal async Task SendQuickLogInfoMessage(ContextMenuInteractionCreatedEventArgs context = null, ComponentInteractionCreatedEventArgs eventArgs = null)
+    internal async Task SendQuickLogInfoMessage(DiscordMessage targetMessage = null, CommandContext context = null, ComponentInteractionCreatedEventArgs eventArgs = null)
     {
         if (context == null && eventArgs == null)
             throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
 
         var embed = GetBaseLogInfoEmbed("## Quick SHVDN.log Info");
 
-        var targetMessage = context?.TargetMessage ?? eventArgs.Message;
+        if (targetMessage == null) targetMessage = eventArgs!.Message;
         var cache = Program.Cache.GetProcess(targetMessage.Id);
         embed = AddTsViewFields(embed, cache, log);
 
@@ -61,7 +62,7 @@ internal class SHVDNProcess : SharedLogInfo
 
         DiscordMessage sentMessage;
         if (context != null)
-            sentMessage = await context.Interaction.EditOriginalResponseAsync(webhookBuilder);
+            sentMessage = await context.EditResponseAsync(webhookBuilder);
         else if (eventArgs.Id == ComponentInteraction.ShvdnGetQuickInfo)
         {
             var responseBuilder = new DiscordInteractionResponseBuilder(webhookBuilder);
@@ -71,7 +72,7 @@ internal class SHVDNProcess : SharedLogInfo
         else
             sentMessage = await eventArgs.Interaction.EditOriginalResponseAsync(webhookBuilder);
             
-        Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this));
+        Program.Cache.SaveProcess(sentMessage.Id, new ProcessCache(cache.Interaction, cache.OriginalMessage, this));
     }
     
     internal async Task SendDetailedInfoMessage(ComponentInteractionCreatedEventArgs eventArgs)
@@ -135,7 +136,7 @@ internal class SHVDNProcess : SharedLogInfo
             // ReSharper disable RedundantExplicitParamsArrayCreation
             overflowBuilder.AddComponents(buttonComponents);
             var sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflowBuilder);
-            Program.Cache.SaveProcess(sentOverflowMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
+            Program.Cache.SaveProcess(sentOverflowMessage.Id, new ProcessCache(cache.Interaction, cache.OriginalMessage, this)); 
             return;
         }
         
@@ -150,7 +151,7 @@ internal class SHVDNProcess : SharedLogInfo
         responseBuilder.AddComponents(buttonComponents);
         await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage, responseBuilder);
         var sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
-        Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
+        Program.Cache.SaveProcess(sentMessage.Id, new ProcessCache(cache.Interaction, cache.OriginalMessage, this)); 
     }
 
     internal async Task SendMessageToUser(ComponentInteractionCreatedEventArgs eventArgs)

@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using DSharpPlus.Commands;
 using DSharpPlus.Commands.Processors.SlashCommands.ArgumentModifiers;
 using DSharpPlus.Entities;
@@ -11,7 +12,8 @@ namespace ULSS_Helper.Commands.Case;
 public class CloseCase
 {
     [Command("CloseCase")]
-    public async Task CloseCaseCmd(CommandContext ctx, [SlashAutoCompleteProvider<CaseAutoComplete>] string caseId)
+    [Description("Close a case.")]
+    public async Task CloseCaseCmd(CommandContext ctx, [Description("The case - Type 'all' to close all cases!"), SlashAutoCompleteProvider<CaseAutoComplete>] string caseId)
     {
         if (!await PermissionManager.RequireTs(ctx)) return;
         await ctx.DeferResponseAsync();

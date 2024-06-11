@@ -102,7 +102,7 @@ public class ComponentInteraction
                     var message = await eventArgs.Channel.GetMessageAsync(messageId);
                     var targetAttachment = message.Attachments.FirstOrDefault(attachment => attachment.Id == targetAttachmentId);
                     
-                    if (targetAttachment!.FileName.Contains("RagePluginHook"))
+                    if (targetAttachment!.FileName!.Contains("RagePluginHook"))
                     {
                         await eventArgs.Interaction.DeferAsync(true);
                         // ReSharper disable once UseObjectOrCollectionInitializer
@@ -114,8 +114,8 @@ public class ComponentInteraction
                             rphProcess = new RPHProcess();
                             rphProcess.log = await RPHAnalyzer.Run(targetAttachment.Url);
                             rphProcess.log.MsgId = cache.OriginalMessage.Id;
-                            ProxyCheck.Run(rphProcess.log, Program.Cache.GetUser(eventArgs.Message.Author.Id.ToString()), eventArgs.Message);
-                            Program.Cache.SaveProcess(messageId: eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, rphProcess));
+                            ProxyCheck.Run(rphProcess.log, Program.Cache.GetUser(eventArgs.Message.Author!.Id.ToString()), eventArgs.Message);
+                            Program.Cache.SaveProcess(messageId: eventArgs.Message.Id, new ProcessCache(eventArgs.Message.Interaction, cache.OriginalMessage, rphProcess));
                         }
 
                         await rphProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
@@ -133,7 +133,7 @@ public class ComponentInteraction
                             elsProcess = new ELSProcess();
                             elsProcess.log = await ELSAnalyzer.Run(targetAttachment.Url);
                             elsProcess.log.MsgId = cache.OriginalMessage.Id;
-                            Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, elsProcess));
+                            Program.Cache.SaveProcess(eventArgs.Message.Id, new ProcessCache(eventArgs.Message.Interaction, cache.OriginalMessage, elsProcess));
                         }
 
                         await elsProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
@@ -151,7 +151,7 @@ public class ComponentInteraction
                             asiProcess = new ASIProcess();
                             asiProcess.log = await ASIAnalyzer.Run(targetAttachment.Url);
                             asiProcess.log.MsgId = cache.OriginalMessage.Id;
-                            Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, asiProcess));
+                            Program.Cache.SaveProcess(eventArgs.Message.Id, new ProcessCache(eventArgs.Message.Interaction, cache.OriginalMessage, asiProcess));
                         }
                         
                         await asiProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
@@ -169,7 +169,7 @@ public class ComponentInteraction
                             shvdnProcess = new SHVDNProcess();
                             shvdnProcess.log = await SHVDNAnalyzer.Run(targetAttachment.Url);
                             shvdnProcess.log.MsgId = cache.OriginalMessage.Id;
-                            Program.Cache.SaveProcess(eventArgs.Message.Id, new(eventArgs.Interaction, cache.OriginalMessage, shvdnProcess));
+                            Program.Cache.SaveProcess(eventArgs.Message.Id, new ProcessCache(eventArgs.Message.Interaction, cache.OriginalMessage, shvdnProcess));
                         }
                         
                         await shvdnProcess.SendQuickLogInfoMessage(eventArgs: eventArgs);
