@@ -215,9 +215,9 @@ public class ModalSubmit
                                 "Ignore", false,
                                 new DiscordComponentEmoji("🪠"))]);
                         var tsMsgSent = await e.Interaction.Guild.GetChannelAsync(Program.Settings.Env.RequestHelpChannelId);
-                        await tsMsgSent.SendMessageAsync(tsMsg);
+                        var rCh = await tsMsgSent.SendMessageAsync(tsMsg);
                         ac.TsRequested = 1;
-                        ac.RequestID = tsMsgSent.Id.ToString();
+                        ac.RequestID = rCh.Id.ToString();
                         ac.ExpireDate = DateTime.Now.ToUniversalTime().AddHours(12);
                         await Database.EditCase(ac);
                         return;
