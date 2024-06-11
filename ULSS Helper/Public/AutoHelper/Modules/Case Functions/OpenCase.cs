@@ -3,7 +3,6 @@ using DSharpPlus.EventArgs;
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
-// ReSharper disable IdentifierTypo
 
 namespace ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 
@@ -27,17 +26,17 @@ public class OpenCase
             //$"\r\n> - Screenshots of .png or .jpg - BETA" +
             $"\r\n\r\n*Do not abuse the request help button. Only use it if you have tried all the steps provided and have exhausted your own options. Abuse of this feature may result in your access being revoked!*" +
             $"\r\n\r\n__Please check the FAQ for common issues!__"));
-        caseMsg.AddComponents([
+        caseMsg.AddComponents(
             new DiscordButtonComponent(DiscordButtonStyle.Success, ComponentInteraction.MarkSolved, "Mark Solved", false,
                 new DiscordComponentEmoji("👍")),
             new DiscordButtonComponent(DiscordButtonStyle.Danger, ComponentInteraction.RequestHelp, "Request Help", false,
                 new DiscordComponentEmoji("❓")),
             new DiscordButtonComponent(DiscordButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", false,
-                new DiscordComponentEmoji("📨"))]);
+                new DiscordComponentEmoji("📨")));
         var tmpuser = await Program.GetMember(ctx.User.Id.ToString());
         await supportthread.AddThreadMemberAsync(tmpuser);
 
-        var newCase = new AutoCase()
+        var newCase = new AutoCase
         {
             CaseID = caseId,
             OwnerID = ctx.User.Id.ToString(),

@@ -100,7 +100,7 @@ public class MessageSent
                                 await SHVDNProcess.ProcessLog(attach, ctx);
                                 break;
                             default:
-                                if (attach.FileName.EndsWith(".xml") || attach.FileName.EndsWith(".meta"))
+                                if (attach.FileName!.EndsWith(".xml") || attach.FileName.EndsWith(".meta"))
                                 {
                                     if (attach.FileSize / 1000000 > 5)
                                     {
