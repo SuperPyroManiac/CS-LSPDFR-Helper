@@ -19,7 +19,7 @@ public class MessageSent
         {
             if (ctx.Message.MessageType == DiscordMessageType.ThreadCreated && ctx.Message.ChannelId == Program.Settings.Env.AutoHelperChannelId) 
                 await ctx.Channel.DeleteMessageAsync(ctx.Message);
-            if (Program.Cache.GetCasess().Any(x => x.ChannelID == ctx.Channel.Id.ToString()) && !ctx.Author.IsBot)
+            if (Program.Cache.GetCasess().Any(x => x.ChannelID == ctx.Channel.Id.ToString()) && !ctx.Author.IsBot && ctx.Channel.ParentId == Program.Settings.Env.AutoHelperChannelId)
             {
                 var ac = Program.Cache.GetCasess().First(x => x.ChannelID == ctx.Channel.Id.ToString());
 
