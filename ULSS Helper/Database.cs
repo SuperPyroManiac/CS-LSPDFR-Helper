@@ -379,7 +379,6 @@ internal class Database
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("insert into Cases (CaseID, OwnerID, ChannelID, Solved, TsRequested, RequestID, CreateDate, ExpireDate) VALUES (@CaseID, @OwnerID, @ChannelID, @Solved, @TsRequested, @RequestID, @CreateDate, @ExpireDate)", autocase);
             Program.Cache.UpdateCases(LoadCases());
-            await Task.Run(CaseMonitor.UpdateMonitor);
         }
         catch (MySqlException e)
         {
