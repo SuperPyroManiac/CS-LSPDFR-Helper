@@ -1,20 +1,20 @@
+using System.ComponentModel;
+using DSharpPlus.Commands;
+using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Entities;
-using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
-using ULSS_Helper.Objects;
+using ULSS_Helper.Modules.Functions;
 
 namespace ULSS_Helper.Commands.Error;
 
-public class RemoveError : ApplicationCommandModule
+public class RemoveError
 {
-    [SlashCommand("RemoveError", "Removes an error from the database!")]
-    [RequireAdvancedTsRole]
+    [Command("RemoveError")]
+    [Description("Removes an error from the database!")]
     public async Task RemoveErrorCmd
-    (
-        InteractionContext ctx,
-        [Option("ID", "Must match an existing error id!")] string errorId
-    )
+    (SlashCommandContext ctx, [Description("Must match an existing error id!")] string errorId)
     {
+        if (!await PermissionManager.RequireAdvancedTs(ctx)) return;
         var bd = new DiscordInteractionResponseBuilder();
         bd.IsEphemeral = true;
         
@@ -24,7 +24,8 @@ public class RemoveError : ApplicationCommandModule
             if (error.ID == errorId)
             {
                 isValid = true;
-                await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Success($"**Removed error with id: {errorId}**")));
+                await ctx.Interaction.CreateResponseAsync( DiscordInteractionResponseType.ChannelMessageWithSource, 
+                    bd.AddEmbed(BasicEmbeds.Success($"**Removed error with id: {errorId}**")));
                 await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Warning(
                     $"Removed error: {errorId}!\r\n>>> " +
                     $"**Regex:**\r\n" +
@@ -41,7 +42,8 @@ public class RemoveError : ApplicationCommandModule
         // ReSharper disable once ConditionIsAlwaysTrueOrFalse
         if (!isValid)
         {
-            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error($"**No error found with id: {errorId}!**")));
+            await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, 
+                bd.AddEmbed(BasicEmbeds.Error($"**No error found with id: {errorId}!**")));
         }
     }
 }

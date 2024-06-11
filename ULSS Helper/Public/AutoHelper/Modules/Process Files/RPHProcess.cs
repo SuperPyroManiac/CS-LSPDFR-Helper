@@ -1,4 +1,3 @@
-using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using ULSS_Helper.Events;
@@ -10,7 +9,7 @@ namespace ULSS_Helper.Public.AutoHelper.Modules.Process_Files;
 
 public class RPHProcess
 {
-    internal static async Task ProcessLog(DiscordAttachment attach, MessageCreateEventArgs ctx)
+    internal static async Task ProcessLog(DiscordAttachment attach, MessageCreatedEventArgs ctx)
     {
         try
         {
@@ -104,7 +103,7 @@ public class RPHProcess
                 if (embed4.Fields.Count != 0) overflowBuilder.AddEmbed(embed4);
                 // ReSharper disable RedundantExplicitParamsArrayCreation
                 overflowBuilder.AddComponents([
-                    new DiscordButtonComponent(ButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", false, new DiscordComponentEmoji("📨"))]);
+                    new DiscordButtonComponent(DiscordButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", false, new DiscordComponentEmoji("📨"))]);
                 
                 await ctx.Message.RespondAsync(overflowBuilder);
                  
@@ -160,7 +159,7 @@ public class RPHProcess
                 }
                 webhookBuilder.AddComponents(
                     [
-                        new DiscordButtonComponent(ButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", false, new DiscordComponentEmoji("📨"))
+                        new DiscordButtonComponent(DiscordButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", false, new DiscordComponentEmoji("📨"))
                     ]
                 );
                 await ctx.Message.RespondAsync(webhookBuilder);

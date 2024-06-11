@@ -1,27 +1,31 @@
-using DSharpPlus;
+using System.ComponentModel;
+using DSharpPlus.Commands;
+using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Entities;
-using DSharpPlus.SlashCommands;
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
+using ULSS_Helper.Modules.Functions;
 using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Commands.Error;
 
-public class EditError : ApplicationCommandModule
+public class EditError
 {
-    [SlashCommand("EditError", "Edits an error in the database!")]
-    [RequireAdvancedTsRole]
+    [Command("EditError")]
+    [Description("Edits an error in the database!")]
     public async Task EditErrorCmd
-    (
-        InteractionContext ctx, 
-        [Option("ID", "Error ID!")] string errorId,
-        [Option("NewLevel", "Error Level")] Level? newLevel = null)
+    (SlashCommandContext ctx, 
+        [Description("The error ID.")] string errorId,
+        [Description("The error level.")] Level? newLevel = null)
     {
+        if (!await PermissionManager.RequireAdvancedTs(ctx)) return;
         var bd = new DiscordInteractionResponseBuilder();
 
         if (Database.LoadErrors().All(ts => ts.ID.ToString() != errorId))
         {
-            await ctx.CreateResponseAsync(bd.AddEmbed(BasicEmbeds.Error($"No error found with ID: {errorId}")));
+            bd.IsEphemeral = true;
+            await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, 
+                bd.AddEmbed(BasicEmbeds.Error($"No error found with ID: {errorId}")));
             return;
         }
         
@@ -57,7 +61,7 @@ public class EditError : ApplicationCommandModule
                 options: errorValues));
         bd.AddComponents(
             new DiscordButtonComponent(
-                ButtonStyle.Success,
+                DiscordButtonStyle.Success,
                 ComponentInteraction.SelectErrorValueToFinish,
                 "Done Editing",
                 false,
@@ -74,7 +78,7 @@ public class EditError : ApplicationCommandModule
             Console.WriteLine("Someone manually deleted an editor message!");
         }
         
-        await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, bd);
+        await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, bd);
         var msg = await ctx.Interaction.GetOriginalResponseAsync();
         Program.Cache.SaveUserAction(ctx.Interaction.User.Id, ComponentInteraction.SelectErrorValueToEdit, new UserActionCache(ctx.Interaction, error, msg));
     }

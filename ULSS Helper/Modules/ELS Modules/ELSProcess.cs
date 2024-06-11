@@ -1,7 +1,7 @@
-using DSharpPlus;
+using DSharpPlus.Commands;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using DSharpPlus.SlashCommands;
+
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
@@ -27,14 +27,14 @@ internal class ELSProcess : SharedLogInfo
         };
     }
 
-    internal async Task SendQuickLogInfoMessage(ContextMenuContext context=null, ComponentInteractionCreateEventArgs eventArgs=null)
+    internal async Task SendQuickLogInfoMessage(DiscordMessage targetMessage = null, CommandContext context=null, ComponentInteractionCreatedEventArgs eventArgs=null)
     {
         if (context == null && eventArgs == null)
             throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
 
         var embed = GetBaseLogInfoEmbed("## Quick ELS.log Info");
 
-        var targetMessage = context?.TargetMessage ?? eventArgs.Message;
+        if (targetMessage == null) targetMessage = eventArgs!.Message;
         var cache = Program.Cache.GetProcess(targetMessage.Id);
         embed = AddTsViewFields(embed, cache, log);
 
@@ -56,8 +56,8 @@ internal class ELSProcess : SharedLogInfo
         webhookBuilder.AddComponents(
             // ReSharper disable RedundantExplicitParamsArrayCreation
             [
-                new DiscordButtonComponent(ButtonStyle.Primary, ComponentInteraction.ElsGetDetailedInfo, "More Info", false, new DiscordComponentEmoji("❗")),
-                new DiscordButtonComponent(ButtonStyle.Danger, ComponentInteraction.ElsQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
+                new DiscordButtonComponent(DiscordButtonStyle.Primary, ComponentInteraction.ElsGetDetailedInfo, "More Info", false, new DiscordComponentEmoji("❗")),
+                new DiscordButtonComponent(DiscordButtonStyle.Danger, ComponentInteraction.ElsQuickSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
             ]
         );
 
@@ -67,17 +67,17 @@ internal class ELSProcess : SharedLogInfo
         else if (eventArgs.Id == ComponentInteraction.ElsGetQuickInfo)
         {
             var responseBuilder = new DiscordInteractionResponseBuilder(webhookBuilder);
-            await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, responseBuilder);
+            await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage, responseBuilder);
             sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
         }
         else
             sentMessage = await eventArgs.Interaction.EditOriginalResponseAsync(webhookBuilder);
             
-        Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this));
+        Program.Cache.SaveProcess(sentMessage.Id, new ProcessCache(cache.Interaction, cache.OriginalMessage, this));
     }
 
 
-    internal async Task SendDetailedInfoMessage(ComponentInteractionCreateEventArgs eventArgs)
+    internal async Task SendDetailedInfoMessage(ComponentInteractionCreatedEventArgs eventArgs)
     {
         var validVcFiles = "\r\n- " + string.Join(", ", log.ValidElsVcfFiles);
         var invalidVcFiles = "\r\n- " + string.Join("\r\n- ", log.InvalidElsVcfFiles);
@@ -93,14 +93,14 @@ internal class ELSProcess : SharedLogInfo
         var buttonComponents = new DiscordComponent[]
         {
             new DiscordButtonComponent(
-                ButtonStyle.Secondary,
+                DiscordButtonStyle.Secondary,
                 ComponentInteraction.ElsGetQuickInfo,
                 "Back to Quick Info", 
                 false,
                 new DiscordComponentEmoji("⬅️")
             ),
             new DiscordButtonComponent(
-                ButtonStyle.Danger, 
+                DiscordButtonStyle.Danger, 
                 ComponentInteraction.ElsDetailedSendToUser, 
                 "Send To User", 
                 false,
@@ -135,7 +135,7 @@ internal class ELSProcess : SharedLogInfo
             // ReSharper disable RedundantExplicitParamsArrayCreation
             overflowBuilder.AddComponents(buttonComponents);
             var sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflowBuilder);
-            Program.Cache.SaveProcess(sentOverflowMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
+            Program.Cache.SaveProcess(sentOverflowMessage.Id, new ProcessCache(cache.Interaction, cache.OriginalMessage, this)); 
             return;
         }
 
@@ -151,12 +151,12 @@ internal class ELSProcess : SharedLogInfo
         var responseBuilder = new DiscordInteractionResponseBuilder();
         responseBuilder.AddEmbed(embed);
         responseBuilder.AddComponents(buttonComponents);
-        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, responseBuilder);
+        await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage, responseBuilder);
         var sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
-        Program.Cache.SaveProcess(sentMessage.Id, new(cache.Interaction, cache.OriginalMessage, this)); 
+        Program.Cache.SaveProcess(sentMessage.Id, new ProcessCache(cache.Interaction, cache.OriginalMessage, this)); 
     }
 
-    internal async Task SendMessageToUser(ComponentInteractionCreateEventArgs eventArgs)
+    internal async Task SendMessageToUser(ComponentInteractionCreatedEventArgs eventArgs)
     {
         var newEmbList = new List<DiscordEmbed>();
         var newEmb = GetBaseLogInfoEmbed(eventArgs.Message.Embeds[0].Description);
@@ -173,7 +173,7 @@ internal class ELSProcess : SharedLogInfo
         var newMessage = new DiscordMessageBuilder();
         newMessage.AddEmbeds(newEmbList);
         newMessage.WithReply(log.MsgId, true);
-        await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
+        await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage,
             new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Sent!")));
         await eventArgs.Interaction.DeleteOriginalResponseAsync();
         await newMessage.SendAsync(eventArgs.Channel);

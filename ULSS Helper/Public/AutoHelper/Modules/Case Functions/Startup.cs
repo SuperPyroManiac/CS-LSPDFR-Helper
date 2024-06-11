@@ -1,4 +1,3 @@
-using DSharpPlus;
 using DSharpPlus.Entities;
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
@@ -41,7 +40,7 @@ internal class Startup
         if (!st) embed.AddField("AutoHelper Disabled!", "System has been disabled by staff temporarily!");
 
         var dmsg = new DiscordMessageBuilder().AddEmbed(embed);
-        dmsg.AddComponents(new DiscordButtonComponent(ButtonStyle.Success, ComponentInteraction.OpenCase, "Open Case", !st));
+        dmsg.AddComponents(new DiscordButtonComponent(DiscordButtonStyle.Success, ComponentInteraction.OpenCase, "Open Case", !st));
         
         
         await dmsg.ModifyAsync(origMsg);

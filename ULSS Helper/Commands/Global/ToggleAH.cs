@@ -1,18 +1,21 @@
+using System.ComponentModel;
+using DSharpPlus.Commands;
+using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Entities;
-using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
-using ULSS_Helper.Objects;
+using ULSS_Helper.Modules.Functions;
 using ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 
 namespace ULSS_Helper.Commands.Global;
 
-public class ToggleAH : ApplicationCommandModule
+public class ToggleAH
 {
-    [SlashCommand("ToggleAH", "Toggles if the AutoHelper is enabled or not!")]
-    [RequireBotAdmin]
+    [Command("ToggleAH")]
+    [Description("Toggles if the AutoHelper is enabled or not!")]
     
-    public async Task ToggleAHCmd(InteractionContext ctx)
+    public async Task ToggleAHCmd(SlashCommandContext ctx)
     {
+        if (!await PermissionManager.RequireBotAdmin(ctx)) return;
         var ahStatus = Database.AutoHelperStatus();
         ahStatus = !ahStatus;
         var newStatus = "0";
@@ -25,7 +28,7 @@ public class ToggleAH : ApplicationCommandModule
         bd.IsEphemeral = true;
         
         bd.AddEmbed(BasicEmbeds.Success($"__AutoHelper Status Changed!__\r\n> Enabled: {ahStatus}", true));
-        await ctx.CreateResponseAsync(bd);
+        await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, bd);
         await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info($"__AutoHelper Status Changed!__\r\n> Enabled: {ahStatus}", true));
     }
 }

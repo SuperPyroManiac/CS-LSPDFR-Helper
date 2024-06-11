@@ -1,26 +1,29 @@
-using DSharpPlus;
+using System.ComponentModel;
+using DSharpPlus.Commands;
+using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Entities;
-using DSharpPlus.SlashCommands;
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
+using ULSS_Helper.Modules.Functions;
 using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Commands.Plugin;
 
-public class AddPlugin : ApplicationCommandModule
+public class AddPlugin
 {
-    [SlashCommand("AddPlugin", "Adds a plugin to the database!")]
-    [RequireAdvancedTsRole]
-    public async Task AddPluginCmd(
-        InteractionContext ctx, 
-        [Option("Name", "Plugins name as shown in the log!")] string pluginName, 
-        [Option("State", "Plugin state")] State pluginState)
+    [Command("AddPlugin")]
+    [Description("Adds a plugin to the database!")]
+    public async Task AddPluginCmd(SlashCommandContext ctx, 
+        [Description("Plugins name as shown in the log!")] string pluginName, 
+        [Description("Plugin state")] State pluginState)
     {
+        if (!await PermissionManager.RequireAdvancedTs(ctx)) return;
         if (Database.LoadPlugins().Any(plugin => plugin.Name == pluginName))
         {
             var err = new DiscordInteractionResponseBuilder();
             err.IsEphemeral = true;
-            await ctx.CreateResponseAsync(err.AddEmbed(BasicEmbeds.Error("This plugin already exists!\r\nConsider using /EditPlugin <Name> <State>", true)));
+            await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
+                err.AddEmbed(BasicEmbeds.Error("__This plugin already exists!__\r\nConsider using /EditPlugin <Name> <State>", true)));
             return;
         }
 
@@ -67,7 +70,7 @@ public class AddPlugin : ApplicationCommandModule
             ));
         bd.AddComponents(
             new DiscordButtonComponent(
-                ButtonStyle.Success,
+                DiscordButtonStyle.Success,
                 ComponentInteraction.SelectPluginValueToFinish,
                 "Done Editing",
                 false,
@@ -84,7 +87,7 @@ public class AddPlugin : ApplicationCommandModule
             Console.WriteLine("Someone manually deleted an editor message!");
         }
         
-        await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, bd);
+        await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, bd);
         var msg = await ctx.Interaction.GetOriginalResponseAsync();
         Program.Cache.SaveUserAction(ctx.Interaction.User.Id, ComponentInteraction.SelectPluginValueToEdit, new UserActionCache(ctx.Interaction, plugin, msg));
     }

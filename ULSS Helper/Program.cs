@@ -1,11 +1,10 @@
 ﻿using System.Reflection;
 using DSharpPlus;
-using DSharpPlus.AsyncEvents;
+using DSharpPlus.Commands;
 using DSharpPlus.Entities;
-using DSharpPlus.SlashCommands;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
-using DSharpPlus.SlashCommands.EventArgs;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
@@ -17,40 +16,34 @@ namespace ULSS_Helper;
 internal class Program
 {
     internal static DiscordClient Client {get; set;}
-    internal static Settings Settings;
+    internal static Settings Settings = new();
     internal static Cache Cache = new();
     internal static bool StartupMsg = false;
     
     static async Task Main()
     {
-        Timer.StartTimer();
+        var builder = DiscordClientBuilder.CreateDefault(Settings.Env.BotToken, DiscordIntents.All);
+        builder.SetLogLevel(LogLevel.Error);
 
-        Settings = new Settings();
+        builder.ConfigureEventHandlers(
+            e => e
+                .HandleModalSubmitted(ModalSubmit.HandleModalSubmit)
+                .HandleComponentInteractionCreated(ComponentInteraction.HandleInteraction)
+                .HandleMessageCreated(MessageSent.MessageSentEvent)
+                .HandleGuildMemberAdded(JoinLeave.JoinEvent)
+                .HandleGuildMemberRemoved(JoinLeave.LeaveEvent));
+            
+        Client = builder.Build();
         
-        var discordConfig = new DiscordConfiguration
-        {
-            Intents = DiscordIntents.All,
-            Token = Settings.Env.BotToken,
-            TokenType = TokenType.Bot,
-            AutoReconnect = true,
-            MinimumLogLevel = LogLevel.Error
-        };
-        Client = new DiscordClient(discordConfig);
+        IServiceProvider serviceProvider = new ServiceCollection().AddLogging(x => x.AddConsole()).BuildServiceProvider();
+
+        var commandsExtension = Client.UseCommands(new CommandsConfiguration());
+        commandsExtension.AddCommands(Assembly.GetExecutingAssembly(), Settings.Env.ServerId);
         
-        var sCommands = Client.UseSlashCommands();
-
-        sCommands.RegisterCommands(Assembly.GetExecutingAssembly(), Settings.Env.ServerId);
-        sCommands.RegisterCommands<ContextMenu>(Settings.Env.ServerId);
-
-        Client.ModalSubmitted += ModalSubmit.HandleModalSubmit;
-        Client.ComponentInteractionCreated += ComponentInteraction.HandleInteraction;
-        Client.MessageCreated += MessageSent.MessageSentEvent;
-        Client.GuildMemberAdded += JoinLeave.JoinEvent;
-        Client.GuildMemberRemoved += JoinLeave.LeaveEvent;
-        //Client.VoiceStateUpdated += VoiceChatManager.OnMemberJoinLeaveVC;
         Client.UseInteractivity(new InteractivityConfiguration());
 
         await Client.ConnectAsync();
+        Timer.StartTimer();
         Cache.UpdatePlugins(Database.LoadPlugins());
         Cache.UpdateErrors(Database.LoadErrors());
         Cache.UpdateCases(Database.LoadCases());

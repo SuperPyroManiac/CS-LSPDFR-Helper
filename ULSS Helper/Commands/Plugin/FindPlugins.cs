@@ -1,28 +1,33 @@
-using DSharpPlus;
+using System.ComponentModel;
+using DSharpPlus.Commands;
+using DSharpPlus.Commands.Processors.SlashCommands;
+using DSharpPlus.Commands.Processors.SlashCommands.ArgumentModifiers;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
-using DSharpPlus.SlashCommands;
 using ULSS_Helper.Messages;
+using ULSS_Helper.Modules.Functions;
 using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Commands.Plugin;
 
-public class FindPlugins : ApplicationCommandModule
+public class FindPlugins
 {
-    [SlashCommand("FindPlugins", "Returns a list of all plugins in the database that match the search parameters!")]
-    [RequireTsRoleSlash]
-    public static async Task FindPluginsCmd(InteractionContext ctx,
-        [Autocomplete(typeof(PluginAutoComplete)),Option("Name", "The plugin's name.")] string plugName=null,
-        [Option("DName", "The plugin's display name.")] string plugDName=null,
-        [Option("ID", "The plugin's id on lcpdfr.com.")] string plugId=null,
-        [Option("State", "The plugin's state.")] State? plugState=null,
-        [Option("Description", "The plugin's description.")] string plugDescription=null,
-        [Option("Strict_Search", "true = enabled, false = disabled (approximate search)")] bool exactMatch=false
+    [Command("FindPlugins")]
+    [Description("Returns a list of all plugins in the database that match the search parameters!")]
+    public static async Task FindPluginsCmd(SlashCommandContext ctx,
+        [Description("Must match an existing plugin name!"), 
+         SlashAutoCompleteProvider<PluginAutoComplete>] string plugName=null,
+        [Description("The plugin's display name.")] string plugDName=null,
+        [Description("The plugin's id on lcpdfr.com.")] string plugId=null,
+        [Description("The plugin's state.")] State? plugState=null,
+        [Description("The plugin's description.")] string plugDescription=null,
+        [Description("true = enabled, false = disabled (approximate search)")] bool exactMatch=false
         )
     {
-        await ctx.CreateResponseAsync(
-            InteractionResponseType.DeferredChannelMessageWithSource,
+        if (!await PermissionManager.RequireTs(ctx)) return;
+        await ctx.Interaction.CreateResponseAsync(
+            DiscordInteractionResponseType.DeferredChannelMessageWithSource,
             new DiscordInteractionResponseBuilder { IsEphemeral = true }
         );
         

@@ -11,38 +11,38 @@ namespace ULSS_Helper.Objects;
 /// </summary>
 internal class ProcessCache : Cache
 {
-    internal DiscordInteraction Interaction { get; private set; }
+    internal DiscordMessageInteraction Interaction { get; private set; }
     internal DiscordMessage OriginalMessage { get; private set; }
     internal ELSProcess ElsProcess { get; private set; }
     internal RPHProcess RphProcess { get; private set; }
     internal ASIProcess AsiProcess { get; private set; }
     internal SHVDNProcess ShvdnProcess { get; private set; }
 
-    internal ProcessCache(DiscordInteraction interaction, DiscordMessage originalMessage, ELSProcess elsProcess)
+    internal ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage, ELSProcess elsProcess)
     {
         Interaction = interaction;
         OriginalMessage = originalMessage;
         ElsProcess = elsProcess;
     }
-    internal ProcessCache(DiscordInteraction interaction, DiscordMessage originalMessage, RPHProcess rphProcess)
+    internal ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage, RPHProcess rphProcess)
     {
         Interaction = interaction;
         OriginalMessage = originalMessage;
         RphProcess = rphProcess;
     }
-    internal ProcessCache(DiscordInteraction interaction, DiscordMessage originalMessage, ASIProcess asiProcess)
+    internal ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage, ASIProcess asiProcess)
     {
         Interaction = interaction;
         OriginalMessage = originalMessage;
         AsiProcess = asiProcess;
     }
-    internal ProcessCache(DiscordInteraction interaction, DiscordMessage originalMessage, SHVDNProcess shvdnProcess)
+    internal ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage, SHVDNProcess shvdnProcess)
     {
         Interaction = interaction;
         OriginalMessage = originalMessage;
         ShvdnProcess = shvdnProcess;
     }
-    internal ProcessCache(DiscordInteraction interaction, DiscordMessage originalMessage)
+    internal ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage)
     {
         Interaction = interaction;
         OriginalMessage = originalMessage;

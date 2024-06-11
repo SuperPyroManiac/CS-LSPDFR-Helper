@@ -1,6 +1,5 @@
-using DSharpPlus;
+using DSharpPlus.Commands;
 using DSharpPlus.Entities;
-using DSharpPlus.SlashCommands;
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
@@ -12,24 +11,24 @@ internal class SharedLogInfo
     internal const string OptionValueSeparator = "&";
 
     // ReSharper disable once ReplaceAsyncWithTaskReturn
-    internal async Task SendAttachmentErrorMessage(ContextMenuContext context, string message)
+    internal async Task SendAttachmentErrorMessage(CommandContext context, string message)
     {
         var response = new DiscordInteractionResponseBuilder
         {
             IsEphemeral = true
         };
         response.AddEmbed(BasicEmbeds.Error(message));
-        await context.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
+        await context.RespondAsync(response);
     }
     
-    internal async Task SendSelectFileForAnalysisMessage(ContextMenuContext context, List<DiscordAttachment> acceptedAttachments)
+    internal async Task SendSelectFileForAnalysisMessage(CommandContext context, List<DiscordAttachment> acceptedAttachments, DiscordMessage targetMessage)
     {
         var embed = BasicEmbeds.Warning(" There were multiple attachments detected for log analysis!\r\n Please select the one you would like to be analyzed!");
         
         List<DiscordSelectComponentOption> selectOptions = [];
         foreach(var acceptedAttachment in acceptedAttachments)
         {
-            var value = context.TargetMessage.Id + OptionValueSeparator + acceptedAttachment.Id;
+            var value = targetMessage.Id + OptionValueSeparator + acceptedAttachment.Id;
             var option = new DiscordSelectComponentOption(acceptedAttachment.FileName, value);
             selectOptions.Add(option);
         }
@@ -48,7 +47,7 @@ internal class SharedLogInfo
             );  
 
         var sentMessage = await context.EditResponseAsync(webhookBuilder);
-        Program.Cache.SaveProcess(sentMessage.Id, new(context.Interaction, context.TargetMessage));
+        Program.Cache.SaveProcess(sentMessage.Id, new ProcessCache(targetMessage.Interaction, targetMessage));
 
     }
 

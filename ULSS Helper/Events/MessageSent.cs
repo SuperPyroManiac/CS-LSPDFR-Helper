@@ -1,5 +1,4 @@
 using DSharpPlus;
-using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DiscordUser = ULSS_Helper.Objects.DiscordUser;
 
@@ -7,7 +6,7 @@ namespace ULSS_Helper.Events;
 
 internal class MessageSent
 {
-    internal static async Task MessageSentEvent(DiscordClient s, MessageCreateEventArgs ctx)
+    internal static async Task MessageSentEvent(DiscordClient s, MessageCreatedEventArgs ctx)
     {
         if (ctx.Channel.IsPrivate) return;
         
