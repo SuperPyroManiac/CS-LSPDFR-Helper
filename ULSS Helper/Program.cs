@@ -23,7 +23,7 @@ internal class Program
     static async Task Main()
     {
         var builder = DiscordClientBuilder.CreateDefault(Settings.Env.BotToken, DiscordIntents.All);
-        builder.SetLogLevel(LogLevel.Trace);
+        builder.SetLogLevel(LogLevel.Error);
 
         builder.ConfigureEventHandlers(
             e => e
@@ -35,7 +35,7 @@ internal class Program
             
         Client = builder.Build();
         
-        IServiceProvider serviceProvider = new ServiceCollection().AddLogging(x => x.AddConsole()).BuildServiceProvider();
+        new ServiceCollection().AddLogging(x => x.AddConsole()).BuildServiceProvider();
 
         var commandsExtension = Client.UseCommands(new CommandsConfiguration());
         commandsExtension.AddCommands(Assembly.GetExecutingAssembly(), Settings.Env.ServerId);
