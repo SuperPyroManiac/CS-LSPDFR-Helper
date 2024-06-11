@@ -404,22 +404,6 @@ internal class Database
         }
     }
     
-    internal static async void DeleteCase(AutoCase ac)
-    {
-        try
-        {
-            using IDbConnection cnn = new MySqlConnection(ConnStr);
-            await cnn.ExecuteAsync("delete from Cases where CaseID = (@CaseID)", ac);
-            Program.Cache.UpdateCases(LoadCases());
-        }
-        catch (MySqlException e)
-        {
-            Console.WriteLine(e);
-            await Logging.ErrLog($"SQL Issue: {e}");
-            throw;
-        }
-    }
-    
     internal static async void UpdatePluginVersions()
     {
         HttpClient webClient = new();
