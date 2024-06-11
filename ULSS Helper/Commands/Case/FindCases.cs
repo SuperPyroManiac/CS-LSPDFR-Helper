@@ -22,7 +22,7 @@ public class FindCases
         {
             await ctx.Interaction.EditOriginalResponseAsync(msg.AddEmbed(BasicEmbeds.Error(
                 $"__No cases found!__\r\n" +
-                $"User: <@{userId}> does not have any cases!", true)));
+                $"User: {userId.Mention} does not have any cases!", true)));
             return;
         }
         
