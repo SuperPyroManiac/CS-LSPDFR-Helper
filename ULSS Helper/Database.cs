@@ -412,7 +412,7 @@ internal class Database
         {
             try
             {
-                if (plugin.ID == "0" || string.IsNullOrEmpty(plugin.ID) || plugin.State != "LSPDFR") continue;
+                if (plugin.ID == "0" || string.IsNullOrEmpty(plugin.ID) || plugin.State == "LIB" || plugin.State == "IGNORE") continue;
                 Thread.Sleep(3500);
 
                 var onlineVersion = await webClient.GetStringAsync(
@@ -430,14 +430,11 @@ internal class Database
                     Console.WriteLine($"Updating Plugin {plugin.Name} from {plugin.Version} to {onlineVersion}");
                     if (string.IsNullOrEmpty(plugin.EAVersion) || plugin.EAVersion == "0")
                         await Logging.SendLog(0, 0,
-                            BasicEmbeds.Info(
-                                $"Updating Plugin!\r\n{plugin.Name} from {plugin.Version} to {onlineVersion}", true),
+                            BasicEmbeds.Info($"__Updating Plugin!__\r\n>>> {plugin.Name} from `{plugin.Version}` to `{onlineVersion}`", true),
                             false);
                     else
                         await Logging.SendLog(0, 0,
-                            BasicEmbeds.Warning(
-                                $"Updating Plugin!\r\n{plugin.Name} from {plugin.Version} to {onlineVersion}\r\nThis plugin has an EA version of {plugin.EAVersion} please double check it now!",
-                                true), false);
+                            BasicEmbeds.Warning($"__Updating Plugin!__\r\n>>> {plugin.Name} from `{plugin.Version}` to `{onlineVersion}`\r\nThis plugin has an EA version of `{plugin.EAVersion}` please double check it now!", true), false);
                     using IDbConnection cnn = new MySqlConnection(ConnStr);
                     await cnn.ExecuteAsync(
                         $"UPDATE Plugin SET Version = '{onlineVersion}' WHERE Name = '{plugin.Name}';");
