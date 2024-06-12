@@ -247,8 +247,7 @@ public class ComponentInteraction
                         Database.EditPlugin(usercache.Plugin);
                         Program.Cache.RemoveUserAction(eventArgs.User.Id, SelectPluginValueToEdit);
                         await eventArgs.Message.DeleteAsync();
-                        await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType
-                            .DeferredMessageUpdate);
+                        await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate);
                         return;
                     }
                     
