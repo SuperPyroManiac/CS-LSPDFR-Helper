@@ -22,6 +22,11 @@ internal class Program
     
     static async Task Main()
     {
+        Cache.UpdatePlugins(Database.LoadPlugins());
+        Cache.UpdateErrors(Database.LoadErrors());
+        Cache.UpdateCases(Database.LoadCases());
+        Cache.UpdateUsers(Database.LoadUsers());
+        
         var builder = DiscordClientBuilder.CreateDefault(Settings.Env.BotToken, DiscordIntents.All);
         builder.SetLogLevel(LogLevel.Error);
 
@@ -44,10 +49,6 @@ internal class Program
 
         await Client.ConnectAsync();
         Timer.StartTimer();
-        Cache.UpdatePlugins(Database.LoadPlugins());
-        Cache.UpdateErrors(Database.LoadErrors());
-        Cache.UpdateCases(Database.LoadCases());
-        Cache.UpdateUsers(Database.LoadUsers());
         await Task.Run(Startup.StartAutoHelper);
         await StatusMessages.SendStartupMessage();
         await Task.Delay(-1);
