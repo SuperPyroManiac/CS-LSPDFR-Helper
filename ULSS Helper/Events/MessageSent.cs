@@ -10,20 +10,6 @@ internal class MessageSent
     {
         if (ctx.Channel.IsPrivate) return;
         
-        //Add Users
-        if (Program.Cache.GetUsers().All(x => x.UID.ToString() != ctx.Author.Id.ToString()))
-        {
-            var newUser = new DiscordUser()
-            {
-                UID = ctx.Author.Id.ToString(),
-                Username = ctx.Author.Username,
-                BotEditor = 0,
-                BotAdmin = 0,
-                Blocked = 0
-            };
-            Database.AddUser(newUser);
-        }
-        
         //Activate PublicSupport MessageSentEvent
         await Modules.Functions.PublicSupportManager.MessageSentEvent(s, ctx);
         

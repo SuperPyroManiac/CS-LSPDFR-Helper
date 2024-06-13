@@ -11,8 +11,8 @@ public class OpenCase
     internal static async Task<DiscordThreadChannel> CreateCase(ComponentInteractionCreatedEventArgs ctx)
     {
         var caseId = new Random().Next(int.MaxValue).ToString("x");
-        var supportthread = await ctx.Channel.CreateThreadAsync($"AutoHelper - Case: {caseId}",
-            DiscordAutoArchiveDuration.ThreeDays, DiscordChannelType.PublicThread);
+        
+        var supportthread = await ctx.Channel.CreateThreadAsync($"AutoHelper - Case: {caseId}", DiscordAutoArchiveDuration.ThreeDays, DiscordChannelType.PrivateThread);
         var caseMsg = new DiscordMessageBuilder();
         caseMsg.AddEmbed(BasicEmbeds.Public(
             $"# __AutoHelper Case: {caseId}__" +

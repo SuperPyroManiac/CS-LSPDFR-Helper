@@ -22,7 +22,7 @@ internal class Startup
         await foreach (var msg in ch.GetMessagesAsync(100))
         {
             if (msg.Embeds.Count <= 0) continue;
-            if (msg.Embeds.FirstOrDefault()!.Description.Contains("ULSS AutoHelper")) origMsg = msg;
+            if (msg.Embeds.FirstOrDefault()!.Description != null && msg.Embeds.FirstOrDefault()!.Description!.Contains("ULSS AutoHelper")) origMsg = msg;
         }
         if (origMsg == null) origMsg = await ch.SendMessageAsync("Starting...");
 

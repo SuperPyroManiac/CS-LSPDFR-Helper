@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
 using DSharpPlus;
 using DSharpPlus.Commands;
+using DSharpPlus.Commands.Processors.TextCommands;
+using DSharpPlus.Commands.Processors.TextCommands.Parsing;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
@@ -18,7 +20,6 @@ internal class Program
     internal static DiscordClient Client {get; set;}
     internal static Settings Settings = new();
     internal static Cache Cache = new();
-    internal static bool StartupMsg = false;
     
     static async Task Main()
     {
@@ -44,14 +45,22 @@ internal class Program
 
         var commandsExtension = Client.UseCommands(new CommandsConfiguration());
         commandsExtension.AddCommands(Assembly.GetExecutingAssembly(), Settings.Env.ServerId);
-        
+        TextCommandProcessor textCommandProcessor = new(new()
+        { PrefixResolver = new DefaultPrefixResolver(false, ")(").ResolvePrefixAsync});//TODO: Remove this entirely.
+        await commandsExtension.AddProcessorsAsync(textCommandProcessor);
         Client.UseInteractivity(new InteractivityConfiguration());
 
-        await Client.ConnectAsync();
+        await Client.ConnectAsync(new DiscordActivity("with fire!", DiscordActivityType.Playing), DiscordUserStatus.DoNotDisturb);
         Timer.StartTimer();
+        await Task.Delay(1000);
         await Task.Run(Startup.StartAutoHelper);
         await StatusMessages.SendStartupMessage();
         await Task.Delay(-1);
+    }
+
+    internal static DiscordGuild GetGuild()
+    {
+        return Client.Guilds[Settings.Env.ServerId];
     }
 
     internal static async Task<DiscordMember> GetMember(string uid)

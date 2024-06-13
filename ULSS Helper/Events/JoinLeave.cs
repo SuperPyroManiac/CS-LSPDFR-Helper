@@ -9,12 +9,13 @@ internal class JoinLeave
 {
     internal static Task JoinEvent(DiscordClient s, GuildMemberAddedEventArgs ctx)
     {
-        var dbUsers = Program.Cache.GetUsers();
+        var dbUsers = Database.LoadUsers();
+        
         
         //Add Users
         if (dbUsers.All(x => x.UID.ToString() != ctx.Member.Id.ToString()))
         {
-            var newUser = new DiscordUser()
+            var newUser = new DiscordUser
             {
                 UID = ctx.Member.Id.ToString(),
                 Username = ctx.Member.Username,
@@ -24,7 +25,8 @@ internal class JoinLeave
             };
             Database.AddUser(newUser);
         }
-        return null;
+
+        return Task.CompletedTask;
     }
     
     internal static async Task LeaveEvent(DiscordClient s, GuildMemberRemovedEventArgs ctx)

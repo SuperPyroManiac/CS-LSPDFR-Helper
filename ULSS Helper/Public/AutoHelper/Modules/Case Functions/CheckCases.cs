@@ -16,6 +16,7 @@ internal class CheckCases
         thList.AddRange(parentCh.Threads);
         foreach (var th in thList)
         {
+            if (!th.Name.Contains("AutoHelper")) continue;
             caseChannelDict.TryAdd(th, Program.Cache.GetCase(th.Name.Split(": ")[1]));
         }
 

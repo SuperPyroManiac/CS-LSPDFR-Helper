@@ -14,21 +14,21 @@ public class EditUser
 {
     [Command("EditUser")]
     [Description("Edits a user!")]
-    public async Task EditUserCmd(SlashCommandContext ctx, [Description("User to edit!")] DiscordUser userId)
+    public async Task EditUserCmd(SlashCommandContext ctx, [Description("User to edit!")] DiscordUser user)
     {
         if (!await PermissionManager.RequireBotAdmin(ctx)) return;
         var bd = new DiscordInteractionResponseBuilder();
         bd.IsEphemeral = true;
-        if (Database.LoadUsers().All(x => x.UID.ToString() != userId.Id.ToString()))
+        if (Program.Cache.GetUsers().All(x => x.UID.ToString() != user.Id.ToString()))
         {
             await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
                 bd.AddEmbed(BasicEmbeds.Error("__User is not in the DB!__", true)));
             return;
         }
-
-        var dUser = Database.LoadUsers().FirstOrDefault(x => x.UID.ToString() == userId.Id.ToString());
-        var tmpusr = await ctx.Guild.GetMemberAsync(ulong.Parse(dUser.UID));
-        dUser!.Username = tmpusr.Username;
+        
+        var dUser = Program.Cache.GetUser(user.Id.ToString());
+        var tempus = await ctx.Guild!.GetMemberAsync(ulong.Parse(dUser!.UID));
+        dUser!.Username = tempus.Username;
         
         DiscordInteractionResponseBuilder modal = new();
         modal.WithCustomId(ModalSubmit.EditUser);
