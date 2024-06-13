@@ -9,7 +9,7 @@ internal class JoinLeave
 {
     internal static async Task JoinEvent(DiscordClient s, GuildMemberAddedEventArgs ctx)
     {
-        var dbUsers = Program.Cache.GetUsers();
+        var dbUsers = Database.LoadUsers();
         
         //Add Users
         if (dbUsers.All(x => x.UID.ToString() != ctx.Member.Id.ToString()))
