@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using DSharpPlus;
 using DSharpPlus.Commands;
-using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Commands.Processors.TextCommands;
 using DSharpPlus.Commands.Processors.TextCommands.Parsing;
 using DSharpPlus.Entities;
@@ -51,11 +50,17 @@ internal class Program
         await commandsExtension.AddProcessorsAsync(textCommandProcessor);
         Client.UseInteractivity(new InteractivityConfiguration());
 
-        await Client.ConnectAsync(new DiscordActivity("with fire", DiscordActivityType.Playing), DiscordUserStatus.DoNotDisturb);
+        await Client.ConnectAsync(new DiscordActivity("with fire!", DiscordActivityType.Playing), DiscordUserStatus.DoNotDisturb);
         Timer.StartTimer();
+        await Task.Delay(5000);
         await Task.Run(Startup.StartAutoHelper);
         await StatusMessages.SendStartupMessage();
         await Task.Delay(-1);
+    }
+
+    internal static DiscordGuild GetGuild()
+    {
+        return Client.Guilds[Settings.Env.ServerId];
     }
 
     internal static async Task<DiscordMember> GetMember(string uid)
