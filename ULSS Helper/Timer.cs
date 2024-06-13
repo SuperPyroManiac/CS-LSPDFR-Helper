@@ -27,6 +27,7 @@ internal class Timer
     {
         //Clean & Update Caches
         await Program.Cache.RemoveExpiredCacheEntries(TimeSpan.FromMinutes(5));
+        await CaseMonitor.UpdateMonitor();
         Program.Cache.UpdatePlugins(Database.LoadPlugins());
         Program.Cache.UpdateErrors(Database.LoadErrors());
         Program.Cache.UpdateCases(Database.LoadCases());

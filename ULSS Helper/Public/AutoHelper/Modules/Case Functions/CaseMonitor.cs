@@ -18,7 +18,7 @@ internal class CaseMonitor
             if (msg.Embeds.Count == 0) msgPurge.Add(msg);
             foreach (var emb in msg.Embeds)
             {
-                if (!emb.Description.Contains("AutoHelper Active Cases") &&
+                if (!emb.Description!.Contains("AutoHelper Active Cases") &&
                     !emb.Description.Contains("Help Requested!"))
                 {
                     msgPurge.Add(msg);
