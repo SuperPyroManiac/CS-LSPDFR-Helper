@@ -27,6 +27,5 @@ internal class CheckCases
             if (pair.Key.ThreadMetadata.IsArchived) continue;
             if (pair.Value.Solved == 1 || pair.Value.ExpireDate <= DateTime.Now.ToUniversalTime()) await CloseCase.Close(pair.Value);
         }
-        await CaseMonitor.UpdateMonitor();
     }
 }
