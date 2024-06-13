@@ -27,7 +27,7 @@ internal class CloseCase
             await foreach (var msg in tmp.GetMessagesAsync(5))
             {
                 if (msg.Embeds.Count <= 0) continue;
-                if (msg.Embeds[0].Description.Contains("If you need further help start a new one or ask"))
+                if (msg.Embeds[0].Description != null && msg.Embeds[0].Description.Contains("If you need further help start a new one or ask"))
                 {
                     send = false;
                     break;

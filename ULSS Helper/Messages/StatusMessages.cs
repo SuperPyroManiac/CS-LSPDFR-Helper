@@ -10,10 +10,7 @@ internal class StatusMessages
         var commitHash = "";
         var commitHashShort = "";
         try
-        {
-            if (Program.StartupMsg) return;
-            Program.StartupMsg = true;
-            
+        { 
             var infoFilePath = Path.Combine(Directory.GetCurrentDirectory(), "build_info.txt");
             if (File.Exists(infoFilePath)) 
             {

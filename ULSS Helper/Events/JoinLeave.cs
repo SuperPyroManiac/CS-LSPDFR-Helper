@@ -7,7 +7,7 @@ namespace ULSS_Helper.Events;
 
 internal class JoinLeave
 {
-    internal static Task JoinEvent(DiscordClient s, GuildMemberAddedEventArgs ctx)
+    internal static async Task JoinEvent(DiscordClient s, GuildMemberAddedEventArgs ctx)
     {
         var dbUsers = Program.Cache.GetUsers();
         
@@ -24,7 +24,6 @@ internal class JoinLeave
             };
             Database.AddUser(newUser);
         }
-        return null;
     }
     
     internal static async Task LeaveEvent(DiscordClient s, GuildMemberRemovedEventArgs ctx)
