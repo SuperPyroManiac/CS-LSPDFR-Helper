@@ -20,6 +20,7 @@ internal class Database
             {
                 using IDbConnection cnn = new MySqlConnection(ConnStr);
                 var output = cnn.Query<string>($"select Value from GlobalValues where Name = 'AHStatus'");
+                cnn.Close();
                 return output.First() == "1";
             }
             catch (MySqlException e)
@@ -34,6 +35,7 @@ internal class Database
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             cnn.Execute($"UPDATE GlobalValues SET Value = '{state}' WHERE Name = 'AHStatus'");
             var output = state == "1";
+            cnn.Close();
             return output;
         }
         catch (MySqlException e)
@@ -50,6 +52,7 @@ internal class Database
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             var output = cnn.Query<Plugin>("select * from Plugin");
+            cnn.Close();
             return output.ToList();
         }
         catch (MySqlException e)
@@ -67,6 +70,7 @@ internal class Database
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             var output = cnn.Query<Plugin>($"select * from Plugin where Name='{pluginName}'");
             output = output.ToList();
+            cnn.Close();
             if (output.Count() == 1) 
             {
                 return output.First();
@@ -109,6 +113,7 @@ internal class Database
             var conditionsString = string.Join(" and ", conditions);
             var output = cnn.Query<Plugin>($"select * from Plugin where {conditionsString}");
 
+            cnn.Close();
             return output.ToList();
         }
         catch (MySqlException e)
@@ -148,6 +153,7 @@ internal class Database
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             var output = cnn.Query<Error>($"select * from Error where ID='{errorId}'");
             output = output.ToList();
+            cnn.Close();
             if (output.Count() == 1) 
             {
                 return output.First();
@@ -190,6 +196,7 @@ internal class Database
             var conditionsString = string.Join(" and ", conditions);
             var output = cnn.Query<Error>($"select * from Error where {conditionsString}", new DynamicParameters());
 
+            cnn.Close();
             return output.ToList();
         }
         catch (MySqlException e)
@@ -213,6 +220,7 @@ internal class Database
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("insert into Plugin (Name, DName, Version, EAVersion, ID, State, Description, Link) VALUES (@Name, @DName, @Version, @EAVersion, @ID, @State, @Description, @Link)", plugin);
             Program.Cache.UpdatePlugins(LoadPlugins());
+            cnn.Close();
         }
         catch (MySqlException e)
         {
@@ -249,6 +257,7 @@ internal class Database
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("UPDATE Plugin SET Name = @Name, DName = @DName, Version = @Version, EAVersion = @EAVersion, ID = @ID, State = @State, Description = @Description, Link = @Link WHERE Name = (@Name)", plugin);
             Program.Cache.UpdatePlugins(LoadPlugins());
+            cnn.Close();
         }
         catch (MySqlException e)
         {
@@ -265,6 +274,7 @@ internal class Database
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("UPDATE Error SET Regex = @Regex, Solution = @Solution, Description = @Description, Level = @Level WHERE ID = (@ID)", error);
             Program.Cache.UpdateErrors(LoadErrors());
+            cnn.Close();
         }
         catch (MySqlException e)
         {
@@ -281,6 +291,7 @@ internal class Database
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("delete from Plugin where Name = (@Name)", plugin);
             Program.Cache.UpdatePlugins(LoadPlugins());
+            cnn.Close();
         }
         catch (MySqlException e)
         {
@@ -297,6 +308,7 @@ internal class Database
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("delete from Error where ID = (@ID)", error);
             Program.Cache.UpdateErrors(LoadErrors());
+            cnn.Close();
         }
         catch (MySqlException e)
         {
@@ -312,6 +324,7 @@ internal class Database
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             var output = cnn.Query<DiscordUser>("select * from Users");
+            cnn.Close();
             return output.ToList();
         }
         catch (MySqlException e)
@@ -330,6 +343,7 @@ internal class Database
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("insert into Users (UID, Username, BotEditor, BotAdmin, Blocked, LogPath) VALUES (@UID, @Username, @BotEditor, @BotAdmin, @Blocked, @LogPath)", user);
             Program.Cache.UpdateUsers(LoadUsers());
+            cnn.Close();
         }
         catch (MySqlException e)
         {
@@ -346,6 +360,7 @@ internal class Database
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("UPDATE Users SET UID = @UID, Username = @Username, BotEditor = @BotEditor, BotAdmin = @BotAdmin, Blocked = @Blocked, LogPath = @LogPath WHERE UID = @UID", user);
             Program.Cache.UpdateUsers(LoadUsers());
+            cnn.Close();
         }
         catch (MySqlException e)
         {
@@ -361,6 +376,7 @@ internal class Database
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             var output = cnn.Query<AutoCase>("select * from Cases");
+            cnn.Close();
             return output.ToList();
         }
         catch (MySqlException e)
@@ -379,6 +395,7 @@ internal class Database
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("insert into Cases (CaseID, OwnerID, ChannelID, Solved, TsRequested, RequestID, CreateDate, ExpireDate) VALUES (@CaseID, @OwnerID, @ChannelID, @Solved, @TsRequested, @RequestID, @CreateDate, @ExpireDate)", autocase);
             Program.Cache.UpdateCases(LoadCases());
+            cnn.Close();
         }
         catch (MySqlException e)
         {
@@ -395,6 +412,7 @@ internal class Database
             using IDbConnection cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("UPDATE Cases SET CaseID = @CaseID, OwnerID = @OwnerID, ChannelID = @ChannelID, Solved = @Solved, TsRequested = @TsRequested, RequestID = @RequestID, CreateDate = @CreateDate, ExpireDate = @ExpireDate WHERE CaseID = (@CaseID)", autocase);
             Program.Cache.UpdateCases(LoadCases());
+            cnn.Close();
         }
         catch (MySqlException e)
         {

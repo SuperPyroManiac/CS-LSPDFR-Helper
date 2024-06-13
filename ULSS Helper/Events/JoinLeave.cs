@@ -11,6 +11,7 @@ internal class JoinLeave
     {
         var dbUsers = Database.LoadUsers();
         
+        
         //Add Users
         if (dbUsers.All(x => x.UID.ToString() != ctx.Member.Id.ToString()))
         {

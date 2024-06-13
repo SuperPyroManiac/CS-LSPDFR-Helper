@@ -52,7 +52,7 @@ internal class Program
 
         await Client.ConnectAsync(new DiscordActivity("with fire!", DiscordActivityType.Playing), DiscordUserStatus.DoNotDisturb);
         Timer.StartTimer();
-        await Task.Delay(5000);
+        await Task.Delay(1000);
         await Task.Run(Startup.StartAutoHelper);
         await StatusMessages.SendStartupMessage();
         await Task.Delay(-1);

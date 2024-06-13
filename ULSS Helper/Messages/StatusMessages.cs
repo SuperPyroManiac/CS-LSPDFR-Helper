@@ -10,6 +10,7 @@ internal class StatusMessages
         var commitHash = "";
         var commitHashShort = "";
         var addedCnt = 0;
+        var changedCnt = 0;
         try
         { 
             var infoFilePath = Path.Combine(Directory.GetCurrentDirectory(), "build_info.txt");
@@ -21,10 +22,10 @@ internal class StatusMessages
                 commitHashShort = commitHash.Substring(0, 7);
             }
 
-            var serverusers = Program.GetGuild().Members.Values.ToList();
+            var serverusers = Program.GetGuild().Members;
             var dbusers = Database.LoadUsers();
 
-            foreach (var user in serverusers)
+            foreach (var user in serverusers.Values.ToList())
             {
                 if (dbusers.All(x => x.UID.ToString() != user.Id.ToString()))
                 {
@@ -42,6 +43,20 @@ internal class StatusMessages
                     Database.AddUser(newUser);
                 }
             }
+
+            foreach (var user in dbusers)
+            {
+                if (!serverusers.ContainsKey(ulong.Parse(user.UID))) continue;
+                if (serverusers[ulong.Parse(user.UID)].Username != user.Username)
+                {
+                    changedCnt++;
+                    user.Username = serverusers[ulong.Parse(user.UID)].Username;
+                    await Task.Delay(100);
+                    Database.EditUser(user);
+                }
+            }
+            if (addedCnt > 0 || changedCnt > 0) Program.Cache.UpdateUsers(Database.LoadUsers());
+            
         }
         catch (Exception e)
         {
@@ -52,7 +67,9 @@ internal class StatusMessages
         if (!string.IsNullOrEmpty(commitHash))
             msgText += $"> Build is based on commit with hash [`{commitHashShort}`](https://github.com/SuperPyroManiac/ULSS-Helper/commit/{commitHash}) (branch: `{branchName}`)\r\n";
         if (addedCnt > 0)
-            msgText += $"> {addedCnt} New users found, added them to the DB!";
+            msgText += $"> {addedCnt} New users found, added them to the DB!\r\n";
+        if (changedCnt > 0)
+            msgText += $"> {changedCnt} Username changes, updated the DB!\r\n";
         
         var embed = BasicEmbeds.Success(msgText, true);
         var tmplogchnl = await Program.Client.GetChannelAsync(Program.Settings.Env.TsBotLogChannelId);

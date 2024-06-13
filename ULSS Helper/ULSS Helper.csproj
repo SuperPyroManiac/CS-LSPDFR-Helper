@@ -15,19 +15,23 @@
 
 
     <ItemGroup>
-      <PackageReference Include="Dapper" Version="2.1.35" />
-      <PackageReference Include="DSharpPlus" Version="5.0.0-pr-1953-00551" />
-      <PackageReference Include="DSharpPlus.Commands" Version="5.0.0-pr-1953-00551" />
-      <PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-pr-1953-00551" />
-      <PackageReference Include="DSharpPlus.Lavalink" Version="5.0.0-pr-1953-00551" />
-      <PackageReference Include="DSharpPlus.Rest" Version="5.0.0-pr-1953-00551" />
-      <PackageReference Include="DSharpPlus.VoiceNext" Version="5.0.0-pr-1953-00551" />
-      <PackageReference Include="DSharpPlus.VoiceNext.Natives" Version="1.0.0" />
-      <PackageReference Include="FuzzySharp" Version="2.0.2" />
-      <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0-preview.5.24306.7" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.0-preview.5.24306.7" />
-      <PackageReference Include="MySqlConnector" Version="2.3.7" />
-      <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
+        <PackageReference Include="Dapper" Version="2.1.35" />
+        <PackageReference Include="DSharpPlus" Version="5.0.0-nightly-02291" />
+        <PackageReference Include="DSharpPlus.Commands" Version="5.0.0-nightly-02291" />
+        <PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-02291" />
+        <PackageReference Include="FuzzySharp" Version="2.0.2" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0-preview.5.24306.7" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.0-preview.5.24306.7" />
+        <PackageReference Include="MySqlConnector" Version="2.3.7" />
+        <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
+        <PackageReference Include="System.Text.Json" Version="9.0.0-preview.5.24306.7" />
+    </ItemGroup>
+
+
+
+
+    <ItemGroup>
+      <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     </ItemGroup>
 
 </Project>
