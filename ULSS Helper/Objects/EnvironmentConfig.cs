@@ -11,7 +11,6 @@ namespace ULSS_Helper.Objects;
 /// <param name="ServerId">The ID of the Discord server where this bot should be working on (also known as "guild id").</param>
 /// <param name="TsRoleId">The ID of the "Tech Support" role on the Discord server that should be allowed to use advanced bot commands.</param>
 /// <param name="TsIconUrl">The URL of the icon/image asset that should be used in the bot's embed thumbnail fields.</param>
-/// <param name="PublicUsageAllowedChannelIds">A list of channel IDs where the public users are allowed to use the bot commands (/checkLog, etc.).</param>
 /// <param name="AutoHelperChannelId">The channel that the autohelper will run in.</param>
 /// <param name="SupportChannelId">The public support channel the bot will monitor.</param>
 /// <param name="RequestHelpChannelId">The channel that the autohelper will request help in.</param>
@@ -30,7 +29,6 @@ public record EnvironmentConfig(
     ulong ServerId,
     ulong TsRoleId,
     string TsIconUrl,
-    List<ulong> PublicUsageAllowedChannelIds,
     ulong AutoHelperChannelId,
     ulong SupportChannelId,
     ulong RequestHelpChannelId,
