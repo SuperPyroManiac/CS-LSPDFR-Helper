@@ -16,9 +16,9 @@
 
     <ItemGroup>
         <PackageReference Include="Dapper" Version="2.1.35" />
-        <PackageReference Include="DSharpPlus" Version="5.0.0-nightly-02292" />
-        <PackageReference Include="DSharpPlus.Commands" Version="5.0.0-nightly-02292" />
-        <PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-02292" />
+        <PackageReference Include="DSharpPlus" Version="5.0.0-nightly-02293" />
+        <PackageReference Include="DSharpPlus.Commands" Version="5.0.0-nightly-02293" />
+        <PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-02293" />
         <PackageReference Include="FuzzySharp" Version="2.0.2" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0-preview.5.24306.7" />
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.0-preview.5.24306.7" />

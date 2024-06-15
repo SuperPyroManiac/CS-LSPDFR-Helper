@@ -8,6 +8,7 @@ internal class MessageSent
 {
     internal static async Task MessageSentEvent(DiscordClient s, MessageCreatedEventArgs ctx)
     {
+        while (!Program.isStarted) await Task.Delay(500);
         if (ctx.Channel.IsPrivate) return;
         
         //Activate PublicSupport MessageSentEvent

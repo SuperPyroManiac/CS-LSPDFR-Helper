@@ -17,6 +17,8 @@ public class ModalSubmit
 
     public static async Task HandleModalSubmit(DiscordClient s, ModalSubmittedEventArgs e)
     {
+        while (!Program.isStarted) await Task.Delay(500);
+        
         List<string> cacheEventIds =
         [
             EditPlugin,
