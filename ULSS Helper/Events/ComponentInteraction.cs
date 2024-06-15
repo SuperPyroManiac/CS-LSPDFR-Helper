@@ -61,6 +61,8 @@ public class ComponentInteraction
 
     internal static async Task HandleInteraction(DiscordClient s, ComponentInteractionCreatedEventArgs eventArgs)
     {
+        while (!Program.isStarted) await Task.Delay(500);
+        
         List<string> cacheEventIds =
         [
             SelectAttachmentForAnalysis,

@@ -7,8 +7,9 @@ namespace ULSS_Helper.Events;
 
 internal class JoinLeave
 {
-    internal static Task JoinEvent(DiscordClient s, GuildMemberAddedEventArgs ctx)
+    internal static async Task JoinEvent(DiscordClient s, GuildMemberAddedEventArgs ctx)
     {
+        while (!Program.isStarted) await Task.Delay(500);
         var dbUsers = Database.LoadUsers();
         
         
@@ -25,12 +26,13 @@ internal class JoinLeave
             };
             Database.AddUser(newUser);
         }
-
-        return Task.CompletedTask;
     }
     
     internal static async Task LeaveEvent(DiscordClient s, GuildMemberRemovedEventArgs ctx)
     {
+        while (!Program.isStarted) await Task.Delay(500);
+        
+        //Close case if user leaves.
         await CheckUsers.CloseCases(ctx.Member.Id.ToString());
     }
 }
