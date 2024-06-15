@@ -22,7 +22,6 @@
       <Folder Include="CustomTypes\AutoCompleteTypes\" />
       <Folder Include="CustomTypes\Enums\" />
       <Folder Include="CustomTypes\LogTypes\" />
-      <Folder Include="CustomTypes\MainTypes\" />
     </ItemGroup>
 
 </Project>
