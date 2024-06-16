@@ -13,8 +13,8 @@ internal class Functions
         return Client.Guilds[Program.Settings.ServerId];
     }
     
-    internal static  async Task<DiscordMember> GetMember(string uid)
+    internal static  async Task<DiscordMember> GetMember(ulong uid)
     {
-        return await GetGuild().GetMemberAsync(ulong.Parse(uid));
+        return await GetGuild().GetMemberAsync(uid);
     }
 }

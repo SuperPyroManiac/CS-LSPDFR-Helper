@@ -5,7 +5,7 @@ using LSPDFR_Helper.Functions;
 
 internal class User
 {
-    public string UID { get; set; }
+    public ulong UID { get; set; }
     public string Username { get; set; }
     public int BotEditor { get; set; }
     public int BotAdmin { get; set; }
