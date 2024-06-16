@@ -19,7 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Commands\" />
+      <Folder Include="Commands\ContextMenu\" />
       <Folder Include="CustomTypes\AutoCompleteTypes\" />
       <Folder Include="CustomTypes\Enums\" />
       <Folder Include="CustomTypes\LogTypes\" />
