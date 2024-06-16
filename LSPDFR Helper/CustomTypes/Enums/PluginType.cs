@@ -1,7 +1,7 @@
 namespace LSPDFR_Helper.CustomTypes.Enums;
 
 ///<summary>Types of plugins.</summary>
-public enum Type
+internal enum PluginType
 {
     ///<summary>LSPDFR plugins.</summary>
     LSPDFR,

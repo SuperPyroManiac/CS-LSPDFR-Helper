@@ -57,9 +57,6 @@ internal class Program
     
     private static async Task Startup(DiscordClient sender, GuildDownloadCompletedEventArgs args)
     {
-        //Setup Caches
-        Cache.UpdateUsers(DbManager.GetUsers());
-        
         //Startup Tasks
         await Functions.Startup.Init();
         

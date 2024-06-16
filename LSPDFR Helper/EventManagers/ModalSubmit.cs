@@ -18,40 +18,49 @@ internal static class ModalSubmit
 
     public static async Task HandleModalSubmit(DiscordClient s, ModalSubmittedEventArgs e)
     {
-        while (!Program.IsStarted) await Task.Delay(500);
+        try
+        {
+            while (!Program.IsStarted) await Task.Delay(500);
 
-        if ( CacheEventIds.Contains(e.Interaction.Data.CustomId) )
-        { //Handle cached modal events here.
-            var cache = Program.Cache.GetUserAction(e.Interaction.User.Id, e.Interaction.Data.CustomId);
+            if ( CacheEventIds.Contains(e.Interaction.Data.CustomId) )
+            { //Handle cached modal events here.
+                var cache = Program.Cache.GetUserAction(e.Interaction.User.Id, e.Interaction.Data.CustomId);
             
-            if (e.Interaction.Data.CustomId == CustomIds.SelectUserValueToEdit)
-            {
-                var user = new User()
+                if (e.Interaction.Data.CustomId == CustomIds.SelectUserValueToEdit)
                 {
-                    UID = cache.User.UID,
-                    Username = cache.User.Username,
-                    BotEditor = int.Parse(e.Values["userEditor"]),
-                    BotAdmin = int.Parse(e.Values["userBotAdmin"]),
-                    Blocked = int.Parse(e.Values["userBlacklist"]),
-                };
-                DbManager.EditUser(user);
-                Program.Cache.UpdateUsers(DbManager.GetUsers());
+                    var user = new User()
+                    {
+                        Id = cache.User.Id,
+                        Username = cache.User.Username,
+                        BotEditor = Convert.ToBoolean(e.Values["userEditor"]),
+                        BotAdmin = Convert.ToBoolean(e.Values["userBotAdmin"]),
+                        Blocked = Convert.ToBoolean(e.Values["userBlacklist"]),
+                    };
+                    DbManager.EditUser(user);
+                    await Task.Delay(250);
+                    Program.Cache.UpdateUsers(DbManager.GetUsers());
 
-                var embed = BasicEmbeds.Info(
-                    $"__User Updated!__\r\n"
-                    + $">>> **UID: **{user.UID}\r\n"
-                    + $" **Username: **{user.Username}\r\n"
-                    + $" **Is Editor: **{Convert.ToBoolean(user.BotEditor)}\r\n"
-                    + $" **Is Bot Admin: **{Convert.ToBoolean(user.BotAdmin)}\r\n"
-                    + $" **Is Blacklisted: **{Convert.ToBoolean(user.Blocked)}\r\n", true);
+                    var embed = BasicEmbeds.Info(
+                        $"__User Updated!__\r\n"
+                        + $">>> **UID: **{user.Id}\r\n"
+                        + $" **Username: **{user.Username}\r\n"
+                        + $" **Is Editor: **{Convert.ToBoolean(user.BotEditor)}\r\n"
+                        + $" **Is Bot Admin: **{Convert.ToBoolean(user.BotAdmin)}\r\n"
+                        + $" **Is Blacklisted: **{Convert.ToBoolean(user.Blocked)}\r\n", true);
                 
-                await e.Interaction.CreateResponseAsync(
-                    DiscordInteractionResponseType.ChannelMessageWithSource,
-                    new DiscordInteractionResponseBuilder().AddEmbed(embed).AsEphemeral());
+                    await e.Interaction.CreateResponseAsync(
+                        DiscordInteractionResponseType.ChannelMessageWithSource,
+                        new DiscordInteractionResponseBuilder().AddEmbed(embed).AsEphemeral());
                 
-                await Logging.SendLog(e.Interaction.ChannelId, e.Interaction.User.Id, embed);
+                    await Logging.SendLog(e.Interaction.ChannelId, e.Interaction.User.Id, embed);
+                }
             }
+            //Handle non cached modal events here.
         }
-        //Handle non cached modal events here.
+        catch ( Exception ex )
+        {
+            Console.WriteLine(ex);
+            await Logging.ErrLog($"{ex}");
+        }
     }
 }

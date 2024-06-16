@@ -46,7 +46,7 @@ public static class PermissionManager
     {
         var isWhitelistedForCommands = false;
         var ts = Program.Cache.GetUser(ctx.User.Id);
-        if (ts != null && ts.BotEditor == 0) await SendNoAdvancedPermissionError(ctx);
+        if (ts != null && !ts.BotEditor) await SendNoAdvancedPermissionError(ctx);
         else 
             isWhitelistedForCommands = ts != null;
         
@@ -61,7 +61,7 @@ public static class PermissionManager
     /// </summary>
     public static async Task<bool> RequireBotAdmin(SlashCommandContext ctx)
     {
-        if (Convert.ToBoolean((int)Program.Cache.GetUser(ctx.User.Id).BotAdmin)) return true;
+        if (Program.Cache.GetUser(ctx.User.Id).BotAdmin) return true;
         await SendNoPermissionError(ctx);
         return false;
     }
@@ -72,7 +72,7 @@ public static class PermissionManager
     /// </summary>
     public static async Task<bool> RequireNotBlacklisted(SlashCommandContext ctx)
     {
-        if (!Convert.ToBoolean((int)Program.Cache.GetUser(ctx.User.Id).Blocked)) return true;
+        if (!Program.Cache.GetUser(ctx.User.Id).Blocked) return true;
         await SendBlacklistPermissionError(ctx);
         return false;
     }

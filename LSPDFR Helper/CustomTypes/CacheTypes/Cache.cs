@@ -13,7 +13,7 @@ internal class Cache
     internal void UpdateUsers(List<User> users)
     {
         _userCacheDict.Clear();
-        foreach (var user in users) _userCacheDict.TryAdd(user.UID, user);
+        foreach (var user in users) _userCacheDict.TryAdd(user.Id, user);
     }
     
     /// <summary>Returns a list of all cached users.</summary>

@@ -13,23 +13,24 @@ internal class Users
         var cnt = 0;
         foreach (var user in ServerUsers.Values.ToList())
         {
-            if (DbUsers.All(x => x.UID.ToString() != user.Id.ToString()))
+            if (DbUsers.All(x => x.Id != user.Id))
             {
                 if (user == null) continue;
                 cnt++;
 
                 var newUser = new User()
                 {
-                    UID = user.Id,
+                    Id = user.Id,
                     Username = user.Username,
-                    BotEditor = 0,
-                    BotAdmin = 0,
-                    Blocked = 0
+                    BotEditor = false,
+                    BotAdmin = false,
+                    Blocked = false
                 };
                 await Task.Delay(100);
                 DbManager.AddUser(newUser);
             }
         }
+        await Task.Delay(250);
         if (cnt > 0) Program.Cache.UpdateUsers(DbManager.GetUsers());
         return cnt;
     }
@@ -39,15 +40,16 @@ internal class Users
         var cnt = 0;
         foreach (var user in DbUsers)
         {
-            if (!ServerUsers.ContainsKey(user.UID)) continue;
-            if (ServerUsers[user.UID].Username != user.Username)
+            if (!ServerUsers.ContainsKey(user.Id)) continue;
+            if (ServerUsers[user.Id].Username != user.Username)
             {
                 cnt++;
-                user.Username = ServerUsers[user.UID].Username;
+                user.Username = ServerUsers[user.Id].Username;
                 await Task.Delay(100);
                 DbManager.EditUser(user);
             }
         }
+        await Task.Delay(250);
         if (cnt > 0) Program.Cache.UpdateUsers(DbManager.GetUsers());
         return cnt;
     }

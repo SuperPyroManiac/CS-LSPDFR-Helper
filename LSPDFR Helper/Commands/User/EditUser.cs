@@ -18,7 +18,7 @@ public class EditUser
         if (!await PermissionManager.RequireBotAdmin(ctx)) return;
         var bd = new DiscordInteractionResponseBuilder();
         bd.IsEphemeral = true;
-        if (Program.Cache.GetUsers().All(x => x.UID.ToString() != user.Id.ToString()))
+        if (Program.Cache.GetUsers().All(x => x.Id.ToString() != user.Id.ToString()))
         {
             await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
                 bd.AddEmbed(BasicEmbeds.Error("__User is not in the DB!__", true)));
@@ -26,7 +26,7 @@ public class EditUser
         }
         
         var dUser = Program.Cache.GetUser(user.Id);
-        var tempus = await ctx.Guild!.GetMemberAsync(dUser.UID);
+        var tempus = await ctx.Guild!.GetMemberAsync(dUser.Id);
         dUser!.Username = tempus.Username;
         
         DiscordInteractionResponseBuilder modal = new();

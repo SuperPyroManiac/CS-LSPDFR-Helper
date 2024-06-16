@@ -34,7 +34,7 @@ internal class DbManager
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
-            await cnn.ExecuteAsync("insert into Users (UID, Username, BotEditor, BotAdmin, Blocked, LogPath) VALUES (@UID, @Username, @BotEditor, @BotAdmin, @Blocked, @LogPath)", user);
+            await cnn.ExecuteAsync("insert into Users (Id, Username, BotEditor, BotAdmin, Blocked, LogPath) VALUES (@Id, @Username, @BotEditor, @BotAdmin, @Blocked, @LogPath)", user);
             cnn.Close();
         }
         catch (MySqlException e)
@@ -50,7 +50,7 @@ internal class DbManager
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
-            await cnn.ExecuteAsync("UPDATE Users SET UID = @UID, Username = @Username, BotEditor = @BotEditor, BotAdmin = @BotAdmin, Blocked = @Blocked, LogPath = @LogPath WHERE UID = @UID", user);
+            await cnn.ExecuteAsync("UPDATE Users SET Id = @Id, Username = @Username, BotEditor = @BotEditor, BotAdmin = @BotAdmin, Blocked = @Blocked, LogPath = @LogPath WHERE Id = @Id", user);
             cnn.Close();
         }
         catch (MySqlException e)

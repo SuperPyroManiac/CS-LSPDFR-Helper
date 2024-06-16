@@ -10,6 +10,7 @@ internal class Startup
     
     internal static async Task Init()
     {
+        PrepCaches();
         await Verification();
         await SendStartupMessage();
     }

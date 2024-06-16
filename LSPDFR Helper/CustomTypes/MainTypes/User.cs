@@ -1,20 +1,17 @@
-using LSPDFR_Helper.CustomTypes.SpecialTypes;
-
 namespace LSPDFR_Helper.CustomTypes.MainTypes;
-using LSPDFR_Helper.Functions;
 
 internal class User
 {
-    public ulong UID { get; set; }
+    public ulong Id { get; set; }
     public string Username { get; set; }
-    public int BotEditor { get; set; }
-    public int BotAdmin { get; set; }
-    public int Blocked { get; set; }
+    public bool BotEditor { get; set; }
+    public bool BotAdmin { get; set; }
+    public bool Blocked { get; set; }
     public string LogPath { get; set; }
 
     public async Task<bool> IsTs()
     {
-        var usr = await Functions.GetMember(UID);
+        var usr = await Functions.Functions.GetMember(Id);
         return usr.Roles.Any(role => role.Id == Program.Settings.TsRoleId);
     }
 }

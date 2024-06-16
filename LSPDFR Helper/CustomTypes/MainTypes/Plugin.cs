@@ -1,5 +1,4 @@
 using LSPDFR_Helper.CustomTypes.Enums;
-using Type = LSPDFR_Helper.CustomTypes.Enums.Type;
 
 namespace LSPDFR_Helper.CustomTypes.MainTypes;
 
@@ -12,6 +11,6 @@ internal class Plugin
     internal string EaVersion { get; set; }
     internal int Id { get; set; }
     internal string Link { get; set; }
-    internal Type Type { get; set; }
+    internal PluginType PluginType { get; set; }
     internal State State { get; set; }
 }

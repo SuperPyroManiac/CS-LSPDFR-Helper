@@ -1,7 +1,7 @@
 namespace LSPDFR_Helper.CustomTypes.Enums;
 
 ///<summary>Error types.</summary>
-public enum Level
+internal enum Level
 {
     ///<summary>Special: Checks msg's in AH channels via fuzzymatch.</summary>
     PMSG,

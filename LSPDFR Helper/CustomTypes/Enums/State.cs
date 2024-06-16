@@ -1,7 +1,7 @@
 namespace LSPDFR_Helper.CustomTypes.Enums;
 
 ///<summary>State of the plugin.</summary>
-public enum State
+internal enum State
 {
     ///<summary>Normal and working.</summary>
     NORMAL,
