@@ -7,7 +7,7 @@ using LSPDFR_Helper.Functions.Messages;
 
 namespace LSPDFR_Helper.EventManagers;
 
-internal class ModalSubmit
+internal static class ModalSubmit
 {
     private static readonly List<string> CacheEventIds =
     [
