@@ -19,9 +19,14 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Commands\" />
       <Folder Include="CustomTypes\AutoCompleteTypes\" />
       <Folder Include="CustomTypes\Enums\" />
       <Folder Include="CustomTypes\LogTypes\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\ULSS Helper\ULSS Helper.csproj" />
     </ItemGroup>
 
 </Project>
