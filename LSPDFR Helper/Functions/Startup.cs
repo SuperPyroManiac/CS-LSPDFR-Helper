@@ -32,7 +32,7 @@ internal class Startup
         const string commitHash = "";
         const string commitHashShort = "";
         
-        var msgText = "Tara Helper woke up from her beauty sleep!\n\n";
+        var msgText = "__Tara Helper woke up from her beauty sleep!__\n\n";
         if (!string.IsNullOrEmpty(commitHash))
             msgText += $"> Build is based on commit with hash [`{commitHashShort}`](https://github.com/SuperPyroManiac/ULSS-Helper/commit/{commitHash}) (branch: `{branchName}`)\r\n";
         if (_addedCnt > 0)
@@ -41,7 +41,7 @@ internal class Startup
             msgText += $"> {_changedCnt} Username changes, updated the DB!\r\n";
         
         var embed = BasicEmbeds.Success(msgText, true);
-        var ch = await Program.Client.GetChannelAsync(Program.Settings.BotLogChId);
+        var ch = await Functions.GetGuild().GetChannelAsync(Program.Settings.BotLogChId);
         await new DiscordMessageBuilder().AddEmbed(embed).SendAsync(ch);
     }
 }
