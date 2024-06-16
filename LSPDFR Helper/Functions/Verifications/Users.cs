@@ -30,6 +30,7 @@ internal class Users
                 DbManager.AddUser(newUser);
             }
         }
+        if (cnt > 0) Program.Cache.UpdateUsers(DbManager.GetUsers());
         return cnt;
     }
     
@@ -47,6 +48,7 @@ internal class Users
                 DbManager.EditUser(user);
             }
         }
+        if (cnt > 0) Program.Cache.UpdateUsers(DbManager.GetUsers());
         return cnt;
     }
 }

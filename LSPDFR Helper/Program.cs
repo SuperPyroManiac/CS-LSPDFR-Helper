@@ -54,9 +54,9 @@ internal class Program
         await Task.Delay(-1);
     }
     
-    private static Task Startup(DiscordClient sender, GuildDownloadCompletedEventArgs args)
+    private static async Task Startup(DiscordClient sender, GuildDownloadCompletedEventArgs args)
     {
+        await Functions.Startup.Init();
         IsStarted = true;
-        return Task.CompletedTask;
     }
 }
