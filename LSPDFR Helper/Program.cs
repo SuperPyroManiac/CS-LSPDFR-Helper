@@ -9,6 +9,7 @@ using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using LSPDFR_Helper.CustomTypes.CacheTypes;
 using LSPDFR_Helper.CustomTypes.SpecialTypes;
+using LSPDFR_Helper.EventManagers;
 using LSPDFR_Helper.Functions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -30,9 +31,9 @@ internal class Program
         builder.SetLogLevel(LogLevel.Error);
 
         builder.ConfigureEventHandlers(
-            e => e
-                .HandleGuildDownloadCompleted(Startup));
-                // .HandleModalSubmitted(HandleModalSubmit)
+                e => e
+                    .HandleGuildDownloadCompleted(Startup)
+                    .HandleModalSubmitted(ModalSubmit.HandleModalSubmit));
                 // .HandleComponentInteractionCreated(HandleInteraction)
                 // .HandleMessageCreated(MessageSentEvent)
                 // .HandleGuildMemberAdded(JoinEvent)
@@ -56,7 +57,13 @@ internal class Program
     
     private static async Task Startup(DiscordClient sender, GuildDownloadCompletedEventArgs args)
     {
+        //Setup Caches
+        Cache.UpdateUsers(DbManager.GetUsers());
+        
+        //Startup Tasks
         await Functions.Startup.Init();
+        
+        //Allow Events
         IsStarted = true;
     }
 }

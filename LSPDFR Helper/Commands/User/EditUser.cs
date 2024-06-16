@@ -3,6 +3,7 @@ using DSharpPlus.Commands;
 using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Entities;
 using LSPDFR_Helper.CustomTypes.CacheTypes;
+using LSPDFR_Helper.EventManagers;
 using LSPDFR_Helper.Functions;
 using LSPDFR_Helper.Functions.Messages;
 
@@ -10,14 +11,14 @@ namespace LSPDFR_Helper.Commands.User;
 
 public class EditUser
 {
-    [Command("EditUser")]
+    [Command("edituser")]
     [Description("Edits a user!")]
     public async Task EditUserCmd(SlashCommandContext ctx, [Description("User to edit!")] DiscordUser user)
     {
         if (!await PermissionManager.RequireBotAdmin(ctx)) return;
         var bd = new DiscordInteractionResponseBuilder();
         bd.IsEphemeral = true;
-        if (Program.Cache.GetUsers().All<CustomTypes.MainTypes.User>(x => x.UID.ToString() != user.Id.ToString()))
+        if (Program.Cache.GetUsers().All(x => x.UID.ToString() != user.Id.ToString()))
         {
             await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
                 bd.AddEmbed(BasicEmbeds.Error("__User is not in the DB!__", true)));
@@ -29,7 +30,7 @@ public class EditUser
         dUser!.Username = tempus.Username;
         
         DiscordInteractionResponseBuilder modal = new();
-        modal.WithCustomId(ModalSubmit.EditUser);
+        modal.WithCustomId(CustomIds.SelectUserValueToEdit);
         modal.WithTitle($"Editing {dUser.Username}!");
         modal.AddComponents(new DiscordTextInputComponent(
             label: "Editor:", 
