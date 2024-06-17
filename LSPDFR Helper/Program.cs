@@ -9,10 +9,13 @@ using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using LSPDFR_Helper.CustomTypes.CacheTypes;
 using LSPDFR_Helper.CustomTypes.SpecialTypes;
-using LSPDFR_Helper.EventManagers;
 using LSPDFR_Helper.Functions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using static LSPDFR_Helper.EventManagers.ModalSubmit;
+using static LSPDFR_Helper.EventManagers.CompInteraction;
+using static LSPDFR_Helper.EventManagers.MessageSent;
+using static LSPDFR_Helper.EventManagers.OnJoinLeave;
 
 namespace LSPDFR_Helper;
 
@@ -33,11 +36,11 @@ internal class Program
         builder.ConfigureEventHandlers(
                 e => e
                     .HandleGuildDownloadCompleted(Startup)
-                    .HandleModalSubmitted(ModalSubmit.HandleModalSubmit));
-                // .HandleComponentInteractionCreated(HandleInteraction)
-                // .HandleMessageCreated(MessageSentEvent)
-                // .HandleGuildMemberAdded(JoinEvent)
-                // .HandleGuildMemberRemoved(LeaveEvent));
+                    .HandleModalSubmitted(HandleModalSubmit)
+                    .HandleComponentInteractionCreated(HandleInteraction)
+                    .HandleMessageCreated(MessageSentEvent)
+                    .HandleGuildMemberAdded(JoinEvent)
+                    .HandleGuildMemberRemoved(LeaveEvent));
             
         Client = builder.Build();
         
