@@ -40,6 +40,7 @@ internal class Startup
             msgText += $"> {_addedCnt} New users found, added them to the DB!\r\n";
         if (_changedCnt > 0)
             msgText += $"> {_changedCnt} Username changes, updated the DB!\r\n";
+        //TODO: Show plugins / errors / users count
         
         var embed = BasicEmbeds.Success(msgText, true);
         var ch = await Functions.GetGuild().GetChannelAsync(Program.Settings.BotLogChId);
