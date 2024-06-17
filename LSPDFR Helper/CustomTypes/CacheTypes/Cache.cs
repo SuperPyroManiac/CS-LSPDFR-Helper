@@ -8,7 +8,29 @@ internal class Cache
     private Dictionary<ulong, ProcessCache> _processCacheDict = new();
     private Dictionary<string, InteractionCache> _interactionCacheDict = new();
     private readonly ConcurrentDictionary<ulong, User> _userCacheDict = new();
+    private readonly ConcurrentDictionary<int, Error> _errorCacheDict = new();
+    private readonly ConcurrentDictionary<string, Plugin> _pluginCacheDict = new();
+    private readonly ConcurrentDictionary<string, AutoCase> _caseCacheDict = new();
 
+    /// <summary>Replaces all cache entries with the specified error list.</summary>
+    internal void UpdateErrors(List<Error> errors)
+    {
+        _userCacheDict.Clear();
+        foreach (var error in errors) _errorCacheDict.TryAdd(error.Id, error);
+    }
+    
+    /// <summary>Returns a list of all cached errors.</summary>
+    internal List<Error> GetErrors()
+    {
+        return _errorCacheDict.Values.ToList();
+    }
+    
+    /// <summary>Returns a single error based off the id.</summary>
+    internal Error GetError(int errorId)
+    {
+        return _errorCacheDict[errorId];
+    }
+    
     /// <summary>Replaces all cache entries with the specified user list.</summary>
     internal void UpdateUsers(List<User> users)
     {

@@ -4,9 +4,10 @@ namespace LSPDFR_Helper.CustomTypes.MainTypes;
 
 internal class Error
 {
-    public int Id { get; set; }
-    public string Pattern { get; set; }
-    public string Solution { get; set; }
-    public string Description { get; set; }
-    public Level Level { get; set; }
+    internal int Id { get; set; }
+    internal string Pattern { get; set; }
+    internal string Solution { get; set; }
+    internal string Description { get; set; }
+    internal bool StringMatch { get; set; }
+    internal Level Level { get; set; }
 }

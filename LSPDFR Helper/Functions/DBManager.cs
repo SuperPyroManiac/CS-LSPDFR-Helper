@@ -11,6 +11,76 @@ internal class DbManager
 {
     private static readonly string ConnStr = $"Server={Program.BotSettings.Env.DbServer};User ID={Program.BotSettings.Env.DbUser};Password={Program.BotSettings.Env.DbPass};Database={Program.BotSettings.Env.DbName}";
 
+    //Error Functions
+    internal static Error GetError(string errorId)
+    {
+        try
+        {
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
+            var output = cnn.Query<Error>($"select * from Error where ID='{errorId}'");
+            cnn.Close();
+            return output.First();
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine(e);
+            Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+            throw;
+        }
+    }
+    
+    internal static long AddError(Error error)
+    {
+        try
+        {
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
+            cnn.Open();
+            cnn.Execute("insert into Error (Pattern, Solution, Description, Level, StringMatch) VALUES (@Pattern, @Solution, @Description, @Level, @StringMatch)", error);
+            var id = cnn.ExecuteScalar("SELECT LAST_INSERT_ID();")!;
+            cnn.Close();
+            return long.Parse(id.ToString()!);
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine(e);
+            Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+            throw;
+        }
+    }
+    
+    internal static async void EditError(Error error)
+    {
+        try
+        {
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
+            await cnn.ExecuteAsync("UPDATE Error SET Pattern = @Pattern, Solution = @Solution, Description = @Description, Level = @Level, StringMatch = @StringMatch WHERE Id = (@Id)", error);
+            cnn.Close();
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine(e);
+            await Logging.ErrLog($"SQL Issue: {e}");
+            throw;
+        }
+    }
+    
+    internal static async void DeleteError(Error error)
+    {
+        try
+        {
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
+            await cnn.ExecuteAsync("delete from Error where Id = (@Id)", error);
+            cnn.Close();
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine(e);
+            await Logging.ErrLog($"SQL Issue: {e}");
+            throw;
+        }
+    }
+    
+    //User Functions
     internal static List<User> GetUsers()
     {
         try
@@ -61,6 +131,7 @@ internal class DbManager
         }
     }
     
+    //Msc Functions
     internal static GlobalSettings GetGlobalSettings()
     {
         try
