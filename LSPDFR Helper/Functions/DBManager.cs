@@ -9,7 +9,7 @@ namespace LSPDFR_Helper.Functions;
 
 internal class DbManager
 {
-    private static readonly string ConnStr = $"Server={Program.BotSettings.Env.DbServer};User ID={Program.BotSettings.Env.DbUser};Password={Program.BotSettings.Env.DbPass};Database={Program.BotSettings.Env.DbName}";
+    private static readonly string ConnStr = $"Server={Program.BotSettings.Env.DbServer};User ID={Program.BotSettings.Env.DbUser};Password={Program.BotSettings.Env.DbPass};Database={Program.BotSettings.Env.DbName};Allow User Variables=True";
 
     //Error Functions
     internal static List<Error> GetErrors()
@@ -33,7 +33,7 @@ internal class DbManager
         try
         {
             using IDbConnection cnn = new MySqlConnection(ConnStr);
-            var output = cnn.Query<Error>($"select * from Error where ID='{errorId}'");
+            var output = cnn.Query<Error>($"select * from Error where Id='{errorId}'");
             cnn.Close();
             return output.First();
         }

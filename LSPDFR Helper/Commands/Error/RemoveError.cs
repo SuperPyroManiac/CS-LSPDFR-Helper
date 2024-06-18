@@ -7,11 +7,11 @@ using LSPDFR_Helper.Functions.Messages;
 
 namespace LSPDFR_Helper.Commands.Error;
 
-internal class RemoveError
+public class RemoveError
 {
     [Command("removeerror")]
     [Description("Removes an error from the database!")]
-    internal async Task RemoveErrorCmd
+    public async Task RemoveErrorCmd
     (SlashCommandContext ctx, [Description("Must match an existing error id!")] string errorId)
     {
         if (!await PermissionManager.RequireAdvancedTs(ctx)) return;

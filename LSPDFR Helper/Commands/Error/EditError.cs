@@ -11,11 +11,11 @@ using PermissionManager = ULSS_Helper.Modules.Functions.PermissionManager;
 
 namespace LSPDFR_Helper.Commands.Error;
 
-internal class EditError
+public class EditError
 {
     [Command("editerror")]
     [Description("Edits an error in the database!")]
-    internal async Task EditErrorCmd
+    public async Task EditErrorCmd
     (SlashCommandContext ctx, 
         [Description("The error ID.")] string errorId,
         [Description("The error level.")] Level newLevel = default)

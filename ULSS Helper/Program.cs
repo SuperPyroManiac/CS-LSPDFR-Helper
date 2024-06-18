@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using DSharpPlus;
 using DSharpPlus.Commands;
+using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Commands.Processors.TextCommands;
 using DSharpPlus.Commands.Processors.TextCommands.Parsing;
 using DSharpPlus.Entities;
@@ -49,7 +50,7 @@ internal class Program
         new ServiceCollection().AddLogging(x => x.AddConsole()).BuildServiceProvider();
 
         var commandsExtension = Client.UseCommands(new CommandsConfiguration());
-        commandsExtension.AddCommands(Assembly.GetExecutingAssembly(), Settings.Env.ServerId);
+        commandsExtension.AddCommands(Assembly.GetExecutingAssembly());
         TextCommandProcessor textCommandProcessor = new(new()
         { PrefixResolver = new DefaultPrefixResolver(false, ")(").ResolvePrefixAsync});
         await commandsExtension.AddProcessorsAsync(textCommandProcessor);

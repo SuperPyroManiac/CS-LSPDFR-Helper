@@ -11,7 +11,7 @@ internal static class BasicEmbeds
             Description = $":no_entry:  {msg}",
             Color = DiscordColor.Red
         };
-        if (bold) embed.Description = $"## :no_entry:  {msg}";
+        if (bold) embed.Description = $"### :no_entry:  {msg}";
         return embed;
     }
 
@@ -22,7 +22,7 @@ internal static class BasicEmbeds
             Description = $":warning:  {msg}",
             Color = DiscordColor.Gold
         };
-        if (bold) embed.Description = $"## :warning:  {msg}";
+        if (bold) embed.Description = $"### :warning:  {msg}";
         return embed;
     }
 
@@ -33,7 +33,7 @@ internal static class BasicEmbeds
             Description = $":grey_exclamation:  {msg}",
             Color = DiscordColor.DarkBlue
         };
-        if (bold) embed.Description = $"## :grey_exclamation:  {msg}";
+        if (bold) embed.Description = $"### :grey_exclamation:  {msg}";
         return embed;
     }
 
@@ -44,7 +44,7 @@ internal static class BasicEmbeds
             Description = $"{DiscordEmoji.FromName(Program.Client, ":yes:")}  {msg}",
             Color = DiscordColor.DarkGreen
         };
-        if (bold) embed.Description = $"## {DiscordEmoji.FromName(Program.Client, ":yes:")}  {msg}";
+        if (bold) embed.Description = $"### {DiscordEmoji.FromName(Program.Client, ":yes:")}  {msg}";
         return embed;
     }
 

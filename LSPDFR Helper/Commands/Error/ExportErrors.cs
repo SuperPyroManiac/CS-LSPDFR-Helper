@@ -9,11 +9,11 @@ using PermissionManager = ULSS_Helper.Modules.Functions.PermissionManager;
 
 namespace LSPDFR_Helper.Commands.Error;
 
-internal class ExportErrors
+public class ExportErrors
 {
     [Command("exporterrors")]
     [Description("Exports all errors as an xml!")]
-    internal async Task ExportErrorsCmd(SlashCommandContext ctx)
+    public async Task ExportErrorsCmd(SlashCommandContext ctx)
     {
         if (!await PermissionManager.RequireAdvancedTs(ctx)) return;
         var bd = new DiscordInteractionResponseBuilder();

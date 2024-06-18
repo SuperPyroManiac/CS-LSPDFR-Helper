@@ -10,11 +10,11 @@ using LSPDFR_Helper.Functions.Messages;
 
 namespace LSPDFR_Helper.Commands.Error;
 
-internal class AddError
+public class AddError
 {
     [Command("adderror")]
     [Description("Adds an error to the database!")]
-        internal async Task AddErrorCmd(SlashCommandContext ctx, [Description("Error Level")] Level level)
+        public async Task AddErrorCmd(SlashCommandContext ctx, [Description("Error Level")] Level level)
     {
         if (!await PermissionManager.RequireAdvancedTs(ctx)) return;
         var error = new CustomTypes.MainTypes.Error()

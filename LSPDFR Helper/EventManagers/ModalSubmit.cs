@@ -28,14 +28,10 @@ internal static class ModalSubmit
             
                 if (e.Interaction.Data.CustomId == CustomIds.SelectUserValueToEdit)
                 {
-                    var user = new User()
-                    {
-                        Id = cache.User.Id,
-                        Username = cache.User.Username,
-                        BotEditor = Convert.ToBoolean(e.Values["userEditor"]),
-                        BotAdmin = Convert.ToBoolean(e.Values["userBotAdmin"]),
-                        Blocked = Convert.ToBoolean(e.Values["userBlacklist"]),
-                    };
+                    var user = cache.User;
+                    user.BotEditor = Convert.ToBoolean(e.Values["userEditor"]);
+                    user.BotAdmin = Convert.ToBoolean(e.Values["userBotAdmin"]);
+                    user.Blocked = Convert.ToBoolean(e.Values["userBlacklist"]);
                     DbManager.EditUser(user);
                     await Task.Delay(250);
                     Program.Cache.UpdateUsers(DbManager.GetUsers());
