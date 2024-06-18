@@ -7,34 +7,43 @@ using LSPDFR_Helper.CustomTypes.Enums;
 using LSPDFR_Helper.EventManagers;
 using LSPDFR_Helper.Functions;
 using LSPDFR_Helper.Functions.Messages;
+using PermissionManager = ULSS_Helper.Modules.Functions.PermissionManager;
 
 namespace LSPDFR_Helper.Commands.Error;
 
-internal class AddError
+internal class EditError
 {
-    [Command("adderror")]
-    [Description("Adds an error to the database!")]
-        internal async Task AddErrorCmd(SlashCommandContext ctx, [Description("Error Level")] Level level)
+    [Command("editerror")]
+    [Description("Edits an error in the database!")]
+    internal async Task EditErrorCmd
+    (SlashCommandContext ctx, 
+        [Description("The error ID.")] string errorId,
+        [Description("The error level.")] Level newLevel = default)
     {
         if (!await PermissionManager.RequireAdvancedTs(ctx)) return;
-        var error = new CustomTypes.MainTypes.Error()
+        var bd = new DiscordInteractionResponseBuilder();
+
+        if (DbManager.GetError(errorId) == null)
         {
-            Pattern = "- REQUIRED -",
-            Solution = "- REQUIRED -",
-            Description = "- REQUIRED -",
-            StringMatch = false,
-            Level = level
-        };
+            bd.IsEphemeral = true;
+            await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, 
+                bd.AddEmbed(BasicEmbeds.Error($"No error found with ID: {errorId}")));
+            return;
+        }
+        
+        var error = DbManager.GetError(errorId);
+        
+        if (newLevel != default) error.Level = newLevel;
         var errorValues = new List<DiscordSelectComponentOption>()
         {
-            new DiscordSelectComponentOption("Pattern", "Error Pattern"),
+            new DiscordSelectComponentOption("Regex", "Error Regex"),
             new DiscordSelectComponentOption("Solution", "Error Solution"),
             new DiscordSelectComponentOption("Description", "Error Description"),
             new DiscordSelectComponentOption("String Match", "True: Pattern is String / False: Pattern is Regex or Fuzzymatch"),
         };
 
         var embed = BasicEmbeds.Info(
-            $"__Adding New {error.Level} Error!__\r\n" +
+            $"__Editing Error ID: {error.Id}__\r\n" +
             $">>> **Regex:**\r\n" +
             $"```{error.Pattern}```\r\n" +
             $"**Solution:**\r\n" +
@@ -49,14 +58,12 @@ internal class AddError
             Text = $"Current Editor: {ctx.Interaction.User.Username}",
             IconUrl = ctx.User.AvatarUrl
         };
-        var bd = new DiscordInteractionResponseBuilder();
         bd.AddEmbed(embed);
         bd.AddComponents(
             new DiscordSelectComponent(
                 customId: CustomIds.SelectErrorValueToEdit,
                 placeholder: "Edit Value",
-                options: errorValues
-            ));
+                options: errorValues));
         bd.AddComponents(
             new DiscordButtonComponent(
                 DiscordButtonStyle.Success,
@@ -68,7 +75,8 @@ internal class AddError
         try
         {
             var oldEditor = Program.Cache.GetUserAction(ctx.Interaction.User.Id, CustomIds.SelectErrorValueToEdit);
-            if (oldEditor != null) await oldEditor.Msg.DeleteAsync();
+            if (oldEditor != null)
+                await oldEditor.Msg.DeleteAsync();
         }
         catch (Exception)
         {

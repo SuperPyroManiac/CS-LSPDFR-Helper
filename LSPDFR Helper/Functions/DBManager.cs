@@ -12,6 +12,22 @@ internal class DbManager
     private static readonly string ConnStr = $"Server={Program.BotSettings.Env.DbServer};User ID={Program.BotSettings.Env.DbUser};Password={Program.BotSettings.Env.DbPass};Database={Program.BotSettings.Env.DbName}";
 
     //Error Functions
+    internal static List<Error> GetErrors()
+    {
+        try
+        {
+            using IDbConnection cnn = new MySqlConnection(ConnStr);
+            var output = cnn.Query<Error>("select * from Error");
+            return output.ToList();
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine(e);
+            Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+            throw;
+        }
+    }
+    
     internal static Error GetError(string errorId)
     {
         try
