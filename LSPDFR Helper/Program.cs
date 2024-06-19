@@ -46,11 +46,10 @@ public class Program
         
         new ServiceCollection().AddLogging(x => x.AddConsole()).BuildServiceProvider();
 
-        var commandsExtension = Client.UseCommands(new CommandsConfiguration());
+        var cc = new CommandsConfiguration();
+        cc.UseDefaultCommandErrorHandler = false;
+        var commandsExtension = Client.UseCommands(cc);
         commandsExtension.AddCommands(Assembly.GetExecutingAssembly());
-        TextCommandProcessor textCommandProcessor = new(new()
-        { PrefixResolver = new DefaultPrefixResolver(false, ")(").ResolvePrefixAsync});
-        await commandsExtension.AddProcessorsAsync(textCommandProcessor);
         
         Client.UseInteractivity(new InteractivityConfiguration());
         await Client.ConnectAsync(new DiscordActivity("with fire!", DiscordActivityType.Playing), DiscordUserStatus.DoNotDisturb);

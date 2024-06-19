@@ -86,9 +86,9 @@ public static class ModalSubmit
                 if (e.Interaction.Data.CustomId == CustomIds.SelectUserValueToEdit)
                 {
                     var user = cache.User;
-                    user.BotEditor = Convert.ToBoolean(e.Values["userEditor"]);
-                    user.BotAdmin = Convert.ToBoolean(e.Values["userBotAdmin"]);
-                    user.Blocked = Convert.ToBoolean(e.Values["userBlacklist"]);
+                    user.BotEditor = e.Values["userEditor"].Equals("true", StringComparison.OrdinalIgnoreCase);
+                    user.BotAdmin = e.Values["userBotAdmin"].Equals("true", StringComparison.OrdinalIgnoreCase);
+                    user.Blocked = e.Values["userBlacklist"].Equals("true", StringComparison.OrdinalIgnoreCase);
                     DbManager.EditUser(user);
                     await Task.Delay(250);
                     Program.Cache.UpdateUsers(DbManager.GetUsers());
@@ -97,9 +97,9 @@ public static class ModalSubmit
                         $"__User Updated!__\r\n"
                         + $">>> **UID: **{user.Id}\r\n"
                         + $" **Username: **{user.Username}\r\n"
-                        + $" **Is Editor: **{Convert.ToBoolean(user.BotEditor)}\r\n"
-                        + $" **Is Bot Admin: **{Convert.ToBoolean(user.BotAdmin)}\r\n"
-                        + $" **Is Blacklisted: **{Convert.ToBoolean(user.Blocked)}\r\n", true);
+                        + $" **Is Editor: **{user.BotEditor}\r\n"
+                        + $" **Is Bot Admin: **{user.BotAdmin}\r\n"
+                        + $" **Is Blacklisted: **{user.Blocked}\r\n", true);
                 
                     await e.Interaction.CreateResponseAsync(
                         DiscordInteractionResponseType.ChannelMessageWithSource,
