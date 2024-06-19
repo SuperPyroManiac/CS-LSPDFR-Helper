@@ -4,7 +4,7 @@ namespace ULSS_Helper.Modules.XML_Modules;
 
 public class XMLValidator
 {
-    internal static async Task<string> Run(string path)
+    public static async Task<string> Run(string path)
     {
         var xmlFile = await new HttpClient().GetStringAsync(path);
         

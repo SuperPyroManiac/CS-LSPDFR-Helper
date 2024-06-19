@@ -9,46 +9,46 @@ namespace ULSS_Helper.Objects;
 /// <summary>
 /// Used to store information during a log analysis process for a specific DiscordMessage. This allows accessing the Process object instances in the (possible) following chain of bot responses related to the same OriginalMessage.
 /// </summary>
-internal class ProcessCache : Cache
+public class ProcessCache : Cache
 {
-    internal DiscordMessageInteraction Interaction { get; private set; }
-    internal DiscordMessage OriginalMessage { get; private set; }
-    internal ELSProcess ElsProcess { get; private set; }
-    internal RPHProcess RphProcess { get; private set; }
-    internal ASIProcess AsiProcess { get; private set; }
-    internal SHVDNProcess ShvdnProcess { get; private set; }
+    public DiscordMessageInteraction Interaction { get; private set; }
+    public DiscordMessage OriginalMessage { get; private set; }
+    public ELSProcess ElsProcess { get; private set; }
+    public RPHProcess RphProcess { get; private set; }
+    public ASIProcess AsiProcess { get; private set; }
+    public SHVDNProcess ShvdnProcess { get; private set; }
 
-    internal ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage, ELSProcess elsProcess)
+    public ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage, ELSProcess elsProcess)
     {
         Interaction = interaction;
         OriginalMessage = originalMessage;
         ElsProcess = elsProcess;
     }
-    internal ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage, RPHProcess rphProcess)
+    public ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage, RPHProcess rphProcess)
     {
         Interaction = interaction;
         OriginalMessage = originalMessage;
         RphProcess = rphProcess;
     }
-    internal ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage, ASIProcess asiProcess)
+    public ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage, ASIProcess asiProcess)
     {
         Interaction = interaction;
         OriginalMessage = originalMessage;
         AsiProcess = asiProcess;
     }
-    internal ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage, SHVDNProcess shvdnProcess)
+    public ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage, SHVDNProcess shvdnProcess)
     {
         Interaction = interaction;
         OriginalMessage = originalMessage;
         ShvdnProcess = shvdnProcess;
     }
-    internal ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage)
+    public ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage)
     {
         Interaction = interaction;
         OriginalMessage = originalMessage;
     }
 
-    internal ProcessCache Update(ProcessCache newCache)
+    public ProcessCache Update(ProcessCache newCache)
     {
         if ((OriginalMessage ?? newCache.OriginalMessage) != null && OriginalMessage.Id != newCache.OriginalMessage.Id)
             throw new InvalidOperationException("Cannot update ProcessCache that belongs to a different message!");
@@ -71,7 +71,7 @@ internal class ProcessCache : Cache
     /// <param name="attachments">If several attachments are attached to the message, the list of attachments can be passed here to check whether it contains several log files of the same type.</param>
     /// <returns>True if the cache can be used to get the log analysis results for the specified log type; false otherwise.</returns>
     /// <exception cref="ArgumentException">Thrown when an invalid log type is provided.</exception>
-    internal static bool IsCacheUsagePossible(string logType, ProcessCache cache, List<DiscordAttachment> attachments=null)
+    public static bool IsCacheUsagePossible(string logType, ProcessCache cache, List<DiscordAttachment> attachments=null)
     {
         if (cache == null) return false;
 

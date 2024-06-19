@@ -3,7 +3,7 @@ using DSharpPlus.EventArgs;
 
 namespace LSPDFR_Helper.EventManagers;
 
-internal static class CompInteraction
+public static class CompInteraction
 {
     private static readonly List<string> CacheEventIds =
     [
@@ -32,7 +32,7 @@ internal static class CompInteraction
         CustomIds.ShvdnDetailedSendToUser
     ];
     
-    internal static async Task HandleInteraction(DiscordClient s, ComponentInteractionCreatedEventArgs eventArgs)
+    public static async Task HandleInteraction(DiscordClient s, ComponentInteractionCreatedEventArgs eventArgs)
     {
         while ( !Program.IsStarted ) await Task.Delay(500);
 

@@ -7,7 +7,7 @@ namespace ULSS_Helper.Modules.ASI_Modules;
 // ReSharper disable InconsistentNaming
 public class ASIAnalyzer
 {
-    internal static async Task<ASILog> Run(string attachmentUrl)
+    public static async Task<ASILog> Run(string attachmentUrl)
     {
         var timer = new Stopwatch();
         timer.Start();

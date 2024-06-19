@@ -1,17 +1,17 @@
 namespace ULSS_Helper.Objects;
 
-internal abstract class Cache
+public abstract class Cache
 {
     private DateTime CreatedAt { get; }
-    internal DateTime ModifiedAt { get; private set; }
+    public DateTime ModifiedAt { get; private set; }
 
-    internal Cache()
+    public Cache()
     {
         CreatedAt = DateTime.Now;
         ModifiedAt = CreatedAt;
     }
 
-    internal void Update()
+    public void Update()
     {
         ModifiedAt = DateTime.Now;
     }

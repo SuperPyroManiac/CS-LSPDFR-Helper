@@ -59,7 +59,7 @@ public class ComponentInteraction
     public const string ShvdnQuickSendToUser = "ShvdnQuickInfoSendToUser";
     public const string ShvdnDetailedSendToUser = "ShvdnDetailedSendToUser";
 
-    internal static async Task HandleInteraction(DiscordClient s, ComponentInteractionCreatedEventArgs eventArgs)
+    public static async Task HandleInteraction(DiscordClient s, ComponentInteractionCreatedEventArgs eventArgs)
     {
         while (!Program.isStarted) await Task.Delay(500);
         

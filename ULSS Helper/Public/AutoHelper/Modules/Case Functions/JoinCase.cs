@@ -4,9 +4,9 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 
-internal class JoinCase
+public class JoinCase
 {
-    internal static async Task Join(AutoCase ac, string tsID)
+    public static async Task Join(AutoCase ac, string tsID)
     {
         if (ac.TsRequested == 1 && ac.RequestID != null)
         {
@@ -26,7 +26,7 @@ internal class JoinCase
         await ch.AddThreadMemberAsync(tmpusr);
     }
     
-    internal static async Task PubJoin(AutoCase ac, string userId)
+    public static async Task PubJoin(AutoCase ac, string userId)
     {
         var tmpch = await Program.Client.GetChannelAsync(ulong.Parse(ac.ChannelID));
         var ch = (DiscordThreadChannel)tmpch;

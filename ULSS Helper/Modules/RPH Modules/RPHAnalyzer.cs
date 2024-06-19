@@ -8,7 +8,7 @@ namespace ULSS_Helper.Modules.RPH_Modules;
 
 public class RPHAnalyzer
 {
-    internal static async Task<RPHLog> Run(string attachmentUrl)
+    public static async Task<RPHLog> Run(string attachmentUrl)
     {
         var pluginData = Program.Cache.GetPlugins();
         var errorData = Program.Cache.GetErrors();

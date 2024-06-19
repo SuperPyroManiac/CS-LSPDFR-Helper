@@ -6,12 +6,12 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Modules;
 
-internal class SharedLogInfo
+public class SharedLogInfo
 {
-    internal const string OptionValueSeparator = "&";
+    public const string OptionValueSeparator = "&";
 
     // ReSharper disable once ReplaceAsyncWithTaskReturn
-    internal async Task SendAttachmentErrorMessage(CommandContext context, string message)
+    public async Task SendAttachmentErrorMessage(CommandContext context, string message)
     {
         var response = new DiscordInteractionResponseBuilder
         {
@@ -21,7 +21,7 @@ internal class SharedLogInfo
         await context.RespondAsync(response);
     }
     
-    internal async Task SendSelectFileForAnalysisMessage(CommandContext context, List<DiscordAttachment> acceptedAttachments, DiscordMessage targetMessage)
+    public async Task SendSelectFileForAnalysisMessage(CommandContext context, List<DiscordAttachment> acceptedAttachments, DiscordMessage targetMessage)
     {
         var embed = BasicEmbeds.Warning(" There were multiple attachments detected for log analysis!\r\n Please select the one you would like to be analyzed!");
         
@@ -51,7 +51,7 @@ internal class SharedLogInfo
 
     }
 
-    internal DiscordEmbedBuilder AddTsViewFields(DiscordEmbedBuilder embed, ProcessCache cache, Log log) 
+    public DiscordEmbedBuilder AddTsViewFields(DiscordEmbedBuilder embed, ProcessCache cache, Log log) 
     {
         embed.AddField("Log uploader:", $"<@{cache.OriginalMessage.Author.Id}>", true);
         embed.AddField("Log message:", cache.OriginalMessage.JumpLink.ToString(), true);
@@ -59,7 +59,7 @@ internal class SharedLogInfo
         return embed;
     }
 
-    internal DiscordEmbedBuilder RemoveTsViewFields(DiscordEmbedBuilder embed)
+    public DiscordEmbedBuilder RemoveTsViewFields(DiscordEmbedBuilder embed)
     {
         return embed.RemoveFieldRange(0, 3);
     }

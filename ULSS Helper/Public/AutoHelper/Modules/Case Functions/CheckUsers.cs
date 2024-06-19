@@ -1,8 +1,8 @@
 namespace ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 
-internal class CheckUsers
+public class CheckUsers
 {
-    internal static async Task Validate()
+    public static async Task Validate()
     {
         var cases = Program.Cache.GetCasess().Where(x => x.Solved == 0).ToList();
         var users = Program.GetGuild().Members.Values.ToList();
@@ -11,7 +11,7 @@ internal class CheckUsers
             await CloseCase.Close(ac);
     }
     
-    internal static async Task CloseCases(string uid)
+    public static async Task CloseCases(string uid)
     {
         var cases = Program.Cache.GetCasess().Where(x => x.Solved == 0).ToList();
         

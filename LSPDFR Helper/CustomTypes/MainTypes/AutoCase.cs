@@ -1,13 +1,13 @@
 namespace LSPDFR_Helper.CustomTypes.MainTypes;
 
-internal class AutoCase
+public class AutoCase
 {
-    internal string CaseId { get; set; }
-    internal ulong OwnerId { get; set; }
-    internal ulong ChannelId { get; set; }
-    internal ulong RequestId { get; set; }
-    internal bool Solved { get; set; }
-    internal bool TsRequested { get; set; }
-    internal DateTime CreateDate { get; set; }
-    internal DateTime ExpireDate { get; set; }
+    public string CaseId { get; set; }
+    public ulong OwnerId { get; set; }
+    public ulong ChannelId { get; set; }
+    public ulong RequestId { get; set; }
+    public bool Solved { get; set; }
+    public bool TsRequested { get; set; }
+    public DateTime CreateDate { get; set; }
+    public DateTime ExpireDate { get; set; }
 }

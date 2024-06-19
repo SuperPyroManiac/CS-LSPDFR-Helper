@@ -3,9 +3,9 @@ using ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 
 namespace ULSS_Helper;
 
-internal class Timer
+public class Timer
 {
-    internal static void StartTimer()
+    public static void StartTimer()
     {
         var aTimer = new System.Timers.Timer(TimeSpan.FromHours(1));
         aTimer.Elapsed += OnLongTimedEvent;

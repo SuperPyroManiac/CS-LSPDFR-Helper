@@ -5,7 +5,7 @@ using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Entities;
 using LSPDFR_Helper.Functions;
 using LSPDFR_Helper.Functions.Messages;
-using PermissionManager = ULSS_Helper.Modules.Functions.PermissionManager;
+using LSPDFR_Helper.Functions.Verifications;
 
 namespace LSPDFR_Helper.Commands.Error;
 
@@ -20,8 +20,8 @@ public class ExportErrors
         bd.IsEphemeral = true;
         
         var errors = DbManager.GetErrors().ToArray();
-        var serializer = new XmlSerializer(typeof(ULSS_Helper.Objects.Error[]));
-        await using (var writer = new StreamWriter(Path.Combine(Settings.GetOrCreateFolder( "Exports"), "ErrorExport.xml")))
+        var serializer = new XmlSerializer(typeof(CustomTypes.MainTypes.Error[]));
+        await using (var writer = new StreamWriter(Path.Combine(Settings.GetOrCreateFolder("Exports"), "ErrorExport.xml")))
         {
             serializer.Serialize(writer, errors);
         }

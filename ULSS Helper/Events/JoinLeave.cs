@@ -5,9 +5,9 @@ using ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 
 namespace ULSS_Helper.Events;
 
-internal class JoinLeave
+public class JoinLeave
 {
-    internal static async Task JoinEvent(DiscordClient s, GuildMemberAddedEventArgs ctx)
+    public static async Task JoinEvent(DiscordClient s, GuildMemberAddedEventArgs ctx)
     {
         while (!Program.isStarted) await Task.Delay(500);
         var dbUsers = Database.LoadUsers();
@@ -28,7 +28,7 @@ internal class JoinLeave
         }
     }
     
-    internal static async Task LeaveEvent(DiscordClient s, GuildMemberRemovedEventArgs ctx)
+    public static async Task LeaveEvent(DiscordClient s, GuildMemberRemovedEventArgs ctx)
     {
         while (!Program.isStarted) await Task.Delay(500);
         

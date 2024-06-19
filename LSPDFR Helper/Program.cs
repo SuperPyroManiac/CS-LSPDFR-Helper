@@ -19,13 +19,13 @@ using static LSPDFR_Helper.EventManagers.OnJoinLeave;
 
 namespace LSPDFR_Helper;
 
-internal class Program
+public class Program
 {
-    internal static DiscordClient Client { get; set; }
-    internal static bool IsStarted { get; set; }
-    internal static Cache Cache = new();
-    internal static Settings BotSettings = new();
-    internal static GlobalSettings Settings = DbManager.GetGlobalSettings();
+    public static DiscordClient Client { get; set; }
+    public static bool IsStarted { get; set; }
+    public static Cache Cache = new();
+    public static Settings BotSettings = new();
+    public static GlobalSettings Settings = DbManager.GetGlobalSettings();
     
     static async Task Main()
     {

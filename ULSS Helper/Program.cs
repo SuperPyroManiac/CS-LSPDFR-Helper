@@ -19,12 +19,12 @@ using static ULSS_Helper.Events.ModalSubmit;
 
 namespace ULSS_Helper;
 
-internal class Program
+public class Program
 {
-    internal static DiscordClient Client {get; set;}
-    internal static Settings Settings = new();
-    internal static Cache Cache = new();
-    internal static bool isStarted;
+    public static DiscordClient Client {get; set;}
+    public static Settings Settings = new();
+    public static Cache Cache = new();
+    public static bool isStarted;
     
     static async Task Main()
     {
@@ -64,12 +64,12 @@ internal class Program
         await Task.Delay(-1);
     }
 
-    internal static DiscordGuild GetGuild()
+    public static DiscordGuild GetGuild()
     {
         return Client.Guilds[Settings.Env.ServerId];
     }
 
-    internal static async Task<DiscordMember> GetMember(string uid)
+    public static async Task<DiscordMember> GetMember(string uid)
     {
         var serv = await Client.GetGuildAsync(Settings.Env.ServerId);
         return await serv.GetMemberAsync(ulong.Parse(uid));

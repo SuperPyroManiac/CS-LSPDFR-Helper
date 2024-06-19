@@ -3,9 +3,9 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Messages;
 
-internal class FindErrorMessages : FindBaseMessages
+public class FindErrorMessages : FindBaseMessages
 {    
-    internal static string GetSearchParamsList(string title, string errId, string regex, string solution, string description, Level? level, bool exactMatch)
+    public static string GetSearchParamsList(string title, string errId, string regex, string solution, string description, Level? level, bool exactMatch)
     {
         var searchParamsList = $"**{title}**\r\n";
         if (errId != null)
@@ -24,7 +24,7 @@ internal class FindErrorMessages : FindBaseMessages
         return searchParamsList;
     }
 
-    internal static async Task SendDbOperationConfirmation(Error newError, DbOperation operation, ulong channel, ulong sender, Error oldError = null)
+    public static async Task SendDbOperationConfirmation(Error newError, DbOperation operation, ulong channel, ulong sender, Error oldError = null)
     {
         var errorRegex = $"**Regex:**\r\n```\n{newError.Regex}\n```\r\n";
         var errorSolution = $"**Solution:**\n```{newError.Solution}```\r\n\r\n";

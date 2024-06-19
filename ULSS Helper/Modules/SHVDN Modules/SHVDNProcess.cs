@@ -9,9 +9,9 @@ using ULSS_Helper.Objects;
 namespace ULSS_Helper.Modules.SHVDN_Modules;
 
 // ReSharper disable once InconsistentNaming
-internal class SHVDNProcess : SharedLogInfo
+public class SHVDNProcess : SharedLogInfo
 {
-    internal SHVDNLog log;
+    public SHVDNLog log;
     private int ProblemCounter(SHVDNLog log)
     {
         if (log == null) return 0;
@@ -30,7 +30,7 @@ internal class SHVDNProcess : SharedLogInfo
             }
         };
     }
-    internal async Task SendQuickLogInfoMessage(DiscordMessage targetMessage = null, CommandContext context = null, ComponentInteractionCreatedEventArgs eventArgs = null)
+    public async Task SendQuickLogInfoMessage(DiscordMessage targetMessage = null, CommandContext context = null, ComponentInteractionCreatedEventArgs eventArgs = null)
     {
         if (context == null && eventArgs == null)
             throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
@@ -75,7 +75,7 @@ internal class SHVDNProcess : SharedLogInfo
         Program.Cache.SaveProcess(sentMessage.Id, new ProcessCache(cache.Interaction, cache.OriginalMessage, this));
     }
     
-    internal async Task SendDetailedInfoMessage(ComponentInteractionCreatedEventArgs eventArgs)
+    public async Task SendDetailedInfoMessage(ComponentInteractionCreatedEventArgs eventArgs)
     {
         var frozenScriptsList = "\r\n> - " + string.Join("\r\n> - ", log.FrozenScripts);
         var scriptDependsList = "\r\n> - " + string.Join("\r\n> - ", log.ScriptDepends);
@@ -154,7 +154,7 @@ internal class SHVDNProcess : SharedLogInfo
         Program.Cache.SaveProcess(sentMessage.Id, new ProcessCache(cache.Interaction, cache.OriginalMessage, this)); 
     }
 
-    internal async Task SendMessageToUser(ComponentInteractionCreatedEventArgs eventArgs)
+    public async Task SendMessageToUser(ComponentInteractionCreatedEventArgs eventArgs)
     {
         var newEmbList = new List<DiscordEmbed>();
         var newEmb = GetBaseLogInfoEmbed(eventArgs.Message.Embeds[0].Description);

@@ -1,6 +1,6 @@
 namespace LSPDFR_Helper.CustomTypes.Enums;
 
-internal enum Platform
+public enum Platform
 {
     STEAM,
     EPIC,

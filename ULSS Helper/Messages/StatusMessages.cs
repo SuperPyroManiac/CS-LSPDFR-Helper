@@ -2,9 +2,9 @@ using DSharpPlus.Entities;
 
 namespace ULSS_Helper.Messages;
 
-internal class StatusMessages
+public class StatusMessages
 {
-    internal static async Task SendStartupMessage()
+    public static async Task SendStartupMessage()
     {
         var branchName = "";
         var commitHash = "";

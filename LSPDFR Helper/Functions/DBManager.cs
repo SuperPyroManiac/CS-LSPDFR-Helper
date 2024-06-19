@@ -1,4 +1,3 @@
-using System.Data;
 using Dapper;
 using LSPDFR_Helper.CustomTypes.MainTypes;
 using LSPDFR_Helper.CustomTypes.SpecialTypes;
@@ -7,18 +6,17 @@ using MySqlConnector;
 
 namespace LSPDFR_Helper.Functions;
 
-internal class DbManager
+public static class DbManager
 {
-    private static readonly string ConnStr = $"Server={Program.BotSettings.Env.DbServer};User ID={Program.BotSettings.Env.DbUser};Password={Program.BotSettings.Env.DbPass};Database={Program.BotSettings.Env.DbName};Allow User Variables=True";
+    private static readonly string ConnStr = $"Server={Program.BotSettings.Env.DbServer};User ID={Program.BotSettings.Env.DbUser};Password={Program.BotSettings.Env.DbPass};Database={Program.BotSettings.Env.DbName}";
 
     //Error Functions
-    internal static List<Error> GetErrors()
+    public static List<Error> GetErrors()
     {
         try
         {
-            using IDbConnection cnn = new MySqlConnection(ConnStr);
-            var output = cnn.Query<Error>("select * from Error");
-            return output.ToList();
+            using var cnn = new MySqlConnection(ConnStr);
+            return cnn.Query<Error>("select * from Error").ToList();
         }
         catch (MySqlException e)
         {
@@ -28,14 +26,12 @@ internal class DbManager
         }
     }
     
-    internal static Error GetError(string errorId)
+    public static Error GetError(string errorId)
     {
         try
         {
-            using IDbConnection cnn = new MySqlConnection(ConnStr);
-            var output = cnn.Query<Error>($"select * from Error where Id='{errorId}'");
-            cnn.Close();
-            return output.First();
+            using var cnn = new MySqlConnection(ConnStr);
+            return cnn.Query<Error>($"select * from Error where Id='{errorId}'").First();
         }
         catch (MySqlException e)
         {
@@ -45,16 +41,13 @@ internal class DbManager
         }
     }
     
-    internal static long AddError(Error error)
+    public static long AddError(Error error)
     {
         try
         {
-            using IDbConnection cnn = new MySqlConnection(ConnStr);
-            cnn.Open();
+            using var cnn = new MySqlConnection(ConnStr);
             cnn.Execute("insert into Error (Pattern, Solution, Description, Level, StringMatch) VALUES (@Pattern, @Solution, @Description, @Level, @StringMatch)", error);
-            var id = cnn.ExecuteScalar("SELECT LAST_INSERT_ID();")!;
-            cnn.Close();
-            return long.Parse(id.ToString()!);
+            return long.Parse(cnn.ExecuteScalar("SELECT LAST_INSERT_ID();")!.ToString()!);
         }
         catch (MySqlException e)
         {
@@ -64,13 +57,12 @@ internal class DbManager
         }
     }
     
-    internal static async void EditError(Error error)
+    public static async void EditError(Error error)
     {
         try
         {
-            using IDbConnection cnn = new MySqlConnection(ConnStr);
+            await using var cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("UPDATE Error SET Pattern = @Pattern, Solution = @Solution, Description = @Description, Level = @Level, StringMatch = @StringMatch WHERE Id = (@Id)", error);
-            cnn.Close();
         }
         catch (MySqlException e)
         {
@@ -80,13 +72,12 @@ internal class DbManager
         }
     }
     
-    internal static async void DeleteError(Error error)
+    public static async void DeleteError(Error error)
     {
         try
         {
-            using IDbConnection cnn = new MySqlConnection(ConnStr);
+            await using var cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("delete from Error where Id = (@Id)", error);
-            cnn.Close();
         }
         catch (MySqlException e)
         {
@@ -97,14 +88,12 @@ internal class DbManager
     }
     
     //User Functions
-    internal static List<User> GetUsers()
+    public static List<User> GetUsers()
     {
         try
         {
-            using IDbConnection cnn = new MySqlConnection(ConnStr);
-            var output = cnn.Query<User>("select * from Users");
-            cnn.Close();
-            return output.ToList();
+            using var cnn = new MySqlConnection(ConnStr);
+            return cnn.Query<User>("select * from Users").ToList();
         }
         catch (MySqlException e)
         {
@@ -115,13 +104,12 @@ internal class DbManager
     }
     
     
-    internal static async void AddUser(User user)
+    public static async void AddUser(User user)
     {
         try
         {
-            using IDbConnection cnn = new MySqlConnection(ConnStr);
+            await using var cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("insert into Users (Id, Username, BotEditor, BotAdmin, Blocked, LogPath) VALUES (@Id, @Username, @BotEditor, @BotAdmin, @Blocked, @LogPath)", user);
-            cnn.Close();
         }
         catch (MySqlException e)
         {
@@ -131,13 +119,12 @@ internal class DbManager
         }
     }
     
-    internal static async void EditUser(User user)
+    public static async void EditUser(User user)
     {
         try
         {
-            using IDbConnection cnn = new MySqlConnection(ConnStr);
+            await using var cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("UPDATE Users SET Id = @Id, Username = @Username, BotEditor = @BotEditor, BotAdmin = @BotAdmin, Blocked = @Blocked, LogPath = @LogPath WHERE Id = @Id", user);
-            cnn.Close();
         }
         catch (MySqlException e)
         {
@@ -148,11 +135,11 @@ internal class DbManager
     }
     
     //Msc Functions
-    internal static GlobalSettings GetGlobalSettings()
+    public static GlobalSettings GetGlobalSettings()
     {
         try
         {
-            using IDbConnection cnn = new MySqlConnection(ConnStr);
+            using var cnn = new MySqlConnection(ConnStr);
             var dict = cnn.Query("select * from GlobalValues").ToDictionary(
                 row => ( string )row.Name,
                 row => ( string )row.Value);

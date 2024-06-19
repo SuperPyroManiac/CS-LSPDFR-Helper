@@ -4,9 +4,9 @@ using ULSS_Helper.Messages;
 
 namespace ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 
-internal class CaseMonitor
+public class CaseMonitor
 {
-    internal static async Task UpdateMonitor()
+    public static async Task UpdateMonitor()
     {
         var cl = Program.Client;
         var ch = await cl.GetChannelAsync(Program.Settings.Env.RequestHelpChannelId);

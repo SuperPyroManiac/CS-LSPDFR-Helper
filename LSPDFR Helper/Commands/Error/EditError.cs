@@ -7,7 +7,7 @@ using LSPDFR_Helper.CustomTypes.Enums;
 using LSPDFR_Helper.EventManagers;
 using LSPDFR_Helper.Functions;
 using LSPDFR_Helper.Functions.Messages;
-using PermissionManager = ULSS_Helper.Modules.Functions.PermissionManager;
+using LSPDFR_Helper.Functions.Verifications;
 
 namespace LSPDFR_Helper.Commands.Error;
 

@@ -13,7 +13,7 @@ namespace ULSS_Helper.Public.AutoHelper;
 
 public class MessageSent
 {
-    internal static async Task MessageSentEvent(DiscordClient s, MessageCreatedEventArgs ctx)
+    public static async Task MessageSentEvent(DiscordClient s, MessageCreatedEventArgs ctx)
     {
         try
         {

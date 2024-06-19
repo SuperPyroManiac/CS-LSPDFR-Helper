@@ -8,7 +8,7 @@ namespace ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 
 public class OpenCase
 {
-    internal static async Task<DiscordThreadChannel> CreateCase(ComponentInteractionCreatedEventArgs ctx)
+    public static async Task<DiscordThreadChannel> CreateCase(ComponentInteractionCreatedEventArgs ctx)
     {
         var caseId = new Random().Next(int.MaxValue).ToString("x");
         

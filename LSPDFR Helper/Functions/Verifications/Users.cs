@@ -3,12 +3,12 @@ using LSPDFR_Helper.CustomTypes.MainTypes;
 
 namespace LSPDFR_Helper.Functions.Verifications;
 
-internal class Users
+public class Users
 {
     private static readonly IReadOnlyDictionary<ulong, DiscordMember> ServerUsers = Functions.GetGuild().Members;
     private static readonly List<User> DbUsers = DbManager.GetUsers();
     
-    internal static async Task<int> Missing()
+    public static async Task<int> Missing()
     {
         var cnt = 0;
         foreach (var user in ServerUsers.Values.ToList())
@@ -35,7 +35,7 @@ internal class Users
         return cnt;
     }
     
-    internal static async Task<int> Usernames()
+    public static async Task<int> Usernames()
     {
         var cnt = 0;
         foreach (var user in DbUsers)

@@ -4,9 +4,9 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 
-internal class CloseCase
+public class CloseCase
 {
-    internal static async Task Close(AutoCase ac, bool validate = true)
+    public static async Task Close(AutoCase ac, bool validate = true)
     {
         try
         {

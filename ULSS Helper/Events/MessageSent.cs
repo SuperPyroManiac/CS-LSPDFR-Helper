@@ -4,9 +4,9 @@ using DiscordUser = ULSS_Helper.Objects.DiscordUser;
 
 namespace ULSS_Helper.Events;
 
-internal class MessageSent
+public class MessageSent
 {
-    internal static async Task MessageSentEvent(DiscordClient s, MessageCreatedEventArgs ctx)
+    public static async Task MessageSentEvent(DiscordClient s, MessageCreatedEventArgs ctx)
     {
         while (!Program.isStarted) await Task.Delay(500);
         if (ctx.Channel.IsPrivate) return;

@@ -9,12 +9,12 @@ namespace ULSS_Helper.Public.AutoHelper.Modules.Process_Files;
 
 public class SHVDNProcess
 {
-    internal static int ProblemCounter(SHVDNLog log)
+    public static int ProblemCounter(SHVDNLog log)
     {
         if (log == null) return 0;
         else return log.FrozenScripts.Count + log.ScriptDepends.Count;
     }
-    internal static async Task ProcessLog(DiscordAttachment attach, MessageCreatedEventArgs ctx)
+    public static async Task ProcessLog(DiscordAttachment attach, MessageCreatedEventArgs ctx)
     {
         try
         {

@@ -8,11 +8,11 @@ using ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 
 namespace ULSS_Helper;
 
-internal class Database
+public class Database
 {
     private static readonly string ConnStr = $"Server={Program.Settings.Env.DbServer};User ID={Program.Settings.Env.DbUser};Password={Program.Settings.Env.DbPass};Database={Program.Settings.Env.DbName}";
 
-    internal static bool AutoHelperStatus(string state = null)
+    public static bool AutoHelperStatus(string state = null)
     {
         if (state == null)
         {
@@ -46,7 +46,7 @@ internal class Database
         }
     }
     
-    internal static List<Plugin> LoadPlugins()
+    public static List<Plugin> LoadPlugins()
     {
         try
         {
@@ -63,7 +63,7 @@ internal class Database
         }
     }
 
-    internal static Plugin GetPlugin(string pluginName)
+    public static Plugin GetPlugin(string pluginName)
     {
         try
         {
@@ -89,7 +89,7 @@ internal class Database
         }
     }
     
-    internal static List<Plugin> FindPlugins(string name = null, string dName = null, string id = null, State? state = null, string description = null, bool? exactMatch = false)
+    public static List<Plugin> FindPlugins(string name = null, string dName = null, string id = null, State? state = null, string description = null, bool? exactMatch = false)
     {
         try
         {
@@ -130,7 +130,7 @@ internal class Database
         }
     }
 
-    internal static List<Error> LoadErrors()
+    public static List<Error> LoadErrors()
     {
         try
         {
@@ -146,7 +146,7 @@ internal class Database
         }
     }
 
-    internal static Error GetError(string errorId)
+    public static Error GetError(string errorId)
     {
         try
         {
@@ -172,7 +172,7 @@ internal class Database
         }
     }
 
-    internal static List<Error> FindErrors(string id, string regex, string solution, string description, Level? level, bool? exactMatch = false)
+    public static List<Error> FindErrors(string id, string regex, string solution, string description, Level? level, bool? exactMatch = false)
     {
         try
         {
@@ -213,7 +213,7 @@ internal class Database
         }
     }
 
-    internal static async void AddPlugin(Plugin plugin)
+    public static async void AddPlugin(Plugin plugin)
     {
         try
         {
@@ -230,7 +230,7 @@ internal class Database
         }
     }
     
-    internal static long AddError(Error error)
+    public static long AddError(Error error)
     {
         try
         {
@@ -250,7 +250,7 @@ internal class Database
         }
     }
     
-    internal static async void EditPlugin(Plugin plugin)
+    public static async void EditPlugin(Plugin plugin)
     {
         try
         {
@@ -267,7 +267,7 @@ internal class Database
         }
     }
     
-    internal static async void EditError(Error error)
+    public static async void EditError(Error error)
     {
         try
         {
@@ -284,7 +284,7 @@ internal class Database
         }
     }
 
-    internal static async void DeletePlugin(Plugin plugin)
+    public static async void DeletePlugin(Plugin plugin)
     {
         try
         {
@@ -301,7 +301,7 @@ internal class Database
         }
     }
     
-    internal static async void DeleteError(Error error)
+    public static async void DeleteError(Error error)
     {
         try
         {
@@ -318,7 +318,7 @@ internal class Database
         }
     }
     
-    internal static List<DiscordUser> LoadUsers()
+    public static List<DiscordUser> LoadUsers()
     {
         try
         {
@@ -336,7 +336,7 @@ internal class Database
     }
     
     
-    internal static async void AddUser(DiscordUser user)
+    public static async void AddUser(DiscordUser user)
     {
         try
         {
@@ -353,7 +353,7 @@ internal class Database
         }
     }
     
-    internal static async void EditUser(DiscordUser user)
+    public static async void EditUser(DiscordUser user)
     {
         try
         {
@@ -370,7 +370,7 @@ internal class Database
         }
     }
     
-    internal static List<AutoCase> LoadCases()
+    public static List<AutoCase> LoadCases()
     {
         try
         {
@@ -388,7 +388,7 @@ internal class Database
     }
     
     
-    internal static async Task AddCase(AutoCase autocase)
+    public static async Task AddCase(AutoCase autocase)
     {
         try
         {
@@ -405,7 +405,7 @@ internal class Database
         }
     }
     
-    internal static async Task EditCase(AutoCase autocase)
+    public static async Task EditCase(AutoCase autocase)
     {
         try
         {
@@ -422,7 +422,7 @@ internal class Database
         }
     }
     
-    internal static async void UpdatePluginVersions()
+    public static async void UpdatePluginVersions()
     {
         HttpClient webClient = new();
 	    var plugins = LoadPlugins();

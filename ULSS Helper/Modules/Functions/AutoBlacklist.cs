@@ -4,7 +4,7 @@ namespace ULSS_Helper.Modules.Functions;
 
 public class AutoBlacklist
 {
-    internal static void Add(string userId, string reason)
+    public static void Add(string userId, string reason)
     {
         var user = Program.Cache.GetUser(userId);
         user.Blocked = 1;

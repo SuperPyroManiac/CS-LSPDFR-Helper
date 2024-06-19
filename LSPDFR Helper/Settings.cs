@@ -4,17 +4,17 @@ using LSPDFR_Helper.CustomTypes.SpecialTypes;
 
 namespace LSPDFR_Helper;
 
-internal class Settings
+public class Settings
 {
     private const string ConfigFileName = "environment-config.json";
-    internal EnvironmentConfig Env { get; }
+    public EnvironmentConfig Env { get; }
 
-    internal Settings()
+    public Settings()
     {
         Env = LoadEnvConfigFile();
     }
 
-    internal static string GetOrCreateFolder(string folder)
+    public static string GetOrCreateFolder(string folder)
     {
         var path = Path.Combine(Directory.GetCurrentDirectory(), folder);
         if (!Path.Exists(path)) Directory.CreateDirectory(path);

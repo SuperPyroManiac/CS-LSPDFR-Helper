@@ -3,9 +3,9 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Messages;
 
-internal class FindPluginMessages : FindBaseMessages
+public class FindPluginMessages : FindBaseMessages
 {
-    internal static string GetSearchParamsList(string title, string plugName, string plugDName, string plugId, State? plugState, string plugDescription, bool exactMatch)
+    public static string GetSearchParamsList(string title, string plugName, string plugDName, string plugId, State? plugState, string plugDescription, bool exactMatch)
     {
         var searchParamsList = $"**{title}**\r\n";
         if (plugName != null)
@@ -24,7 +24,7 @@ internal class FindPluginMessages : FindBaseMessages
         return searchParamsList;
     }
 
-    internal static async Task SendDbOperationConfirmation(Plugin newPlugin, DbOperation operation, ulong channel, ulong sender, Plugin oldPlugin = null)
+    public static async Task SendDbOperationConfirmation(Plugin newPlugin, DbOperation operation, ulong channel, ulong sender, Plugin oldPlugin = null)
     {
         var pluginDName = $"**Display Name:** {newPlugin.DName}\r\n";
         var pluginVersion = $"**Version:** {newPlugin.Version}\r\n";

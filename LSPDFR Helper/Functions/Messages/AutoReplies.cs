@@ -2,9 +2,9 @@ using DSharpPlus.EventArgs;
 
 namespace LSPDFR_Helper.Functions.Messages;
 
-internal static class AutoReplies
+public static class AutoReplies
 {
-    internal static async Task MonitorMessages(MessageCreatedEventArgs ctx)
+    public static async Task MonitorMessages(MessageCreatedEventArgs ctx)
     {
         if (Program.Settings.SupportChId != ctx.Channel.Id) return;
         //TODO: Include AH threads!!

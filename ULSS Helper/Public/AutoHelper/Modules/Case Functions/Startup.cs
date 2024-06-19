@@ -4,15 +4,15 @@ using ULSS_Helper.Messages;
 
 namespace ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 
-internal class Startup
+public class Startup
 {
-    internal static async Task StartAutoHelper()
+    public static async Task StartAutoHelper()
     {
         await CheckUsers.Validate();
         await CheckCases.Validate();
         await UpdateMsg();
     }
-    internal static async Task UpdateMsg()
+    public static async Task UpdateMsg()
     {
         var cl = Program.Client;
         var ch = await cl.GetChannelAsync(Program.Settings.Env.AutoHelperChannelId);

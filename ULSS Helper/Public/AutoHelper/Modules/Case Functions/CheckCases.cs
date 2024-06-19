@@ -4,9 +4,9 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 
-internal class CheckCases
+public class CheckCases
 {
-    internal static async Task Validate()
+    public static async Task Validate()
     {
     ConcurrentDictionary<DiscordThreadChannel, AutoCase> caseChannelDict = new();
     

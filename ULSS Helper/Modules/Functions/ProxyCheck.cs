@@ -7,7 +7,7 @@ namespace ULSS_Helper.Modules.Functions;
 
 public class ProxyCheck
 {
-    internal static bool Run(RPHLog log, DiscordUser user, DiscordMessage msg)
+    public static bool Run(RPHLog log, DiscordUser user, DiscordMessage msg)
     {
         if (user.BotEditor == 1 || user.BotAdmin == 1) return true;
         if (string.IsNullOrEmpty(log.LogPath)) return true;

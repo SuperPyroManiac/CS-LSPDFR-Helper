@@ -7,7 +7,7 @@ namespace ULSS_Helper.Modules.ELS_Modules;
 // ReSharper disable InconsistentNaming
 public class ELSAnalyzer
 {
-    internal static async Task<ELSLog> Run(string attachmentUrl)
+    public static async Task<ELSLog> Run(string attachmentUrl)
     {
         var timer = new Stopwatch();
         timer.Start();

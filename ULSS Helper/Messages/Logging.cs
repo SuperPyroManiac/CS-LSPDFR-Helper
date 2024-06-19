@@ -2,10 +2,10 @@ using DSharpPlus.Entities;
 
 namespace ULSS_Helper.Messages;
 
-internal class Logging
+public class Logging
 {
     //Standard Logging
-    internal static async Task ErrLog(string e)
+    public static async Task ErrLog(string e)
     {
         var tsBotLogCh = await Program.Client.GetChannelAsync(Program.Settings.Env.TsBotLogChannelId);
 
@@ -18,7 +18,7 @@ internal class Logging
         await new DiscordMessageBuilder().WithContent($"### Error Detected\r\n```{e}```").SendAsync(tsBotLogCh);
     }
     
-    internal static async Task SendLog(ulong chLink, ulong msgSender, DiscordEmbedBuilder e, bool blame = true)
+    public static async Task SendLog(ulong chLink, ulong msgSender, DiscordEmbedBuilder e, bool blame = true)
     {
         var tsBotLogCh = await Program.Client.GetChannelAsync(Program.Settings.Env.TsBotLogChannelId);
         if (blame) e.AddField("Sent By", $"<@{msgSender}> in: <#{chLink}>");
@@ -26,12 +26,12 @@ internal class Logging
     }
     
     //Public Logging
-    internal static async Task SendPubLog(DiscordEmbedBuilder e)
+    public static async Task SendPubLog(DiscordEmbedBuilder e)
     {
         var pubBotLogCh = await Program.Client.GetChannelAsync(Program.Settings.Env.PublicBotLogChannelId);
         await new DiscordMessageBuilder().AddEmbed(e).SendAsync(pubBotLogCh);
     }
-    internal static async Task ReportPubLog(DiscordEmbedBuilder e)
+    public static async Task ReportPubLog(DiscordEmbedBuilder e)
     {
         var pubBotLogCh = await Program.Client.GetChannelAsync(Program.Settings.Env.PublicBotReportsChannelId);
         await new DiscordMessageBuilder().AddEmbed(e).SendAsync(pubBotLogCh);

@@ -12,7 +12,7 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Events;
 
-internal class ContextMenu
+public class ContextMenu
 {    
     [Command("Analyze Log")]
     [SlashCommandTypes(DiscordApplicationCommandType.MessageContextMenu)]

@@ -8,7 +8,7 @@ namespace LSPDFR_Helper.CustomTypes.SpecialTypes;
 /// <param name="DbUser">Database username</param>
 /// <param name="DbPass">Database password</param>
 /// <param name="DbName">Database name</param>
-internal record EnvironmentConfig(
+public record EnvironmentConfig(
     string BotToken,
     string DbServer,
     string DbUser,

@@ -5,9 +5,9 @@ using LSPDFR_Helper.Functions;
 
 namespace LSPDFR_Helper.EventManagers;
 
-internal static class OnJoinLeave
+public static class OnJoinLeave
 {
-    internal static async Task JoinEvent(DiscordClient s, GuildMemberAddedEventArgs ctx)
+    public static async Task JoinEvent(DiscordClient s, GuildMemberAddedEventArgs ctx)
     {
         while ( !Program.IsStarted ) await Task.Delay(500);
         
@@ -26,7 +26,7 @@ internal static class OnJoinLeave
         }
     }
 
-    internal static async Task LeaveEvent(DiscordClient s, GuildMemberRemovedEventArgs ctx)
+    public static async Task LeaveEvent(DiscordClient s, GuildMemberRemovedEventArgs ctx)
     {
         while ( !Program.IsStarted ) await Task.Delay(500);
         

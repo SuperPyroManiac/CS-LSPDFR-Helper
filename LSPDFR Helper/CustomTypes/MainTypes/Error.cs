@@ -2,12 +2,12 @@ using LSPDFR_Helper.CustomTypes.Enums;
 
 namespace LSPDFR_Helper.CustomTypes.MainTypes;
 
-internal class Error
+public class Error
 {
-    internal int Id { get; set; }
-    internal string Pattern { get; set; }
-    internal string Solution { get; set; }
-    internal string Description { get; set; }
-    internal bool StringMatch { get; set; }
-    internal Level Level { get; set; }
+    public int Id { get; set; }
+    public string Pattern { get; set; }
+    public string Solution { get; set; }
+    public string Description { get; set; }
+    public bool StringMatch { get; set; }
+    public Level Level { get; set; }
 }

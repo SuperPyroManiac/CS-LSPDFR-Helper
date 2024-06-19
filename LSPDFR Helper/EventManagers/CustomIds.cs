@@ -1,48 +1,48 @@
 namespace LSPDFR_Helper.EventManagers;
 
-internal record CustomIds()
+public record CustomIds()
 {
     // Msc
-    internal const string SelectAttachmentForAnalysis = "SelectAttachmentForAnalysis";
-    internal const string SelectIdForRemoval = "SelectIdForRemoval";
+    public const string SelectAttachmentForAnalysis = "SelectAttachmentForAnalysis";
+    public const string SelectIdForRemoval = "SelectIdForRemoval";
     
     // Editor
-    internal const string SelectPluginValueToEdit = "SelectPluginValueToEdit";
-    internal const string SelectPluginValueToFinish = "SelectPluginValueToFinish";
-    internal const string SelectErrorValueToEdit = "SelectErrorValueToEdit";
-    internal const string SelectErrorValueToFinish = "SelectErrorValueToFinish";
-    internal const string SelectUserValueToEdit = "SelectUserValueToEdit";
+    public const string SelectPluginValueToEdit = "SelectPluginValueToEdit";
+    public const string SelectPluginValueToFinish = "SelectPluginValueToFinish";
+    public const string SelectErrorValueToEdit = "SelectErrorValueToEdit";
+    public const string SelectErrorValueToFinish = "SelectErrorValueToFinish";
+    public const string SelectUserValueToEdit = "SelectUserValueToEdit";
     
-    // internal
-    internal const string SendFeedback = "SendFeedback";
-    internal const string RequestHelp = "RequestHelp";
-    internal const string MarkSolved = "MarkSolved";
-    internal const string JoinCase = "JoinCase";
-    internal const string IgnoreRequest = "IgnoreRequest";
-    internal const string OpenCase = "OpenCase";
+    // public
+    public const string SendFeedback = "SendFeedback";
+    public const string RequestHelp = "RequestHelp";
+    public const string MarkSolved = "MarkSolved";
+    public const string JoinCase = "JoinCase";
+    public const string IgnoreRequest = "IgnoreRequest";
+    public const string OpenCase = "OpenCase";
 
     // RPH log analysis events
-    internal const string RphGetQuickInfo = "RphGetQuickInfo";
-    internal const string RphGetDetailedInfo = "RphGetDetailedInfo";
-    internal const string RphGetAdvancedInfo = "RphGetAdvancedInfo";
-    internal const string RphQuickSendToUser = "RphQuickInfoSendToUser";
-    internal const string RphDetailedSendToUser = "RphDetailedSendToUser";
+    public const string RphGetQuickInfo = "RphGetQuickInfo";
+    public const string RphGetDetailedInfo = "RphGetDetailedInfo";
+    public const string RphGetAdvancedInfo = "RphGetAdvancedInfo";
+    public const string RphQuickSendToUser = "RphQuickInfoSendToUser";
+    public const string RphDetailedSendToUser = "RphDetailedSendToUser";
 
     // ELS log analysis events
-    internal const string ElsGetQuickInfo = "ElsGetQuickInfo";
-    internal const string ElsGetDetailedInfo = "ElsGetDetailedInfo";
-    internal const string ElsQuickSendToUser = "ElsQuickInfoSendToUser";
-    internal const string ElsDetailedSendToUser = "ElsDetailedSendToUser";
+    public const string ElsGetQuickInfo = "ElsGetQuickInfo";
+    public const string ElsGetDetailedInfo = "ElsGetDetailedInfo";
+    public const string ElsQuickSendToUser = "ElsQuickInfoSendToUser";
+    public const string ElsDetailedSendToUser = "ElsDetailedSendToUser";
 
     // ASI log analysis events
-    internal const string AsiGetQuickInfo = "AsiGetQuickInfo";
-    internal const string AsiGetDetailedInfo = "AsiGetDetailedInfo";
-    internal const string AsiQuickSendToUser = "AsiQuickInfoSendToUser";
-    internal const string AsiDetailedSendToUser = "AsiDetailedSendToUser";
+    public const string AsiGetQuickInfo = "AsiGetQuickInfo";
+    public const string AsiGetDetailedInfo = "AsiGetDetailedInfo";
+    public const string AsiQuickSendToUser = "AsiQuickInfoSendToUser";
+    public const string AsiDetailedSendToUser = "AsiDetailedSendToUser";
 
     // SHVDN log analysis events
-    internal const string ShvdnGetQuickInfo = "ShvdnGetQuickInfo";
-    internal const string ShvdnGetDetailedInfo = "ShvdnGetDetailedInfo";
-    internal const string ShvdnQuickSendToUser = "ShvdnQuickInfoSendToUser";
-    internal const string ShvdnDetailedSendToUser = "ShvdnDetailedSendToUser";
+    public const string ShvdnGetQuickInfo = "ShvdnGetQuickInfo";
+    public const string ShvdnGetDetailedInfo = "ShvdnGetDetailedInfo";
+    public const string ShvdnQuickSendToUser = "ShvdnQuickInfoSendToUser";
+    public const string ShvdnDetailedSendToUser = "ShvdnDetailedSendToUser";
 }

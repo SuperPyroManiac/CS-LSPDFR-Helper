@@ -4,11 +4,11 @@ using ULSS_Helper.Objects;
 
 namespace ULSS_Helper.Messages;
 
-internal class FindBaseMessages
+public class FindBaseMessages
 {
-    internal static int ChangesCount;
+    public static int ChangesCount;
     
-    internal static string GetModifiedPropertiesList(List<ModifiedProperty> properties)
+    public static string GetModifiedPropertiesList(List<ModifiedProperty> properties)
     {
         var output = new StringBuilder();
         foreach (var prop in properties)

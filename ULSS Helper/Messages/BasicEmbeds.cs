@@ -2,9 +2,9 @@
 
 namespace ULSS_Helper.Messages;
 
-internal static class BasicEmbeds
+public static class BasicEmbeds
 {
-    internal static DiscordEmbedBuilder Error(string msg, bool bold = false)
+    public static DiscordEmbedBuilder Error(string msg, bool bold = false)
     {
         var embed = new DiscordEmbedBuilder
         {
@@ -15,7 +15,7 @@ internal static class BasicEmbeds
         return embed;
     }
 
-    internal static DiscordEmbedBuilder Warning(string msg, bool bold = false)
+    public static DiscordEmbedBuilder Warning(string msg, bool bold = false)
     {
         var embed = new DiscordEmbedBuilder
         {
@@ -26,7 +26,7 @@ internal static class BasicEmbeds
         return embed;
     }
 
-    internal static DiscordEmbedBuilder Info(string msg, bool bold = false)
+    public static DiscordEmbedBuilder Info(string msg, bool bold = false)
     {
         var embed = new DiscordEmbedBuilder
         {
@@ -37,7 +37,7 @@ internal static class BasicEmbeds
         return embed;
     }
 
-    internal static DiscordEmbedBuilder Success(string msg, bool bold = false)
+    public static DiscordEmbedBuilder Success(string msg, bool bold = false)
     {
         var embed = new DiscordEmbedBuilder
         {
@@ -48,7 +48,7 @@ internal static class BasicEmbeds
         return embed;
     }
 
-    internal static DiscordEmbedBuilder Generic(string msg, DiscordColor color)
+    public static DiscordEmbedBuilder Generic(string msg, DiscordColor color)
     {
         var embed = new DiscordEmbedBuilder
         {
@@ -58,7 +58,7 @@ internal static class BasicEmbeds
         return embed;
     }
     
-    internal static DiscordEmbedBuilder Public(string msg)
+    public static DiscordEmbedBuilder Public(string msg)
     {
         var embed = new DiscordEmbedBuilder
         {

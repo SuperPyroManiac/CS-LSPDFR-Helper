@@ -8,21 +8,21 @@ using ULSS_Helper.Objects;
 namespace ULSS_Helper.Modules.RPH_Modules;
 
 // ReSharper disable InconsistentNaming
-internal class RPHProcess : SharedLogInfo
+public class RPHProcess : SharedLogInfo
 {
-    internal string current;
-    internal string outdated;
-    internal string broken;
-    internal string missing;
-    internal string library;
-    internal string missmatch;
-    internal string rph;
-    internal RPHLog log;
-    internal string GtAver = "❌";
-    internal string LspdfRver = "❌";
-    internal string RpHver = "❌";
+    public string current;
+    public string outdated;
+    public string broken;
+    public string missing;
+    public string library;
+    public string missmatch;
+    public string rph;
+    public RPHLog log;
+    public string GtAver = "❌";
+    public string LspdfRver = "❌";
+    public string RpHver = "❌";
 
-    internal DiscordEmbedBuilder GetBaseLogInfoEmbed(string description)
+    public DiscordEmbedBuilder GetBaseLogInfoEmbed(string description)
     {
         if (Program.Cache.GetPlugin("GrandTheftAuto5").Version.Equals(log.GTAVersion)) GtAver = "\u2713";
         if (Program.Cache.GetPlugin("LSPDFR").Version.Equals(log.LSPDFRVersion)) LspdfRver = "\u2713";
@@ -40,7 +40,7 @@ internal class RPHProcess : SharedLogInfo
         };
     }
 
-    internal DiscordEmbedBuilder AddCommonFields(DiscordEmbedBuilder embed)
+    public DiscordEmbedBuilder AddCommonFields(DiscordEmbedBuilder embed)
     {
         if (current.Length != 0 && outdated.Length == 0 && broken.Length != 0) outdated = "**None**";
         if (current.Length != 0 && outdated.Length != 0 && broken.Length == 0) broken = "**None**";
@@ -63,7 +63,7 @@ internal class RPHProcess : SharedLogInfo
         return embed;
     }
 
-    internal async Task SendQuickLogInfoMessage(DiscordMessage targetMessage = null, CommandContext context=null, ComponentInteractionCreatedEventArgs eventArgs=null)
+    public async Task SendQuickLogInfoMessage(DiscordMessage targetMessage = null, CommandContext context=null, ComponentInteractionCreatedEventArgs eventArgs=null)
     {
         if (context == null && eventArgs == null)
             throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
@@ -175,7 +175,7 @@ internal class RPHProcess : SharedLogInfo
         }
     }
 
-    internal async Task SendDetailedInfoMessage(ComponentInteractionCreatedEventArgs eventArgs)
+    public async Task SendDetailedInfoMessage(ComponentInteractionCreatedEventArgs eventArgs)
     {
         var embedDescription = "## RPH.log Error Info";
         if (log.FilePossiblyOutdated)
@@ -251,7 +251,7 @@ internal class RPHProcess : SharedLogInfo
         Program.Cache.SaveProcess(sentMessage.Id, new ProcessCache(cache.Interaction, cache.OriginalMessage, this)); 
     }
     
-    internal async Task SendAdvancedInfoMessage(ComponentInteractionCreatedEventArgs eventArgs)
+    public async Task SendAdvancedInfoMessage(ComponentInteractionCreatedEventArgs eventArgs)
     {
         var embedDescription = "## RPH.log Plugin Info";
         if (log.FilePossiblyOutdated)
@@ -288,7 +288,7 @@ internal class RPHProcess : SharedLogInfo
         Program.Cache.SaveProcess(sentMessage.Id, new ProcessCache(cache.Interaction, cache.OriginalMessage, this)); 
     }
     
-    internal async Task SendMessageToUser(ComponentInteractionCreatedEventArgs eventArgs)
+    public async Task SendMessageToUser(ComponentInteractionCreatedEventArgs eventArgs)
     {
         var newEmbList = new List<DiscordEmbed>();
         var embedDescription = eventArgs.Message.Embeds[0].Description;
@@ -317,7 +317,7 @@ internal class RPHProcess : SharedLogInfo
         await newMessage.SendAsync(eventArgs.Channel);
     }
 
-    internal async Task SendUnknownPluginsLog(ulong originalMsgChannelId, ulong originalMsgUserId)
+    public async Task SendUnknownPluginsLog(ulong originalMsgChannelId, ulong originalMsgUserId)
     {
         var embedDescription = "__Unknown plugins or plugin versions!__\r\n\r\n>>> ";
         var rphLogLink = log.DownloadLink != null && log.DownloadLink.StartsWith("http")

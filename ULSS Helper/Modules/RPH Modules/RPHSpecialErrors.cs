@@ -5,7 +5,7 @@ namespace ULSS_Helper.Modules.RPH_Modules;
 
 public class RPHSpecialErrors
 {
-    internal static RPHLog ProcessSpecialErrors(RPHLog log, string wholeLog)
+    public static RPHLog ProcessSpecialErrors(RPHLog log, string wholeLog)
     {
         var errorData = Program.Cache.GetErrors();
         var pluginData = Program.Cache.GetPlugins();

@@ -4,6 +4,7 @@ using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Entities;
 using LSPDFR_Helper.Functions;
 using LSPDFR_Helper.Functions.Messages;
+using LSPDFR_Helper.Functions.Verifications;
 
 namespace LSPDFR_Helper.Commands.Error;
 

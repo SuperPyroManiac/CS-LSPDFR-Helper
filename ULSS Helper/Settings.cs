@@ -4,19 +4,19 @@ using System.Text.Encodings.Web;
 
 namespace ULSS_Helper;
 
-internal class Settings
+public class Settings
 {
     private const string ConfigFileName = "environment-config.json";
-    internal string DbPath { get; }
-    internal string DbLocation  { get; }
-    internal EnvironmentConfig Env { get; }
+    public string DbPath { get; }
+    public string DbLocation  { get; }
+    public EnvironmentConfig Env { get; }
 
-    internal Settings()
+    public Settings()
     {
         Env = LoadEnvConfigFile();
     }
 
-    internal static string GetOrCreateFolder(string folder)
+    public static string GetOrCreateFolder(string folder)
     {
         var path = Path.Combine(Directory.GetCurrentDirectory(), folder);
         if (!Path.Exists(path)) Directory.CreateDirectory(path);

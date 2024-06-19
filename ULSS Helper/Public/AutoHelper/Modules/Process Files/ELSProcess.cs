@@ -8,7 +8,7 @@ namespace ULSS_Helper.Public.AutoHelper.Modules.Process_Files;
 
 public class ELSProcess
 {
-    internal static async Task ProcessLog(DiscordAttachment attach, MessageCreatedEventArgs ctx)
+    public static async Task ProcessLog(DiscordAttachment attach, MessageCreatedEventArgs ctx)
     {
         try
         {

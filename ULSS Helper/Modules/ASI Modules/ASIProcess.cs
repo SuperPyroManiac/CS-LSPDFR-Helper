@@ -8,9 +8,9 @@ using ULSS_Helper.Objects;
 namespace ULSS_Helper.Modules.ASI_Modules;
 
 // ReSharper disable InconsistentNaming
-internal class ASIProcess : SharedLogInfo
+public class ASIProcess : SharedLogInfo
 {
-    internal ASILog log;
+    public ASILog log;
     
     private DiscordEmbedBuilder GetBaseLogInfoEmbed(string description) 
     {
@@ -25,7 +25,7 @@ internal class ASIProcess : SharedLogInfo
             }
         };
     }
-    internal async Task SendQuickLogInfoMessage(DiscordMessage targetMessage = null, CommandContext context=null, ComponentInteractionCreatedEventArgs eventArgs=null)
+    public async Task SendQuickLogInfoMessage(DiscordMessage targetMessage = null, CommandContext context=null, ComponentInteractionCreatedEventArgs eventArgs=null)
     {
         if (context == null && eventArgs == null)
             throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
@@ -70,7 +70,7 @@ internal class ASIProcess : SharedLogInfo
         Program.Cache.SaveProcess(sentMessage.Id, new ProcessCache(cache.Interaction, cache.OriginalMessage, this));
     }
     
-    internal async Task SendDetailedInfoMessage(ComponentInteractionCreatedEventArgs eventArgs)
+    public async Task SendDetailedInfoMessage(ComponentInteractionCreatedEventArgs eventArgs)
     {
         var loadedAsiFilesList = "\r\n- " + string.Join("\r\n- ", log.LoadedAsiFiles);
         var failedAsiFilesList = "\r\n- " + string.Join("\r\n- ", log.FailedAsiFiles);
@@ -147,7 +147,7 @@ internal class ASIProcess : SharedLogInfo
         Program.Cache.SaveProcess(sentMessage.Id, new ProcessCache(cache.Interaction, cache.OriginalMessage, this)); 
     }
 
-    internal async Task SendMessageToUser(ComponentInteractionCreatedEventArgs eventArgs)
+    public async Task SendMessageToUser(ComponentInteractionCreatedEventArgs eventArgs)
     {
         var newEmbList = new List<DiscordEmbed>();
         var newEmb = GetBaseLogInfoEmbed(eventArgs.Message.Embeds[0].Description);

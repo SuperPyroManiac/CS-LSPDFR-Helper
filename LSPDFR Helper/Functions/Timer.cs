@@ -2,9 +2,9 @@ using System.Timers;
 
 namespace LSPDFR_Helper.Functions;
 
-internal static class Timer
+public static class Timer
 {
-    internal static void Start()
+    public static void Start()
     {
         var aTimer = new System.Timers.Timer(TimeSpan.FromHours(1));
         aTimer.Elapsed += HourlyTimer;

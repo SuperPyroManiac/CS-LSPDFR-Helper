@@ -1,15 +1,15 @@
 namespace LSPDFR_Helper.CustomTypes.MainTypes;
 
-internal class User
+public class User
 {
-    internal ulong Id { get; set; }
-    internal string Username { get; set; }
-    internal bool BotEditor { get; set; }
-    internal bool BotAdmin { get; set; }
-    internal bool Blocked { get; set; }
-    internal string LogPath { get; set; }
+    public ulong Id { get; set; }
+    public string Username { get; set; }
+    public bool BotEditor { get; set; }
+    public bool BotAdmin { get; set; }
+    public bool Blocked { get; set; }
+    public string LogPath { get; set; }
 
-    internal async Task<bool> IsTs()
+    public async Task<bool> IsTs()
     {
         var usr = await Functions.Functions.GetMember(Id);
         return usr.Roles.Any(role => role.Id == Program.Settings.TsRoleId);

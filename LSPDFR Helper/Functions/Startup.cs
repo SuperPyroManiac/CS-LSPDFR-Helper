@@ -3,12 +3,12 @@ using LSPDFR_Helper.Functions.Messages;
 
 namespace LSPDFR_Helper.Functions;
 
-internal class Startup
+public class Startup
 {
     private static int _addedCnt;
     private static int _changedCnt;
     
-    internal static async Task Init()
+    public static async Task Init()
     {
         PrepCaches();
         await Verification();

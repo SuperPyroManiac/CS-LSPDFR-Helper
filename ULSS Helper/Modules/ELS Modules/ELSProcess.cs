@@ -9,9 +9,9 @@ using ULSS_Helper.Objects;
 namespace ULSS_Helper.Modules.ELS_Modules;
 
 // ReSharper disable InconsistentNaming
-internal class ELSProcess : SharedLogInfo
+public class ELSProcess : SharedLogInfo
 {
-    internal ELSLog log;
+    public ELSLog log;
     
     private DiscordEmbedBuilder GetBaseLogInfoEmbed(string description) 
     {
@@ -27,7 +27,7 @@ internal class ELSProcess : SharedLogInfo
         };
     }
 
-    internal async Task SendQuickLogInfoMessage(DiscordMessage targetMessage = null, CommandContext context=null, ComponentInteractionCreatedEventArgs eventArgs=null)
+    public async Task SendQuickLogInfoMessage(DiscordMessage targetMessage = null, CommandContext context=null, ComponentInteractionCreatedEventArgs eventArgs=null)
     {
         if (context == null && eventArgs == null)
             throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
@@ -77,7 +77,7 @@ internal class ELSProcess : SharedLogInfo
     }
 
 
-    internal async Task SendDetailedInfoMessage(ComponentInteractionCreatedEventArgs eventArgs)
+    public async Task SendDetailedInfoMessage(ComponentInteractionCreatedEventArgs eventArgs)
     {
         var validVcFiles = "\r\n- " + string.Join(", ", log.ValidElsVcfFiles);
         var invalidVcFiles = "\r\n- " + string.Join("\r\n- ", log.InvalidElsVcfFiles);
@@ -156,7 +156,7 @@ internal class ELSProcess : SharedLogInfo
         Program.Cache.SaveProcess(sentMessage.Id, new ProcessCache(cache.Interaction, cache.OriginalMessage, this)); 
     }
 
-    internal async Task SendMessageToUser(ComponentInteractionCreatedEventArgs eventArgs)
+    public async Task SendMessageToUser(ComponentInteractionCreatedEventArgs eventArgs)
     {
         var newEmbList = new List<DiscordEmbed>();
         var newEmb = GetBaseLogInfoEmbed(eventArgs.Message.Embeds[0].Description);

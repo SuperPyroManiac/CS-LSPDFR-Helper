@@ -7,7 +7,7 @@ namespace ULSS_Helper.Modules.SHVDN_Modules;
 // ReSharper disable once InconsistentNaming
 public class SHVDNAnalyzer
 {
-    internal static async Task<SHVDNLog> Run(string attachmentUrl)
+    public static async Task<SHVDNLog> Run(string attachmentUrl)
     {
         var timer = new Stopwatch();
         timer.Start();
