@@ -10,6 +10,82 @@ public static class DbManager
 {
     private static readonly string ConnStr = $"Server={Program.BotSettings.Env.DbServer};User ID={Program.BotSettings.Env.DbUser};Password={Program.BotSettings.Env.DbPass};Database={Program.BotSettings.Env.DbName}";
 
+    public static List<Plugin> GetPlugins()
+    {
+        try
+        {
+            using var cnn = new MySqlConnection(ConnStr);
+            return cnn.Query<Plugin>("select * from Plugin").ToList();
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine(e);
+            Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+            throw;
+        }
+    }
+    
+    public static Plugin GetPlugin(string pluginname)
+    {
+        try
+        {
+            using var cnn = new MySqlConnection(ConnStr);
+            return cnn.Query<Plugin>($"select * from Plugin where Name='{pluginname}'").First();
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine(e);
+            Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+            throw;
+        }
+    }
+    
+    public static async void AddPlugin(Plugin plugin)
+    {
+        try
+        {
+            await using var cnn = new MySqlConnection(ConnStr);
+            await cnn.ExecuteAsync("insert into Plugin (Name, DName, Version, EaVersion, Id, State, PluginType, Link, Description) VALUES (@Name, @DName, @Version, @EaVersion, @Id, @State, @PluginType, @Link, @Description)", plugin);
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine(e);
+            Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+            throw;
+        }
+    }
+    
+    public static async void EditPlugin(Plugin plugin)
+    {
+        try
+        {
+            await using var cnn = new MySqlConnection(ConnStr);
+            await cnn.ExecuteAsync("UPDATE Plugin SET DName = @DName, Version = @Version, EaVersion = @EaVersion, Id = @Id, State = @State, PluginType = @PluginType, Link = @Link, Description = @Description WHERE Name = (@Name)", plugin);
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine(e);
+            await Logging.ErrLog($"SQL Issue: {e}");
+            throw;
+        }
+    }
+    
+    public static async void DeletePlugin(Plugin plugin)
+    {
+        try
+        {
+            await using var cnn = new MySqlConnection(ConnStr);
+            await cnn.ExecuteAsync("delete from Plugin where Name = (@Name)", plugin);
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine(e);
+            await Logging.ErrLog($"SQL Issue: {e}");
+            throw;
+        }
+    }
+    
+    //Plugin Functions
     //Error Functions
     public static List<Error> GetErrors()
     {
