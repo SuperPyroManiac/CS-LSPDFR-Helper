@@ -57,7 +57,7 @@ public class RPHAnalyzer
         foreach (var lineReader in reader)
         {
             var line = lineReader;
-            var allrounder = new Regex(@"(?<!CalloutManager\.cs:line 738)\n.+LSPD First Response: (?!無法載入檔案或組件|\[)(.+), Version=(.+), Culture=\w+, PublicKeyToken=\w+");
+            var allrounder = new Regex(@".+LSPD First Response: (\W*\w*\W*\w*\W*), Version=([0-9]+\..+), Culture=\w+, PublicKeyToken=\w+");
             var allmatch = allrounder.Match(line);
             if (allmatch.Success)
             {
