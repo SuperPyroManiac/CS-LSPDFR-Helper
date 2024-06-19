@@ -34,9 +34,9 @@ public class EditError
         if (newLevel != null) error.Level = newLevel.ToString()!.ToUpper();
         var errorValues = new List<DiscordSelectComponentOption>()
         {
-            new DiscordSelectComponentOption("Regex", "Error Regex"),
-            new DiscordSelectComponentOption("Solution", "Error Solution"),
-            new DiscordSelectComponentOption("Description", "Error Description"),
+            new("Regex", "Error Regex"),
+            new("Solution", "Error Solution"),
+            new("Description", "Error Description"),
         };
 
         var embed = BasicEmbeds.Info(

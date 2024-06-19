@@ -1,5 +1,8 @@
 using DSharpPlus;
+using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using LSPDFR_Helper.Functions;
+using LSPDFR_Helper.Functions.Messages;
 
 namespace LSPDFR_Helper.EventManagers;
 
@@ -39,6 +42,65 @@ public static class CompInteraction
         if ( CacheEventIds.Any(eventId => eventId == eventArgs.Id) )
         {//Handle cached interaction events here.
             //TODO: var cache = Program.Cache.GetProcess(eventArgs.Message.Id);
+            
+            //===//===//===////===//===//===////===//Editor Dropdowns//===////===//===//===////===//===//===//
+            
+            if (eventArgs.Id is CustomIds.SelectErrorValueToEdit or CustomIds.SelectErrorValueToFinish)
+            {
+                var usercache = Program.Cache.GetUserAction(eventArgs.User.Id, CustomIds.SelectErrorValueToEdit);
+                if (usercache == null)
+                {
+                    var bd = new DiscordInteractionResponseBuilder();
+                    bd.IsEphemeral = true;
+                    bd.AddEmbed(BasicEmbeds.Error("There was a problem!\r\n>>> You are not the original editor, or the bot reset during this editor session!", true));
+                    await eventArgs.Interaction.CreateResponseAsync(
+                        DiscordInteractionResponseType.ChannelMessageWithSource, bd);
+                    return;
+                }
+
+                if (eventArgs.Id == CustomIds.SelectErrorValueToFinish)
+                {
+                    //await FindErrorMessages.SendDbOperationConfirmation(usercache.Error, DbOperation.UPDATE, eventArgs.Interaction.ChannelId, eventArgs.Interaction.User.Id, Database.GetError(usercache.Error.ID));
+                    DbManager.EditError(usercache.Error);
+                    Program.Cache.RemoveUserAction(eventArgs.User.Id, CustomIds.SelectErrorValueToEdit);
+                    await eventArgs.Message.DeleteAsync();
+                    await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate);
+                    return;
+                }
+                    
+                var value = string.Empty;
+                var selected = eventArgs.Values.FirstOrDefault();
+                switch (selected)
+                {
+                    case "Error Pattern":
+                        value = usercache.Error.Pattern;
+                        break;
+                    case "Error Solution":
+                        value = usercache.Error.Solution;
+                        break;
+                    case "Error Description":
+                        value = usercache.Error.Description;
+                        break;
+                    case "Error String Match":
+                        value = usercache.Error.StringMatch.ToString();
+                        break;
+                }
+                    
+                DiscordInteractionResponseBuilder modal = new();
+                modal.WithCustomId(CustomIds.SelectErrorValueToEdit);
+                modal.WithTitle($"Editing {selected}");
+                modal.AddComponents(
+                    new DiscordTextInputComponent(
+                        label: selected!, 
+                        customId: selected!, 
+                        required: true, 
+                        value: value,
+                        style: DiscordTextInputStyle.Paragraph
+                    )
+                );
+
+                await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.Modal, modal);
+            }
         }
         //Handle non cached interaction events here.
     }

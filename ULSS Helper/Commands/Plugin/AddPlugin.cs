@@ -37,12 +37,12 @@ public class AddPlugin
         
         var pluginValues = new List<DiscordSelectComponentOption>()
         {
-            new DiscordSelectComponentOption("Display Name", "Plugin DName"),
-            new DiscordSelectComponentOption("Version", "Plugin Version"),
-            new DiscordSelectComponentOption("EA Version", "Plugin EAVersion"),
-            new DiscordSelectComponentOption("ID", "Plugin ID"),
-            new DiscordSelectComponentOption("Link", "Plugin Link"),
-            new DiscordSelectComponentOption("Notes", "Plugin Notes"),
+            new("Display Name", "Plugin DName"),
+            new("Version", "Plugin Version"),
+            new("EA Version", "Plugin EAVersion"),
+            new("ID", "Plugin ID"),
+            new("Link", "Plugin Link"),
+            new("Notes", "Plugin Notes"),
         };
         
         var embed = BasicEmbeds.Info(

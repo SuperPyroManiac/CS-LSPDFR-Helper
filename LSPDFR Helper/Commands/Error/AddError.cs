@@ -28,15 +28,15 @@ public class AddError
         };
         var errorValues = new List<DiscordSelectComponentOption>()
         {
-            new DiscordSelectComponentOption("Pattern", "Error Pattern"),
-            new DiscordSelectComponentOption("Solution", "Error Solution"),
-            new DiscordSelectComponentOption("Description", "Error Description"),
-            new DiscordSelectComponentOption("String Match", "True: Pattern is String / False: Pattern is Regex or Fuzzymatch"),
+            new("Pattern", "Error Pattern"),
+            new("Solution", "Error Solution"),
+            new("Description", "Error Description"),
+            new("String Match", "Error String Match"),
         };
 
         var embed = BasicEmbeds.Info(
             $"__Adding New {error.Level} Error!__\r\n" +
-            $">>> **Regex:**\r\n" +
+            $">>> **Pattern:**\r\n" +
             $"```{error.Pattern}```\r\n" +
             $"**Solution:**\r\n" +
             $"```{error.Solution}```\r\n" +

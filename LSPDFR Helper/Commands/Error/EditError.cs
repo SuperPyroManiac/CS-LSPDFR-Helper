@@ -36,15 +36,15 @@ public class EditError
         if (newLevel != default) error.Level = newLevel;
         var errorValues = new List<DiscordSelectComponentOption>()
         {
-            new DiscordSelectComponentOption("Regex", "Error Regex"),
-            new DiscordSelectComponentOption("Solution", "Error Solution"),
-            new DiscordSelectComponentOption("Description", "Error Description"),
-            new DiscordSelectComponentOption("String Match", "True: Pattern is String / False: Pattern is Regex or Fuzzymatch"),
+            new("Pattern", "Error Regex"),
+            new("Solution", "Error Solution"),
+            new("Description", "Error Description"),
+            new("String Match", "Error String Match"),
         };
 
         var embed = BasicEmbeds.Info(
             $"__Editing Error ID: {error.Id}__\r\n" +
-            $">>> **Regex:**\r\n" +
+            $">>> **Pattern:**\r\n" +
             $"```{error.Pattern}```\r\n" +
             $"**Solution:**\r\n" +
             $"```{error.Solution}```\r\n" +

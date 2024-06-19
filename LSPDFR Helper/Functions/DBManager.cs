@@ -41,13 +41,13 @@ public static class DbManager
         }
     }
     
-    public static long AddError(Error error)
+    public static int AddError(Error error)
     {
         try
         {
             using var cnn = new MySqlConnection(ConnStr);
             cnn.Execute("insert into Error (Pattern, Solution, Description, Level, StringMatch) VALUES (@Pattern, @Solution, @Description, @Level, @StringMatch)", error);
-            return long.Parse(cnn.ExecuteScalar("SELECT LAST_INSERT_ID();")!.ToString()!);
+            return int.Parse(cnn.ExecuteScalar("SELECT LAST_INSERT_ID();")!.ToString()!);
         }
         catch (MySqlException e)
         {
