@@ -12,10 +12,29 @@ public class Cache
     private readonly ConcurrentDictionary<string, Plugin> _pluginCacheDict = new();
     private readonly ConcurrentDictionary<string, AutoCase> _caseCacheDict = new();
 
+    /// <summary>Replaces all cache entries with the specified plugin list.</summary>
+    public void UpdatePlugins(List<Plugin> plugins)
+    {
+        _pluginCacheDict.Clear();
+        foreach (var plugin in plugins) _pluginCacheDict.TryAdd(plugin.Name, plugin);
+    }
+    
+    /// <summary>Returns a list of all cached plugins.</summary>
+    public List<Plugin> GetPlugins()
+    {
+        return _pluginCacheDict.Values.ToList();
+    }
+    
+    /// <summary>Returns a single plugin based off the name.</summary>
+    public Plugin GetPlugin(string pluginname)
+    {
+        return _pluginCacheDict[pluginname];
+    }
+    
     /// <summary>Replaces all cache entries with the specified error list.</summary>
     public void UpdateErrors(List<Error> errors)
     {
-        _userCacheDict.Clear();
+        _errorCacheDict.Clear();
         foreach (var error in errors) _errorCacheDict.TryAdd(error.Id, error);
     }
     

@@ -30,8 +30,6 @@ public class Users
                 DbManager.AddUser(newUser);
             }
         }
-        await Task.Delay(250);
-        if (cnt > 0) Program.Cache.UpdateUsers(DbManager.GetUsers());
         return cnt;
     }
     
@@ -49,8 +47,6 @@ public class Users
                 DbManager.EditUser(user);
             }
         }
-        await Task.Delay(250);
-        if (cnt > 0) Program.Cache.UpdateUsers(DbManager.GetUsers());
         return cnt;
     }
 }

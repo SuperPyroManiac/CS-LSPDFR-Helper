@@ -27,6 +27,62 @@ public static class ModalSubmit
             { //Handle cached modal events here.
                 var cache = Program.Cache.GetUserAction(e.Interaction.User.Id, e.Interaction.Data.CustomId);
                 
+                if (e.Interaction.Data.CustomId == CustomIds.SelectPluginValueToEdit)
+                {
+                    var plugin = cache.Plugin;
+                    if (DbManager.GetPlugins().Any(p => p.Name != plugin.Name))
+                    {
+                        DbManager.AddPlugin(plugin);
+                        //await FindPluginMessages.SendDbOperationConfirmation(plugin, operation: DbOperation.CREATE, e.Interaction.ChannelId, e.Interaction.User.Id);
+                    }
+
+                    switch (e.Values.First().Key)
+                    {
+                        case "Plugin DName":
+                            plugin.DName = e.Values["Plugin DName"];
+                            break;
+                        case "Plugin Version":
+                            plugin.Version = e.Values["Plugin Version"];
+                            break;
+                        case "Plugin EAVersion":
+                            plugin.EaVersion = e.Values["Plugin EaVersion"];
+                            break;
+                        case "Plugin ID":
+                            plugin.Id = int.Parse(e.Values["Plugin Id"]);
+                            break;
+                        case "Plugin Link":
+                            plugin.Link = e.Values["Plugin Link"];
+                            break;
+                        case "Plugin Notes":
+                            plugin.Description = e.Values["Plugin Notes"];
+                            break;
+                    }
+                
+                    var bd = new DiscordMessageBuilder();
+                    var embed = BasicEmbeds.Info(
+                        $"__Adding New Plugin: {plugin.Name}__\r\n>>> " +
+                        $"**Display Name:** {plugin.DName}\r\n" +
+                        $"**Version:** {plugin.Version}\r\n" +
+                        $"**Ea Version:** {plugin.EaVersion}\r\n" +
+                        $"**Id:** {plugin.Id}\r\n" +
+                        $"**Link:** {plugin.Link}\r\n" +
+                        $"**Notes:**\r\n" +
+                        $"```{plugin.Description}```\r\n" +
+                        $"**Type:** {plugin.PluginType}\r\n" +
+                        $"**State:** {plugin.State}", true);
+                    embed.Footer = new DiscordEmbedBuilder.EmbedFooter
+                    {
+                        Text = $"Current Editor: {e.Interaction.User.Username}",
+                        IconUrl = e.Interaction.User.AvatarUrl
+                    };
+                    bd.AddEmbed(embed);
+                    bd.AddComponents(cache.Msg.Components!);
+                
+                    var msg = await cache.Msg.ModifyAsync(bd);
+                    Program.Cache.SaveUserAction(e.Interaction.User.Id, CustomIds.SelectPluginValueToEdit, new InteractionCache(e.Interaction, plugin, msg));
+                    await e.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate);
+                }
+                
                 if (e.Interaction.Data.CustomId == CustomIds.SelectErrorValueToEdit)
                 {
                     var err = cache.Error;

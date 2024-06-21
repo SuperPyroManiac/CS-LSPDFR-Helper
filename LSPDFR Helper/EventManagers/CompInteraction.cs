@@ -45,6 +45,79 @@ public static class CompInteraction
             
             //===//===//===////===//===//===////===//Editor Dropdowns//===////===//===//===////===//===//===//
             
+            if (eventArgs.Id is CustomIds.SelectPluginValueToEdit or CustomIds.SelectPluginValueToFinish)
+            {
+                var usercache = Program.Cache.GetUserAction(eventArgs.User.Id, CustomIds.SelectPluginValueToEdit);
+                if (usercache == null)
+                {
+                    var bd = new DiscordInteractionResponseBuilder();
+                    bd.IsEphemeral = true;
+                    bd.AddEmbed(BasicEmbeds.Error("There was a problem!\r\n>>> You are not the original editor!", true));
+                    await eventArgs.Interaction.CreateResponseAsync(
+                        DiscordInteractionResponseType.ChannelMessageWithSource, bd);
+                    return;
+                }
+
+                if (eventArgs.Id == CustomIds.SelectPluginValueToFinish)
+                {
+                    //await FindPluginMessages.SendDbOperationConfirmation(usercache.Plugin, DbOperation.UPDATE, eventArgs.Interaction.ChannelId, eventArgs.Interaction.User.Id, Database.GetPlugin(usercache.Plugin.Name));
+                    DbManager.EditPlugin(usercache.Plugin);
+                    Program.Cache.RemoveUserAction(eventArgs.User.Id, CustomIds.SelectPluginValueToEdit);
+                    await eventArgs.Message.DeleteAsync();
+                    await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate);
+                    return;
+                }
+                    
+                var value = string.Empty;
+                var selected = eventArgs.Values.FirstOrDefault();
+                switch (selected)
+                {
+                    case "Plugin DName":
+                        value = usercache.Plugin.DName;
+                        break;
+                    case "Plugin Version":
+                        value = usercache.Plugin.Version;
+                        break;
+                    case "Plugin EAVersion":
+                        value = usercache.Plugin.EaVersion;
+                        break;
+                    case "Plugin ID":
+                        value = usercache.Plugin.Id.ToString();
+                        break;
+                    case "Plugin Link":
+                        value = usercache.Plugin.Link;
+                        break;
+                    case "Plugin Notes":
+                        value = usercache.Plugin.Description;
+                        break;
+                }
+                    
+                DiscordInteractionResponseBuilder modal = new();
+                modal.WithCustomId(CustomIds.SelectPluginValueToEdit);
+                modal.WithTitle($"Editing {selected}");
+                if (selected == "Plugin Notes")
+                {
+                    modal.AddComponents(
+                        new DiscordTextInputComponent(
+                            label: selected!, 
+                            customId: selected!, 
+                            required: true, 
+                            value: value,
+                            style: DiscordTextInputStyle.Paragraph));
+                }else
+                {
+                    modal.AddComponents(
+                        new DiscordTextInputComponent(
+                            label: selected!, 
+                            customId: selected!, 
+                            required: true, 
+                            value: value,
+                            style: DiscordTextInputStyle.Short));
+                }
+
+                await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.Modal, modal);
+            }
+            
             if (eventArgs.Id is CustomIds.SelectErrorValueToEdit or CustomIds.SelectErrorValueToFinish)
             {
                 var usercache = Program.Cache.GetUserAction(eventArgs.User.Id, CustomIds.SelectErrorValueToEdit);

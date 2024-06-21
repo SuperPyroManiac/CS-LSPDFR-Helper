@@ -18,7 +18,7 @@ public class EditError
     public async Task EditErrorCmd
     (SlashCommandContext ctx, 
         [Description("The error ID.")] string errorId,
-        [Description("The error level.")] Level newLevel = default)
+        [Description("The error level.")] Level newlevel = default)
     {
         if (!await PermissionManager.RequireAdvancedTs(ctx)) return;
         var bd = new DiscordInteractionResponseBuilder();
@@ -33,7 +33,7 @@ public class EditError
         
         var error = DbManager.GetError(errorId);
         
-        if (newLevel != default) error.Level = newLevel;
+        if (newlevel != default) error.Level = newlevel;
         var errorValues = new List<DiscordSelectComponentOption>()
         {
             new("Pattern", "Error Regex"),
