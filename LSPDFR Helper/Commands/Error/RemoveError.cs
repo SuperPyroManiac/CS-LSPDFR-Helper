@@ -36,6 +36,7 @@ public class RemoveError
                 $"```{error.StringMatch}```\r\n" +
                 $"**Error Level: {error.Level}**", true));
             DbManager.DeleteError(error);
+            Program.Cache.UpdateErrors(DbManager.GetErrors());
             return;
         }
         await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, 
