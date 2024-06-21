@@ -65,6 +65,7 @@ public static class CompInteraction
                     Program.Cache.RemoveUserAction(eventArgs.User.Id, CustomIds.SelectPluginValueToEdit);
                     await eventArgs.Message.DeleteAsync();
                     await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate);
+                    Program.Cache.UpdatePlugins(DbManager.GetPlugins());
                     return;
                 }
                     
@@ -138,6 +139,7 @@ public static class CompInteraction
                     Program.Cache.RemoveUserAction(eventArgs.User.Id, CustomIds.SelectErrorValueToEdit);
                     await eventArgs.Message.DeleteAsync();
                     await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate);
+                    Program.Cache.UpdateErrors(DbManager.GetErrors());
                     return;
                 }
                     
