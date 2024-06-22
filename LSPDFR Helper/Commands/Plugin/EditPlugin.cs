@@ -59,6 +59,8 @@ public class EditPlugin
             $"**Ea Version:** {plugin.EaVersion}\r\n" +
             $"**Id:** {plugin.Id}\r\n" +
             $"**Link:** {plugin.Link}\r\n" +
+            $"**Author Id:** {plugin.AuthorId}\r\n" +
+            $"**Announce:** {plugin.Announce}\r\n" +
             $"**Notes:**\r\n" +
             $"```{plugin.Description}```\r\n" +
             $"**Type:** {plugin.PluginType}\r\n" +
