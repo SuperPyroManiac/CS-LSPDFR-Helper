@@ -4,11 +4,11 @@ namespace LSPDFR_Helper.CustomTypes.Enums;
 public enum State
 {
     ///<summary>Normal and working.</summary>
-    NORMAL,
+    NORMAL = 1,
     ///<summary>Normal but not downloaded from LCPDFR.com</summary>
-    EXTERNAL,
+    EXTERNAL = 2,
     ///<summary>Does not work, should be removed.</summary>
-    BROKEN,
+    BROKEN = 3,
     ///<summary>SPECIAL: Requires Pyro's approval!</summary>
-    IGNORE
+    IGNORE = 4
 }

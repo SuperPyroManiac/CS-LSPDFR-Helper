@@ -1,4 +1,5 @@
 using System.Timers;
+using LSPDFR_Helper.Functions.Verifications;
 
 namespace LSPDFR_Helper.Functions;
 
@@ -18,8 +19,8 @@ public static class Timer
     private static void HourlyTimer(object _, ElapsedEventArgs e)
     {
         //Update Checker
-        // var th = new Thread(Database.UpdatePluginVersions);
-        // th.Start();
+        var th = new Thread(Plugins.UpdateVersions);
+        th.Start();
     }
 
     private static void ShortTimer(object _, ElapsedEventArgs e)

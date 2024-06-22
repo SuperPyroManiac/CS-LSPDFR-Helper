@@ -2,7 +2,7 @@ namespace LSPDFR_Helper.CustomTypes.Enums;
 
 public enum Platform
 {
-    STEAM,
-    EPIC,
-    ROCKSTAR
+    STEAM = 1,
+    EPIC = 2,
+    ROCKSTAR = 3
 }

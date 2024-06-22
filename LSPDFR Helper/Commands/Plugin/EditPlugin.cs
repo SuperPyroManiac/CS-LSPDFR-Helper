@@ -15,7 +15,7 @@ namespace LSPDFR_Helper.Commands.Plugin;
 
 public class EditPlugin
 {
-    [Command("EditPlugin")]
+    [Command("editplugin")]
     [Description("Edits a plugin in the database!")]
     public async Task EditPluginCmd
     (

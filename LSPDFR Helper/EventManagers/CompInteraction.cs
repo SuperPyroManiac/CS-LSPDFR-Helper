@@ -82,7 +82,7 @@ public static class CompInteraction
                     case "Plugin EAVersion":
                         value = usercache.Plugin.EaVersion;
                         break;
-                    case "Plugin ID":
+                    case "Plugin Id":
                         value = usercache.Plugin.Id.ToString();
                         break;
                     case "Plugin Link":

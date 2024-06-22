@@ -4,15 +4,15 @@ namespace LSPDFR_Helper.CustomTypes.Enums;
 public enum PluginType
 {
     ///<summary>LSPDFR plugins.</summary>
-    LSPDFR,
+    LSPDFR = 1,
     ///<summary>RagePluginHook plugins.</summary>
-    RPH,
+    RPH = 2,
     ///<summary>ASI scripts.</summary>
-    ASI,
+    ASI = 3,
     ///<summary>ScriptHookV scripts/</summary>
-    SHV,
+    SHV = 4,
     ///<summary>ScriptHookVDotNet scripts.</summary>
-    SHVDN,
+    SHVDN = 5,
     ///<summary>Libraries, ex: RageNativeUI or PyroCommon</summary>
-    LIBRARY
+    LIBRARY = 6
 }

@@ -48,11 +48,12 @@ public class Startup
             msgText += $"> Build is based on commit with hash [`{commitHashShort}`](https://github.com/SuperPyroManiac/ULSS-Helper/commit/{commitHash})\r\n";
         msgText += $"> **Cached plugins:** {Program.Cache.GetPlugins().Count}\r\n" +
                    $"> **Cached errors:** {Program.Cache.GetErrors().Count}\r\n" +
-                   $"> **Cached users:** {Program.Cache.GetUsers().Count}";
+                   $"> **Cached cases:** TODO\r\n" +
+                   $"> **Cached users:** {Program.Cache.GetUsers().Count}\r\n\r\n";
         if (_addedCnt > 0)
-            msgText += $"> {_addedCnt} New users found, added them to the DB!\r\n";
+            msgText += $"> *{_addedCnt} New users found, added them to the DB!*\r\n";
         if (_changedCnt > 0)
-            msgText += $"> {_changedCnt} Username changes, updated the DB!\r\n";
+            msgText += $"> *{_changedCnt} Username changes, updated the DB!*\r\n";
         
         var embed = BasicEmbeds.Success(msgText, true);
         var ch = await Functions.GetGuild().GetChannelAsync(Program.Settings.BotLogChId);

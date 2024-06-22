@@ -30,7 +30,7 @@ public static class ModalSubmit
                 if (e.Interaction.Data.CustomId == CustomIds.SelectPluginValueToEdit)
                 {
                     var plugin = cache.Plugin;
-                    if (DbManager.GetPlugins().Any(p => p.Name != plugin.Name))
+                    if (DbManager.GetPlugins().All(p => p.Name != plugin.Name))
                     {
                         DbManager.AddPlugin(plugin);
                         //await FindPluginMessages.SendDbOperationConfirmation(plugin, operation: DbOperation.CREATE, e.Interaction.ChannelId, e.Interaction.User.Id);
@@ -47,7 +47,7 @@ public static class ModalSubmit
                         case "Plugin EAVersion":
                             plugin.EaVersion = e.Values["Plugin EaVersion"];
                             break;
-                        case "Plugin ID":
+                        case "Plugin Id":
                             plugin.Id = int.Parse(e.Values["Plugin Id"]);
                             break;
                         case "Plugin Link":

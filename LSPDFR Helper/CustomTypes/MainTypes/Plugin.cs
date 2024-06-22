@@ -11,6 +11,7 @@ public class Plugin
     public string EaVersion { get; set; }
     public int Id { get; set; }
     public string Link { get; set; }
+    public bool Announce { get; set; }
     public PluginType PluginType { get; set; }
     public State State { get; set; }
 }
