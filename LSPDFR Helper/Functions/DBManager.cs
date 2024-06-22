@@ -221,10 +221,6 @@ public static class DbManager
                 row => ( string )row.Value);
             return new GlobalSettings
             {
-                GTAVer = dict["GTAVer"],
-                RPHVer = dict["RPHVer"],
-                LSPDFRVer = dict["LSPDFRVer"],
-                SHVVer = dict["SHVVer"],
                 AHStatus = dict["AHStatus"].Equals("1"),
                 ServerId = ulong.Parse(dict["ServerId"]),
                 TsRoleId = ulong.Parse(dict["TsRoleId"]),
