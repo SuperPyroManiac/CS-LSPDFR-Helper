@@ -18,4 +18,5 @@ public class GlobalSettings
     public ulong PublicLogChId { get; set; }
     public ulong ReportChId { get; set; }
     public ulong StaffContactChId { get; set; }
+    public ulong AnnounceChId { get; set; }
 }

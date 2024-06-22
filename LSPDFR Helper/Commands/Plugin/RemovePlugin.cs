@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Data.Common;
 using DSharpPlus.Commands;
 using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Commands.Processors.SlashCommands.ArgumentModifiers;

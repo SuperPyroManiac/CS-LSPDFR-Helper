@@ -1,6 +1,5 @@
 using DSharpPlus;
 using DSharpPlus.EventArgs;
-using DiscordUser = ULSS_Helper.Objects.DiscordUser;
 
 namespace ULSS_Helper.Events;
 

@@ -5,7 +5,6 @@ using DSharpPlus.Entities;
 using LSPDFR_Helper.CustomTypes.CacheTypes;
 using LSPDFR_Helper.CustomTypes.Enums;
 using LSPDFR_Helper.EventManagers;
-using LSPDFR_Helper.Functions;
 using LSPDFR_Helper.Functions.Messages;
 using LSPDFR_Helper.Functions.Verifications;
 

@@ -235,7 +235,8 @@ public static class DbManager
                 BotLogChId = ulong.Parse(dict["BotLogChId"]),
                 PublicLogChId = ulong.Parse(dict["PublicLogChId"]),
                 ReportChId = ulong.Parse(dict["ReportChId"]),
-                StaffContactChId = ulong.Parse(dict["StaffContactChId"])
+                StaffContactChId = ulong.Parse(dict["StaffContactChId"]),
+                AnnounceChId = ulong.Parse(dict["AnnounceChId"])
             };
         }
         catch ( MySqlException e )

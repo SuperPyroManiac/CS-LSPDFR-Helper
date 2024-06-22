@@ -1,6 +1,5 @@
 using System.Text.RegularExpressions;
 using DSharpPlus;
-using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Modules.Functions;

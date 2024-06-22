@@ -1,8 +1,6 @@
 ﻿using System.Reflection;
 using DSharpPlus;
 using DSharpPlus.Commands;
-using DSharpPlus.Commands.Processors.TextCommands;
-using DSharpPlus.Commands.Processors.TextCommands.Parsing;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
@@ -10,7 +8,6 @@ using DSharpPlus.Interactivity.Extensions;
 using LSPDFR_Helper.CustomTypes.CacheTypes;
 using LSPDFR_Helper.CustomTypes.SpecialTypes;
 using LSPDFR_Helper.Functions;
-using LSPDFR_Helper.Functions.Verifications;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using static LSPDFR_Helper.EventManagers.ModalSubmit;

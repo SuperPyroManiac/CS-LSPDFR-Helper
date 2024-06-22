@@ -1,23 +1,25 @@
-using System.Data;
 using System.Text.RegularExpressions;
-using Dapper;
 using LSPDFR_Helper.CustomTypes.Enums;
-using LSPDFR_Helper.CustomTypes.MainTypes;
 using LSPDFR_Helper.Functions.Messages;
-using MySqlConnector;
 
 namespace LSPDFR_Helper.Functions.Verifications;
 
 public static class Plugins
 {
-    public static async void UpdateVersions()
+    public static void UpdateVersions()
     {
-        HttpClient webClient = new();
+        var th = new Thread(UpdateThread);
+        th.Start();
+    }
+
+    private static async void UpdateThread()
+    {
+                HttpClient webClient = new();
 	    var plugins = DbManager.GetPlugins();
         var updatedStr = new List<string>();
         var upBrkStrlist = new List<string>();
         var upEaStrlist = new List<string>();
-        var upAnnStrlist = new List<string>();
+        var upAnnStrlist = new List<string>();//TODO add announcements!!!!!
         
         foreach (var plugin in plugins)
         {

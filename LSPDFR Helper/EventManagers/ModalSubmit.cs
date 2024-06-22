@@ -2,7 +2,6 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using LSPDFR_Helper.CustomTypes.CacheTypes;
-using LSPDFR_Helper.CustomTypes.MainTypes;
 using LSPDFR_Helper.Functions;
 using LSPDFR_Helper.Functions.Messages;
 

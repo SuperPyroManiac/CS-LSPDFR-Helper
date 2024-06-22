@@ -1,6 +1,5 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
 
 namespace LSPDFR_Helper.Functions;
 

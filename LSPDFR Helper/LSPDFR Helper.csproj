@@ -20,7 +20,6 @@
 
     <ItemGroup>
       <Folder Include="Commands\ContextMenu\" />
-      <Folder Include="Commands\Global\" />
       <Folder Include="CustomTypes\LogTypes\" />
     </ItemGroup>
 

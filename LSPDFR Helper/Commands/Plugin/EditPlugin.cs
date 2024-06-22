@@ -49,7 +49,9 @@ public class EditPlugin
             new("Ea Version", "Plugin EaVersion"),
             new("Id", "Plugin Id"),
             new("Link", "Plugin Link"),
-            new("Notes", "Plugin Notes")
+            new("Notes", "Plugin Notes"),
+            new("Author Id", "Plugin AuthorId"),
+            new("Announce", "Plugin Announce")
         };
         
         var embed = BasicEmbeds.Info(

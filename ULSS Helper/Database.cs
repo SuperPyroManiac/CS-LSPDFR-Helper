@@ -4,7 +4,6 @@ using System.Text.RegularExpressions;
 using Dapper;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
-using ULSS_Helper.Public.AutoHelper.Modules.Case_Functions;
 
 namespace ULSS_Helper;
 
