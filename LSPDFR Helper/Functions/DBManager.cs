@@ -45,7 +45,7 @@ public static class DbManager
         try
         {
             await using var cnn = new MySqlConnection(ConnStr);
-            await cnn.ExecuteAsync("insert into Plugin (Name, DName, Version, EaVersion, Id, State, PluginType, Link, Description) VALUES (@Name, @DName, @Version, @EaVersion, @Id, @State, @PluginType, @Link, @Description)", plugin);
+            await cnn.ExecuteAsync("insert into Plugin (Name, DName, Version, EaVersion, Id, State, PluginType, Link, Description, AuthorId, Announce) VALUES (@Name, @DName, @Version, @EaVersion, @Id, @State, @PluginType, @Link, @Description, @AuthorId, @Announce)", plugin);
         }
         catch (MySqlException e)
         {
@@ -60,7 +60,7 @@ public static class DbManager
         try
         {
             await using var cnn = new MySqlConnection(ConnStr);
-            await cnn.ExecuteAsync("UPDATE Plugin SET DName = @DName, Version = @Version, EaVersion = @EaVersion, Id = @Id, State = @State, PluginType = @PluginType, Link = @Link, Description = @Description WHERE Name = (@Name)", plugin);
+            await cnn.ExecuteAsync("UPDATE Plugin SET DName = @DName, Version = @Version, EaVersion = @EaVersion, Id = @Id, State = @State, PluginType = @PluginType, Link = @Link, Description = @Description, AuthorId = @AuthorId, Announce = @Announce WHERE Name = (@Name)", plugin);
         }
         catch (MySqlException e)
         {

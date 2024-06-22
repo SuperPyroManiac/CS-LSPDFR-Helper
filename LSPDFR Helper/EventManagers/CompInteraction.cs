@@ -69,30 +69,20 @@ public static class CompInteraction
                     return;
                 }
                     
-                var value = string.Empty;
                 var selected = eventArgs.Values.FirstOrDefault();
-                switch (selected)
+                var value = selected switch
                 {
-                    case "Plugin DName":
-                        value = usercache.Plugin.DName;
-                        break;
-                    case "Plugin Version":
-                        value = usercache.Plugin.Version;
-                        break;
-                    case "Plugin EAVersion":
-                        value = usercache.Plugin.EaVersion;
-                        break;
-                    case "Plugin Id":
-                        value = usercache.Plugin.Id.ToString();
-                        break;
-                    case "Plugin Link":
-                        value = usercache.Plugin.Link;
-                        break;
-                    case "Plugin Notes":
-                        value = usercache.Plugin.Description;
-                        break;
-                }
-                    
+                    "Plugin DName" => usercache.Plugin.DName,
+                    "Plugin Version" => usercache.Plugin.Version,
+                    "Plugin EAVersion" => usercache.Plugin.EaVersion,
+                    "Plugin Id" => usercache.Plugin.Id.ToString(),
+                    "Plugin AuthorId" => usercache.Plugin.AuthorId.ToString(),
+                    "Plugin Link" => usercache.Plugin.Link,
+                    "Plugin Notes" => usercache.Plugin.Description,
+                    "Plugin Announce" => usercache.Plugin.Announce.ToString(),
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+
                 DiscordInteractionResponseBuilder modal = new();
                 modal.WithCustomId(CustomIds.SelectPluginValueToEdit);
                 modal.WithTitle($"Editing {selected}");
@@ -143,24 +133,16 @@ public static class CompInteraction
                     return;
                 }
                     
-                var value = string.Empty;
                 var selected = eventArgs.Values.FirstOrDefault();
-                switch (selected)
+                var value = selected switch
                 {
-                    case "Error Pattern":
-                        value = usercache.Error.Pattern;
-                        break;
-                    case "Error Solution":
-                        value = usercache.Error.Solution;
-                        break;
-                    case "Error Description":
-                        value = usercache.Error.Description;
-                        break;
-                    case "Error String Match":
-                        value = usercache.Error.StringMatch.ToString();
-                        break;
-                }
-                    
+                    "Error Pattern" => usercache.Error.Pattern,
+                    "Error Solution" => usercache.Error.Solution,
+                    "Error Description" => usercache.Error.Description,
+                    "Error String Match" => usercache.Error.StringMatch.ToString(),
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+
                 DiscordInteractionResponseBuilder modal = new();
                 modal.WithCustomId(CustomIds.SelectErrorValueToEdit);
                 modal.WithTitle($"Editing {selected}");

@@ -50,22 +50,30 @@ public static class ModalSubmit
                         case "Plugin Id":
                             plugin.Id = int.Parse(e.Values["Plugin Id"]);
                             break;
+                        case "Plugin AuthorId":
+                            plugin.AuthorId = ulong.Parse(e.Values["Plugin AuthorId"]);
+                            break;
                         case "Plugin Link":
                             plugin.Link = e.Values["Plugin Link"];
                             break;
                         case "Plugin Notes":
                             plugin.Description = e.Values["Plugin Notes"];
                             break;
+                        case "Plugin Announce":
+                            plugin.Announce = e.Values["Plugin Announce"].Equals("true", StringComparison.OrdinalIgnoreCase);
+                            break;
                     }
                 
                     var bd = new DiscordMessageBuilder();
                     var embed = BasicEmbeds.Info(
-                        $"__Adding New Plugin: {plugin.Name}__\r\n>>> " +
+                        $"__Editing Plugin: {plugin.Name}__\r\n>>> " +
                         $"**Display Name:** {plugin.DName}\r\n" +
                         $"**Version:** {plugin.Version}\r\n" +
                         $"**Ea Version:** {plugin.EaVersion}\r\n" +
                         $"**Id:** {plugin.Id}\r\n" +
                         $"**Link:** {plugin.Link}\r\n" +
+                        $"**Author Id:** {plugin.AuthorId}\r\n" +
+                        $"**Announce:** {plugin.Announce}\r\n" +
                         $"**Notes:**\r\n" +
                         $"```{plugin.Description}```\r\n" +
                         $"**Type:** {plugin.PluginType}\r\n" +

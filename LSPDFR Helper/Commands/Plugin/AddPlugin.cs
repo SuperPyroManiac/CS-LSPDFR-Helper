@@ -47,16 +47,20 @@ public class AddPlugin
             new("Ea Version", "Plugin EaVersion"),
             new("Id", "Plugin Id"),
             new("Link", "Plugin Link"),
-            new("Notes", "Plugin Notes")
+            new("Notes", "Plugin Notes"),
+            new("Author Id", "Plugin AuthorId"),
+            new("Announce", "Plugin Announce")
         };
         
         var embed = BasicEmbeds.Info(
-            $"__Adding New Plugin: {plugin.Name}__\r\n>>> " +
+            $"__Editing Plugin: {plugin.Name}__\r\n>>> " +
             $"**Display Name:** {plugin.DName}\r\n" +
             $"**Version:** {plugin.Version}\r\n" +
             $"**Ea Version:** {plugin.EaVersion}\r\n" +
             $"**Id:** {plugin.Id}\r\n" +
             $"**Link:** {plugin.Link}\r\n" +
+            $"**Author Id:** {plugin.AuthorId}\r\n" +
+            $"**Announce:** {plugin.Announce}\r\n" +
             $"**Notes:**\r\n" +
             $"```{plugin.Description}```\r\n" +
             $"**Type:** {plugin.PluginType}\r\n" +
