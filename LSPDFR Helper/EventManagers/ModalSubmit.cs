@@ -4,6 +4,7 @@ using DSharpPlus.EventArgs;
 using LSPDFR_Helper.CustomTypes.CacheTypes;
 using LSPDFR_Helper.Functions;
 using LSPDFR_Helper.Functions.Messages;
+using LSPDFR_Helper.Functions.Messages.ModifiedProperties;
 
 namespace LSPDFR_Helper.EventManagers;
 
@@ -32,7 +33,7 @@ public static class ModalSubmit
                     if (DbManager.GetPlugins().All(p => p.Name != plugin.Name))
                     {
                         DbManager.AddPlugin(plugin);
-                        //await FindPluginMessages.SendDbOperationConfirmation(plugin, operation: DbOperation.CREATE, e.Interaction.ChannelId, e.Interaction.User.Id);
+                        await FindPluginMessages.SendDbOperationConfirmation(plugin, operation: DbOperation.CREATE, e.Interaction.ChannelId, e.Interaction.User.Id);
                     }
 
                     switch (e.Values.First().Key)
@@ -102,7 +103,7 @@ public static class ModalSubmit
                             return;
                         }
                         err.Id = DbManager.AddError(err);
-                        //await FindErrorMessages.SendDbOperationConfirmation(newError: err, operation: DbOperation.CREATE, e.Interaction.ChannelId, e.Interaction.User.Id);
+                        await FindErrorMessages.SendDbOperationConfirmation(newError: err, operation: DbOperation.CREATE, e.Interaction.ChannelId, e.Interaction.User.Id);
                     }
 
                     switch (e.Values.First().Key)

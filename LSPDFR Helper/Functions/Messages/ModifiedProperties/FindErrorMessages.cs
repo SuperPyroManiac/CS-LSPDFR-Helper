@@ -73,11 +73,11 @@ public abstract class FindErrorMessages : FindBaseMessages
                 ChangesCount = 0;
                 break;
         }
-        if (embed != null && !embed.Footer.Text.Contains('0')) 
-        {
-            var bd = new DiscordInteractionResponseBuilder();
-            bd.IsEphemeral = true;
-            await Logging.SendLog(channel, sender, embed);
-        }
+        if ( operation == DbOperation.UPDATE && embed.Footer.Text.Contains('0') ) return;
+        
+        var bd = new DiscordInteractionResponseBuilder();
+        bd.IsEphemeral = true;
+        await Logging.SendLog(channel, sender, embed);
+        
     }
 }

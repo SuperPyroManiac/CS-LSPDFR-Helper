@@ -48,7 +48,7 @@ public abstract class FindPluginMessages : FindBaseMessages
         switch (operation)
         {
             case DbOperation.CREATE:
-                embed = ULSS_Helper.Messages.BasicEmbeds.Info($"__Added new plugin: {newPlugin.Name}__\r\n>>> **Type:** {newPlugin.PluginType}\r\n**State:** {newPlugin.State}", true);
+                embed = BasicEmbeds.Info($"__Added new plugin: {newPlugin.Name}__\r\n>>> **Type:** {newPlugin.PluginType}\r\n**State:** {newPlugin.State}", true);
                 break;
             
             case DbOperation.UPDATE:
@@ -73,11 +73,11 @@ public abstract class FindPluginMessages : FindBaseMessages
                 }
                 catch (Exception exception)
                 {
-                    embed = ULSS_Helper.Messages.BasicEmbeds.Info(title + pluginPropsList, true);
+                    embed = BasicEmbeds.Info(title + pluginPropsList, true);
                     Console.WriteLine(value: exception);
                     break;
                 }
-                embed = ULSS_Helper.Messages.BasicEmbeds.Info(text, true);
+                embed = BasicEmbeds.Info(text, true);
                 embed.Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{ChangesCount} {(ChangesCount == 1 ? "property has" : "properties have")} been modified."
@@ -85,11 +85,11 @@ public abstract class FindPluginMessages : FindBaseMessages
                 ChangesCount = 0;
                 break;
         }
-        if (embed != null && !embed.Footer.Text.Contains('0')) 
-        {
-            var bd = new DiscordInteractionResponseBuilder();
-            bd.IsEphemeral = true;
-            await ULSS_Helper.Messages.Logging.SendLog(channel, sender, embed);
-        }
+
+        if ( operation == DbOperation.UPDATE && embed.Footer.Text.Contains('0') ) return;
+        
+        var bd = new DiscordInteractionResponseBuilder();
+        bd.IsEphemeral = true;
+        await Logging.SendLog(channel, sender, embed);
     }
 } 
