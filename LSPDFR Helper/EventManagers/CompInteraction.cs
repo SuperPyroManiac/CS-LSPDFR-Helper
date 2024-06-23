@@ -3,6 +3,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using LSPDFR_Helper.Functions;
 using LSPDFR_Helper.Functions.Messages;
+using LSPDFR_Helper.Functions.Messages.ModifiedProperties;
 
 namespace LSPDFR_Helper.EventManagers;
 
@@ -60,7 +61,7 @@ public static class CompInteraction
 
                 if (eventArgs.Id == CustomIds.SelectPluginValueToFinish)
                 {
-                    //await FindPluginMessages.SendDbOperationConfirmation(usercache.Plugin, DbOperation.UPDATE, eventArgs.Interaction.ChannelId, eventArgs.Interaction.User.Id, Database.GetPlugin(usercache.Plugin.Name));
+                    await FindPluginMessages.SendDbOperationConfirmation(usercache.Plugin, DbOperation.UPDATE, eventArgs.Interaction.ChannelId, eventArgs.Interaction.User.Id, DbManager.GetPlugin(usercache.Plugin.Name));
                     DbManager.EditPlugin(usercache.Plugin);
                     Program.Cache.RemoveUserAction(eventArgs.User.Id, CustomIds.SelectPluginValueToEdit);
                     await eventArgs.Message.DeleteAsync();
@@ -124,7 +125,7 @@ public static class CompInteraction
 
                 if (eventArgs.Id == CustomIds.SelectErrorValueToFinish)
                 {
-                    //await FindErrorMessages.SendDbOperationConfirmation(usercache.Error, DbOperation.UPDATE, eventArgs.Interaction.ChannelId, eventArgs.Interaction.User.Id, Database.GetError(usercache.Error.ID));
+                    await FindErrorMessages.SendDbOperationConfirmation(usercache.Error, DbOperation.UPDATE, eventArgs.Interaction.ChannelId, eventArgs.Interaction.User.Id, DbManager.GetError(usercache.Error.Id.ToString()));
                     DbManager.EditError(usercache.Error);
                     Program.Cache.RemoveUserAction(eventArgs.User.Id, CustomIds.SelectErrorValueToEdit);
                     await eventArgs.Message.DeleteAsync();
