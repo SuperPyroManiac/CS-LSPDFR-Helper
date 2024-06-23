@@ -70,4 +70,9 @@ public static class BasicEmbeds
         };
         return embed;
     }
+
+    public static string AddBlanks(int count)
+    {
+        return string.Join("", Enumerable.Repeat("\u200b ", count));
+    }
 }
