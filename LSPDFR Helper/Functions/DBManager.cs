@@ -1,4 +1,5 @@
 using Dapper;
+using LSPDFR_Helper.CustomTypes.Enums;
 using LSPDFR_Helper.CustomTypes.MainTypes;
 using LSPDFR_Helper.CustomTypes.SpecialTypes;
 using LSPDFR_Helper.Functions.Messages;
@@ -9,7 +10,8 @@ namespace LSPDFR_Helper.Functions;
 public static class DbManager
 {
     private static readonly string ConnStr = $"Server={Program.BotSettings.Env.DbServer};User ID={Program.BotSettings.Env.DbUser};Password={Program.BotSettings.Env.DbPass};Database={Program.BotSettings.Env.DbName}";
-
+    
+    //Plugin Functions
     public static List<Plugin> GetPlugins()
     {
         try
@@ -33,6 +35,45 @@ public static class DbManager
             return cnn.Query<Plugin>($"select * from Plugin where Name='{pluginname}'").First();
         }
         catch (MySqlException e)
+        {
+            Console.WriteLine(e);
+            Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+            throw;
+        }
+    }
+    
+    public static List<Plugin> FindPlugins(string name = null, string dName = null, string id = null, State? state = null, PluginType? type = null, string description = null, bool? exactMatch = false)
+    {
+        try
+        {
+            using var cnn = new MySqlConnection(ConnStr);
+            List<string> conditions = [];
+            var comparisonOperator = " = '";
+            var endOfComparison = "'";
+            if (!(exactMatch ?? true))  
+            {
+                comparisonOperator = " like '%";
+                endOfComparison = "%'";
+            }
+
+            if (name != null) conditions.Add("Name" + comparisonOperator + name + endOfComparison);
+            if (dName != null) conditions.Add("DName" + comparisonOperator + dName + endOfComparison);
+            if (id != null) conditions.Add("Id" + comparisonOperator + id + endOfComparison);
+            if (state != null) conditions.Add("State" + comparisonOperator + state + endOfComparison);
+            if (type != null) conditions.Add("PluginType" + comparisonOperator + type + endOfComparison);
+            if (description != null) conditions.Add("Description" + comparisonOperator + description + endOfComparison);
+
+            if (conditions.Count == 0) throw new InvalidDataException("At least one of the input parameters has to have a non-null value!");
+            var conditionsString = string.Join(" and ", conditions);
+            return cnn.Query<Plugin>($"select * from Plugin where {conditionsString}").ToList();
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine(e);
+            Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+            throw;
+        }
+        catch (InvalidDataException e)
         {
             Console.WriteLine(e);
             Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
@@ -85,7 +126,6 @@ public static class DbManager
         }
     }
     
-    //Plugin Functions
     //Error Functions
     public static List<Error> GetErrors()
     {
@@ -110,6 +150,44 @@ public static class DbManager
             return cnn.Query<Error>($"select * from Error where Id='{errorId}'").First();
         }
         catch (MySqlException e)
+        {
+            Console.WriteLine(e);
+            Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+            throw;
+        }
+    }
+    
+    public static List<Error> FindErrors(string id, string pattern, string solution, string description, Level? level, bool? exactMatch = false)
+    {
+        try
+        {
+            using var cnn = new MySqlConnection(ConnStr);
+            List<string> conditions = [];
+            var comparisonOperator = " = '";
+            var endOfComparison = "'";
+            if (!(exactMatch ?? true))  
+            {
+                comparisonOperator = " like '%";
+                endOfComparison = "%'";
+            }
+
+            if (id != null) conditions.Add("Id" + comparisonOperator + id + endOfComparison);
+            if (pattern != null) conditions.Add("Pattern" + comparisonOperator + pattern + endOfComparison);
+            if (solution != null) conditions.Add("Solution" + comparisonOperator + solution + endOfComparison);
+            if (description != null) conditions.Add("Description" + comparisonOperator + description + endOfComparison);
+            conditions.Add("Level" + comparisonOperator + level + endOfComparison);
+            
+            if (conditions.Count == 0) throw new InvalidDataException("At least one of the input parameters has to have a non-null value!");
+            var conditionsString = string.Join(" and ", conditions);
+            return cnn.Query<Error>($"select * from Error where {conditionsString}", new DynamicParameters()).ToList();
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine(e);
+            Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+            throw;
+        }
+        catch (InvalidDataException e)
         {
             Console.WriteLine(e);
             Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();

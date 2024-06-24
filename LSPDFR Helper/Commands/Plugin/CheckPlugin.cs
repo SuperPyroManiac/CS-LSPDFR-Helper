@@ -4,7 +4,6 @@ using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Commands.Processors.SlashCommands.ArgumentModifiers;
 using DSharpPlus.Entities;
 using LSPDFR_Helper.CustomTypes.AutoCompleteTypes;
-using LSPDFR_Helper.CustomTypes.Enums;
 using LSPDFR_Helper.Functions.Messages;
 using LSPDFR_Helper.Functions.Verifications;
 
@@ -33,19 +32,13 @@ public class CheckPlugin
 		if (!string.IsNullOrEmpty(plugin.Link)) plugin.Link = $"[Here]({plugin.Link})";
 		plugin.Link ??= "N/A";
 		
-		var embed = new DiscordEmbedBuilder
-		{
-			Color = new DiscordColor(243, 154, 18),
-			Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.TsIconUrl },
-			Footer = new DiscordEmbedBuilder.EmbedFooter { Text = "Provided by discord.gg/ulss" }
-		};
-        embed.Description =
+		var embed = BasicEmbeds.Public(            
             $"## __{plugin.Name}__{BasicEmbeds.AddBlanks(25)}\r\n"
             + $">>> **Display Name:** {plugin.DName}\n"
             + $"**Version:** {plugin.Version}\n"
             + $"**Link:** {plugin.Link}\n"
             + $"**Type:** {plugin.PluginType} | **State:** {plugin.State}\n"
-            + $"**Notes:** \r\n```{plugin.Description}```\r\n";
+            + $"**Notes:** \r\n```{plugin.Description}```\r\n");
 		
 		await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, response.AddEmbed(embed));
 		await Logging.SendPubLog(BasicEmbeds.Info(

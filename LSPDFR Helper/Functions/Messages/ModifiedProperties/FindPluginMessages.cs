@@ -8,7 +8,7 @@ namespace LSPDFR_Helper.Functions.Messages.ModifiedProperties;
 
 public abstract class FindPluginMessages : FindBaseMessages
 {
-    public static string GetSearchParamsList(string title, string plugName, string plugDName, string plugId, State plugState, PluginType plugType, bool plugAnnounce, string plugDescription, bool exactMatch)
+    public static string GetSearchParamsList(string title, string plugName, string plugDName, string plugId, State? plugState, PluginType? plugType, string plugDescription, bool exactMatch)
     {
         var searchParamsList = $"**{title}**\r\n";
         if (plugName != null)
@@ -16,13 +16,11 @@ public abstract class FindPluginMessages : FindBaseMessages
         if (plugDName != null)
             searchParamsList += $"- **Display Name:** {plugDName}\r\n";
         if (plugId != null)
-            searchParamsList += $"- **ID (on lcpdfr.com):** {plugId}\r\n";
+            searchParamsList += $"- **Id (on lcpdfr.com):** {plugId}\r\n";
         if (plugState != null)
             searchParamsList += $"- **State:**\r\n {plugState}\r\n";
         if (plugType != null)
             searchParamsList += $"- **Type:**\r\n {plugType}\r\n";
-        if (plugAnnounce != null)
-            searchParamsList += $"- **Announce:**\r\n {plugAnnounce}\r\n";
         if (plugDescription != null)
             searchParamsList += $"- **Notes:** \r\n> {plugDescription.Replace("\n", "\n> ")}\r\n";
         if (exactMatch)
