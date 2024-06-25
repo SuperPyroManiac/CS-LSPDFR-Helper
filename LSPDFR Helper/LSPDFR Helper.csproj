@@ -19,7 +19,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Commands\ContextMenu\" />
       <Folder Include="CustomTypes\LogTypes\" />
       <Folder Include="Functions\AutoHelper\" />
       <Folder Include="Functions\Processors\ASI\" />
