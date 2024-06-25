@@ -30,11 +30,6 @@ public static class ModalSubmit
                 if (e.Interaction.Data.CustomId == CustomIds.SelectPluginValueToEdit)
                 {
                     var plugin = cache.Plugin;
-                    if (DbManager.GetPlugins().All(p => p.Name != plugin.Name))
-                    {
-                        DbManager.AddPlugin(plugin);
-                        await FindPluginMessages.SendDbOperationConfirmation(plugin, operation: DbOperation.CREATE, e.Interaction.ChannelId, e.Interaction.User.Id);
-                    }
 
                     switch (e.Values.First().Key)
                     {
@@ -99,7 +94,7 @@ public static class ModalSubmit
                         if (DbManager.GetErrors().Any(error => error.Pattern == err.Pattern))
                         {
                             await e.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
-                                new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Error("This error already exists!\r\nConsider using /EditError <ID>", true)));
+                                new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Error("This error already exists!\r\nConsider using /EditError", true)));
                             return;
                         }
                         err.Id = DbManager.AddError(err);

@@ -7,6 +7,7 @@ using LSPDFR_Helper.CustomTypes.Enums;
 using LSPDFR_Helper.EventManagers;
 using LSPDFR_Helper.Functions;
 using LSPDFR_Helper.Functions.Messages;
+using LSPDFR_Helper.Functions.Messages.ModifiedProperties;
 using LSPDFR_Helper.Functions.Verifications;
 
 namespace LSPDFR_Helper.Commands.Plugin;
@@ -39,6 +40,9 @@ public class AddPlugin
             PluginType = plugintype,
             State = pluginstate
         };
+        
+        DbManager.AddPlugin(plugin);
+        await FindPluginMessages.SendDbOperationConfirmation(plugin, operation: DbOperation.CREATE,ctx.Interaction.ChannelId, ctx.Interaction.User.Id);
         
         var pluginValues = new List<DiscordSelectComponentOption>
         {
