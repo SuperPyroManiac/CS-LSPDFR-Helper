@@ -61,6 +61,7 @@ public class ValidateXML
             response.AddField(log.FileName, $">>> ```xml\r\n{log.ParsedInfo}\r\n```");
         }
 
+        await ctx.RespondAsync(msg.AddEmbed(BasicEmbeds.Success($"__All Files Validated!__{BasicEmbeds.AddBlanks(25)}\r\n>>> Results have been posted.")));
         await targetMessage.RespondAsync(response);
     }
 }
