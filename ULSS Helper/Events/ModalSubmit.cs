@@ -158,7 +158,7 @@ public class ModalSubmit
                 
                 await e.Interaction.CreateResponseAsync(
                     DiscordInteractionResponseType.ChannelMessageWithSource,
-                    new DiscordInteractionResponseBuilder().AddEmbed(embed).AsEphemeral(true));
+                    new DiscordInteractionResponseBuilder().AddEmbed(embed).AsEphemeral());
                 
                 await Logging.SendLog(e.Interaction.ChannelId, e.Interaction.User.Id, embed);
             }
@@ -179,7 +179,7 @@ public class ModalSubmit
 				await Logging.SendPubLog(embed);
 				await e.Interaction.CreateResponseAsync(
 					DiscordInteractionResponseType.ChannelMessageWithSource,
-					new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Feedback sent!")).AsEphemeral(true)
+					new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Feedback sent!")).AsEphemeral()
 					);
 			}
             

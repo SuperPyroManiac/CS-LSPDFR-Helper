@@ -19,7 +19,7 @@ public class Startup
         var st = Database.AutoHelperStatus();
         DiscordMessage origMsg = null;
         var embed = BasicEmbeds.Public("# __ULSS AutoHelper__");
-        await foreach (var msg in ch.GetMessagesAsync(100))
+        await foreach (var msg in ch.GetMessagesAsync())
         {
             if (msg.Embeds.Count <= 0) continue;
             if (msg.Embeds.FirstOrDefault()!.Description != null && msg.Embeds.FirstOrDefault()!.Description!.Contains("ULSS AutoHelper")) origMsg = msg;

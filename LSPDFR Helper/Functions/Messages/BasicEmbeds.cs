@@ -4,7 +4,7 @@ namespace LSPDFR_Helper.Functions.Messages;
 
 public static class BasicEmbeds
 {
-    public static DiscordEmbedBuilder Error(string msg, bool bold = false)
+    public static DiscordEmbedBuilder Error(string msg, bool bold = true)
     {
         var embed = new DiscordEmbedBuilder
         {
@@ -15,7 +15,7 @@ public static class BasicEmbeds
         return embed;
     }
 
-    public static DiscordEmbedBuilder Warning(string msg, bool bold = false)
+    public static DiscordEmbedBuilder Warning(string msg, bool bold = true)
     {
         var embed = new DiscordEmbedBuilder
         {
@@ -26,7 +26,7 @@ public static class BasicEmbeds
         return embed;
     }
 
-    public static DiscordEmbedBuilder Info(string msg, bool bold = false)
+    public static DiscordEmbedBuilder Info(string msg, bool bold = true)
     {
         var embed = new DiscordEmbedBuilder
         {
@@ -37,7 +37,7 @@ public static class BasicEmbeds
         return embed;
     }
 
-    public static DiscordEmbedBuilder Success(string msg, bool bold = false)
+    public static DiscordEmbedBuilder Success(string msg, bool bold = true)
     {
         var embed = new DiscordEmbedBuilder
         {
@@ -54,6 +54,18 @@ public static class BasicEmbeds
         {
             Description = msg,
             Color = color
+        };
+        return embed;
+    }
+    
+    public static DiscordEmbedBuilder Ts(string msg, DiscordEmbedBuilder.EmbedFooter footer)
+    {
+        var embed = new DiscordEmbedBuilder
+        {
+            Description = msg,
+            Color = new DiscordColor(243, 154, 18),
+            Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.TsIconUrl },
+            Footer = footer
         };
         return embed;
     }
