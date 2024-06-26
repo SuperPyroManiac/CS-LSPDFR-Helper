@@ -82,6 +82,35 @@ public class Cache
             .Where(x => x.Value.Expire <= DateTime.Now)
             .Select(x => x.Key);
         foreach ( var key in expiredInteractionKeys ) _interactionCacheDict.Remove(key);
+        
+        var expiredProcessKeys = _processCacheDict
+            .Where(x => x.Value.Expire <= DateTime.Now)
+            .Select(x => x.Key);
+        foreach ( var key in expiredProcessKeys ) _processCacheDict.Remove(key);
+    }
+    
+    /// <summary>Saves the current state of a log analysis process.</summary>
+    /// <param name="messageId">The ID of the last message in the current chain of messages in response to an uploaded log.</param>
+    /// <param name="newCache">The ProcessCache object (will be merged with any existing cache objects for the same message id).</param>
+    public void SaveProcess(ulong messageId, ProcessCache newCache)
+    {
+        if (_processCacheDict.ContainsKey(messageId))
+        {
+            var currentCache = GetProcess(messageId);
+            _processCacheDict[messageId] = currentCache.Update(newCache);
+        }
+        else
+            _processCacheDict.Add(messageId, newCache);
+    }
+    
+    /// <summary>Gets the ProcessCache object identified by a message ID that is related to the process.</summary>
+    /// <param name="messageId">The ID of the last message in the current chain of messages in response to an uploaded log.</param>
+    public ProcessCache GetProcess(ulong messageId)
+    {
+        if (_processCacheDict.ContainsKey(messageId))
+            return _processCacheDict[messageId]; 
+            
+        return null;
     }
     
     /// <summary>Returns a unique key for an interaction.</summary>

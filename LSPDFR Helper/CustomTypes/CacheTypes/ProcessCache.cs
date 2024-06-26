@@ -1,4 +1,5 @@
 using DSharpPlus.Entities;
+using LSPDFR_Helper.CustomTypes.LogTypes;
 
 namespace LSPDFR_Helper.CustomTypes.CacheTypes;
 
@@ -7,35 +8,15 @@ public class ProcessCache
     public DateTime Expire = DateTime.Now.AddMinutes(15);
     public DiscordMessageInteraction Interaction { get; private set; }
     public DiscordMessage OriginalMessage { get; private set; }
-    // public ELSProcess ElsProcess { get; private set; }
-    // public RPHProcess RphProcess { get; private set; }
-    // public ASIProcess AsiProcess { get; private set; }
-    // public SHVDNProcess ShvdnProcess { get; private set; }
+    public RPHLog RphLog { get; set; }
 
-    // public ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage, ELSProcess elsProcess)
-    // {
-    //     Interaction = interaction;
-    //     OriginalMessage = originalMessage;
-    //     ElsProcess = elsProcess;
-    // }
-    // public ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage, RPHProcess rphProcess)
-    // {
-    //     Interaction = interaction;
-    //     OriginalMessage = originalMessage;
-    //     RphProcess = rphProcess;
-    // }
-    // public ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage, ASIProcess asiProcess)
-    // {
-    //     Interaction = interaction;
-    //     OriginalMessage = originalMessage;
-    //     AsiProcess = asiProcess;
-    // }
-    // public ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage, SHVDNProcess shvdnProcess)
-    // {
-    //     Interaction = interaction;
-    //     OriginalMessage = originalMessage;
-    //     ShvdnProcess = shvdnProcess;
-    // }
+    public ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage, RPHLog rphlog)
+    {
+        Interaction = interaction;
+        OriginalMessage = originalMessage;
+        RphLog = rphlog;
+    }
+    
     public ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage)
     {
         Interaction = interaction;
@@ -49,10 +30,7 @@ public class ProcessCache
         
         Interaction = newCache.Interaction ?? Interaction;
         OriginalMessage = newCache.OriginalMessage ?? OriginalMessage;
-        // ElsProcess = newCache.ElsProcess ?? ElsProcess;
-        // RphProcess = newCache.RphProcess ?? RphProcess;
-        // AsiProcess = newCache.AsiProcess ?? AsiProcess;
-        // ShvdnProcess = newCache.ShvdnProcess ?? ShvdnProcess;
+        RphLog = newCache.RphLog ?? RphLog;
         Expire = DateTime.Now.AddMinutes(15);
         return this;
     }
@@ -71,31 +49,17 @@ public class ProcessCache
 
         if (attachments != null)
         {
-            var countOfType = attachments.Count(attachment => attachment.FileName.Contains(logType));
+            var countOfType = attachments.Count(attachment => attachment.FileName!.Contains(logType));
             if (countOfType > 1) return false;
         }
-
-        // switch (logType)
-        // {
-        //     case "RagePluginHook":
-        //         if (cache.RphProcess?.log == null || cache.RphProcess.log.AnalysisHasExpired()) 
-        //             return false;
-        //         break;
-        //     case "ELS":
-        //         if (cache.ElsProcess?.log == null || cache.ElsProcess.log.AnalysisHasExpired()) 
-        //             return false;
-        //         break;
-        //     case "asiloader":
-        //         if (cache.AsiProcess?.log == null || cache.AsiProcess.log.AnalysisHasExpired()) 
-        //             return false;
-        //         break;
-        //     case "ScriptHookVDotNet":
-        //         if (cache.ShvdnProcess?.log == null || cache.ShvdnProcess.log.AnalysisHasExpired()) 
-        //             return false;
-        //         break;
-        //     default:
-        //         throw new ArgumentException($"Invalid log type '{logType}'.");
-        // }
+        switch (logType)
+        {
+            case "RagePluginHook":
+                if (cache.RphLog == null) return false;
+                break;
+            default:
+                throw new ArgumentException($"Invalid log type '{logType}'.");
+        }
         return true;
     }
 }

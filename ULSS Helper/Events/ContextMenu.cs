@@ -21,7 +21,7 @@ public class ContextMenu
         if (!await PermissionManager.RequireTs(context)) return;
         //===//===//===////===//===//===////===//Attachment Checks/===////===//===//===////===//===//===//
         DiscordAttachment attachmentForAnalysis = null;
-        List<string> acceptedFileNames = [..new[] { "RagePluginHook", "ELS", "asiloader", "ScriptHookVDotNet" }];
+        List<string> acceptedFileNames = ["RagePluginHook", "ELS", "asiloader", "ScriptHookVDotNet"];
         var acceptedFileNamesString = string.Join(" or ", acceptedFileNames);
         var acceptedLogFileNamesString = "`" + string.Join(".log` or `", acceptedFileNames) + ".log`";
         SharedLogInfo sharedLogInfo = new();
@@ -73,7 +73,6 @@ public class ContextMenu
             //===//===//===////===//===//===////===//Process Attachments/===////===//===//===////===//===//===//
             if (attachmentForAnalysis.FileName.Contains("RagePluginHook"))
             {
-                #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 	            var th = new Thread(() => RphThread(context, attachmentForAnalysis, targetMessage));
 	            th.Start();
                 return;
