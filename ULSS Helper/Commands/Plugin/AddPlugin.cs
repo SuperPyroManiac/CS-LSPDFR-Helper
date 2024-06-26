@@ -35,7 +35,7 @@ public class AddPlugin
             State = pluginState.ToString().ToUpper()
         };
         
-        var pluginValues = new List<DiscordSelectComponentOption>()
+        var pluginValues = new List<DiscordSelectComponentOption>
         {
             new("Display Name", "Plugin DName"),
             new("Version", "Plugin Version"),

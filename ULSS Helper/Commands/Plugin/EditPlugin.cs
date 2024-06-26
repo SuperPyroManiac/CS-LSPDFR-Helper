@@ -37,7 +37,7 @@ public class EditPlugin
 
         if (newState != null) plugin.State = newState.ToString()!.ToUpper();
         
-        var pluginValues = new List<DiscordSelectComponentOption>()
+        var pluginValues = new List<DiscordSelectComponentOption>
         {
             new("Display Name", "Plugin DName"),
             new("Version", "Plugin Version"),

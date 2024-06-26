@@ -38,7 +38,7 @@ public class ValidateXML
             }
             validCnt++;
             
-            parsedXmls.Add(new XmlLog()
+            parsedXmls.Add(new XmlLog
             {
                 FileName = attach.FileName,
                 ParsedInfo = await XmlValidator.Run(attach.Url)
@@ -51,7 +51,7 @@ public class ValidateXML
             return;
         }
 
-        var response = BasicEmbeds.Ts($"## __XML Validator__{BasicEmbeds.AddBlanks(35)}", new DiscordEmbedBuilder.EmbedFooter()
+        var response = BasicEmbeds.Ts($"## __XML Validator__{BasicEmbeds.AddBlanks(35)}", new DiscordEmbedBuilder.EmbedFooter
         {
             IconUrl = ctx.User.AvatarUrl,
             Text = $"Sent by: {ctx.User.Username}"

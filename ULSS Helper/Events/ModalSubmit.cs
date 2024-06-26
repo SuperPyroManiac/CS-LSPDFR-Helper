@@ -138,7 +138,7 @@ public class ModalSubmit
             
             if (e.Interaction.Data.CustomId == EditUser)
             {
-                var user = new DiscordUser()
+                var user = new DiscordUser
                 {
                     UID = cache.User.UID,
                     Username = cache.User.Username,

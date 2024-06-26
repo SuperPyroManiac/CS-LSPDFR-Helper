@@ -23,7 +23,7 @@ public class AddError
             Description = "- REQUIRED -",
             Level = level.ToString().ToUpper()
         };
-        var errorValues = new List<DiscordSelectComponentOption>()
+        var errorValues = new List<DiscordSelectComponentOption>
         {
             new("Regex", "Error Regex"),
             new("Solution", "Error Solution"),

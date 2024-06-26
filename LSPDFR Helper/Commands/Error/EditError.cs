@@ -34,7 +34,7 @@ public class EditError
         var error = DbManager.GetError(errorId);
         
         if (newlevel != default) error.Level = newlevel;
-        var errorValues = new List<DiscordSelectComponentOption>()
+        var errorValues = new List<DiscordSelectComponentOption>
         {
             new("Pattern", "Error Regex"),
             new("Solution", "Error Solution"),

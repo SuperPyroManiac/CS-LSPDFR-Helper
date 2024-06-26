@@ -30,7 +30,7 @@ public class OskaruApiService
     public async Task<string> GetImageText(string imageUrl, string caption = null)
     {
         Console.WriteLine("Got to oska");
-        var requestBody = new AnalyseImageLinkRequest()
+        var requestBody = new AnalyseImageLinkRequest
         {
             downloadLink = imageUrl,
             caption = caption

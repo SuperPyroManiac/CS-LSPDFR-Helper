@@ -42,7 +42,7 @@ public class EditPlugin
         if (newstate != default) plugin.State = newstate;
         if (newtype != default) plugin.PluginType = newtype;
         
-        var pluginValues = new List<DiscordSelectComponentOption>()
+        var pluginValues = new List<DiscordSelectComponentOption>
         {
             new("Display Name", "Plugin DName"),
             new("Version", "Plugin Version"),

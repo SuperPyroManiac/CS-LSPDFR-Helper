@@ -32,7 +32,7 @@ public class EditError
         var error = Database.GetError(errorId);
         
         if (newLevel != null) error.Level = newLevel.ToString()!.ToUpper();
-        var errorValues = new List<DiscordSelectComponentOption>()
+        var errorValues = new List<DiscordSelectComponentOption>
         {
             new("Regex", "Error Regex"),
             new("Solution", "Error Solution"),

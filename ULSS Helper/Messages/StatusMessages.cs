@@ -32,7 +32,7 @@ public class StatusMessages
                     if (user == null) continue;
                     addedCnt++;
 
-                    var newUser = new ULSS_Helper.Objects.DiscordUser()
+                    var newUser = new ULSS_Helper.Objects.DiscordUser
                     {
                         UID = user.Id.ToString(),
                         Username = user.Username,

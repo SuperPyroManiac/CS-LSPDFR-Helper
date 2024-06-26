@@ -18,7 +18,7 @@ public static class Users
                 if (user == null) continue;
                 cnt++;
 
-                var newUser = new User()
+                var newUser = new User
                 {
                     Id = user.Id,
                     Username = user.Username,

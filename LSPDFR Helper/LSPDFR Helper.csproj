@@ -23,7 +23,6 @@
       <Folder Include="Functions\Processors\ASI\" />
       <Folder Include="Functions\Processors\ELS\" />
       <Folder Include="Functions\Processors\IMAGES\" />
-      <Folder Include="Functions\Processors\RPH\" />
       <Folder Include="Functions\Processors\SHVDN\" />
       <Folder Include="Functions\Processors\SHV\" />
     </ItemGroup>

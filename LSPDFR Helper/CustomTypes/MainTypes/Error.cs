@@ -10,4 +10,5 @@ public class Error
     public string Description { get; set; }
     public bool StringMatch { get; set; }
     public Level Level { get; set; }
+    public List<Plugin> PluginList { get; set; } = [];
 }

@@ -17,7 +17,7 @@ public class AddError
         public async Task AddErrorCmd(SlashCommandContext ctx, [Description("Error Level")] Level level)
     {
         if (!await PermissionManager.RequireAdvancedTs(ctx)) return;
-        var error = new CustomTypes.MainTypes.Error()
+        var error = new CustomTypes.MainTypes.Error
         {
             Pattern = "- REQUIRED -",
             Solution = "- REQUIRED -",
@@ -25,7 +25,7 @@ public class AddError
             StringMatch = false,
             Level = level
         };
-        var errorValues = new List<DiscordSelectComponentOption>()
+        var errorValues = new List<DiscordSelectComponentOption>
         {
             new("Pattern", "Error Pattern"),
             new("Solution", "Error Solution"),

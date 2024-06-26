@@ -28,7 +28,10 @@ public class Cache
     /// <summary>Returns a single plugin based off the name.</summary>
     public Plugin GetPlugin(string pluginname)
     {
-        return _pluginCacheDict[pluginname];
+        try
+        { return _pluginCacheDict[pluginname]; }
+        catch ( Exception e )
+        { return null; }
     }
     
     /// <summary>Replaces all cache entries with the specified error list.</summary>
@@ -66,7 +69,10 @@ public class Cache
     /// <summary>Returns a single user based off the uid.</summary>
     public User GetUser(ulong userId)
     {
-        return _userCacheDict[userId];
+        try
+        { return _userCacheDict[userId]; }
+        catch ( Exception e )
+        { return null; }
     }
 
     /// <summary>Removed all interaction/process caches that have not been modified in 15 minutes.</summary>

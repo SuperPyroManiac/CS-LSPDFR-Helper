@@ -37,7 +37,7 @@ public class RPHAnalyzer
             if (!reader[0].Contains("Started new log on") || !wholeLog.Contains("Cleaning temp folder"))
             {
                 log.LogModified = true;
-                log.Errors.Add(new Error()
+                log.Errors.Add(new Error
                 {
                     ID = "666",
                     Level = "CRITICAL",
@@ -197,8 +197,7 @@ public class RPHAnalyzer
             var errmatch = errregex.Matches(wholeLog);
             foreach (Match match in errmatch)
             {
-                var newError = new Error()
-                { ID = error.ID, Level = error.Level, Regex = error.Regex, Solution = error.Solution };
+                var newError = new Error { ID = error.ID, Level = error.Level, Regex = error.Regex, Solution = error.Solution };
                 for (var i = 0; i <= 10; i++)
                 {
                     newError.Solution = newError.Solution.Replace("{" + i + "}", match.Groups[i].Value);
