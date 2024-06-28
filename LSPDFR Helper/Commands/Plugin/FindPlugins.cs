@@ -34,18 +34,6 @@ public class FindPlugins
         
         try 
         {
-            var searchParamsListForLog = FindPluginMessages.GetSearchParamsList(
-                "Ran 'FindPlugins' command with the following parameters:", 
-                plugname, 
-                plugdname, 
-                plugid, 
-                plugstate, 
-                plugtype,
-                plugdescription,
-                exactmatch
-            );
-            await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info(searchParamsListForLog));
-            
             var pluginsFound = DbManager.FindPlugins(plugname, plugdname, plugid, plugstate, plugtype, plugdescription, exactmatch);
 
             if (pluginsFound.Count > 0) 

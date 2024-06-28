@@ -88,27 +88,19 @@ public class ValidateLog
         //===//===//===////===//===//===////===//Process Attachments/===////===//===//===////===//===//===//
         if (attach.FileName.Contains("RagePluginHook"))
         {
-            async void Start() => await RphThread(ctx, attach, targetMessage);
-            var th = new Thread(Start);
-            th.Start();
+            await ctx.Interaction.DeferAsync(true);
+            var rphProcessor = new RphProcessor();
+            var cache = Program.Cache.GetProcess(targetMessage.Id);
+            if (ProcessCache.IsCacheUsagePossible("RagePluginHook", cache)) rphProcessor = cache.RphProcessor;
+            else
+            {
+                rphProcessor.Log = await RPHValidater.Run(attach.Url);
+                rphProcessor.Log.MsgId = targetMessage.Id;
+                //TODO: ProxyCheck.Run(rphProcess.log, Program.Cache.GetUser(targetMessage.Author!.Id.ToString()), targetMessage);
+                Program.Cache.SaveProcess(targetMessage.Id, new ProcessCache(targetMessage.Interaction, targetMessage, rphProcessor));
+            }
+            await rphProcessor.SendBaseInfoMessage(targetMessage, ctx);
             return;
         }
-    }
-    
-    private async Task RphThread(SlashCommandContext ctx, DiscordAttachment attachmentForAnalysis, DiscordMessage targetMessage)
-    {
-        await ctx.Interaction.DeferAsync(true);
-        RPHLog log;
-        var cache = Program.Cache.GetProcess(targetMessage.Id);
-        if (ProcessCache.IsCacheUsagePossible("RagePluginHook", cache)) log = cache.RphLog;
-        else
-        {
-            log = await RPHValidater.Run(attachmentForAnalysis.Url);
-            log.MsgId = targetMessage.Id;
-            //TODO: ProxyCheck.Run(rphProcess.log, Program.Cache.GetUser(targetMessage.Author!.Id.ToString()), targetMessage);
-            Program.Cache.SaveProcess(targetMessage.Id, new ProcessCache(targetMessage.Interaction, targetMessage, log));
-        }
-        
-        //TODO: await RPHformatter(log, ctx, IsTs = true);
     }
 }

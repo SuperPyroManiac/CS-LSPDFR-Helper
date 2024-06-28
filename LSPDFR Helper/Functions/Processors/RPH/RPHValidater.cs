@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Text.RegularExpressions;
 using LSPDFR_Helper.CustomTypes.Enums;
 using LSPDFR_Helper.CustomTypes.LogTypes;
@@ -79,7 +78,7 @@ public static class RPHValidater
                             if (log.Outdated.All(x => x.Name != logPlugin.Name)) log.Outdated.Add(logPlugin);
                             break;
                         }
-                        // plugin version in log is newer than version in DB and there is no Early Acccess version
+                        // plugin version in log is newer than version in DB and there is no Early Access version
                         case > 0:
                         {
                             logPlugin.EaVersion = plugin.Version;
@@ -118,6 +117,7 @@ public static class RPHValidater
         log.Errors = log.Errors.OrderBy(x => x.Level).ToList();
         
         log.ValidaterCompletedAt = DateTime.Now;
+        log.ElapsedTime = DateTime.Now.Subtract(log.ValidaterStartedAt).TotalMilliseconds.ToString();
         
         return log;
     }

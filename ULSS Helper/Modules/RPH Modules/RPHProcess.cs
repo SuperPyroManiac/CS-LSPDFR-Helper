@@ -14,7 +14,6 @@ public class RPHProcess : SharedLogInfo
     public string outdated;
     public string broken;
     public string missing;
-    public string library;
     public string missmatch;
     public string rph;
     public RPHLog log;
@@ -86,7 +85,6 @@ public class RPHProcess : SharedLogInfo
         broken = string.Join("\r\n- ", brokenList);
         missing = string.Join(", ", missingList);
         missmatch = string.Join(", ", missmatchList);
-        library = string.Join(", ", libraryList);
         rph = string.Join(", ", rphList);
         
         var embedDescription = "## RPH.log Quick Info";        

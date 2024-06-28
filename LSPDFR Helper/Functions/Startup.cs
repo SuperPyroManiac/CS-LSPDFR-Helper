@@ -10,9 +10,7 @@ public class Startup
     
     public static async Task Init()
     {
-        await Verification();
-        await PrepCaches();
-        await SendStartupMessage();
+        await Task.WhenAll(Verification(), PrepCaches(), SendStartupMessage());
     }
     
     private static async Task Verification()

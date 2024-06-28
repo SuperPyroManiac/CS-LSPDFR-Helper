@@ -32,17 +32,6 @@ public class FindErrors
         
         try 
         {
-            var searchParamsListForLog = FindErrorMessages.GetSearchParamsList(
-                "Ran 'FindErrors' command with the following parameters:", 
-                id,
-                pattern,
-                solution,
-                description,
-                level,
-                exactmatch
-            );
-            await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info(searchParamsListForLog));
-
             var errorsFound = DbManager.FindErrors(id, pattern, solution, description, level, exactmatch);
 
             if (errorsFound.Count > 0) 
