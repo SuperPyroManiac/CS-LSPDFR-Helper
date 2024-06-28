@@ -28,7 +28,7 @@ public class RphProcessor : SharedData
         if (Program.Cache.GetPlugin("GrandTheftAuto5").Version.Equals(Log.GTAVersion)) _gtaVer = "\u2713";
         if (Program.Cache.GetPlugin("LSPDFR").Version.Equals(Log.LSPDFRVersion)) _lspdfrVer = "\u2713";
         if (Program.Cache.GetPlugin("RagePluginHook").Version.Equals(Log.RPHVersion)) _rphVer = "\u2713";
-        return BasicEmbeds.Ts(description + BasicEmbeds.AddBlanks(45),
+        return BasicEmbeds.Ts(description + BasicEmbeds.AddBlanks(20),
             new DiscordEmbedBuilder.EmbedFooter() { Text = $"GTA: {_gtaVer} - RPH: {_lspdfrVer} - LSPDFR: {_rphVer} - Notes: {Log.Errors.Count} - Try /CheckPlugin" });
     }
     
@@ -212,7 +212,6 @@ public class RphProcessor : SharedData
                     options: errorIds
                 )
             );
-
         responseBuilder.AddComponents(
             [
                 new DiscordButtonComponent(
@@ -262,6 +261,13 @@ public class RphProcessor : SharedData
                     "Back to Quick Info", 
                     false,
                     new DiscordComponentEmoji("⬅️")
+                ),
+                new DiscordButtonComponent(
+                    DiscordButtonStyle.Danger,
+                    CustomIds.RphSendToUser,
+                    "Send To User", 
+                    false,
+                    new DiscordComponentEmoji("📨")
                 )
             ]
         );
