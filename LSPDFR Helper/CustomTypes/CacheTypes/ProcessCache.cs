@@ -1,5 +1,4 @@
 using DSharpPlus.Entities;
-using LSPDFR_Helper.CustomTypes.LogTypes;
 using LSPDFR_Helper.Functions.Processors.RPH;
 
 namespace LSPDFR_Helper.CustomTypes.CacheTypes;

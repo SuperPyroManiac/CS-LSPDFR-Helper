@@ -4,7 +4,6 @@ using DSharpPlus.EventArgs;
 using LSPDFR_Helper.CustomTypes.Enums;
 using LSPDFR_Helper.EventManagers;
 using LSPDFR_Helper.Functions.Messages;
-using ULSS_Helper.Objects;
 using ProcessCache = LSPDFR_Helper.CustomTypes.CacheTypes.ProcessCache;
 using RPHLog = LSPDFR_Helper.CustomTypes.LogTypes.RPHLog;
 using State = LSPDFR_Helper.CustomTypes.Enums.State;
@@ -142,7 +141,7 @@ public class RphProcessor : SharedData
             else
                 sentOverflowMessage = await eventArgs.Interaction.EditOriginalResponseAsync(overflowBuilder);
                  
-            Program.Cache.SaveProcess(sentOverflowMessage.Id, new CustomTypes.CacheTypes.ProcessCache(cache.Interaction, cache.OriginalMessage, this));
+            Program.Cache.SaveProcess(sentOverflowMessage.Id, new ProcessCache(cache.Interaction, cache.OriginalMessage, this));
         }
         else
         {
