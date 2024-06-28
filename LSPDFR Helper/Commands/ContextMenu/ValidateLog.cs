@@ -98,7 +98,7 @@ public class ValidateLog
                 //TODO: ProxyCheck.Run(rphProcess.log, Program.Cache.GetUser(targetMessage.Author!.Id.ToString()), targetMessage);
                 Program.Cache.SaveProcess(targetMessage.Id, new ProcessCache(targetMessage.Interaction, targetMessage, rphProcessor));
             }
-            await rphProcessor.SendBaseInfoMessage(targetMessage, ctx);
+            await rphProcessor.SendQuickInfoMessage(targetMessage, ctx);
             return;
         }
     }

@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
@@ -18,10 +19,9 @@ public static class CompInteraction
         CustomIds.SelectErrorValueToEdit,
         CustomIds.SelectErrorValueToFinish,
         CustomIds.RphGetQuickInfo,
-        CustomIds.RphGetDetailedInfo,
-        CustomIds.RphGetAdvancedInfo,
-        CustomIds.RphQuickSendToUser,
-        CustomIds.RphDetailedSendToUser,
+        CustomIds.RphGetErrorInfo,
+        CustomIds.RphGetPluginInfo,
+        CustomIds.RphSendToUser,
         CustomIds.ElsGetQuickInfo,
         CustomIds.ElsGetDetailedInfo,
         CustomIds.ElsQuickSendToUser,
@@ -42,10 +42,71 @@ public static class CompInteraction
 
         if ( CacheEventIds.Any(eventId => eventId == eventArgs.Id) )
         {//Handle cached interaction events here.
-            //TODO: var cache = Program.Cache.GetProcess(eventArgs.Message.Id);
+            var cache = Program.Cache.GetProcess(eventArgs.Message.Id);
+            
+            //===//===//===////===//===//===////===//RPH Buttons//===////===//===//===////===//===//===//
+            if (eventArgs.Id is CustomIds.RphGetQuickInfo) 
+                await cache.RphProcessor.SendQuickInfoMessage(eventArgs: eventArgs);
+                
+            if (eventArgs.Id is CustomIds.RphGetErrorInfo) 
+                await cache.RphProcessor.UpdateToErrorMessage(eventArgs);
+                
+            if (eventArgs.Id is CustomIds.RphGetPluginInfo) 
+                await cache.RphProcessor.UpdateToPluginMessage(eventArgs);
+                
+            if (eventArgs.Id is CustomIds.RphSendToUser) 
+                await cache.RphProcessor.SendMessageToUser(eventArgs);
+            
+            //===//===//===////===//===//===////===//Remove Errors//===////===//===//===////===//===//===//
+            if (eventArgs.Id.Equals(CustomIds.SelectIdForRemoval))
+            {
+                // Get the current SelectComponent from the Message that the user interacted with
+                var selectComp = (DiscordSelectComponent) eventArgs.Message.Components
+                    .FirstOrDefault(compRow => compRow.Components.Any(comp => comp.CustomId == CustomIds.SelectIdForRemoval))
+                    ?.Components!.FirstOrDefault(comp => comp.CustomId == CustomIds.SelectIdForRemoval);
+                // Get a list of all components (like buttons) except for the SelectComponent so we can rebuild the list of components later after modifying the SelectComponent
+                var allComponentsExceptSelect = eventArgs.Message.Components
+                    .FirstOrDefault(compRow => compRow.Components.All(comp => comp.CustomId != CustomIds.SelectIdForRemoval))?.Components;
+                    
+                var options = new List<DiscordSelectComponentOption>(selectComp!.Options);
+                var optionsToRemove = selectComp.Options.Where(option => int.Parse(option.Value) == int.Parse(eventArgs.Values.FirstOrDefault()!));
+                // Remove the selected option(s) from the list of options in the SelectComponent. This doesn't affect the list of troubleshooting steps in the embed yet.
+                foreach (var option in optionsToRemove)
+                    options.Remove(option);
+
+                var db = new DiscordInteractionResponseBuilder();
+                // If there are any options left after removing the selected error, rebuild the SelectComponent and add it to the response.
+                if (options.Count > 0)
+                    db.AddComponents(
+                        new DiscordSelectComponent(
+                            customId: CustomIds.SelectIdForRemoval,
+                            placeholder: "Remove Error",
+                            options: options
+                        )
+                    );
+                var compRow = new List<DiscordComponent>();
+                foreach (var comp in allComponentsExceptSelect!)
+                    compRow.Add(comp);
+                db.AddComponents(compRow);
+                    
+                var embed = new DiscordEmbedBuilder(eventArgs.Message.Embeds.FirstOrDefault()!);
+                // Remove the error field with the selected id
+                for (var i = embed.Fields.Count - 1; i > 0; i--)
+                {
+                    var fieldName = embed.Fields[i].Name;
+                    // If the field name contains "ID:" followed by a number, extract the number to compare it with the selected id (for removal) in eventArgs.Values
+                    if (new Regex(@"ID:\s?\d+\D+").IsMatch(fieldName)) 
+                    {
+                        var idString = fieldName.Split("ID:")[1].Trim(); // ["__```SEVERE ", " 123``` Troubleshooting Steps:__"]
+                        idString = Regex.Split(idString, @"\D")[0]; // ["123", "``` Troubleshooting Steps:__"]
+                        if (int.Parse(idString) == int.Parse(eventArgs.Values.FirstOrDefault()!))
+                            embed.RemoveFieldAt(i);
+                    }
+                }
+                await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage, db.AddEmbed(embed));
+            }
             
             //===//===//===////===//===//===////===//Editor Dropdowns//===////===//===//===////===//===//===//
-            
             if (eventArgs.Id is CustomIds.SelectPluginValueToEdit or CustomIds.SelectPluginValueToFinish)
             {
                 var usercache = Program.Cache.GetUserAction(eventArgs.User.Id, CustomIds.SelectPluginValueToEdit);

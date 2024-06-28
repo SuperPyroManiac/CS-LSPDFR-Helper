@@ -179,7 +179,7 @@ public class ComponentInteraction
                     }
                 }
                 
-                //===//===//===////===//===//===////===//Remove errors from bot response before sending it to the public user//===////===//===//===////===//===//===//
+                //===//===//===////===//===//===////===//Remove Errors//===////===//===//===////===//===//===//
                 if (eventArgs.Id.Equals(SelectIdForRemoval))
                 {
                     // Get the current SelectComponent from the Message that the user interacted with

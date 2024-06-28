@@ -23,10 +23,9 @@ public record CustomIds()
 
     // RPH log analysis events
     public const string RphGetQuickInfo = "RphGetQuickInfo";
-    public const string RphGetDetailedInfo = "RphGetDetailedInfo";
-    public const string RphGetAdvancedInfo = "RphGetAdvancedInfo";
-    public const string RphQuickSendToUser = "RphQuickInfoSendToUser";
-    public const string RphDetailedSendToUser = "RphDetailedSendToUser";
+    public const string RphGetErrorInfo = "RphGetDetailedInfo";
+    public const string RphGetPluginInfo = "RphGetAdvancedInfo";
+    public const string RphSendToUser = "RphQuickInfoSendToUser";
 
     // ELS log analysis events
     public const string ElsGetQuickInfo = "ElsGetQuickInfo";
