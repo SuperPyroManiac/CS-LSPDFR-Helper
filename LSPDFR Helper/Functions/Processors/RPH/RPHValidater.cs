@@ -32,28 +32,27 @@ public static class RPHValidater
             return log;
         }
         
-        var rphMatch = new Regex(@"Loading plugin .+\wlugins(?:\\|/)(.+).dll.*", RegexOptions.Multiline).Matches(rawLog);
-        foreach ( Match match in rphMatch )
-        {
-            var existingPlug = Program.Cache.GetPlugin(match.Groups[1].ToString());
-            if ( existingPlug != null ) if (unsorted.All(x => x.Name != match.Groups[1].ToString())) unsorted.Add(Program.Cache.GetPlugin(match.Groups[1].ToString()));
-            if (existingPlug == null && log.Missing.All(x => x.Name != match.Groups[1].ToString()))
-                log.Missing.Add(new Plugin {Name = match.Groups[1].ToString()});
-        }
-        
-        var lspdfrMatch = new Regex(@"(?<!CalloutManager\.cs:line 738)\n.+LSPD First Response: (?!無法載入檔案或組件|\[)(.+), Version=(.+), Culture=\w+, PublicKeyToken=\w+", RegexOptions.Multiline).Matches(rawLog);
+        var lspdfrMatch = new Regex(@"(?:(?<!CalloutManager\.cs:line 738)\n.+LSPD First Response: (?!無法載入檔案或組件|\[|Creating)(.+), Version=(.+), Culture=\w+, PublicKeyToken=\w+)|(?:Loading plugin .+\wlugins(?:\\|/)(.+).dll.*)", RegexOptions.Multiline).Matches(rawLog);
         foreach ( Match match in lspdfrMatch )
         {
-            var existingPlug = Program.Cache.GetPlugin(match.Groups[1].ToString());
-            if ( existingPlug != null )
+            if ( match.Groups[1].Length > 0 )
             {
-                var newPlug = existingPlug;
-                newPlug.Version = match.Groups[2].ToString();
-                if (unsorted.All(x => x.Name != newPlug.Name)) unsorted.Add(newPlug);
+                var existingPlug = Program.Cache.GetPlugin(match.Groups[1].ToString());
+                if ( existingPlug != null )
+                {
+                    var newPlug = existingPlug;
+                    newPlug.Version = match.Groups[2].ToString();
+                    if (unsorted.All(x => x.Name != newPlug.Name)) unsorted.Add(newPlug);
+                    continue;
+                }
+                if (log.Missing.All(x => x.Name != match.Groups[1].ToString()))
+                    log.Missing.Add(new Plugin {Name = match.Groups[1].ToString()});
                 continue;
             }
-            if (log.Missing.All(x => x.Name != match.Groups[1].ToString()))
-                log.Missing.Add(new Plugin {Name = match.Groups[1].ToString()});
+            var existingRphPlug = Program.Cache.GetPlugin(match.Groups[3].ToString());
+            if ( existingRphPlug != null ) if (unsorted.All(x => x.Name != match.Groups[3].ToString())) unsorted.Add(Program.Cache.GetPlugin(match.Groups[3].ToString()));
+            if (existingRphPlug == null && log.Missing.All(x => x.Name != match.Groups[3].ToString()))
+                log.Missing.Add(new Plugin {Name = match.Groups[3].ToString(), PluginType = PluginType.RPH});
         }
 
         foreach ( var logPlugin in unsorted )
