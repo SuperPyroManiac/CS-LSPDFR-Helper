@@ -32,8 +32,8 @@ public static class RPHValidater
             return log;
         }
         
-        var lspdfrMatch = new Regex(@"(?:(?<!CalloutManager\.cs:line 738)\n.+LSPD First Response: (?!無法載入檔案或組件|\[|Creating)(.+), Version=(.+), Culture=\w+, PublicKeyToken=\w+)|(?:Loading plugin .+\wlugins(?:\\|/)(.+).dll.*)", RegexOptions.Multiline).Matches(rawLog);
-        foreach ( Match match in lspdfrMatch )
+        var allMatch = new Regex(@"(?:(?<!CalloutManager\.cs:line 738)\n.+LSPD First Response: (?!無法載入檔案或組件|\[|Creating|CalloutInterface: \[ERROR\] there was an error)\W?(.+), Version=(.+), Culture=\w+, PublicKeyToken=\w+)|(?:Loading plugin .+\wlugins(?:\\|/)(.+).dll.*)", RegexOptions.Multiline).Matches(rawLog);
+        foreach ( Match match in allMatch )
         {
             if ( match.Groups[1].Length > 0 )
             {
