@@ -310,7 +310,7 @@ internal class RPHProcess : SharedLogInfo
         newMessage.AddEmbeds(newEmbList);
         newMessage.WithReply(log.MsgId, true);
         newMessage.AddComponents(new DiscordButtonComponent(DiscordButtonStyle.Secondary, ComponentInteraction.SendFeedback,
-            "Send Feedback", false, new DiscordComponentEmoji("📨")));
+            "Send Feedback", true, new DiscordComponentEmoji("📨")));
         await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage,
             new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Sent!")));
         await eventArgs.Interaction.DeleteOriginalResponseAsync();

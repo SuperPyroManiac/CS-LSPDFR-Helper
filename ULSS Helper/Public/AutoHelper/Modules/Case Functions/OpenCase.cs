@@ -29,9 +29,9 @@ public class OpenCase
         caseMsg.AddComponents(
             new DiscordButtonComponent(DiscordButtonStyle.Success, ComponentInteraction.MarkSolved, "Mark Solved", false,
                 new DiscordComponentEmoji("👍")),
-            new DiscordButtonComponent(DiscordButtonStyle.Danger, ComponentInteraction.RequestHelp, "Request Help", false,
+            new DiscordButtonComponent(DiscordButtonStyle.Danger, ComponentInteraction.RequestHelp, "Request Help", true,
                 new DiscordComponentEmoji("❓")),
-            new DiscordButtonComponent(DiscordButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", false,
+            new DiscordButtonComponent(DiscordButtonStyle.Secondary, ComponentInteraction.SendFeedback, "Send Feedback", true,
                 new DiscordComponentEmoji("📨")));
         var tmpuser = await Program.GetMember(ctx.User.Id.ToString());
         await supportthread.AddThreadMemberAsync(tmpuser);

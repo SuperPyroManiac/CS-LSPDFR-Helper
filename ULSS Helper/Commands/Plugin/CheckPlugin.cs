@@ -49,7 +49,7 @@ public class CheckPlugin
 			}
 		};
 		response.AddComponents([
-			new DiscordButtonComponent(DiscordButtonStyle.Secondary, "SendFeedback", "Send Feedback", false,
+			new DiscordButtonComponent(DiscordButtonStyle.Secondary, "SendFeedback", "Send Feedback", true,
 				new DiscordComponentEmoji("📨"))
 		]);
 		
