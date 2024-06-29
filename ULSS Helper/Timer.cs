@@ -33,7 +33,7 @@ internal class Timer
         // Program.Cache.UpdateCases(Database.LoadCases());
         // Program.Cache.UpdateUsers(Database.LoadUsers());
         
-        //Verify Cases & Users
+        //Verify Cases & Users - Yes
         await Task.Run(CheckUsers.Validate);
         await Task.Run(CheckCases.Validate);
     }
