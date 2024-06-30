@@ -3,7 +3,6 @@ using LSPDFR_Helper.CustomTypes.LogTypes;
 
 namespace LSPDFR_Helper.Functions.Processors.ELS;
 
-// ReSharper disable InconsistentNaming
 public class ELSValidater
 {
     public static async Task<ELSLog> Run(string attachmentUrl)
