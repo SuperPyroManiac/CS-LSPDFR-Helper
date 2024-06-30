@@ -191,7 +191,7 @@ public class RPHProcess : SharedLogInfo
         {
             if (embed.Fields.Count == 20)
             {
-                embed.AddField($"___```Too Much``` Overflow:___",
+                embed.AddField("___```Too Much``` Overflow:___",
                     ">>> You have more errors than we can show!\r\nPlease fix what is shown, and upload a new log!");
                 break;
             }

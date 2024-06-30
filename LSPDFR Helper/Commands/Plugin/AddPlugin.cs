@@ -28,7 +28,7 @@ public class AddPlugin
             var err = new DiscordInteractionResponseBuilder();
             err.IsEphemeral = true;
             await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
-                err.AddEmbed(BasicEmbeds.Error("__This plugin already exists!__\r\n> Consider using /EditPlugin", true)));
+                err.AddEmbed(BasicEmbeds.Error("__This plugin already exists!__\r\n> Consider using /EditPlugin")));
             return;
         }
 
@@ -68,7 +68,7 @@ public class AddPlugin
             $"**Notes:**\r\n" +
             $"```{plugin.Description}```\r\n" +
             $"**Type:** {plugin.PluginType}\r\n" +
-            $"**State:** {plugin.State}", true);
+            $"**State:** {plugin.State}");
         embed.Footer = new DiscordEmbedBuilder.EmbedFooter
         {
             Text = $"Current Editor: {ctx.Interaction.User.Username}",

@@ -32,27 +32,27 @@ public static class RPHValidater
             return log;
         }
 
-        var allMatch = new Regex(@"(?:(?<!CalloutManager\.cs:line 738)\n.+LSPD First Response: (?!無法載入檔案或組件|\[|Creating|CalloutInterface: \[ERROR\] there was an error)\W?(.+), Version=(.+), Culture=\w+, PublicKeyToken=\w+)|(?:Loading plugin .+\wlugins(?:\\|/)(.+).dll.*)", RegexOptions.Multiline).Matches(rawLog);
+        var allMatch = new Regex(@"(?:(?<!CalloutManager\.cs:line 738)\n.+LSPD First Response: (?!無法載入檔案或組件|\[|Creating|CalloutInterface: \[ERROR\] there was an error| )\W?(.+), Version=(.+), Culture=\w+, PublicKeyToken=\w+)|(?:Loading plugin .+\wlugins(?:\\|/)(.+).dll.*)", RegexOptions.Multiline).Matches(rawLog);
         foreach ( Match match in allMatch )
         {
-            if ( match.Groups[1].Length > 0 )
+            if ( match.Groups[1].Value.Length > 0 )
             {
-                var existingPlug = Program.Cache.GetPlugin(match.Groups[1].ToString());
+                var existingPlug = Program.Cache.GetPlugin(match.Groups[1].Value);
                 if ( existingPlug != null )
                 {
                     var newPlug = existingPlug;
-                    newPlug.Version = match.Groups[2].ToString();
+                    newPlug.Version = match.Groups[2].Value;
                     if ( unsorted.All(x => x.Name != newPlug.Name) ) unsorted.Add(newPlug);
                     continue;
                 }
-                if ( log.Missing.All(x => x.Name != match.Groups[1].ToString()) )
-                    log.Missing.Add(new Plugin { Name = match.Groups[1].ToString() });
+                if ( log.Missing.All(x => x.Name != match.Groups[1].Value) )
+                    log.Missing.Add(new Plugin { Name = match.Groups[1].Value, Version = match.Groups[2].Value});
                 continue;
             }
             //RPH Plugins
-            var existingRphPlug = Program.Cache.GetPlugin(match.Groups[3].ToString());
-            if ( existingRphPlug != null ) if ( unsorted.All(x => x.Name != match.Groups[3].ToString()) ) unsorted.Add(Program.Cache.GetPlugin(match.Groups[3].ToString()));
-            if ( existingRphPlug == null && log.Missing.All(x => x.Name != match.Groups[3].ToString()) ) log.Missing.Add(new Plugin { Name = match.Groups[3].ToString(), PluginType = PluginType.RPH });
+            var existingRphPlug = Program.Cache.GetPlugin(match.Groups[3].Value);
+            if ( existingRphPlug != null ) if ( unsorted.All(x => x.Name != match.Groups[3].Value) ) unsorted.Add(Program.Cache.GetPlugin(match.Groups[3].Value));
+            if ( existingRphPlug == null && log.Missing.All(x => x.Name != match.Groups[3].Value) ) log.Missing.Add(new Plugin { Name = match.Groups[3].Value, PluginType = PluginType.RPH, Version = "RPH"});
         }
 
         foreach ( var logPlugin in unsorted )
@@ -116,7 +116,7 @@ public static class RPHValidater
         log.Errors = log.Errors.OrderBy(x => x.Level).ToList();
 
         log.ValidaterCompletedAt = DateTime.Now;
-        log.ElapsedTime = DateTime.Now.Subtract(log.ValidaterStartedAt).TotalMilliseconds.ToString();
+        log.ElapsedTime = DateTime.Now.Subtract(log.ValidaterStartedAt).Milliseconds.ToString();
 
         return log;
     }

@@ -1,7 +1,6 @@
 using DSharpPlus.Commands;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;

@@ -1,10 +1,10 @@
 using System.Text;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using FuzzySharp;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 using ULSS_Helper.Services;
-using FuzzySharp;
 
 namespace ULSS_Helper.Public.AutoHelper.Modules.Process_Files;
 public class ImageProcess
@@ -28,7 +28,7 @@ public class ImageProcess
             if (string.IsNullOrEmpty(imageText))
             {
                 Console.WriteLine("2");
-                logEmbedContent.Append($"*No text recognized in uploaded image*\r\n");
+                logEmbedContent.Append("*No text recognized in uploaded image*\r\n");
                 var logNoTextEmbed = BasicEmbeds.Info(logEmbedContent.ToString());
                 await Logging.SendPubLog(logNoTextEmbed);
                 return;
@@ -78,7 +78,7 @@ public class ImageProcess
             }
             else
             {
-                logEmbedContent.Append($"Matched with error IDs: None");
+                logEmbedContent.Append("Matched with error IDs: None");
             }
             
             var logEmbed = BasicEmbeds.Info(logEmbedContent.ToString(), true);

@@ -425,7 +425,7 @@ public class ComponentInteraction
             {
                 DiscordInteractionResponseBuilder modal = new();
                 modal.WithCustomId(ModalSubmit.RequestHelp);
-                modal.WithTitle($"Requesting help!");
+                modal.WithTitle("Requesting help!");
                 modal.AddComponents(new DiscordTextInputComponent(
                     label: "Explain your issue in detail:",
                     customId: "issueDsc",

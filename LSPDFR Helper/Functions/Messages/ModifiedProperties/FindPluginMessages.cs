@@ -3,7 +3,6 @@ using LSPDFR_Helper.CustomTypes.Enums;
 using LSPDFR_Helper.CustomTypes.MainTypes;
 using LSPDFR_Helper.CustomTypes.SpecialTypes;
 
-
 namespace LSPDFR_Helper.Functions.Messages.ModifiedProperties;
 
 public abstract class FindPluginMessages : FindBaseMessages
@@ -46,7 +45,7 @@ public abstract class FindPluginMessages : FindBaseMessages
         switch (operation)
         {
             case DbOperation.CREATE:
-                embed = BasicEmbeds.Info($"__Added new plugin: {newPlugin.Name}__\r\n>>> **Type:** {newPlugin.PluginType}\r\n**State:** {newPlugin.State}", true);
+                embed = BasicEmbeds.Info($"__Added new plugin: {newPlugin.Name}__\r\n>>> **Type:** {newPlugin.PluginType}\r\n**State:** {newPlugin.State}");
                 break;
             
             case DbOperation.UPDATE:
@@ -71,11 +70,11 @@ public abstract class FindPluginMessages : FindBaseMessages
                 }
                 catch (Exception exception)
                 {
-                    embed = BasicEmbeds.Info(title + pluginPropsList, true);
+                    embed = BasicEmbeds.Info(title + pluginPropsList);
                     Console.WriteLine(value: exception);
                     break;
                 }
-                embed = BasicEmbeds.Info(text, true);
+                embed = BasicEmbeds.Info(text);
                 embed.Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{ChangesCount} {(ChangesCount == 1 ? "property has" : "properties have")} been modified."

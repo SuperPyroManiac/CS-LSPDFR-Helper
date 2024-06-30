@@ -72,7 +72,7 @@ public static class ModalSubmit
                         $"**Notes:**\r\n" +
                         $"```{plugin.Description}```\r\n" +
                         $"**Type:** {plugin.PluginType}\r\n" +
-                        $"**State:** {plugin.State}", true);
+                        $"**State:** {plugin.State}");
                     embed.Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
                         Text = $"Current Editor: {e.Interaction.User.Username}",
@@ -94,7 +94,7 @@ public static class ModalSubmit
                         if (DbManager.GetErrors().Any(error => error.Pattern == err.Pattern))
                         {
                             await e.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
-                                new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Error("This error already exists!\r\nConsider using /EditError", true)));
+                                new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Error("This error already exists!\r\nConsider using /EditError")));
                             return;
                         }
                         err.Id = DbManager.AddError(err);
@@ -128,7 +128,7 @@ public static class ModalSubmit
                         $"```{err.Description}```\r\n" +
                         $"**String Match:**\r\n" +
                         $"```{err.StringMatch}```\r\n" +
-                        $"**Error Level: {err.Level}**", true);
+                        $"**Error Level: {err.Level}**");
                     embed.Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
                         Text = $"Current Editor: {e.Interaction.User.Username}",
@@ -158,7 +158,7 @@ public static class ModalSubmit
                         + $" **Username: **{user.Username}\r\n"
                         + $" **Is Editor: **{user.BotEditor}\r\n"
                         + $" **Is Bot Admin: **{user.BotAdmin}\r\n"
-                        + $" **Is Blacklisted: **{user.Blocked}\r\n", true);
+                        + $" **Is Blacklisted: **{user.Blocked}\r\n");
                 
                     await e.Interaction.CreateResponseAsync(
                         DiscordInteractionResponseType.ChannelMessageWithSource,

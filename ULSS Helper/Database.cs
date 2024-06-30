@@ -1,7 +1,7 @@
 ﻿using System.Data;
-using MySqlConnector;
 using System.Text.RegularExpressions;
 using Dapper;
+using MySqlConnector;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
 
@@ -18,7 +18,7 @@ public class Database
             try
             {
                 using IDbConnection cnn = new MySqlConnection(ConnStr);
-                var output = cnn.Query<string>($"select Value from GlobalValues where Name = 'AHStatus'");
+                var output = cnn.Query<string>("select Value from GlobalValues where Name = 'AHStatus'");
                 cnn.Close();
                 return output.First() == "1";
             }

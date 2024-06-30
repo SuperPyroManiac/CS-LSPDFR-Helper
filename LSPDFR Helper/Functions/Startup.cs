@@ -1,5 +1,6 @@
 using DSharpPlus.Entities;
 using LSPDFR_Helper.Functions.Messages;
+using LSPDFR_Helper.Functions.Verifications;
 
 namespace LSPDFR_Helper.Functions;
 
@@ -16,8 +17,8 @@ public class Startup
     private static async Task Verification()
     {
         //User Verifications
-        _addedCnt = await Verifications.Users.Missing();
-        _changedCnt = await Verifications.Users.Usernames();
+        _addedCnt = await Users.Missing();
+        _changedCnt = await Users.Usernames();
     }
 
     private static Task PrepCaches()
@@ -53,7 +54,7 @@ public class Startup
         if (_changedCnt > 0)
             msgText += $"> *{_changedCnt} Username changes, updated the DB!*\r\n";
         
-        var embed = BasicEmbeds.Success(msgText, true);
+        var embed = BasicEmbeds.Success(msgText);
         var ch = await Functions.GetGuild().GetChannelAsync(Program.Settings.BotLogChId);
         await new DiscordMessageBuilder().AddEmbed(embed).SendAsync(ch);
     }

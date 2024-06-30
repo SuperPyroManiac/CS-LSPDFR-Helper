@@ -1,6 +1,6 @@
 namespace LSPDFR_Helper.EventManagers;
 
-public record CustomIds()
+public record CustomIds
 {
     // Msc
     public const string SelectAttachmentForAnalysis = "SelectAttachmentForAnalysis";

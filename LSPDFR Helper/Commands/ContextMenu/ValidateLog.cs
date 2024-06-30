@@ -99,7 +99,6 @@ public class ValidateLog
                 Program.Cache.SaveProcess(targetMessage.Id, new ProcessCache(targetMessage.Interaction, targetMessage, rphProcessor));
             }
             await rphProcessor.SendQuickInfoMessage(targetMessage, ctx);
-            return;
         }
     }
 }

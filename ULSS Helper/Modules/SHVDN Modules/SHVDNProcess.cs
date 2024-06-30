@@ -1,7 +1,6 @@
 using DSharpPlus.Commands;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-
 using ULSS_Helper.Events;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
@@ -15,7 +14,7 @@ public class SHVDNProcess : SharedLogInfo
     private int ProblemCounter(SHVDNLog log)
     {
         if (log == null) return 0;
-        else return log.FrozenScripts.Count + log.ScriptDepends.Count;
+        return log.FrozenScripts.Count + log.ScriptDepends.Count;
     }
     private DiscordEmbedBuilder GetBaseLogInfoEmbed(string description) 
     {

@@ -29,7 +29,7 @@ public class RphProcessor : SharedData
         if (Program.Cache.GetPlugin("LSPDFR").Version.Equals(Log.LSPDFRVersion)) _lspdfrVer = "\u2713";
         if (Program.Cache.GetPlugin("RagePluginHook").Version.Equals(Log.RPHVersion)) _rphVer = "\u2713";
         return BasicEmbeds.Ts(description + BasicEmbeds.AddBlanks(20),
-            new DiscordEmbedBuilder.EmbedFooter() { Text = $"GTA: {_gtaVer} - RPH: {_lspdfrVer} - LSPDFR: {_rphVer} - Notes: {Log.Errors.Count} - Try /CheckPlugin" });
+            new DiscordEmbedBuilder.EmbedFooter { Text = $"GTA: {_gtaVer} - RPH: {_lspdfrVer} - LSPDFR: {_rphVer} - Notes: {Log.Errors.Count} - Try /CheckPlugin" });
     }
     
     private DiscordEmbedBuilder AddCommonFields(DiscordEmbedBuilder embed)
@@ -61,7 +61,7 @@ public class RphProcessor : SharedData
             ? $"[RagePluginHook.log]({Log.DownloadLink})" 
             : "RagePluginHook.log";
         var embed = BasicEmbeds.Warning($"__Unknown Plugin / Version!__{BasicEmbeds.AddBlanks(35)}\r\n\r\n>>> " +
-                                        $"There was a {rphLogLink} uploaded that has plugin versions that are unknown to the bot's DB!\r\n\r\n", true);
+                                        $"There was a {rphLogLink} uploaded that has plugin versions that are unknown to the bot's DB!\r\n\r\n");
         
         var missingDashListStr = "- " + string.Join("\n- ", Log.Missing.Select(plugin => $"{plugin?.Name} ({plugin?.Version})").ToList()) + "\n";
         if (missingDashListStr.Length is > 3 and < 1024) embed.AddField(":bangbang:  **Plugins not recognized:**", missingDashListStr);
@@ -178,7 +178,7 @@ public class RphProcessor : SharedData
         {
             if (embed.Fields.Count == 20)
             {
-                embed.AddField($"___```Too Much``` Overflow:___",
+                embed.AddField("___```Too Much``` Overflow:___",
                     ">>> You have more errors than we can show!\r\nPlease fix what is shown, and upload a new log!");
                 break;
             }

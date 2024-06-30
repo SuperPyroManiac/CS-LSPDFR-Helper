@@ -45,6 +45,6 @@ public class CheckPlugin
 			$"__User checked a plugin!__{BasicEmbeds.AddBlanks(25)}\r\n"
 			+ $">>> Sender: {ctx.Member!.Mention} ({ctx.Member.Username})\r\n"
 			+ $"Channel: <#{ctx.Channel.Id}>\r\n"
-			+ $"Plugin: {name}\r\n", true));
+			+ $"Plugin: {name}\r\n"));
 	}
 }

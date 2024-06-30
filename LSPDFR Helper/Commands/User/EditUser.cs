@@ -21,7 +21,7 @@ public class EditUser
         if (Program.Cache.GetUsers().All(x => x.Id.ToString() != user.Id.ToString()))
         {
             await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
-                bd.AddEmbed(BasicEmbeds.Error("__User is not in the DB!__", true)));
+                bd.AddEmbed(BasicEmbeds.Error("__User is not in the DB!__")));
             return;
         }
         

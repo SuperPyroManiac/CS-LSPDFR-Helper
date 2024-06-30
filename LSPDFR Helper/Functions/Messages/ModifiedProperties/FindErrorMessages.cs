@@ -39,7 +39,7 @@ public abstract class FindErrorMessages : FindBaseMessages
         switch (operation)
         {
             case DbOperation.CREATE:
-                embed = BasicEmbeds.Info($"__Added a new error with ID {newError.Id}__\r\n>>> **String Match:** `{newError.StringMatch}`\r\n**Level:** `{newError.Level}`", true);
+                embed = BasicEmbeds.Info($"__Added a new error with ID {newError.Id}__\r\n>>> **String Match:** `{newError.StringMatch}`\r\n**Level:** `{newError.Level}`");
                 break;
             
             case DbOperation.UPDATE:
@@ -60,12 +60,12 @@ public abstract class FindErrorMessages : FindBaseMessages
                 }
                 catch (Exception exception)
                 {
-                    embed = BasicEmbeds.Info(title + errorPropsList, true);
+                    embed = BasicEmbeds.Info(title + errorPropsList);
                     Console.WriteLine(exception);
                     break;
                 }
                 
-                embed = BasicEmbeds.Info(text, true);
+                embed = BasicEmbeds.Info(text);
                 embed.Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{ChangesCount} {(ChangesCount == 1 ? "property has" : "properties have")} been modified."

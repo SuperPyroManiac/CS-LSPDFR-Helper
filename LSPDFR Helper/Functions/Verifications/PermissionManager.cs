@@ -10,14 +10,14 @@ public static class PermissionManager
     {
         await ctx.Interaction.DeferAsync(true);
         var responseBuilder = new DiscordInteractionResponseBuilder { IsEphemeral = true };
-        await ctx.EditResponseAsync(responseBuilder.AddEmbed(BasicEmbeds.Error($"__Permission Denied!__\r\n>>> You cannot use: `{ctx.Command.Name}`", true)));
+        await ctx.EditResponseAsync(responseBuilder.AddEmbed(BasicEmbeds.Error($"__Permission Denied!__\r\n>>> You cannot use: `{ctx.Command.Name}`")));
     }
     
     private static async Task SendBlacklistPermissionError(SlashCommandContext ctx)
     {
         await ctx.Interaction.DeferAsync(true);
         var responseBuilder = new DiscordInteractionResponseBuilder { IsEphemeral = true };
-        await ctx.EditResponseAsync(responseBuilder.AddEmbed(BasicEmbeds.Error($"__You are blacklisted!__\r\n>>> Contact server staff in <#{Program.Settings.StaffContactChId}> if you think this is an error!", true)));
+        await ctx.EditResponseAsync(responseBuilder.AddEmbed(BasicEmbeds.Error($"__You are blacklisted!__\r\n>>> Contact server staff in <#{Program.Settings.StaffContactChId}> if you think this is an error!")));
     }
     
     private static async Task SendNoAdvancedPermissionError(SlashCommandContext ctx)
@@ -25,7 +25,7 @@ public static class PermissionManager
         await Logging.SendLog(
             ctx.Channel.Id, 
             ctx.User.Id,
-            BasicEmbeds.Warning($"__TS attempted to use an advanced command!__\r\n>>> Command name: {ctx.Command.Name}", true)
+            BasicEmbeds.Warning($"__TS attempted to use an advanced command!__\r\n>>> Command name: {ctx.Command.Name}")
         );
     }
     

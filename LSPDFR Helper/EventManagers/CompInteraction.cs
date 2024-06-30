@@ -114,7 +114,7 @@ public static class CompInteraction
                 {
                     var bd = new DiscordInteractionResponseBuilder();
                     bd.IsEphemeral = true;
-                    bd.AddEmbed(BasicEmbeds.Error("There was a problem!\r\n>>> You are not the original editor!", true));
+                    bd.AddEmbed(BasicEmbeds.Error("There was a problem!\r\n>>> You are not the original editor!"));
                     await eventArgs.Interaction.CreateResponseAsync(
                         DiscordInteractionResponseType.ChannelMessageWithSource, bd);
                     return;
@@ -178,7 +178,7 @@ public static class CompInteraction
                 {
                     var bd = new DiscordInteractionResponseBuilder();
                     bd.IsEphemeral = true;
-                    bd.AddEmbed(BasicEmbeds.Error("There was a problem!\r\n>>> You are not the original editor, or the bot reset during this editor session!", true));
+                    bd.AddEmbed(BasicEmbeds.Error("There was a problem!\r\n>>> You are not the original editor, or the bot reset during this editor session!"));
                     await eventArgs.Interaction.CreateResponseAsync(
                         DiscordInteractionResponseType.ChannelMessageWithSource, bd);
                     return;

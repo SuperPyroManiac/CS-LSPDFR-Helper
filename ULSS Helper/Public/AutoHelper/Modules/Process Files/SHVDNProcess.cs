@@ -12,7 +12,7 @@ public class SHVDNProcess
     public static int ProblemCounter(SHVDNLog log)
     {
         if (log == null) return 0;
-        else return log.FrozenScripts.Count + log.ScriptDepends.Count;
+        return log.FrozenScripts.Count + log.ScriptDepends.Count;
     }
     public static async Task ProcessLog(DiscordAttachment attach, MessageCreatedEventArgs ctx)
     {

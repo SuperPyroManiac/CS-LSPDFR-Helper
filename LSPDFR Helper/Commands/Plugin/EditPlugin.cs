@@ -66,7 +66,7 @@ public class EditPlugin
             $"**Notes:**\r\n" +
             $"```{plugin.Description}```\r\n" +
             $"**Type:** {plugin.PluginType}\r\n" +
-            $"**State:** {plugin.State}", true);
+            $"**State:** {plugin.State}");
         embed.Footer = new DiscordEmbedBuilder.EmbedFooter
         {
             Text = $"Current Editor: {ctx.Interaction.User.Username}",

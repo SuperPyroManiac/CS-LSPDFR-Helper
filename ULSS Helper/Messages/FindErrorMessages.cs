@@ -19,7 +19,7 @@ public class FindErrorMessages : FindBaseMessages
         if (level != null)
             searchParamsList += $"- **Level:** {level}\r\n";
         if (exactMatch)
-            searchParamsList += $"- **Strict search:** enabled\r\n";
+            searchParamsList += "- **Strict search:** enabled\r\n";
 
         return searchParamsList;
     }

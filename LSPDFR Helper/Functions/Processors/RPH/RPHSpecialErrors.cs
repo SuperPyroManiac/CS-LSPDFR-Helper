@@ -25,13 +25,13 @@ public static class RPHSpecialErrors
         
         //===//===//===////===//===//===////===//Combined Error Lists//===////===//===//===////===//===//===//
         var err1 = Program.Cache.GetError(1);
-        foreach (Match match in new Regex(@err1.Pattern, RegexOptions.Multiline).Matches(wholeLog))
+        foreach (Match match in new Regex(err1.Pattern, RegexOptions.Multiline).Matches(wholeLog))
         {
             if (err1.PluginList.Any(x => x.Name.Equals(match.Groups[2].Value))) continue;
             if (log.Current.Any(x => x.Name.Equals(match.Groups[2].Value))) continue;
             if (log.Outdated.Any(x => x.Name.Equals(match.Groups[2].Value))) continue;
             var errPlug = Program.Cache.GetPlugin(match.Groups[2].Value);
-            if ( errPlug == null ) errPlug = new Plugin() { Name = match.Groups[2].Value };
+            if ( errPlug == null ) errPlug = new Plugin { Name = match.Groups[2].Value };
             err1.PluginList.Add(errPlug);
         }
         if (err1.PluginList.Count > 0)

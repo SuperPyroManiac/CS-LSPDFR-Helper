@@ -40,7 +40,7 @@ public class RemovePlugin
                                         $"**Notes:**\r\n" +
                                         $"```{plugin.Description}```\r\n" +
                                         $"**Type:** {plugin.PluginType}\r\n" +
-                                        $"**State:** {plugin.State}", true));
+                                        $"**State:** {plugin.State}"));
                 DbManager.DeletePlugin(plugin);
                 Program.Cache.UpdatePlugins(DbManager.GetPlugins());
                 return;

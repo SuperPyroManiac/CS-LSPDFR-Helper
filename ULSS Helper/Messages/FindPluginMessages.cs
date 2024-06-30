@@ -19,7 +19,7 @@ public class FindPluginMessages : FindBaseMessages
         if (plugDescription != null)
             searchParamsList += $"- **Notes:** \r\n> {plugDescription.Replace("\n", "\n> ")}\r\n";
         if (exactMatch)
-            searchParamsList += $"- **Strict search:** enabled\r\n";
+            searchParamsList += "- **Strict search:** enabled\r\n";
 
         return searchParamsList;
     }

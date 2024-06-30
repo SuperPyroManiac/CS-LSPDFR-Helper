@@ -52,7 +52,7 @@ public class EditError
             $"```{error.Description}```\r\n" +
             $"**String Match:**\r\n" +
             $"```{error.StringMatch}```\r\n" +
-            $"**Error Level: {error.Level}**", true);
+            $"**Error Level: {error.Level}**");
         embed.Footer = new DiscordEmbedBuilder.EmbedFooter
         {
             Text = $"Current Editor: {ctx.Interaction.User.Username}",

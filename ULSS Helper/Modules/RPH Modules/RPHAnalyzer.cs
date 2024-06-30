@@ -1,5 +1,5 @@
-using System.Globalization;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using ULSS_Helper.Messages;
 using ULSS_Helper.Objects;
@@ -232,7 +232,8 @@ public class RPHAnalyzer
             {
                 return -1; // version1 is smaller
             }
-            else if (part1 > part2)
+
+            if (part1 > part2)
             {
                 return 1; // version1 is larger
             }
@@ -243,11 +244,12 @@ public class RPHAnalyzer
         {
             return -1; // version1 is smaller
         }
-        else if (parts1.Length > parts2.Length)
+
+        if (parts1.Length > parts2.Length)
         {
             return 1; // version1 is larger
         }
-        
+
         return 0; // versions are equal
     }
 

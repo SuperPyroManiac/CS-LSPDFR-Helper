@@ -32,15 +32,15 @@ public class ForceVerification
             case Choice.PLUGINS:
                 Plugins.UpdateVersions();
                 await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
-                    bd.AddEmbed(BasicEmbeds.Success($"__Forced Plugin Verification!__\r\n>>> Plugin count: {Program.Cache.GetPlugins().Count}\r\nAllow 10 - 15 minutes for updater to finish.", true)));
-                await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info($"__Forced Plugin Verification!__\r\n>>> Plugin count: {Program.Cache.GetPlugins().Count}\r\nAllow 10 - 15 minutes for updater to finish.", true));
+                    bd.AddEmbed(BasicEmbeds.Success($"__Forced Plugin Verification!__\r\n>>> Plugin count: {Program.Cache.GetPlugins().Count}\r\nAllow 10 - 15 minutes for updater to finish.")));
+                await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info($"__Forced Plugin Verification!__\r\n>>> Plugin count: {Program.Cache.GetPlugins().Count}\r\nAllow 10 - 15 minutes for updater to finish."));
                 break;
             case Choice.USERS:
                 missing = await Users.Missing();
                 usernames = await Users.Usernames();
                 await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
-                    bd.AddEmbed(BasicEmbeds.Success($"__Forced User Verification!__\r\n>>> User count: {Program.Cache.GetUsers().Count}\r\nMissing users added: {missing}\r\nUsernames updated: {usernames}", true)));
-                await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info($"__Forced User Verification!__\r\n>>> User count: {Program.Cache.GetUsers().Count}\r\nMissing users added: {missing}\r\nUsernames updated: {usernames}", true));
+                    bd.AddEmbed(BasicEmbeds.Success($"__Forced User Verification!__\r\n>>> User count: {Program.Cache.GetUsers().Count}\r\nMissing users added: {missing}\r\nUsernames updated: {usernames}")));
+                await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info($"__Forced User Verification!__\r\n>>> User count: {Program.Cache.GetUsers().Count}\r\nMissing users added: {missing}\r\nUsernames updated: {usernames}"));
                 break;
             case Choice.CASES:
                 break;

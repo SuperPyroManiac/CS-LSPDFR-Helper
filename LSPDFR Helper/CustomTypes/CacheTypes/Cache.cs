@@ -116,7 +116,7 @@ public class Cache
     /// <summary>Returns a unique key for an interaction.</summary>
     private static string GetUserActionKey(ulong userId, string actionId)
     {
-        return userId.ToString() + "&" + actionId;
+        return userId + "&" + actionId;
     }
     
     /// <summary>

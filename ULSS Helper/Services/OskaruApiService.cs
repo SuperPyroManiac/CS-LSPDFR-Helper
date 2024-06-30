@@ -1,5 +1,6 @@
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 
 namespace ULSS_Helper.Services;
@@ -38,7 +39,7 @@ public class OskaruApiService
         var serializeOptions = new JsonSerializerOptions
         {
             WriteIndented = true,
-            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         };
         string jsonContent = JsonSerializer.Serialize(requestBody, serializeOptions);
         var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
@@ -55,10 +56,8 @@ public class OskaruApiService
                 AnalyseImageLinkResponse responseObj = JsonSerializer.Deserialize<AnalyseImageLinkResponse>(responseBody);
                 return responseObj.ocrResult;
             }
-            else
-            {
-                Console.WriteLine("Request failed with status code: " + response.StatusCode);
-            }
+
+            Console.WriteLine("Request failed with status code: " + response.StatusCode);
         }
         catch (HttpRequestException ex)
         {

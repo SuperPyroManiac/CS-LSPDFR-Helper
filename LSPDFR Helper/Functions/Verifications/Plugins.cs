@@ -16,8 +16,8 @@ public static class Plugins
     {
                 HttpClient webClient = new();
 	    var plugins = DbManager.GetPlugins();
-        var logMsg = BasicEmbeds.Info($"__Plugin Updates__\r\n*These plugins have updated!*{BasicEmbeds.AddBlanks(45)}\r\n", true);
-        var annMsg = BasicEmbeds.Success($"__Featured Plugin Updates__{BasicEmbeds.AddBlanks(50)}\r\n", true);
+        var logMsg = BasicEmbeds.Info($"__Plugin Updates__\r\n*These plugins have updated!*{BasicEmbeds.AddBlanks(45)}\r\n");
+        var annMsg = BasicEmbeds.Success($"__Featured Plugin Updates__{BasicEmbeds.AddBlanks(50)}\r\n");
         var upCnt = 0;
         var annCnt = 0;
         

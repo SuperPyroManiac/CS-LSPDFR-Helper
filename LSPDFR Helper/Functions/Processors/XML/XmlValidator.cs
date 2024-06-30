@@ -1,3 +1,4 @@
+using System.Xml;
 using System.Xml.Linq;
 
 namespace LSPDFR_Helper.Functions.Processors.XML;
@@ -12,7 +13,7 @@ public class XmlValidator
             var contacts = XElement.Parse(xmlFile);
             return "XML is valid!";
         }
-        catch (System.Xml.XmlException e)
+        catch (XmlException e)
         {
             return e.Message;
         }

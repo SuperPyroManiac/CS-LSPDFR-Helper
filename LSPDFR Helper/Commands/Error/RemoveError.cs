@@ -34,7 +34,7 @@ public class RemoveError
                 $"```{error.Description}```\r\n" +
                 $"**String Match:**\r\n" +
                 $"```{error.StringMatch}```\r\n" +
-                $"**Error Level: {error.Level}**", true));
+                $"**Error Level: {error.Level}**"));
             DbManager.DeleteError(error);
             Program.Cache.UpdateErrors(DbManager.GetErrors());
             return;

@@ -23,7 +23,7 @@ public static class AutoReplies
                 
             if (attach.FileName.EndsWith(".exe") || attach.FileName.EndsWith(".dll") || attach.FileName.EndsWith(".asi"))
             {
-                await ctx.Message.RespondAsync(BasicEmbeds.Error($"__ULSS AutoHelper__\r\n{ctx.Author.Mention}\r\n>>> Do not upload executable files!\r\nFile: {attach.FileName}", true));
+                await ctx.Message.RespondAsync(BasicEmbeds.Error($"__ULSS AutoHelper__\r\n{ctx.Author.Mention}\r\n>>> Do not upload executable files!\r\nFile: {attach.FileName}"));
                 dltMsg = true;
             }
 

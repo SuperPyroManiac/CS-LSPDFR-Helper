@@ -30,6 +30,6 @@ public class ExportPlugins
         bd.AddFile(fs, AddFileOptions.CloseStream);
         bd.AddEmbed(BasicEmbeds.Success("Plugins Exported.."));
         await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, bd);
-        await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info("__Exported plugins!__", true));
+        await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info("__Exported plugins!__"));
     }
 }

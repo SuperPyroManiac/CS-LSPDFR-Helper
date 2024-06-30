@@ -145,7 +145,7 @@ public class Cache
 
     private string GetUserActionKey(ulong userId, string actionId)
     {
-        return userId.ToString() + "&" + actionId;
+        return userId + "&" + actionId;
     }
 
     public void RemoveUserAction(ulong userId, string actionId)
