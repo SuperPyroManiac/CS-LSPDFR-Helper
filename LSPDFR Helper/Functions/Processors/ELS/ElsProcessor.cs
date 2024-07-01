@@ -30,14 +30,14 @@ public class ElsProcessor : SharedData
 
         if (Log.FaultyVcfFile != null) 
         {
-            embed.AddField(":red_circle:     Faulty VCF found!", $">>> `{Log.FaultyVcfFile}` is faulty and should be fixed or removed!");
+            embed.AddField(":red_circle:     Faulty VCF found!", $">>> `ELS/pack_default/{Log.FaultyVcfFile}` is faulty and should be removed!");
             Log.ValidElsVcfFiles.Clear();
             Log.ValidElsVcfFiles.Add("\r\n__**Cannot show until the fault is fixed!**__");
         }
         else switch (Log.FaultyVcfFile)
         {
             case null when Log.InvalidElsVcfFiles.Count > 0:
-                embed.AddField(":orange_circle:     No serious issues detected!", ">>> No real issues found. Though you have multiple unused VCF's installed! You can ignore or remove these.");
+                embed.AddField(":orange_circle:     No serious issues detected!", ">>> No real issues found. Though you have multiple unused VCF's installed! You can ignore or remove these from: `ELS/pack_default/`");
                 var invalidVcFiles = ">>> " + string.Join(" - ", Log.InvalidElsVcfFiles);
                 if ( invalidVcFiles.Length < 1024 ) embed.AddField("Unused:", invalidVcFiles);
                 else embed.AddField("Too many to show!", $">>> Manually review the log to see all `{Log.InvalidElsVcfFiles.Count}` unused VCF's!");
