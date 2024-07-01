@@ -34,12 +34,14 @@ public class ASIProcessor : SharedData
         if (Log.FailedAsiFiles.Count != 0) 
         {
             embed.AddField(":red_circle:     Some ASIs failed to load!", "See below for details!");
-            var failedASIs = ">>> " + string.Join(" - ", Log.FailedAsiFiles);
+            List<string> failedNames = [];
+            failedNames.AddRange(Log.FailedAsiFiles.Select(asi => asi.Name));
+            var failedASIs = ">>> " + string.Join(" - ", failedNames);
             if ( failedASIs.Length < 1024 ) embed.AddField("Failed:", failedASIs);
             else embed.AddField("Too many to show!", $">>> Manually review the log to see all `{Log.FailedAsiFiles.Count}` failed ASI's!");
 
-            if ( Log.FailedAsiFiles.Any(x => x.Name == "ELS.asi") ) embed.AddField("Possible ELS Issue!", ">>> Ensure you have installed AdvancedHookV.dll! You can get this by reinstalling ELS.");
-            if ( Log.FailedAsiFiles.Any(x => x.PluginType == PluginType.SHV) ) embed.AddField("Possible SHV Issue!", ">>> Ensure you have installed ScriptHookV!");
+            if ( Log.FailedAsiFiles.Any(x => x.Name == "ELS.asi") ) embed.AddField("Possible ELS Issue!", ">>> Ensure that you have installed both [AdvancedHookV.dll](https://www.lcpdfr.com/downloads/gta5mods/scripts/13865-emergency-lighting-system/) & [ScriptHookV](http://dev-c.com/GTAV/scripthookv)!");
+            if ( Log.FailedAsiFiles.Any(x => x.PluginType == PluginType.SHV) ) embed.AddField("Possible SHV Issue!", ">>> Ensure you have installed [ScriptHookV](http://dev-c.com/GTAV/scripthookv)!");
 
         }
         else embed.AddField(":green_circle:     No faulty ASI files detected!", ">>> Seems like everything loaded fine.");
