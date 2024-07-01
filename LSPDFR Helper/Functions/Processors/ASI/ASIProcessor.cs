@@ -4,7 +4,6 @@ using DSharpPlus.EventArgs;
 using LSPDFR_Helper.CustomTypes.CacheTypes;
 using LSPDFR_Helper.CustomTypes.Enums;
 using LSPDFR_Helper.CustomTypes.LogTypes;
-using LSPDFR_Helper.CustomTypes.MainTypes;
 using LSPDFR_Helper.EventManagers;
 using LSPDFR_Helper.Functions.Messages;
 
@@ -38,6 +37,10 @@ public class ASIProcessor : SharedData
             var failedASIs = ">>> " + string.Join(" - ", Log.FailedAsiFiles);
             if ( failedASIs.Length < 1024 ) embed.AddField("Failed:", failedASIs);
             else embed.AddField("Too many to show!", $">>> Manually review the log to see all `{Log.FailedAsiFiles.Count}` failed ASI's!");
+
+            if ( Log.FailedAsiFiles.Any(x => x.Name == "ELS.asi") ) embed.AddField("Possible ELS Issue!", ">>> Ensure you have installed AdvancedHookV.dll! You can get this by reinstalling ELS.");
+            if ( Log.FailedAsiFiles.Any(x => x.PluginType == PluginType.SHV) ) embed.AddField("Possible SHV Issue!", ">>> Ensure you have installed ScriptHookV!");
+
         }
         else embed.AddField(":green_circle:     No faulty ASI files detected!", ">>> Seems like everything loaded fine.");
         

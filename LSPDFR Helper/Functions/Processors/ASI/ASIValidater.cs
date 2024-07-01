@@ -16,10 +16,10 @@ public class ASIValidater
 
         foreach ( Match match in new Regex(@"^\s+.(.+.asi). failed to load.*", RegexOptions.Multiline).Matches(wholeLog) )
         {
-            var plug = Program.Cache.GetPlugin(match.Groups[1].Value.Split(".asi")[0]);
+            var plug = Program.Cache.GetPlugin(match.Groups[1].Value);
             if ( plug == null )
             {
-                plug = new Plugin { Name = match.Groups[1].Value.Split(".asi")[0], Version = "ASI", PluginType = PluginType.ASI };
+                plug = new Plugin { Name = match.Groups[1].Value, Version = "ASI", PluginType = PluginType.ASI };
                 log.Missing.Add(plug);
             }
             if (plug.State == State.BROKEN) log.BrokenAsiFiles.Add(plug.Name);
@@ -28,14 +28,15 @@ public class ASIValidater
         
         foreach ( Match match in new Regex(@"^\s+.(.+.asi). (?!failed to load).*", RegexOptions.Multiline).Matches(wholeLog) )
         {
-            var plug = Program.Cache.GetPlugin(match.Groups[1].Value.Split(".asi")[0]);
+            var plug = Program.Cache.GetPlugin(match.Groups[1].Value);
             if ( plug == null )
             {
-                plug = new Plugin { Name = match.Groups[1].Value.Split(".asi")[0], Version = "ASI", PluginType = PluginType.ASI };
+                plug = new Plugin { Name = match.Groups[1].Value, Version = "ASI", PluginType = PluginType.ASI };
                 log.Missing.Add(plug);
             }
             if (plug.State == State.BROKEN) log.BrokenAsiFiles.Add(plug.Name);
-            log.LoadedAsiFiles.Add(plug);        }
+            log.LoadedAsiFiles.Add(plug);
+        }
         
         log.ValidaterCompletedAt = DateTime.Now;
         log.ElapsedTime = DateTime.Now.Subtract(log.ValidaterStartedAt).Milliseconds.ToString();
