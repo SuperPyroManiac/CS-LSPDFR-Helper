@@ -55,26 +55,6 @@ public class RphProcessor : SharedData
         return embed;
     }
     
-    public async Task SendUnknownPluginsLog(ulong originalMsgChannelId, ulong originalMsgUserId)
-    {
-        var rphLogLink = Log.DownloadLink != null && Log.DownloadLink.StartsWith("http")
-            ? $"[RagePluginHook.log]({Log.DownloadLink})" 
-            : "RagePluginHook.log";
-        var embed = BasicEmbeds.Warning($"__Unknown Plugin / Version!__{BasicEmbeds.AddBlanks(35)}\r\n\r\n>>> " +
-                                        $"There was a {rphLogLink} uploaded that has plugin versions that are unknown to the bot's DB!\r\n\r\n");
-        
-        var missingDashListStr = "- " + string.Join("\n- ", Log.Missing.Select(plugin => $"{plugin?.Name} ({plugin?.Version})").ToList()) + "\n";
-        if (missingDashListStr.Length is > 3 and < 1024) embed.AddField(":bangbang:  **Plugins not recognized:**", missingDashListStr);
-
-        var missmatchDashListStr = "- " + string.Join("\n- ", Log.NewVersion.Select(plugin => $"{plugin?.Name} ({plugin?.EaVersion})").ToList()) + "\n";
-        if (missmatchDashListStr.Length is > 3 and < 1024) embed.AddField(":bangbang:  **Plugin version newer than DB:**", missmatchDashListStr);
-
-        if (missingDashListStr.Length >= 1024 || missmatchDashListStr.Length >= 1024)
-            embed.AddField("Attention!", "Too many unknown plugins to display them in this message. Please check the log manually.");//TODO: This is most likely abuse!
-
-        await Logging.SendLog(originalMsgChannelId, originalMsgUserId, embed);
-    }
-    
     public async Task SendQuickInfoMessage(DiscordMessage targetMessage = null, CommandContext context=null, ComponentInteractionCreatedEventArgs eventArgs=null)
     {
         if (context == null && eventArgs == null) throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
@@ -97,7 +77,8 @@ public class RphProcessor : SharedData
         embed = AddTsViewFields(embed, cache, Log);
 
 
-        if (_missmatch.Length > 0 || _missing.Length > 0) await SendUnknownPluginsLog(cache.OriginalMessage.Channel!.Id, cache.OriginalMessage.Author!.Id);
+        if (_missmatch.Length > 0 || _missing.Length > 0) 
+            await SendUnknownPluginsLog(cache.OriginalMessage.Channel!.Id, cache.OriginalMessage.Author!.Id, Log.DownloadLink, Log.Missing, Log.NewVersion);
         
         if (_outdated.Length >= 1024 || _remove.Length >= 1024)
         {

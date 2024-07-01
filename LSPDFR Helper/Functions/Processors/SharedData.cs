@@ -1,6 +1,8 @@
 using DSharpPlus.Entities;
 using LSPDFR_Helper.CustomTypes.CacheTypes;
 using LSPDFR_Helper.CustomTypes.LogTypes;
+using LSPDFR_Helper.CustomTypes.MainTypes;
+using LSPDFR_Helper.Functions.Messages;
 
 namespace LSPDFR_Helper.Functions.Processors;
 
@@ -17,5 +19,23 @@ public class SharedData
     public DiscordEmbedBuilder RemoveTsViewFields(DiscordEmbedBuilder embed)
     {
         return embed.RemoveFieldRange(0, 3);
+    }
+    
+    public async Task SendUnknownPluginsLog(ulong originalMsgChannelId, ulong originalMsgUserId, string dLink, List<Plugin> missing, List<Plugin> newer)
+    {
+        var rphLogLink = dLink != null && dLink.StartsWith("http") ? $"[Log]({dLink})" : "Log";
+        var embed = BasicEmbeds.Warning($"__Unknown Plugin / Version!__{BasicEmbeds.AddBlanks(35)}\r\n\r\n>>> " +
+                                        $"There was a {rphLogLink} uploaded that has plugin versions that are unknown to the bot's DB!\r\n\r\n");
+        
+        var missingDashListStr = "- " + string.Join("\n- ", missing.Select(plugin => $"{plugin?.Name} ({plugin?.Version})").ToList()) + "\n";
+        if (missingDashListStr.Length is > 3 and < 1024) embed.AddField(":bangbang:  **Plugins not recognized:**", missingDashListStr);
+
+        var missmatchDashListStr = "- " + string.Join("\n- ", newer.Select(plugin => $"{plugin?.Name} ({plugin?.EaVersion})").ToList()) + "\n";
+        if (missmatchDashListStr.Length is > 3 and < 1024) embed.AddField(":bangbang:  **Plugin version newer than DB:**", missmatchDashListStr);
+
+        if (missingDashListStr.Length >= 1024 || missmatchDashListStr.Length >= 1024)
+            embed.AddField("Attention!", "Too many unknown plugins to display them in this message. Please check the log manually.");//TODO: This is most likely abuse!
+
+        await Logging.SendLog(originalMsgChannelId, originalMsgUserId, embed);
     }
 }

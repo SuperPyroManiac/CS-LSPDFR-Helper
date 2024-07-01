@@ -31,10 +31,7 @@ public record CustomIds
     public const string ElsSendToUser = "ElsQuickInfoSendToUser";
 
     // ASI log analysis events
-    public const string AsiGetQuickInfo = "AsiGetQuickInfo";
-    public const string AsiGetDetailedInfo = "AsiGetDetailedInfo";
-    public const string AsiQuickSendToUser = "AsiQuickInfoSendToUser";
-    public const string AsiDetailedSendToUser = "AsiDetailedSendToUser";
+    public const string AsiSendToUser = "AsiQuickInfoSendToUser";
 
     // SHVDN log analysis events
     public const string ShvdnGetQuickInfo = "ShvdnGetQuickInfo";

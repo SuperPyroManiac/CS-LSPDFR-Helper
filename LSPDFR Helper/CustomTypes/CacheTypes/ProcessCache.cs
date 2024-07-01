@@ -1,4 +1,5 @@
 using DSharpPlus.Entities;
+using LSPDFR_Helper.Functions.Processors.ASI;
 using LSPDFR_Helper.Functions.Processors.ELS;
 using LSPDFR_Helper.Functions.Processors.RPH;
 
@@ -10,7 +11,8 @@ public class ProcessCache
     public DiscordMessageInteraction Interaction { get; private set; }
     public DiscordMessage OriginalMessage { get; private set; }
     public RphProcessor RphProcessor { get; set; }
-    public ElsProcessor ElsProcessor { get; set; }
+    public ELSProcessor ElsProcessor { get; set; }
+    public ASIProcessor AsiProcessor { get; set; }
 
     public ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage, RphProcessor rphProcessor)
     {
@@ -19,11 +21,18 @@ public class ProcessCache
         RphProcessor = rphProcessor;
     }
     
-    public ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage, ElsProcessor elsProcessor)
+    public ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage, ELSProcessor elsProcessor)
     {
         Interaction = interaction;
         OriginalMessage = originalMessage;
         ElsProcessor = elsProcessor;
+    }
+    
+    public ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage, ASIProcessor asiProcessor)
+    {
+        Interaction = interaction;
+        OriginalMessage = originalMessage;
+        AsiProcessor = asiProcessor;
     }
     
     public ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage)
@@ -41,6 +50,7 @@ public class ProcessCache
         OriginalMessage = newCache.OriginalMessage ?? OriginalMessage;
         RphProcessor = newCache.RphProcessor ?? RphProcessor;
         ElsProcessor = newCache.ElsProcessor ?? ElsProcessor;
+        AsiProcessor = newCache.AsiProcessor ?? AsiProcessor;
         Expire = DateTime.Now.AddMinutes(15);
         return this;
     }
@@ -69,6 +79,9 @@ public class ProcessCache
                 break;
             case "ELS":
                 if (cache.ElsProcessor.Log == null) return false;
+                break;
+            case "ASI":
+                if (cache.AsiProcessor.Log == null) return false;
                 break;
             default:
                 throw new ArgumentException($"Invalid log type '{logType}'.");

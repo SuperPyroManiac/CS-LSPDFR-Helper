@@ -20,7 +20,6 @@
 
     <ItemGroup>
       <Folder Include="Functions\AutoHelper\" />
-      <Folder Include="Functions\Processors\ASI\" />
       <Folder Include="Functions\Processors\IMAGES\" />
       <Folder Include="Functions\Processors\SHVDN\" />
       <Folder Include="Functions\Processors\SHV\" />

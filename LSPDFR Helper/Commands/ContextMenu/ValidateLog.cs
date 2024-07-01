@@ -4,6 +4,7 @@ using DSharpPlus.Entities;
 using LSPDFR_Helper.CustomTypes.CacheTypes;
 using LSPDFR_Helper.EventManagers;
 using LSPDFR_Helper.Functions.Messages;
+using LSPDFR_Helper.Functions.Processors.ASI;
 using LSPDFR_Helper.Functions.Processors.ELS;
 using LSPDFR_Helper.Functions.Processors.RPH;
 using LSPDFR_Helper.Functions.Verifications;
@@ -106,7 +107,7 @@ public class ValidateLog
         if (attach.FileName.Contains("ELS"))
         {
             await ctx.Interaction.DeferAsync(true);
-            var elsProcessor = new ElsProcessor();
+            var elsProcessor = new ELSProcessor();
             var cache = Program.Cache.GetProcess(targetMessage.Id);
             if (ProcessCache.IsCacheUsagePossible("ELS", cache)) elsProcessor = cache.ElsProcessor;
             else
@@ -116,6 +117,22 @@ public class ValidateLog
                 Program.Cache.SaveProcess(targetMessage.Id, new ProcessCache(targetMessage.Interaction, targetMessage, elsProcessor));
             }
             await elsProcessor.SendQuickInfoMessage(targetMessage, ctx);
+            return;
+        }
+        
+        if (attach.FileName.Contains("asiloader"))
+        {
+            await ctx.Interaction.DeferAsync(true);
+            var asiProcessor = new ASIProcessor();
+            var cache = Program.Cache.GetProcess(targetMessage.Id);
+            if (ProcessCache.IsCacheUsagePossible("ASI", cache)) asiProcessor = cache.AsiProcessor;
+            else
+            {
+                asiProcessor.Log = await ASIValidater.Run(attach.Url);
+                asiProcessor.Log.MsgId = targetMessage.Id;
+                Program.Cache.SaveProcess(targetMessage.Id, new ProcessCache(targetMessage.Interaction, targetMessage, asiProcessor));
+            }
+            await asiProcessor.SendQuickInfoMessage(targetMessage, ctx);
             return;
         }
     }

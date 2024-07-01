@@ -8,7 +8,7 @@ using LSPDFR_Helper.Functions.Messages;
 
 namespace LSPDFR_Helper.Functions.Processors.ELS;
 
-public class ElsProcessor : SharedData
+public class ELSProcessor : SharedData
 {
     public ELSLog Log;
 

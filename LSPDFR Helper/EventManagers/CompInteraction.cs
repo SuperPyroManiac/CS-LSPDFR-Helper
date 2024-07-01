@@ -23,10 +23,7 @@ public static class CompInteraction
         CustomIds.RphGetPluginInfo,
         CustomIds.RphSendToUser,
         CustomIds.ElsSendToUser,
-        CustomIds.AsiGetQuickInfo,
-        CustomIds.AsiGetDetailedInfo,
-        CustomIds.AsiQuickSendToUser,
-        CustomIds.AsiDetailedSendToUser,
+        CustomIds.AsiSendToUser,
         CustomIds.ShvdnGetQuickInfo,
         CustomIds.ShvdnGetDetailedInfo,
         CustomIds.ShvdnQuickSendToUser,
@@ -40,6 +37,10 @@ public static class CompInteraction
         if ( CacheEventIds.Any(eventId => eventId == eventArgs.Id) )
         {//Handle cached interaction events here.
             var cache = Program.Cache.GetProcess(eventArgs.Message.Id);
+            
+            //===//===//===////===//===//===////===//ASI Buttons//===////===//===//===////===//===//===//
+            if (eventArgs.Id is CustomIds.AsiSendToUser) 
+                await cache.AsiProcessor.SendMessageToUser(eventArgs);
             
             //===//===//===////===//===//===////===//ELS Buttons//===////===//===//===////===//===//===//
             if (eventArgs.Id is CustomIds.ElsSendToUser) 
