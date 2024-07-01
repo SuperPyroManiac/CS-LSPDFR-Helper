@@ -5,7 +5,7 @@ using LSPDFR_Helper.CustomTypes.MainTypes;
 
 namespace LSPDFR_Helper.Functions.Processors.RPH;
 
-public static partial class RPHValidater
+public static class RPHValidater
 {
     public static async Task<RPHLog> Run(string attachmentUrl)
     {
@@ -15,10 +15,10 @@ public static partial class RPHValidater
 
         List<Plugin> unsorted = [];
         log.DownloadLink = attachmentUrl;
-        log.LogPath = LogPathReg().Match(rawLog).Groups[1].Value;
-        log.RPHVersion = RPHVersionReg().Match(rawLog).Groups[1].Value;
-        log.LSPDFRVersion = LSPDFRVersionReg().Match(rawLog).Groups[1].Value;
-        log.GTAVersion = GTAVersionReg().Match(rawLog).Groups[1].Value;
+        log.LogPath = new Regex(@"Log path: (.+)RagePluginHook\.log").Match(rawLog).Groups[1].Value;
+        log.RPHVersion = new Regex(@".+ Version: RAGE Plugin Hook v(\d+\.\d+\.\d+\.\d+) for Grand Theft Auto V").Match(rawLog).Groups[1].Value;
+        log.LSPDFRVersion = new Regex(@".+ Running LSPD First Response 0\.4\.9 \((\d+\.\d+\.\d+\.\d+)\)").Match(rawLog).Groups[1].Value;
+        log.GTAVersion = new Regex(@".+ Product version: (\d+\.\d+\.\d+\.\d+)").Match(rawLog).Groups[1].Value;
 
         if ( !rawLog.Contains("Started new log on") || !rawLog.Contains("Cleaning temp folder") )
         {
@@ -32,7 +32,7 @@ public static partial class RPHValidater
             return log;
         }
 
-        var allMatch = allMatchReg().Matches(rawLog);
+        var allMatch = new Regex(@"(?:(?<!CalloutManager\.cs:line 738)\n.+LSPD First Response: (?!無法載入檔案或組件|\[|Creating|CalloutInterface: \[ERROR\] there was an error| )\W?(.+), Version=(.+), Culture=\w+, PublicKeyToken=\w+)|(?:Loading plugin .+\wlugins(?:\\|/)(.+).dll.*)", RegexOptions.Multiline).Matches(rawLog);
         foreach ( Match match in allMatch )
         {
             if ( match.Groups[1].Value.Length > 0 )
@@ -139,15 +139,4 @@ public static partial class RPHValidater
         if ( parts1.Length > parts2.Length ) return 1; // version1 is larger
         return 0; // versions are equal
     }
-
-    [GeneratedRegex(@"Log path: (.+)RagePluginHook\.log")]
-    private static partial Regex LogPathReg();
-    [GeneratedRegex(@".+ Version: RAGE Plugin Hook v(\d+\.\d+\.\d+\.\d+) for Grand Theft Auto V")]
-    private static partial Regex RPHVersionReg();
-    [GeneratedRegex(@".+ Running LSPD First Response 0\.4\.9 \((\d+\.\d+\.\d+\.\d+)\)")]
-    private static partial Regex LSPDFRVersionReg();
-    [GeneratedRegex(@".+ Product version: (\d+\.\d+\.\d+\.\d+)")]
-    private static partial Regex GTAVersionReg();
-    [GeneratedRegex(@"(?:(?<!CalloutManager\.cs:line 738)\n.+LSPD First Response: (?!無法載入檔案或組件|\[|Creating|CalloutInterface: \[ERROR\] there was an error| )\W?(.+), Version=(.+), Culture=\w+, PublicKeyToken=\w+)|(?:Loading plugin .+\wlugins(?:\\|/)(.+).dll.*)", RegexOptions.Multiline)]
-    private static partial Regex allMatchReg();
 }
