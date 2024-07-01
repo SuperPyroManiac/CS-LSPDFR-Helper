@@ -77,8 +77,8 @@ public class RphProcessor : SharedData
     
     public async Task SendQuickInfoMessage(DiscordMessage targetMessage = null, CommandContext context=null, ComponentInteractionCreatedEventArgs eventArgs=null)
     {
-        if (context == null && eventArgs == null)
-            throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
+        if (context == null && eventArgs == null) throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
+        if (targetMessage == null) targetMessage = eventArgs!.Message;
         
         _outdated = string.Join("\r\n- ",
             Log.Outdated.Select(plugin => plugin.Link != null && plugin.Link.StartsWith("https://")
@@ -92,7 +92,7 @@ public class RphProcessor : SharedData
         _rph = string.Join(", ", ( from plug in Log.Current where plug.PluginType == PluginType.RPH select plug.DName ).ToList());
         
         var embed = GetBaseEmbed("## __RPH.log Quick Info__");
-        if (targetMessage == null) targetMessage = eventArgs!.Message;
+        
         var cache = Program.Cache.GetProcess(targetMessage.Id);
         embed = AddTsViewFields(embed, cache, Log);
 

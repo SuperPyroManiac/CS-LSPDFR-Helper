@@ -28,10 +28,7 @@ public record CustomIds
     public const string RphSendToUser = "RphQuickInfoSendToUser";
 
     // ELS log analysis events
-    public const string ElsGetQuickInfo = "ElsGetQuickInfo";
-    public const string ElsGetDetailedInfo = "ElsGetDetailedInfo";
-    public const string ElsQuickSendToUser = "ElsQuickInfoSendToUser";
-    public const string ElsDetailedSendToUser = "ElsDetailedSendToUser";
+    public const string ElsSendToUser = "ElsQuickInfoSendToUser";
 
     // ASI log analysis events
     public const string AsiGetQuickInfo = "AsiGetQuickInfo";

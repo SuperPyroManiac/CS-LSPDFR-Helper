@@ -1,4 +1,5 @@
 using DSharpPlus.Entities;
+using LSPDFR_Helper.Functions.Processors.ELS;
 using LSPDFR_Helper.Functions.Processors.RPH;
 
 namespace LSPDFR_Helper.CustomTypes.CacheTypes;
@@ -9,12 +10,20 @@ public class ProcessCache
     public DiscordMessageInteraction Interaction { get; private set; }
     public DiscordMessage OriginalMessage { get; private set; }
     public RphProcessor RphProcessor { get; set; }
+    public ElsProcessor ElsProcessor { get; set; }
 
     public ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage, RphProcessor rphProcessor)
     {
         Interaction = interaction;
         OriginalMessage = originalMessage;
         RphProcessor = rphProcessor;
+    }
+    
+    public ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage, ElsProcessor elsProcessor)
+    {
+        Interaction = interaction;
+        OriginalMessage = originalMessage;
+        ElsProcessor = elsProcessor;
     }
     
     public ProcessCache(DiscordMessageInteraction interaction, DiscordMessage originalMessage)
@@ -31,6 +40,7 @@ public class ProcessCache
         Interaction = newCache.Interaction ?? Interaction;
         OriginalMessage = newCache.OriginalMessage ?? OriginalMessage;
         RphProcessor = newCache.RphProcessor ?? RphProcessor;
+        ElsProcessor = newCache.ElsProcessor ?? ElsProcessor;
         Expire = DateTime.Now.AddMinutes(15);
         return this;
     }
@@ -56,6 +66,9 @@ public class ProcessCache
         {
             case "RagePluginHook":
                 if (cache.RphProcessor.Log == null) return false;
+                break;
+            case "ELS":
+                if (cache.ElsProcessor.Log == null) return false;
                 break;
             default:
                 throw new ArgumentException($"Invalid log type '{logType}'.");
