@@ -19,7 +19,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Functions\AutoHelper\" />
       <Folder Include="Functions\Processors\IMAGES\" />
       <Folder Include="Functions\Processors\SHVDN\" />
       <Folder Include="Functions\Processors\SHV\" />

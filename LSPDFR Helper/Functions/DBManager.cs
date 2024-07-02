@@ -11,6 +11,67 @@ public static class DbManager
 {
     private static readonly string ConnStr = $"Server={Program.BotSettings.Env.DbServer};User ID={Program.BotSettings.Env.DbUser};Password={Program.BotSettings.Env.DbPass};Database={Program.BotSettings.Env.DbName}";
     
+    //Case Functions
+    public static List<AutoCase> GetCases()
+    {
+        try
+        {
+            using var cnn = new MySqlConnection(ConnStr);
+            return cnn.Query<AutoCase>("select * from Cases").ToList();
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine(e);
+            Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+            throw;
+        }
+    }
+    
+    public static AutoCase GetCase(string caseId)
+    {
+        try
+        {
+            using var cnn = new MySqlConnection(ConnStr);
+            return cnn.Query<AutoCase>($"select * from Cases where CaseID='{caseId}'").First();
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine(e);
+            Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+            throw;
+        }
+    }
+    
+    public static async void AddCase(AutoCase acase)
+    {
+        try
+        {
+            await using var cnn = new MySqlConnection(ConnStr);
+            await cnn.ExecuteAsync("insert into Cases (CaseId, OwnerID, ChannelID, Solved, TsRequested, RequestID, CreateDate, ExpireDate) VALUES (@CaseId, @OwnerID, @ChannelID, @Solved, @TsRequested, @RequestID, @CreateDate, @ExpireDate)", acase);
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine(e);
+            Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+            throw;
+        }
+    }
+    
+    public static async void EditCase(AutoCase acase)
+    {
+        try
+        {
+            await using var cnn = new MySqlConnection(ConnStr);
+            await cnn.ExecuteAsync("UPDATE Cases SET OwnerID = @OwnerID, ChannelID = @ChannelID, Solved = @Solved, TsRequested = @TsRequested, RequestID = @RequestID, CreateDate = @CreateDate, ExpireDate = @ExpireDate WHERE CaseId = (@CaseId)", acase);
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine(e);
+            await Logging.ErrLog($"SQL Issue: {e}");
+            throw;
+        }
+    }
+    
     //Plugin Functions
     public static List<Plugin> GetPlugins()
     {
@@ -289,6 +350,40 @@ public static class DbManager
     }
     
     //Msc Functions
+    public static bool AutoHelperStatus(string state = null)
+    {
+        if (state == null)
+        {
+            try
+            {
+                using MySqlConnection cnn = new MySqlConnection(ConnStr);
+                var output = cnn.Query<string>("select Value from GlobalValues where Name = 'AHStatus'");
+                cnn.Close();
+                return output.First() == "1";
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e);
+                Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+                throw;
+            }
+        }
+        try
+        {
+            using MySqlConnection cnn = new MySqlConnection(ConnStr);
+            cnn.Execute($"UPDATE GlobalValues SET Value = '{state}' WHERE Name = 'AHStatus'");
+            var output = state == "1";
+            cnn.Close();
+            return output;
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine(e);
+            Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
+            throw;
+        }
+    }
+    
     public static GlobalSettings GetGlobalSettings()
     {
         try

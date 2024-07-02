@@ -12,6 +12,28 @@ public class Cache
     private readonly ConcurrentDictionary<string, Plugin> _pluginCacheDict = new();
     private readonly ConcurrentDictionary<string, AutoCase> _caseCacheDict = new();
 
+    /// <summary>Replaces all cache entries with the specified case list.</summary>
+    public void UpdateCases(List<AutoCase> cases)
+    {
+        _caseCacheDict.Clear();
+        foreach (var acase in cases) _caseCacheDict.TryAdd(acase.CaseId, acase);
+    }
+    
+    /// <summary>Returns a list of all cached cases.</summary>
+    public List<AutoCase> GetCases()
+    {
+        return _caseCacheDict.Values.ToList();
+    }
+    
+    /// <summary>Returns a single case based off the caseid.</summary>
+    public AutoCase GetCase(string caseId)
+    {
+        try
+        { return _caseCacheDict[caseId]; }
+        catch ( Exception e )
+        { return null; }
+    }
+    
     /// <summary>Replaces all cache entries with the specified plugin list.</summary>
     public void UpdatePlugins(List<Plugin> plugins)
     {
