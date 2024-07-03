@@ -168,6 +168,58 @@ public static class ModalSubmit
                 }
             }
             //Handle non cached modal events here.
+
+            if (e.Interaction.Data.CustomId == CustomIds.RequestHelp)
+            {
+                var msg = new DiscordInteractionResponseBuilder();
+                msg.IsEphemeral = true;
+                var ac = Program.Cache.GetCases().First(x => x.ChannelId.Equals(e.Interaction.Channel.Id));
+
+                if (e.Interaction.User.Id.Equals(ac.OwnerId) || await Program.Cache.GetUser(e.Interaction.User.Id).IsTs())
+                {
+                    if (!ac.TsRequested)
+                    {
+                        msg.IsEphemeral = false;
+                        msg.AddEmbed(BasicEmbeds.Info(
+                            "__Help Requested!__\r\n" +
+                            ">>> TS have been sent an alert! " +
+                            "Keep in mind they are real people and may not be available at the moment. Patience is key!" +
+                            $"\r\n__**Ensure you have explained your issue well!!**__\r\n```{e.Values["issueDsc"]}```"));
+                        await e.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, msg);
+                        var tsMsg = new DiscordMessageBuilder();
+                        var tmpownr = await Functions.Functions.GetMember(ac.OwnerId);
+                        tsMsg.AddEmbed(BasicEmbeds.Info(
+                            $"__Help Requested! Case: {ac.CaseId}__\r\n" +
+                            $">>> Author: <@{ac.OwnerId}> ({tmpownr.DisplayName})\r\n" +
+                            $"Thread: <#{ac.ChannelId}>\r\n" +
+                            $"Reason:\r\n```{e.Values["issueDsc"]}```\r\n" +
+                            $"Created: <t:{e.Interaction.Channel.CreationTimestamp.ToUnixTimeSeconds()}:R>"));
+                        tsMsg.AddComponents([
+                            new DiscordButtonComponent(DiscordButtonStyle.Secondary, CustomIds.JoinCase,
+                                "Join Case", false,
+                                new DiscordComponentEmoji("💢")),
+                            new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.IgnoreRequest,
+                                "Ignore", false,
+                                new DiscordComponentEmoji("🪠"))]);
+                        var tsMsgSent = await Functions.Functions.GetGuild().GetChannelAsync(Program.Settings.MonitorChId);
+                        var rCh = await tsMsgSent.SendMessageAsync(tsMsg);
+                        ac.TsRequested = true;
+                        ac.RequestId = rCh.Id;
+                        ac.ExpireDate = DateTime.Now.ToUniversalTime().AddHours(12);
+                        DbManager.EditCase(ac);
+                        Program.Cache.UpdateCases(DbManager.GetCases());
+                        return;
+                    }
+                    if (ac.TsRequested)
+                    {
+                        msg.AddEmbed(BasicEmbeds.Error("Help has already been requested!"));
+                        await e.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, msg);
+                        return;
+                    }
+                }
+                msg.AddEmbed(BasicEmbeds.Error("You do not own this case!"));
+                await e.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, msg);
+            }
         }
         catch ( Exception ex )
         {

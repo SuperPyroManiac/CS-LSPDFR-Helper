@@ -3,6 +3,7 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using LSPDFR_Helper.Functions;
+using LSPDFR_Helper.Functions.AutoHelper;
 using LSPDFR_Helper.Functions.Messages;
 using LSPDFR_Helper.Functions.Messages.ModifiedProperties;
 
@@ -63,7 +64,7 @@ public static class CompInteraction
             if (eventArgs.Id.Equals(CustomIds.SelectIdForRemoval))
             {
                 // Get the current SelectComponent from the Message that the user interacted with
-                var selectComp = (DiscordSelectComponent) eventArgs.Message.Components
+                var selectComp = (DiscordSelectComponent) eventArgs.Message.Components!
                     .FirstOrDefault(compRow => compRow.Components.Any(comp => comp.CustomId == CustomIds.SelectIdForRemoval))
                     ?.Components!.FirstOrDefault(comp => comp.CustomId == CustomIds.SelectIdForRemoval);
                 // Get a list of all components (like buttons) except for the SelectComponent so we can rebuild the list of components later after modifying the SelectComponent
@@ -97,7 +98,7 @@ public static class CompInteraction
                 {
                     var fieldName = embed.Fields[i].Name;
                     // If the field name contains "ID:" followed by a number, extract the number to compare it with the selected id (for removal) in eventArgs.Values
-                    if (new Regex(@"ID:\s?\d+\D+").IsMatch(fieldName)) 
+                    if (new Regex(@"ID:\s?\d+\D+").IsMatch(fieldName!))
                     {
                         var idString = fieldName.Split("ID:")[1].Trim(); // ["__```SEVERE ", " 123``` Troubleshooting Steps:__"]
                         idString = Regex.Split(idString, @"\D")[0]; // ["123", "``` Troubleshooting Steps:__"]
@@ -224,5 +225,109 @@ public static class CompInteraction
             }
         }
         //Handle non cached interaction events here.
+
+        //===//===//===////===//===//===////===//AutoHelper Buttons//===////===//===//===////===//===//===//
+        if (eventArgs.Id == CustomIds.OpenCase)
+        {
+            await eventArgs.Interaction.DeferAsync(true);
+            var msg = new DiscordWebhookBuilder();
+            if (Program.Cache.GetUser(eventArgs.User.Id).Blocked)
+            {
+                await eventArgs.Interaction.EditOriginalResponseAsync(msg.AddEmbed(BasicEmbeds.Error(
+                    $"__You are blacklisted from the bot!__\r\nContact server staff in <#{Program.Settings.StaffContactChId}> if you think this is an error!")));
+                return;
+            }
+
+            var findCase = Program.Cache.GetCases().FirstOrDefault(autocase => autocase.OwnerId.Equals(eventArgs.User.Id) && !autocase.Solved);
+            if (findCase != null)
+            {
+                await eventArgs.Interaction.EditOriginalResponseAsync(msg.AddEmbed(BasicEmbeds.Error($"__You already have an open case!__\r\n> Check <#{findCase.ChannelId}>")));
+                return;
+            }
+
+            var newCase = await OpenCase.CreateCase(await Functions.Functions.GetMember(eventArgs.User.Id));
+            msg.AddEmbed(BasicEmbeds.Success($"__Created new case!__\r\n> {newCase.Mention}"));
+            await eventArgs.Interaction.EditOriginalResponseAsync(msg);
+            Program.Cache.UpdateCases(DbManager.GetCases());
+        }
+
+        if (eventArgs.Id == CustomIds.MarkSolved)
+        {
+            var msg = new DiscordInteractionResponseBuilder();
+            msg.IsEphemeral = true;
+            var ac = Program.Cache.GetCases().First(x => x.ChannelId.Equals(eventArgs.Channel.Id));
+
+            if (eventArgs.User.Id.Equals(ac.OwnerId) || await Program.Cache.GetUser(eventArgs.User.Id).IsTs())
+            {
+                msg.AddEmbed(BasicEmbeds.Info("Closing case!", false));
+                await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, msg);
+                await CloseCase.Close(ac);
+                return;
+            }
+            msg.AddEmbed(BasicEmbeds.Error("__You do not own this case!__"));
+            await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, msg);
+            Program.Cache.UpdateCases(DbManager.GetCases());
+        }
+
+        if (eventArgs.Id == CustomIds.JoinCase)
+        {
+            var ac = Program.Cache.GetCases().First(x => x.CaseId.Equals(eventArgs.Message.Embeds.First().Description!.Split("Case: ")[1].Split("_").First()));
+            var msg = new DiscordInteractionResponseBuilder();
+            msg.IsEphemeral = true;
+            if ( Program.Cache.GetUser(eventArgs.User.Id).Blocked )
+            {
+                await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
+                    msg.AddEmbed(BasicEmbeds.Error($"__You are blacklisted from the bot!__\r\nContact server staff in <#{Program.Settings.StaffContactChId}> if you think this is an error!")));
+                return;
+            }
+
+            if ( !await JoinCase.Join(ac, await Functions.Functions.GetMember(eventArgs.User.Id)) )
+            {
+                await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, msg.AddEmbed(BasicEmbeds.Error(
+                    $"__Already joined!__\r\n>>> You have already joined case: `{ac.CaseId}`!\r\nSee: <#{ac.ChannelId}>")));
+                return;
+            }
+            await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
+                msg.AddEmbed(BasicEmbeds.Success($"__Case Joined!__\r\n> <#{ac.ChannelId}>")));
+            Program.Cache.UpdateCases(DbManager.GetCases());
+        }
+
+        if (eventArgs.Id == CustomIds.IgnoreRequest)
+        {
+            var msg = new DiscordInteractionResponseBuilder();
+            msg.IsEphemeral = true;
+            if ( await Program.Cache.GetUser(eventArgs.User.Id).IsTs() )
+            {
+                var ac = Program.Cache.GetCases().First(x => x.CaseId.Equals(eventArgs.Message.Embeds.First().Description!.Split("Case: ")[1].Split("_").First()));
+                var ch = await Program.Client.GetChannelAsync(ac.ChannelId);
+                await ch.SendMessageAsync(BasicEmbeds.Error("__Request Denied!__\r\n>>> This is likely due to you not providing any info, " +
+                                                            "or you have not tried any steps to help yourself.\r\nDirect basic support questions to: <#672541961969729540>"));
+                var chTs = await Program.Client.GetChannelAsync(Program.Settings.MonitorChId);
+                await chTs.DeleteMessageAsync(await chTs.GetMessageAsync(ac.RequestId));
+                ac.RequestId = 0;
+                DbManager.EditCase(ac);
+                await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
+                    msg.AddEmbed(BasicEmbeds.Success($"__Request Ignored!__\r\n> <#{ac.ChannelId}>")));
+                return;
+            }
+            await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
+                msg.AddEmbed(BasicEmbeds.Error("__No Permission!__\r\n> Only server TS can use this!")));
+            Program.Cache.UpdateCases(DbManager.GetCases());
+        }
+
+        if (eventArgs.Id == CustomIds.RequestHelp)
+        {
+            DiscordInteractionResponseBuilder modal = new();
+            modal.WithCustomId(CustomIds.RequestHelp);
+            modal.WithTitle("Requesting help!");
+            modal.AddComponents(new DiscordTextInputComponent(
+                label: "Explain your issue in detail:",
+                customId: "issueDsc",
+                required: true,
+                style: DiscordTextInputStyle.Paragraph
+            ));
+
+            await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.Modal, modal);
+        }
     }
 }

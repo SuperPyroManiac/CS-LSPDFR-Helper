@@ -37,7 +37,7 @@ public static class CloseCase
             if (send)
                 await ch.SendMessageAsync(BasicEmbeds.Warning(
                     "__Thread has been archived!__\r\n" +
-                    "> It is now closed to replies. If you need further help start a new one or ask in the public support channels!", true));
+                    "> It is now closed to replies. If you need further help start a new one or ask in the public support channels!"));
             
             await ch.ModifyAsync(model => model.Locked = true);
             await ch.ModifyAsync(model => model.IsArchived = true);

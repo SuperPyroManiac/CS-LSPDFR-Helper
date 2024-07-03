@@ -11,8 +11,18 @@ public class Startup
     
     public static async Task Init()
     {
-        await Task.WhenAll(Verification(), PrepCaches());
+        await PrepCaches();
+        await Verification();
         await SendStartupMessage();
+    }
+    
+    private static Task PrepCaches()
+    {
+        Program.Cache.UpdateUsers(DbManager.GetUsers());
+        Program.Cache.UpdateErrors(DbManager.GetErrors());
+        Program.Cache.UpdatePlugins(DbManager.GetPlugins());
+        Program.Cache.UpdateCases(DbManager.GetCases());
+        return Task.CompletedTask;
     }
     
     private static async Task Verification()
@@ -24,15 +34,6 @@ public class Startup
         //AH Verifications
         await Verifications.AutoHelper.UpdateMainAhMessage();
         await Verifications.AutoHelper.UpdateAhMonitor();
-    }
-
-    private static Task PrepCaches()
-    {
-        Program.Cache.UpdateUsers(DbManager.GetUsers());
-        Program.Cache.UpdateErrors(DbManager.GetErrors());
-        Program.Cache.UpdatePlugins(DbManager.GetPlugins());
-        Program.Cache.UpdateCases(DbManager.GetCases());
-        return Task.CompletedTask;
     }
 
     private static async Task SendStartupMessage()
