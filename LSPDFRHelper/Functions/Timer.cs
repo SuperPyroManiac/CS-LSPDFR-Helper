@@ -6,7 +6,7 @@ public static class Timer
 {
     public static void Start()
     {
-        var timer = new System.Timers.Timer(TimeSpan.FromSeconds(5));
+        var timer = new System.Timers.Timer(TimeSpan.FromSeconds(15));
         timer.Elapsed += ShortTimer;
         timer.Start();
     }
