@@ -98,7 +98,7 @@ public class Cache
     }
 
     /// <summary>Removed all interaction/process caches that have not been modified in 15 minutes.</summary>
-    private void RemoveExpiredCaches()
+    public Task RemoveExpiredCaches()
     {
         var expiredInteractionKeys = _interactionCacheDict
             .Where(x => x.Value.Expire <= DateTime.Now)
@@ -109,6 +109,8 @@ public class Cache
             .Where(x => x.Value.Expire <= DateTime.Now)
             .Select(x => x.Key);
         foreach ( var key in expiredProcessKeys ) _processCacheDict.Remove(key);
+        
+        return Task.CompletedTask;
     }
     
     /// <summary>Saves the current state of a log analysis process.</summary>

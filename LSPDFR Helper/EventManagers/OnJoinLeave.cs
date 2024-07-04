@@ -2,6 +2,7 @@ using DSharpPlus;
 using DSharpPlus.EventArgs;
 using LSPDFR_Helper.CustomTypes.MainTypes;
 using LSPDFR_Helper.Functions;
+using LSPDFR_Helper.Functions.AutoHelper;
 
 namespace LSPDFR_Helper.EventManagers;
 
@@ -17,7 +18,7 @@ public static class OnJoinLeave
             var newUser = new User
             {
                 Id = ctx.Member.Id,
-                Username = ctx.Member.Username,
+                Username = ctx.Member.DisplayName,
                 BotEditor = false,
                 BotAdmin = false,
                 Blocked = false
@@ -30,6 +31,9 @@ public static class OnJoinLeave
     {
         while ( !Program.IsStarted ) await Task.Delay(500);
         
-        //TODO: CloseCase on leave
+        //Close case if user leaves
+        foreach ( var ac in Program.Cache.GetCases().Where(x => x.Solved == false) )
+            if ( ac.OwnerId == ctx.Member.Id ) await CloseCase.Close(ac);
+        
     }
 }

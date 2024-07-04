@@ -42,11 +42,10 @@ public static class Users
         foreach (var user in dbUsers)
         {
             if (!serverUsers.ContainsKey(user.Id)) continue;
-            if (serverUsers[user.Id].Username != user.Username)
+            if (serverUsers[user.Id].DisplayName != user.Username)
             {
                 cnt++;
-                user.Username = serverUsers[user.Id].Username;
-                await Task.Delay(100);
+                user.Username = serverUsers[user.Id].DisplayName;
                 DbManager.EditUser(user);
             }
         }

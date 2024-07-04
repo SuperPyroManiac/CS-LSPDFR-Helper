@@ -4,10 +4,11 @@ using LSPDFR_Helper.Functions.Verifications;
 
 namespace LSPDFR_Helper.Functions;
 
-public class Startup
+public static class Startup
 {
     private static int _addedUsrCnt;
     private static int _changedUsrCnt;
+    private static int _closedCaseCnt;
     
     public static async Task Init()
     {
@@ -32,6 +33,8 @@ public class Startup
         _changedUsrCnt = await Users.Usernames();
         
         //AH Verifications
+        _closedCaseCnt = await Verifications.AutoHelper.ValidateClosedCases();
+        _closedCaseCnt += await Verifications.AutoHelper.ValidateOpenCases();
         await Verifications.AutoHelper.UpdateMainAhMessage();
         await Verifications.AutoHelper.UpdateAhMonitor();
     }
@@ -60,6 +63,8 @@ public class Startup
             msgText += $"> *{_addedUsrCnt} New users found, added them to the DB!*\r\n";
         if (_changedUsrCnt > 0)
             msgText += $"> *{_changedUsrCnt} Username changes, updated the DB!*\r\n";
+        if (_closedCaseCnt > 0)
+            msgText += $"> *{_closedCaseCnt} Cases failed verification, closed!*\r\n";
         
         var embed = BasicEmbeds.Success(msgText);
         var ch = await Functions.GetGuild().GetChannelAsync(Program.Settings.BotLogChId);

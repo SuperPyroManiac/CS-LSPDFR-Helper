@@ -7,24 +7,17 @@ public static class Timer
 {
     public static void Start()
     {
-        var aTimer = new System.Timers.Timer(TimeSpan.FromHours(1));
-        aTimer.Elapsed += HourlyTimer;
-        aTimer.Start();
-
-        var bTimer = new System.Timers.Timer(TimeSpan.FromSeconds(30));
-        bTimer.Elapsed += ShortTimer;
-        bTimer.Start();
+        var timer = new System.Timers.Timer(TimeSpan.FromSeconds(5));
+        timer.Elapsed += ShortTimer;
+        timer.Start();
     }
 
-    private static void HourlyTimer(object _, ElapsedEventArgs e)
+    private static async void ShortTimer(object _, ElapsedEventArgs e)
     {
-        //Update Checker
-        var th = new Thread(Plugins.UpdateVersions);
-        th.Start();
-    }
-
-    private static void ShortTimer(object _, ElapsedEventArgs e)
-    {
+        Task.WaitAll(Program.Cache.RemoveExpiredCaches(), Verifications.AutoHelper.ValidateOpenCases());
+        //TODO: PLUGIN VERSION CHECKER
+        await Verifications.AutoHelper.UpdateAhMonitor();
+        
         //Clean & Update Caches
         //await Program.Cache.RemoveExpiredCacheEntries(TimeSpan.FromMinutes(5));
         //await CaseMonitor.UpdateMonitor();

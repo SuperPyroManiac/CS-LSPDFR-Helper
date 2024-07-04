@@ -6,15 +6,9 @@ namespace LSPDFR_Helper.Functions.Verifications;
 
 public static class Plugins
 {
-    public static void UpdateVersions()
+    public static async Task UpdateVersions()
     {
-        var th = new Thread(UpdateThread);
-        th.Start();
-    }
-
-    private static async void UpdateThread()
-    {
-                HttpClient webClient = new();
+        HttpClient webClient = new();
 	    var plugins = DbManager.GetPlugins();
         var logMsg = BasicEmbeds.Info($"__Plugin Updates__\r\n*These plugins have updated!*{BasicEmbeds.AddBlanks(45)}\r\n");
         var annMsg = BasicEmbeds.Success($"__Featured Plugin Updates__{BasicEmbeds.AddBlanks(50)}\r\n");

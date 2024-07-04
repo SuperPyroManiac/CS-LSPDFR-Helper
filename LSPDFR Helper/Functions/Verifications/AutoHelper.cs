@@ -1,6 +1,8 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
+using LSPDFR_Helper.CustomTypes.MainTypes;
 using LSPDFR_Helper.EventManagers;
+using LSPDFR_Helper.Functions.AutoHelper;
 using LSPDFR_Helper.Functions.Messages;
 
 namespace LSPDFR_Helper.Functions.Verifications;
@@ -88,11 +90,45 @@ public static class AutoHelper
         await new DiscordMessageBuilder().AddEmbed(embed).ModifyAsync(origMsg);
     }
     
-    // public static Task<int> ValidateOpenCases()
-    // {
-    // }
-    //
-    // public static Task<int> ValidateClosedCases()
-    // {
-    // }
+    public static async Task<int> ValidateOpenCases()
+    {
+        var cnt = 0;
+        
+        foreach ( var ac in Program.Cache.GetCases().Where(x => x.Solved == false) )
+        {
+            if ( ac.ExpireDate <= DateTime.Now.ToUniversalTime() ) { await CloseCase.Close(ac); cnt++; }
+
+            if ( Program.Cache.GetUser(ac.OwnerId).Blocked )
+            {
+                var ch = await Program.Client.GetChannelAsync(ac.ChannelId);
+                await ch.SendMessageAsync(BasicEmbeds.Error($"__You are blacklisted from the bot!__\r\n>>> Contact server staff in <#{Program.Settings.StaffContactChId}> if you think this is an error!"));
+                await CloseCase.Close(ac);
+                cnt++;
+            }
+        }
+        return cnt;
+    }
+    
+    public static async Task<int> ValidateClosedCases()
+    {
+        Dictionary<DiscordThreadChannel, AutoCase> caseChannelDict = new();
+        var cnt = 0;
+    
+        var parentCh = await Program.Client.GetChannelAsync(Program.Settings.AutoHelperChId);
+        var parentChTh = await parentCh.ListPublicArchivedThreadsAsync(null, 100);
+        var thList = parentChTh.Threads.ToList();
+        thList.AddRange(parentCh.Threads);
+        foreach (var th in thList)
+        {
+            if (!th.Name.Contains("AutoHelper")) continue;
+            caseChannelDict.TryAdd(th, Program.Cache.GetCase(th.Name.Split(": ")[1]));
+        }
+
+        foreach (var pair in caseChannelDict.Where(c => c.Value != null))
+        {
+            if ( pair.Key.ThreadMetadata.IsArchived && pair.Value.Solved ) { await CloseCase.Close(pair.Value); cnt++; }
+            if ( pair.Key.ThreadMetadata.IsArchived == false && pair.Value.Solved ) { await CloseCase.Close(pair.Value); cnt++; }
+        }
+        return cnt;
+    }
 }

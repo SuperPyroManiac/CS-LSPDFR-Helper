@@ -13,13 +13,7 @@ public class MessageMonitor
         if ( Program.Cache.GetCases().All(x => x.ChannelId != ctx.Channel.Id) ) return;
         var ac = Program.Cache.GetCases().First(x => x.ChannelId == ctx.Channel.Id);
         if (ac.OwnerId != ctx.Author.Id) return;
-        
-        if (Program.Cache.GetUser(ac.OwnerId).Blocked)
-        {
-            await ctx.Message.RespondAsync(BasicEmbeds.Error($"__You are blacklisted from the bot!__\r\n>>> Contact server staff in <#{Program.Settings.StaffContactChId}> if you think this is an error!"));
-            await CloseCase.Close(ac);
-            return;
-        }
+        if ( Program.Cache.GetUser(ac.OwnerId).Blocked ) return;
         
         // foreach (var error in Program.Cache.GetErrors().Where(error => error.Level == "PMSG")) TODO: Fuzzymatch errors!
         // {
