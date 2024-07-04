@@ -266,7 +266,8 @@ public class RphProcessor : SharedData
         embed = AddCommonFields(embed, false);
         
         var update = Log.Errors.Any(x => x.Level == Level.CRITICAL);
-        foreach (var error in Log.Errors)
+        var cnt = 0;
+        foreach (var error in Log.Errors.Where(x => x.Level != Level.XTRA))
         {
             if ( error.Solution.Length >= 1023 ) error.Solution = "ERROR: The solutions text was too big to display here! Please report this to SuperPyroManiac.";
             if (embed.Fields.Count == 20)
@@ -283,15 +284,18 @@ public class RphProcessor : SharedData
                             $"> {error.Solution.Replace("\n", "\n> ")}");
                     break;
                 case false:
-                    if (error.Level == Level.XTRA) continue;
                     embed.AddField($"___```{error.Level} ID: {error.Id}``` Troubleshooting Steps:___",
                         $"> {error.Solution.Replace("\n", "\n> ")}");
                     break;
             }
+            cnt++;
         }
+        
+        
 
         var responseBuilder = new DiscordMessageBuilder();
         responseBuilder.AddEmbed(embed);
+        if ( _outdated.Length == 0 && _remove.Length == 0 && cnt == 0 ) responseBuilder.AddEmbed(BasicEmbeds.Success("__No Issues Detected__\r\n>>> If you do have any problems, you may want to post in the public support channels!"));//TODO: Better gen message
         await ctx.Message.RespondAsync(responseBuilder);
     }
 }

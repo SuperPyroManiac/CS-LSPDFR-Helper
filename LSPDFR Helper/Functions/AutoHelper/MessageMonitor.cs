@@ -2,6 +2,7 @@ using DSharpPlus;
 using DSharpPlus.EventArgs;
 using LSPDFR_Helper.Functions.Messages;
 using LSPDFR_Helper.Functions.Processors.RPH;
+using LSPDFR_Helper.Functions.Processors.XML;
 
 namespace LSPDFR_Helper.Functions.AutoHelper;
 
@@ -38,25 +39,35 @@ public class MessageMonitor
         var acceptedFiles = new List<string> { "RagePluginHook.log", "ELS.log", "asiloader.log" };
         foreach ( var attach in ctx.Message.Attachments )
         {
-            if ( !acceptedFiles.Contains(attach.FileName) ) continue;
-            if ( attach.FileSize / 1000000 > 3 )
+            if ( !acceptedFiles.Contains(attach.FileName) )
             {
-                await ctx.Message.RespondAsync(BasicEmbeds.Error("__Blacklisted!__\r\n>>> You have sent a log bigger than 3MB! You may not use the AutoHelper until staff review this!"));
-                await Functions.Blacklist(ctx.Author.Id, 
-                    $">>> **User:** {ctx.Author.Mention} ({ctx.Author.Id.ToString()})\r\n**Log:** {ctx.Message.JumpLink}\r\nUser sent a log greater than 3MB!\r\n**File Size:** {attach.FileSize/1000000}MB");
+                if ( attach.FileSize / 1000000 > 3 )
+                {
+                    await ctx.Message.RespondAsync(
+                        BasicEmbeds.Error("__Blacklisted!__\r\n>>> You have sent a log bigger than 3MB! You may not use the AutoHelper until staff review this!"));
+                    await Functions.Blacklist(ctx.Author.Id,
+                        $">>> **User:** {ctx.Author.Mention} ({ctx.Author.Id.ToString()})\r\n**Log:** {ctx.Message.JumpLink}\r\nUser sent a log greater than 3MB!\r\n**File Size:** {attach.FileSize / 1000000}MB");
+                }
+
+                switch ( attach.FileName )
+                {
+                    case "RagePluginHook.log":
+                        var rphProcessor = new RphProcessor();
+                        rphProcessor.Log = await RPHValidater.Run(attach.Url);
+                        await rphProcessor.SendAutoHelperMessage(ctx);
+                        break;
+                    case "ELS.log":
+                        break;
+                    case "asiloader.log":
+                        break;
+                }
             }
 
-            switch ( attach.FileName )
+            if ( attach.FileName!.EndsWith(".xml") || attach.FileName.EndsWith(".meta") )
             {
-                case "RagePluginHook.log":
-                    var rphProcessor = new RphProcessor();
-                    rphProcessor.Log = await RPHValidater.Run(attach.Url);
-                    await rphProcessor.SendAutoHelperMessage(ctx);
-                    break;
-                case "ELS.log":
-                    break;
-                case "asiloader.log":
-                    break;
+                var response = BasicEmbeds.Public($"## __AutoHelper XML Info__{BasicEmbeds.AddBlanks(35)}");
+                response.AddField(attach.FileName, $"```xml\r\n{await XmlValidator.Run(attach.Url)}\r\n```");
+                await ctx.Message.RespondAsync(response);
             }
         }
     }
