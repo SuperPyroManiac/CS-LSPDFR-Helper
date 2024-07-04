@@ -16,11 +16,8 @@ public class ToggleAh
     public async Task ToggleAhCmd(SlashCommandContext ctx)
     {
         if (!await PermissionManager.RequireBotAdmin(ctx)) return;
-        var ahStatus = DbManager.AutoHelperStatus();
-        ahStatus = !ahStatus;
-        var newStatus = "0";
-        if (ahStatus) newStatus = "1";
-        DbManager.AutoHelperStatus(newStatus);
+        var ahStatus = !DbManager.AutoHelperStatus();
+        DbManager.AutoHelperStatus(ahStatus);
 
         await AutoHelper.UpdateMainAhMessage();
         

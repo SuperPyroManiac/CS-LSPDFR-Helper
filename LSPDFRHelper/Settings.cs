@@ -52,7 +52,8 @@ public class Settings
             DbServer: "Example.com",
             DbUser: "Username",
             DbPass: "Password",
-            DbName: "Database"
+            DbName: "Database",
+            BotId: "666"
         );
     } 
 }

@@ -350,16 +350,14 @@ public static class DbManager
     }
     
     //Msc Functions
-    public static bool AutoHelperStatus(string state = null)
+    public static bool AutoHelperStatus(bool? state = null)
     {
         if (state == null)
         {
             try
             {
-                using MySqlConnection cnn = new MySqlConnection(ConnStr);
-                var output = cnn.Query<string>("select Value from GlobalValues where Name = 'AHStatus'");
-                cnn.Close();
-                return output.First() == "1";
+                using var cnn = new MySqlConnection(ConnStr);
+                return cnn.Query<bool>($"select AhStatus from ServerOptions where Id = '{Program.BotSettings.Env.BotId}'").First();
             }
             catch (MySqlException e)
             {
@@ -370,11 +368,10 @@ public static class DbManager
         }
         try
         {
-            using MySqlConnection cnn = new MySqlConnection(ConnStr);
-            cnn.Execute($"UPDATE GlobalValues SET Value = '{state}' WHERE Name = 'AHStatus'");
-            var output = state == "1";
-            cnn.Close();
-            return output;
+            using var cnn = new MySqlConnection(ConnStr);
+            cnn.Execute($"UPDATE ServerOptions SET AhStatus = {state} WHERE Id = '{Program.BotSettings.Env.BotId}'");
+            var output = !state;
+            return output.Value;
         }
         catch (MySqlException e)
         {
@@ -384,29 +381,12 @@ public static class DbManager
         }
     }
     
-    public static GlobalSettings GetGlobalSettings()
+    public static GlobalSettings GetGlobalSettings(string botid)
     {
         try
         {
             using var cnn = new MySqlConnection(ConnStr);
-            var dict = cnn.Query("select * from GlobalValues").ToDictionary(
-                row => ( string )row.Name,
-                row => ( string )row.Value);
-            return new GlobalSettings
-            {
-                AHStatus = dict["AHStatus"].Equals("1"),
-                ServerId = ulong.Parse(dict["ServerId"]),
-                TsRoleId = ulong.Parse(dict["TsRoleId"]),
-                TsIconUrl = dict["TsIconUrl"],
-                AutoHelperChId = ulong.Parse(dict["AutoHelperChId"]),
-                SupportChId = ulong.Parse(dict["SupportChId"]),
-                MonitorChId = ulong.Parse(dict["MonitorChId"]),
-                BotLogChId = ulong.Parse(dict["BotLogChId"]),
-                PublicLogChId = ulong.Parse(dict["PublicLogChId"]),
-                ReportChId = ulong.Parse(dict["ReportChId"]),
-                StaffContactChId = ulong.Parse(dict["StaffContactChId"]),
-                AnnounceChId = ulong.Parse(dict["AnnounceChId"])
-            };
+            return cnn.Query<GlobalSettings>($"select * from ServerOptions where Id = '{botid}'").First();
         }
         catch ( MySqlException e )
         {

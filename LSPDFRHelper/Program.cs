@@ -24,7 +24,7 @@ public class Program
     public static bool IsStarted { get; set; }
     public static Cache Cache = new();
     public static Settings BotSettings = new();
-    public static GlobalSettings Settings = DbManager.GetGlobalSettings();
+    public static GlobalSettings Settings = DbManager.GetGlobalSettings(BotSettings.Env.BotId);
     
     static async Task Main()
     {
