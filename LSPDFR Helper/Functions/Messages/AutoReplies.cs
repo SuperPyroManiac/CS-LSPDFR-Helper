@@ -6,8 +6,7 @@ public static class AutoReplies
 {
     public static async Task MonitorMessages(MessageCreatedEventArgs ctx)
     {
-        if (Program.Settings.SupportChId != ctx.Channel.Id) return;
-        //TODO: Include AH threads!!
+        if (Program.Settings.SupportChId != ctx.Channel.Id && Program.Cache.GetCases().All(x => x.ChannelId != ctx.Channel.Id)) return;
         if (ctx.Message.Attachments.Count == 0) return;
         var dltMsg = false;
         

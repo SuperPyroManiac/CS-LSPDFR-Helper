@@ -287,4 +287,67 @@ public class RphProcessor : SharedData
         await newMessage.SendAsync(eventArgs.Channel);
     }
     
+    public async Task SendAutoHelperMessage(MessageCreatedEventArgs ctx)
+    {
+        var targetMessage = ctx.Message;
+        
+        _outdated = string.Join("\r\n- ",
+            Log.Outdated.Select(plugin => plugin.Link != null && plugin.Link.StartsWith("https://")
+                ? $"[{plugin.DName}]({plugin.Link})"
+                : $"[{plugin.DName}](https://www.google.com/search?q=lspdfr+{plugin.DName.Replace(" ", "+")})").ToList());
+        
+        _current = string.Join(", ", Log.Current.Select(plugin => plugin?.DName).ToList());
+        _remove = string.Join("\r\n- ", ( from plug in Log.Current where (plug.State == State.BROKEN || plug.PluginType == PluginType.LIBRARY) select plug.DName ).ToList());
+        _missing = string.Join(", ", Log.Missing.Select(plugin => $"{plugin?.Name} ({plugin?.Version})").ToList());
+        _missmatch = string.Join(", ", Log.NewVersion.Select(plugin => $"{plugin?.Name} ({plugin?.EaVersion})").ToList());
+        _rph = string.Join(", ", ( from plug in Log.Current where plug.PluginType == PluginType.RPH select plug.DName ).ToList());
+        
+        var embed = GetBaseEmbed("## __RPH.log Info__");
+        
+
+        if (_missmatch.Length > 0 || _missing.Length > 0) await SendUnknownPluginsLog(targetMessage.Channel!.Id, targetMessage.Author!.Id, Log.DownloadLink, Log.Missing, Log.NewVersion);
+        
+        if (_outdated.Length >= 1024 || _remove.Length >= 1024)
+        {
+            embed.AddField(":warning:     **Message Too Big**", "\r\nToo many plugins to display in a single message.\r\nFor detailed info, first fix the plugins!", true);
+            if (_missing.Length > 0) embed.AddField(":bangbang:  **Plugins not recognized:**", _missing);
+            var embed2 = new DiscordEmbedBuilder
+            {
+                Title = ":orange_circle:     **Update:**",
+                Description = "\r\n>>> " + string.Join(" - ", _outdated),
+                Color = new DiscordColor(243, 154, 18),
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.TsIconUrl }
+            };
+            var embed3 = new DiscordEmbedBuilder
+            {
+                Title = ":red_circle:     **Remove:**",
+                Description = "\r\n>>> " + string.Join(" - ", _remove),
+                Color = new DiscordColor(243, 154, 18),
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.TsIconUrl }
+            };
+
+            var overflowBuilder = new DiscordMessageBuilder();
+            overflowBuilder.AddEmbed(embed);
+            if (_outdated.Length != 0) overflowBuilder.AddEmbed(embed2);
+            if (_remove.Length != 0) overflowBuilder.AddEmbed(embed3);
+            overflowBuilder.AddComponents([new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.RphSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))]);
+            
+            await ctx.Message.RespondAsync(overflowBuilder);
+        }
+        else
+        {
+            embed = AddCommonFields(embed);
+            DiscordMessageBuilder webhookBuilder = new();
+            webhookBuilder.AddEmbed(embed);
+            webhookBuilder.AddComponents(
+                [
+                    new DiscordButtonComponent(DiscordButtonStyle.Primary, CustomIds.RphGetErrorInfo, "Error Info", false, new DiscordComponentEmoji("❗")),
+                    new DiscordButtonComponent(DiscordButtonStyle.Primary, CustomIds.RphGetPluginInfo, "Plugin Info", false, new DiscordComponentEmoji("❓")),
+                    new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.RphSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
+                ]
+            );
+            
+            await ctx.Message.RespondAsync(webhookBuilder);
+        }
+    }
 }

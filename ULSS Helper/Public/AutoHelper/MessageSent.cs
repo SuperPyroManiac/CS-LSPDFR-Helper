@@ -55,8 +55,7 @@ public class MessageSent
                     var dltMsg = false;
                     foreach (var attach in ctx.Message.Attachments)
                     {
-                        var rs = $">>> User: {ctx.Author.Mention} ({ctx.Author.Id.ToString()})\r\nLog: {ctx.Message.JumpLink}\r\n" +
-                                 $"User sent a log greater than 3MB!\r\nFile Size: {attach.FileSize/1000000}MB";
+                        var rs = $">>> User: {ctx.Author.Mention} ({ctx.Author.Id.ToString()})\r\nLog: {ctx.Message.JumpLink}\r\nUser sent a log greater than 3MB!\r\nFile Size: {attach.FileSize/1000000}MB";
                         var os = "__AutoBlacklisted!__\r\nYou have sent a log bigger than 3MB! You may not use the AutoHelper until staff review this!";
                         switch (attach.FileName)
                         {
