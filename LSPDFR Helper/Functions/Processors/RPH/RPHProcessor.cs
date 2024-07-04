@@ -22,6 +22,19 @@ public class RphProcessor : SharedData
     private string _gtaVer = "❌";
     private string _lspdfrVer = "❌";
     private string _rphVer = "❌";
+
+    private void InitValues()
+    {
+        _current = string.Join(", ", Log.Current.Select(plugin => plugin?.DName).ToList());
+        _remove = string.Join("\r\n- ", ( from plug in Log.Current where (plug.State == State.BROKEN || plug.PluginType == PluginType.LIBRARY) select plug.DName ).ToList());
+        _missing = string.Join(", ", Log.Missing.Select(plugin => $"{plugin?.Name} ({plugin?.Version})").ToList());
+        _missmatch = string.Join(", ", Log.NewVersion.Select(plugin => $"{plugin?.Name} ({plugin?.EaVersion})").ToList());
+        _rph = string.Join(", ", ( from plug in Log.Current where plug.PluginType == PluginType.RPH select plug.DName ).ToList());
+        _outdated = string.Join("\r\n- ",
+            Log.Outdated.Select(plugin => plugin.Link != null && plugin.Link.StartsWith("https://")
+                ? $"[{plugin.DName}]({plugin.Link})"
+                : $"[{plugin.DName}](https://www.google.com/search?q=lspdfr+{plugin.DName.Replace(" ", "+")})").ToList());
+    }
     
     private DiscordEmbedBuilder GetBaseEmbed(string description)
     {
@@ -31,16 +44,16 @@ public class RphProcessor : SharedData
         return BasicEmbeds.Ts(description + BasicEmbeds.AddBlanks(20),
             new DiscordEmbedBuilder.EmbedFooter { Text = $"GTA: {_gtaVer} - RPH: {_lspdfrVer} - LSPDFR: {_rphVer} - Notes: {Log.Errors.Count} - Try /CheckPlugin" });
     }
-    
-    private DiscordEmbedBuilder AddCommonFields(DiscordEmbedBuilder embed)
+
+    private DiscordEmbedBuilder AddCommonFields(DiscordEmbedBuilder embed, bool ts = true)
     {
         if (_current.Length != 0 && _outdated.Length == 0 && _remove.Length != 0) _outdated = "**None**";
         if (_current.Length != 0 && _outdated.Length != 0 && _remove.Length == 0) _remove = "**None**";
 
         if (_outdated.Length > 0) embed.AddField(":orange_circle:     **Update:**", "\r\n>>> - " + _outdated, true);
         if (_remove.Length > 0) embed.AddField(":red_circle:     **Remove:**", "\r\n>>> - " + _remove, true);
-        if (_missing.Length > 0) embed.AddField(":bangbang:  **Plugins not recognized:**", _missing);
-        if (_missmatch.Length > 0) embed.AddField(":bangbang:  **Plugin version newer than DB:**", _missmatch);
+        if (_missing.Length > 0 && ts) embed.AddField(":bangbang:  **Plugins not recognized:**", _missing);
+        if (_missmatch.Length > 0 && ts) embed.AddField(":bangbang:  **Plugin version newer than DB:**", _missmatch);
 
         if (_current.Length > 0 && _outdated.Length == 0 && _remove.Length == 0 && !string.IsNullOrEmpty(Log.LSPDFRVersion))
             embed.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
@@ -59,46 +72,20 @@ public class RphProcessor : SharedData
     {
         if (context == null && eventArgs == null) throw new InvalidDataException("Parameters 'context' and 'eventArgs' can not both be null!");
         if (targetMessage == null) targetMessage = eventArgs!.Message;
-        
-        _outdated = string.Join("\r\n- ",
-            Log.Outdated.Select(plugin => plugin.Link != null && plugin.Link.StartsWith("https://")
-                ? $"[{plugin.DName}]({plugin.Link})"
-                : $"[{plugin.DName}](https://www.google.com/search?q=lspdfr+{plugin.DName.Replace(" ", "+")})").ToList());
-        
-        _current = string.Join(", ", Log.Current.Select(plugin => plugin?.DName).ToList());
-        _remove = string.Join("\r\n- ", ( from plug in Log.Current where (plug.State == State.BROKEN || plug.PluginType == PluginType.LIBRARY) select plug.DName ).ToList());
-        _missing = string.Join(", ", Log.Missing.Select(plugin => $"{plugin?.Name} ({plugin?.Version})").ToList());
-        _missmatch = string.Join(", ", Log.NewVersion.Select(plugin => $"{plugin?.Name} ({plugin?.EaVersion})").ToList());
-        _rph = string.Join(", ", ( from plug in Log.Current where plug.PluginType == PluginType.RPH select plug.DName ).ToList());
-        
-        var embed = GetBaseEmbed("## __RPH.log Quick Info__");
-        
         var cache = Program.Cache.GetProcess(targetMessage.Id);
-        embed = AddTsViewFields(embed, cache, Log);
-
-
-        if (_missmatch.Length > 0 || _missing.Length > 0) 
-            await SendUnknownPluginsLog(cache.OriginalMessage.Channel!.Id, cache.OriginalMessage.Author!.Id, Log.DownloadLink, Log.Missing, Log.NewVersion);
         
+        InitValues();
+        if (_missmatch.Length > 0 || _missing.Length > 0) await SendUnknownPluginsLog(cache.OriginalMessage.Channel!.Id, cache.OriginalMessage.Author!.Id, Log.DownloadLink, Log.Missing, Log.NewVersion);
+
+        var embed = GetBaseEmbed("## __RPH.log Quick Info__");
+        embed = AddTsViewFields(embed, cache, Log);
         if (_outdated.Length >= 1024 || _remove.Length >= 1024)
         {
             embed.AddField(":warning:     **Message Too Big**", "\r\nToo many plugins to display in a single message.\r\nFor detailed info, first fix the plugins!", true);
             if (_missing.Length > 0) embed.AddField(":bangbang:  **Plugins not recognized:**", _missing);
-            var embed2 = new DiscordEmbedBuilder
-            {
-                Title = ":orange_circle:     **Update:**",
-                Description = "\r\n>>> " + string.Join(" - ", _outdated),
-                Color = new DiscordColor(243, 154, 18),
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.TsIconUrl }
-            };
-            var embed3 = new DiscordEmbedBuilder
-            {
-                Title = ":red_circle:     **Remove:**",
-                Description = "\r\n>>> " + string.Join(" - ", _remove),
-                Color = new DiscordColor(243, 154, 18),
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.TsIconUrl }
-            };
-
+            var embed2 = BasicEmbeds.Public("\r\n>>> " + string.Join(" - ", _outdated));
+            var embed3 = BasicEmbeds.Public("\r\n>>> " + string.Join(" - ", _remove));
+            
             var overflowBuilder = new DiscordWebhookBuilder();
             overflowBuilder.AddEmbed(embed);
             if (_outdated.Length != 0) overflowBuilder.AddEmbed(embed2);
@@ -154,9 +141,10 @@ public class RphProcessor : SharedData
         embed = AddCommonFields(embed);
 
         var errorIds = new List<DiscordSelectComponentOption>();
-        var update = false;
+        var update = Log.Errors.Any(x => x.Level == Level.CRITICAL);
         foreach (var error in Log.Errors)
         {
+            if ( error.Solution.Length >= 1023 ) error.Solution = "ERROR: The solutions text was too big to display here! Please report this to SuperPyroManiac.";
             if (embed.Fields.Count == 20)
             {
                 embed.AddField("___```Too Much``` Overflow:___",
@@ -164,19 +152,19 @@ public class RphProcessor : SharedData
                 break;
             }
 
-            if (error.Level == Level.CRITICAL) update = true;
-            switch (update)
-            {
-                case true:
-                    if (error.Level == Level.CRITICAL)
+            if (error.Level == Level.CRITICAL)
+                switch (update)
+                {
+                    case true:
+                        if (error.Level == Level.CRITICAL)
+                            embed.AddField($"___```{error.Level} ID: {error.Id}``` Troubleshooting Steps:___",
+                                $"> {error.Solution.Replace("\n", "\n> ")}");
+                        break;
+                    case false:
                         embed.AddField($"___```{error.Level} ID: {error.Id}``` Troubleshooting Steps:___",
                             $"> {error.Solution.Replace("\n", "\n> ")}");
-                    break;
-                case false:
-                    embed.AddField($"___```{error.Level} ID: {error.Id}``` Troubleshooting Steps:___",
-                        $"> {error.Solution.Replace("\n", "\n> ")}");
-                    break;
-            }
+                        break;
+                }
 
             if (error.Level != Level.XTRA)
                 if (errorIds.All(x => x.Value != error.Id.ToString())) errorIds.Add(new DiscordSelectComponentOption("Id: " + error.Id, error.Id.ToString()));;
@@ -186,31 +174,12 @@ public class RphProcessor : SharedData
         var responseBuilder = new DiscordInteractionResponseBuilder();
         responseBuilder.AddEmbed(embed);
         if (errorIds.Count > 0 && !update) 
-            responseBuilder.AddComponents(
-                new DiscordSelectComponent(
-                    customId: CustomIds.SelectIdForRemoval, 
-                    placeholder: "Remove Error", 
-                    options: errorIds
-                )
-            );
+            responseBuilder.AddComponents(new DiscordSelectComponent(customId: CustomIds.SelectIdForRemoval, placeholder: "Remove Error", options: errorIds));
         responseBuilder.AddComponents(
             [
-                new DiscordButtonComponent(
-                    DiscordButtonStyle.Secondary,
-                    CustomIds.RphGetQuickInfo,
-                    "Back to Quick Info", 
-                    false,
-                    new DiscordComponentEmoji("⬅️")
-                ),
-                new DiscordButtonComponent(
-                    DiscordButtonStyle.Danger,
-                    CustomIds.RphSendToUser,
-                    "Send To User", 
-                    false,
-                    new DiscordComponentEmoji("📨")
-                )
-            ]
-        );
+                new DiscordButtonComponent(DiscordButtonStyle.Secondary, CustomIds.RphGetQuickInfo, "Back to Quick Info", false, new DiscordComponentEmoji("⬅️")), 
+                new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.RphSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
+            ]);
 
         await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage, responseBuilder);
         var sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
@@ -236,22 +205,9 @@ public class RphProcessor : SharedData
 
         responseBuilder.AddComponents(
             [
-                new DiscordButtonComponent(
-                    DiscordButtonStyle.Secondary,
-                    CustomIds.RphGetQuickInfo,
-                    "Back to Quick Info", 
-                    false,
-                    new DiscordComponentEmoji("⬅️")
-                ),
-                new DiscordButtonComponent(
-                    DiscordButtonStyle.Danger,
-                    CustomIds.RphSendToUser,
-                    "Send To User", 
-                    false,
-                    new DiscordComponentEmoji("📨")
-                )
-            ]
-        );
+                new DiscordButtonComponent(DiscordButtonStyle.Secondary, CustomIds.RphGetQuickInfo, "Back to Quick Info", false, new DiscordComponentEmoji("⬅️")),
+                new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.RphSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
+            ]);
 
         await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage, responseBuilder);
         var sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
@@ -289,65 +245,53 @@ public class RphProcessor : SharedData
     
     public async Task SendAutoHelperMessage(MessageCreatedEventArgs ctx)
     {
-        var targetMessage = ctx.Message;
-        
-        _outdated = string.Join("\r\n- ",
-            Log.Outdated.Select(plugin => plugin.Link != null && plugin.Link.StartsWith("https://")
-                ? $"[{plugin.DName}]({plugin.Link})"
-                : $"[{plugin.DName}](https://www.google.com/search?q=lspdfr+{plugin.DName.Replace(" ", "+")})").ToList());
-        
-        _current = string.Join(", ", Log.Current.Select(plugin => plugin?.DName).ToList());
-        _remove = string.Join("\r\n- ", ( from plug in Log.Current where (plug.State == State.BROKEN || plug.PluginType == PluginType.LIBRARY) select plug.DName ).ToList());
-        _missing = string.Join(", ", Log.Missing.Select(plugin => $"{plugin?.Name} ({plugin?.Version})").ToList());
-        _missmatch = string.Join(", ", Log.NewVersion.Select(plugin => $"{plugin?.Name} ({plugin?.EaVersion})").ToList());
-        _rph = string.Join(", ", ( from plug in Log.Current where plug.PluginType == PluginType.RPH select plug.DName ).ToList());
-        
-        var embed = GetBaseEmbed("## __RPH.log Info__");
-        
+        InitValues();
+        if (_missmatch.Length > 0 || _missing.Length > 0) await SendUnknownPluginsLog(ctx.Message.Channel!.Id, ctx.Message.Author!.Id, Log.DownloadLink, Log.Missing, Log.NewVersion);
 
-        if (_missmatch.Length > 0 || _missing.Length > 0) await SendUnknownPluginsLog(targetMessage.Channel!.Id, targetMessage.Author!.Id, Log.DownloadLink, Log.Missing, Log.NewVersion);
         
+        var embed = GetBaseEmbed("## __AutoHelper RPH.log Info__");
         if (_outdated.Length >= 1024 || _remove.Length >= 1024)
         {
-            embed.AddField(":warning:     **Message Too Big**", "\r\nToo many plugins to display in a single message.\r\nFor detailed info, first fix the plugins!", true);
-            if (_missing.Length > 0) embed.AddField(":bangbang:  **Plugins not recognized:**", _missing);
-            var embed2 = new DiscordEmbedBuilder
-            {
-                Title = ":orange_circle:     **Update:**",
-                Description = "\r\n>>> " + string.Join(" - ", _outdated),
-                Color = new DiscordColor(243, 154, 18),
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.TsIconUrl }
-            };
-            var embed3 = new DiscordEmbedBuilder
-            {
-                Title = ":red_circle:     **Remove:**",
-                Description = "\r\n>>> " + string.Join(" - ", _remove),
-                Color = new DiscordColor(243, 154, 18),
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = Program.Settings.TsIconUrl }
-            };
+            embed.AddField(":warning:     **Message Too Big**", "\r\nToo many plugins to display in a single message.\r\nFor error info, first fix the plugins!", true);
+            var embed2 = BasicEmbeds.Public("\r\n>>> " + string.Join(" - ", _outdated));
+            var embed3 = BasicEmbeds.Public("\r\n>>> " + string.Join(" - ", _remove));
 
             var overflowBuilder = new DiscordMessageBuilder();
             overflowBuilder.AddEmbed(embed);
             if (_outdated.Length != 0) overflowBuilder.AddEmbed(embed2);
             if (_remove.Length != 0) overflowBuilder.AddEmbed(embed3);
-            overflowBuilder.AddComponents([new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.RphSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))]);
-            
             await ctx.Message.RespondAsync(overflowBuilder);
+            return;
         }
-        else
+        embed = AddCommonFields(embed, false);
+        
+        var update = Log.Errors.Any(x => x.Level == Level.CRITICAL);
+        foreach (var error in Log.Errors)
         {
-            embed = AddCommonFields(embed);
-            DiscordMessageBuilder webhookBuilder = new();
-            webhookBuilder.AddEmbed(embed);
-            webhookBuilder.AddComponents(
-                [
-                    new DiscordButtonComponent(DiscordButtonStyle.Primary, CustomIds.RphGetErrorInfo, "Error Info", false, new DiscordComponentEmoji("❗")),
-                    new DiscordButtonComponent(DiscordButtonStyle.Primary, CustomIds.RphGetPluginInfo, "Plugin Info", false, new DiscordComponentEmoji("❓")),
-                    new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.RphSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
-                ]
-            );
-            
-            await ctx.Message.RespondAsync(webhookBuilder);
+            if ( error.Solution.Length >= 1023 ) error.Solution = "ERROR: The solutions text was too big to display here! Please report this to SuperPyroManiac.";
+            if (embed.Fields.Count == 20)
+            {
+                embed.AddField("___```Too Much``` Overflow:___",
+                    ">>> You have more errors than we can show!\r\nPlease fix what is shown, and upload a new log!");
+                break;
+            }
+            switch (update)
+            {
+                case true:
+                    if (error.Level == Level.CRITICAL)
+                        embed.AddField($"___```{error.Level} ID: {error.Id}``` Troubleshooting Steps:___",
+                            $"> {error.Solution.Replace("\n", "\n> ")}");
+                    break;
+                case false:
+                    if (error.Level == Level.XTRA) continue;
+                    embed.AddField($"___```{error.Level} ID: {error.Id}``` Troubleshooting Steps:___",
+                        $"> {error.Solution.Replace("\n", "\n> ")}");
+                    break;
+            }
         }
+
+        var responseBuilder = new DiscordMessageBuilder();
+        responseBuilder.AddEmbed(embed);
+        await ctx.Message.RespondAsync(responseBuilder);
     }
 }
