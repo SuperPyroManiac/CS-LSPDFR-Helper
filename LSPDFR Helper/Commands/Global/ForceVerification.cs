@@ -43,7 +43,7 @@ public class ForceVerification
                     bd.AddEmbed(BasicEmbeds.Success($"__Forced User Verification!__\r\n>>> User count: {Program.Cache.GetUsers().Count}\r\nMissing users added: {missing}\r\nUsernames updated: {usernames}")));
                 await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info($"__Forced User Verification!__\r\n>>> User count: {Program.Cache.GetUsers().Count}\r\nMissing users added: {missing}\r\nUsernames updated: {usernames}"));
                 break;
-            case Choice.CASES:
+            case Choice.CASES://TODO: Figure out why the closed nmber never goes back to 0.
                 closed = await AutoHelper.ValidateClosedCases();
                 closed += await AutoHelper.ValidateOpenCases();
                 await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
@@ -59,7 +59,6 @@ public class ForceVerification
                 await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
                     bd.AddEmbed(BasicEmbeds.Success($"__Forced All Verifications!__\r\n>>> Plugin count: {Program.Cache.GetPlugins().Count}\r\nAllow 10 - 15 minutes for updater to finish.\r\nUser count: {Program.Cache.GetUsers().Count}\r\nMissing users added: {missing}\r\nUsernames updated: {usernames}\r\nCase count: {Program.Cache.GetCases().Count}\r\nClosed: {closed} cases.")));
                 await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info($"__Forced All Verifications!__\r\n>>> Plugin count: {Program.Cache.GetPlugins().Count}\r\nAllow 10 - 15 minutes for updater to finish.\r\nUser count: {Program.Cache.GetUsers().Count}\r\nMissing users added: {missing}\r\nUsernames updated: {usernames}\r\nCase count: {Program.Cache.GetCases().Count}\r\nClosed: {closed} cases."));
-                
                 break;
         }
     }

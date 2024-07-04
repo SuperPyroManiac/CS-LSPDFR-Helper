@@ -14,6 +14,7 @@ using static LSPDFR_Helper.EventManagers.ModalSubmit;
 using static LSPDFR_Helper.EventManagers.CompInteraction;
 using static LSPDFR_Helper.EventManagers.MessageSent;
 using static LSPDFR_Helper.EventManagers.OnJoinLeave;
+using Timer = LSPDFR_Helper.Functions.Timer;
 
 namespace LSPDFR_Helper;
 
@@ -59,6 +60,7 @@ public class Program
     {
         //Startup Tasks
         await Functions.Startup.Init();
+        Timer.Start();
         
         //Allow Events
         IsStarted = true;

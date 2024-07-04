@@ -7,7 +7,7 @@ using LSPDFR_Helper.Functions.Messages;
 
 namespace LSPDFR_Helper.Functions.Verifications;
 
-public static class AutoHelper
+public class AutoHelper
 {
     public static async Task UpdateMainAhMessage()
     {
