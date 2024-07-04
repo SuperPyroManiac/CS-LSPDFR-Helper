@@ -46,6 +46,7 @@ public static class Users
             {
                 cnt++;
                 user.Username = serverUsers[user.Id].DisplayName;
+                await Task.Delay(100);
                 DbManager.EditUser(user);
             }
         }
