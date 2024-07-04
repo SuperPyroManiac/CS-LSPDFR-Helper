@@ -24,8 +24,4 @@
       <Folder Include="Functions\Processors\SHV\" />
     </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\ULSS Helper\ULSS Helper.csproj" />
-    </ItemGroup>
-
 </Project>

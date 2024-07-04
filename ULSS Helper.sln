@@ -1,7 +1,5 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ULSS Helper", "ULSS Helper\ULSS Helper.csproj", "{2D4BD767-6FB1-40B2-8586-CB33F4ACC162}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LSPDFR Helper", "LSPDFR Helper\LSPDFR Helper.csproj", "{6F72EB7D-AC78-4E6E-B429-D11FE08603ED}"
 EndProject
 Global
@@ -10,10 +8,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2D4BD767-6FB1-40B2-8586-CB33F4ACC162}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D4BD767-6FB1-40B2-8586-CB33F4ACC162}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2D4BD767-6FB1-40B2-8586-CB33F4ACC162}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2D4BD767-6FB1-40B2-8586-CB33F4ACC162}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6F72EB7D-AC78-4E6E-B429-D11FE08603ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6F72EB7D-AC78-4E6E-B429-D11FE08603ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F72EB7D-AC78-4E6E-B429-D11FE08603ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
