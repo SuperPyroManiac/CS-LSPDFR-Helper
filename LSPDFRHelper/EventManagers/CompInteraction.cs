@@ -130,7 +130,6 @@ public static class CompInteraction
                     Program.Cache.RemoveUserAction(eventArgs.User.Id, CustomIds.SelectPluginValueToEdit);
                     await eventArgs.Message.DeleteAsync();
                     await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate);
-                    Program.Cache.UpdatePlugins(DbManager.GetPlugins());
                     return;
                 }
                     
@@ -194,7 +193,6 @@ public static class CompInteraction
                     Program.Cache.RemoveUserAction(eventArgs.User.Id, CustomIds.SelectErrorValueToEdit);
                     await eventArgs.Message.DeleteAsync();
                     await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate);
-                    Program.Cache.UpdateErrors(DbManager.GetErrors());
                     return;
                 }
                     
@@ -248,7 +246,6 @@ public static class CompInteraction
             var newCase = await OpenCase.CreateCase(await Functions.Functions.GetMember(eventArgs.User.Id));
             msg.AddEmbed(BasicEmbeds.Success($"__Created new case!__\r\n> {newCase.Mention}"));
             await eventArgs.Interaction.EditOriginalResponseAsync(msg);
-            Program.Cache.UpdateCases(DbManager.GetCases());
         }
 
         if (eventArgs.Id == CustomIds.MarkSolved)
@@ -266,7 +263,6 @@ public static class CompInteraction
             }
             msg.AddEmbed(BasicEmbeds.Error("__You do not own this case!__"));
             await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, msg);
-            Program.Cache.UpdateCases(DbManager.GetCases());
         }
 
         if (eventArgs.Id == CustomIds.JoinCase)
@@ -289,7 +285,6 @@ public static class CompInteraction
             }
             await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
                 msg.AddEmbed(BasicEmbeds.Success($"__Case Joined!__\r\n> <#{ac.ChannelId}>")));
-            Program.Cache.UpdateCases(DbManager.GetCases());
         }
 
         if (eventArgs.Id == CustomIds.IgnoreRequest)
@@ -312,7 +307,6 @@ public static class CompInteraction
             }
             await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
                 msg.AddEmbed(BasicEmbeds.Error("__No Permission!__\r\n> Only server TS can use this!")));
-            Program.Cache.UpdateCases(DbManager.GetCases());
         }
 
         if (eventArgs.Id == CustomIds.RequestHelp)

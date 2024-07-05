@@ -150,7 +150,6 @@ public static class ModalSubmit
                     user.Blocked = e.Values["userBlacklist"].Equals("true", StringComparison.OrdinalIgnoreCase);
                     DbManager.EditUser(user);
                     await Task.Delay(250);
-                    Program.Cache.UpdateUsers(DbManager.GetUsers());
 
                     var embed = BasicEmbeds.Info(
                         $"__User Updated!__\r\n"
@@ -207,7 +206,6 @@ public static class ModalSubmit
                         ac.RequestId = rCh.Id;
                         ac.ExpireDate = DateTime.Now.ToUniversalTime().AddHours(12);
                         DbManager.EditCase(ac);
-                        Program.Cache.UpdateCases(DbManager.GetCases());
                         return;
                     }
                     if (ac.TsRequested)
