@@ -231,8 +231,6 @@ public class RphProcessor : SharedData
         var newMessage = new DiscordMessageBuilder();
         newMessage.AddEmbeds(newEmbList);
         newMessage.WithReply(Log.MsgId, true);
-        newMessage.AddComponents(new DiscordButtonComponent(DiscordButtonStyle.Secondary, CustomIds.SendFeedback,
-            "Send Feedback", false, new DiscordComponentEmoji("📨")));
         await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage,
             new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Info("Sent!")));
         await eventArgs.Interaction.DeleteOriginalResponseAsync();

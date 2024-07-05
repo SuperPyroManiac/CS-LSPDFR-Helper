@@ -14,7 +14,6 @@ public record CustomIds
     public const string SelectUserValueToEdit = "SelectUserValueToEdit";
     
     // public
-    public const string SendFeedback = "SendFeedback";
     public const string RequestHelp = "RequestHelp";
     public const string MarkSolved = "MarkSolved";
     public const string JoinCase = "JoinCase";
