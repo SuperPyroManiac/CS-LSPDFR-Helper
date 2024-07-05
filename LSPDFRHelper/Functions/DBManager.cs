@@ -48,6 +48,7 @@ public static class DbManager
         {
             await using var cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("insert into Cases (CaseId, OwnerID, ChannelID, Solved, TsRequested, RequestID, CreateDate, ExpireDate) VALUES (@CaseId, @OwnerID, @ChannelID, @Solved, @TsRequested, @RequestID, @CreateDate, @ExpireDate)", acase);
+            Program.Cache.UpdateCases(GetCases());
         }
         catch (MySqlException e)
         {
@@ -63,6 +64,7 @@ public static class DbManager
         {
             await using var cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("UPDATE Cases SET OwnerID = @OwnerID, ChannelID = @ChannelID, Solved = @Solved, TsRequested = @TsRequested, RequestID = @RequestID, CreateDate = @CreateDate, ExpireDate = @ExpireDate WHERE CaseId = (@CaseId)", acase);
+            Program.Cache.UpdateCases(GetCases());
         }
         catch (MySqlException e)
         {
@@ -148,6 +150,7 @@ public static class DbManager
         {
             await using var cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("insert into Plugin (Name, DName, Version, EaVersion, Id, State, PluginType, Link, Description, AuthorId, Announce) VALUES (@Name, @DName, @Version, @EaVersion, @Id, @State, @PluginType, @Link, @Description, @AuthorId, @Announce)", plugin);
+            Program.Cache.UpdatePlugins(GetPlugins());
         }
         catch (MySqlException e)
         {
@@ -163,6 +166,7 @@ public static class DbManager
         {
             await using var cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("UPDATE Plugin SET DName = @DName, Version = @Version, EaVersion = @EaVersion, Id = @Id, State = @State, PluginType = @PluginType, Link = @Link, Description = @Description, AuthorId = @AuthorId, Announce = @Announce WHERE Name = (@Name)", plugin);
+            Program.Cache.UpdatePlugins(GetPlugins());
         }
         catch (MySqlException e)
         {
@@ -178,6 +182,7 @@ public static class DbManager
         {
             await using var cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("delete from Plugin where Name = (@Name)", plugin);
+            Program.Cache.UpdatePlugins(GetPlugins());
         }
         catch (MySqlException e)
         {
@@ -262,6 +267,7 @@ public static class DbManager
         {
             using var cnn = new MySqlConnection(ConnStr);
             cnn.Execute("insert into Error (Pattern, Solution, Description, Level, StringMatch) VALUES (@Pattern, @Solution, @Description, @Level, @StringMatch)", error);
+            Program.Cache.UpdateErrors(GetErrors());
             return int.Parse(cnn.ExecuteScalar("SELECT LAST_INSERT_ID();")!.ToString()!);
         }
         catch (MySqlException e)
@@ -278,6 +284,7 @@ public static class DbManager
         {
             await using var cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("UPDATE Error SET Pattern = @Pattern, Solution = @Solution, Description = @Description, Level = @Level, StringMatch = @StringMatch WHERE Id = (@Id)", error);
+            Program.Cache.UpdateErrors(GetErrors());
         }
         catch (MySqlException e)
         {
@@ -325,6 +332,7 @@ public static class DbManager
         {
             await using var cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("insert into Users (Id, Username, BotEditor, BotAdmin, Blocked, LogPath) VALUES (@Id, @Username, @BotEditor, @BotAdmin, @Blocked, @LogPath)", user);
+            Program.Cache.UpdateUsers(GetUsers());
         }
         catch (MySqlException e)
         {
@@ -340,6 +348,7 @@ public static class DbManager
         {
             await using var cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("UPDATE Users SET Id = @Id, Username = @Username, BotEditor = @BotEditor, BotAdmin = @BotAdmin, Blocked = @Blocked, LogPath = @LogPath WHERE Id = @Id", user);
+            Program.Cache.UpdateUsers(GetUsers());
         }
         catch (MySqlException e)
         {

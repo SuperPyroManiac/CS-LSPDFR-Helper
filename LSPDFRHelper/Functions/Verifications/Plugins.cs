@@ -8,6 +8,11 @@ public static class Plugins
 {
     public static async Task UpdateVersions()
     {
+        
+    }
+    
+    public static async Task UpdateAllVersions()
+    {
         HttpClient webClient = new();
 	    var plugins = DbManager.GetPlugins();
         var logMsg = BasicEmbeds.Info($"__Plugin Updates__\r\n*These plugins have updated!*{BasicEmbeds.AddBlanks(45)}\r\n");
@@ -76,7 +81,6 @@ public static class Plugins
                 await Logging.ErrLog($"Version Updater Exception:\r\n {e}");
             }
         }
-        Program.Cache.UpdatePlugins(DbManager.GetPlugins());
 
         if ( upCnt == 0 ) return;
         await Logging.SendLog(0, 0, logMsg, false);
