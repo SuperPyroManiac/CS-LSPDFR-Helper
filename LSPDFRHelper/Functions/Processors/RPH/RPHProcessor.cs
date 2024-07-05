@@ -42,7 +42,7 @@ public class RphProcessor : SharedData
         if (Program.Cache.GetPlugin("LSPDFR").Version.Equals(Log.LSPDFRVersion)) _lspdfrVer = "\u2713";
         if (Program.Cache.GetPlugin("RagePluginHook").Version.Equals(Log.RPHVersion)) _rphVer = "\u2713";
         return BasicEmbeds.Ts(description + BasicEmbeds.AddBlanks(20),
-            new DiscordEmbedBuilder.EmbedFooter { Text = $"GTA: {_gtaVer} - RPH: {_lspdfrVer} - LSPDFR: {_rphVer} - Notes: {Log.Errors.Count} - Try /CheckPlugin" });
+            new DiscordEmbedBuilder.EmbedFooter { Text = $"GTA: {_gtaVer} - RPH: {_rphVer} - LSPDFR: {_lspdfrVer} - Notes: {Log.Errors.Count} - Try /CheckPlugin" });
     }
 
     private DiscordEmbedBuilder AddCommonFields(DiscordEmbedBuilder embed, bool ts = true)
@@ -57,9 +57,9 @@ public class RphProcessor : SharedData
 
         if (_current.Length > 0 && _outdated.Length == 0 && _remove.Length == 0 && !string.IsNullOrEmpty(Log.LSPDFRVersion))
             embed.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
-        if (_current.Length > 0 && _outdated.Length == 0 && _remove.Length == 0 && string.IsNullOrEmpty(Log.LSPDFRVersion))
+        if (string.IsNullOrEmpty(Log.LSPDFRVersion))
             embed.AddField(":red_circle:     **LSPDFR Not Loaded!**", "\r\n- **No plugin information available!**");
-        if (_current.Length == 0 && _outdated.Length == 0 && _remove.Length == 0)
+        if (_current == "**None**" && _outdated.Length == 0 && _remove.Length == 0 && !string.IsNullOrEmpty(Log.LSPDFRVersion))
             embed.AddField(":green_circle:     **No loaded plugins!**", "- No plugins detected from this log.");
         
         if (_current.Length == 0) _current = "**None**";
@@ -151,24 +151,20 @@ public class RphProcessor : SharedData
                     ">>> You have more errors than we can show!\r\nPlease fix what is shown, and upload a new log!");
                 break;
             }
-
-            if (error.Level == Level.CRITICAL)
-                switch (update)
-                {
-                    case true:
-                        if (error.Level == Level.CRITICAL)
-                            embed.AddField($"___```{error.Level} ID: {error.Id}``` Troubleshooting Steps:___",
-                                $"> {error.Solution.Replace("\n", "\n> ")}");
-                        break;
-                    case false:
+            switch (update)
+            {
+                case true:
+                    if (error.Level == Level.CRITICAL)
                         embed.AddField($"___```{error.Level} ID: {error.Id}``` Troubleshooting Steps:___",
                             $"> {error.Solution.Replace("\n", "\n> ")}");
-                        break;
-                }
-
-            if (error.Level != Level.XTRA)
-                if (errorIds.All(x => x.Value != error.Id.ToString())) errorIds.Add(new DiscordSelectComponentOption("Id: " + error.Id, error.Id.ToString()));;
-            
+                    break;
+                case false:
+                    embed.AddField($"___```{error.Level} ID: {error.Id}``` Troubleshooting Steps:___",
+                        $"> {error.Solution.Replace("\n", "\n> ")}");
+                    break;
+            }
+            if (error.Level != Level.XTRA && errorIds.All(x => x.Value != error.Id.ToString())) 
+                errorIds.Add(new DiscordSelectComponentOption("Id: " + error.Id, error.Id.ToString()));;
         }
 
         var responseBuilder = new DiscordInteractionResponseBuilder();

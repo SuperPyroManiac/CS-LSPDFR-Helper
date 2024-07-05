@@ -33,7 +33,7 @@ public class MessageMonitor
         var acceptedFiles = new List<string> { "RagePluginHook.log", "ELS.log", "asiloader.log" };
         foreach ( var attach in ctx.Message.Attachments )
         {
-            if ( !acceptedFiles.Contains(attach.FileName) )
+            if ( acceptedFiles.Contains(attach.FileName) )
             {
                 if ( attach.FileSize / 1000000 > 3 )
                 {
