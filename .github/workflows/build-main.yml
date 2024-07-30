@@ -12,7 +12,7 @@ on:
 jobs:
   build:
 
-    runs-on: main-runner
+    runs-on: Main
 
     steps:
     - uses: actions/checkout@v3
