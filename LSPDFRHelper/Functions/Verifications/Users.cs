@@ -1,3 +1,4 @@
+using DSharpPlus.Entities;
 using LSPDFRHelper.CustomTypes.MainTypes;
 
 namespace LSPDFRHelper.Functions.Verifications;
@@ -7,11 +8,16 @@ public static class Users
     
     public static async Task<int> Missing()
     {
-        var serverUsers = Functions.GetGuild().Members;
+        var serverUsers = new List<DiscordUser>();
+            
+        foreach ( var srv in Program.Client.Guilds.Values )
+        foreach ( var usr in srv.Members )
+                if (!serverUsers.Contains(usr.Value)) serverUsers.Add(usr.Value);
+        
         var dbUsers = DbManager.GetUsers();
         
         var cnt = 0;
-        foreach (var user in serverUsers.Values.ToList())
+        foreach (var user in serverUsers)
         {
             if (dbUsers.All(x => x.Id != user.Id))
             {
@@ -35,19 +41,21 @@ public static class Users
     
     public static async Task<int> Usernames()
     {
-        var serverUsers = Functions.GetGuild().Members;
-        var dbUsers = DbManager.GetUsers();
-        
         var cnt = 0;
-        foreach (var user in dbUsers)
+        foreach ( var srv in Program.Client.Guilds.Values )
         {
-            if (!serverUsers.ContainsKey(user.Id)) continue;
-            if (serverUsers[user.Id].DisplayName != user.Username)
+            var dbUsers = DbManager.GetUsers();
+            
+            foreach (var user in dbUsers)
             {
-                cnt++;
-                user.Username = serverUsers[user.Id].DisplayName;
-                await Task.Delay(100);
-                DbManager.EditUser(user);
+                if (!srv.Members.ContainsKey(user.Id)) continue;
+                if (srv.Members[user.Id].Username != user.Username)
+                {
+                    cnt++;
+                    user.Username = srv.Members[user.Id].Username;
+                    await Task.Delay(100);
+                    DbManager.EditUser(user);
+                }
             }
         }
         return cnt;

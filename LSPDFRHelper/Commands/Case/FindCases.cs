@@ -4,6 +4,7 @@ using DSharpPlus.Commands;
 using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Entities;
 using LSPDFRHelper.Functions.Messages;
+using LSPDFRHelper.Functions.Verifications;
 
 namespace LSPDFRHelper.Commands.Case;
 
@@ -13,6 +14,7 @@ public class FindCases
     [Description("Finds autohelper cases a user opened!")]
     public async Task CloseCaseCmd(SlashCommandContext ctx, [Description("The user to check.")] DiscordUser userid)
     {
+        if (!await PermissionManager.RequireNotBlacklisted(ctx)) return;
         await ctx. Interaction.DeferAsync(true);
         var acase = Program.Cache.GetCases().Where(ac => ac.OwnerId.Equals(userid.Id)).ToList();
         var msg = new DiscordWebhookBuilder();
@@ -35,7 +37,7 @@ public class FindCases
         {
             if (embed.Fields.Count >= 24) break;
             embed.AddField($"__Case: {ucase.CaseId}__", 
-                $">>> [Here](https://discord.com/channels/{Functions.Functions.GetGuild().Id}/{ucase.ChannelId})\r\n" +
+                $">>> [Here](https://discord.com/channels/{ucase.ServerId}/{ucase.ChannelId})\r\n" +
                 $"{Formatter.Timestamp(ucase.CreateDate.ToLocalTime())}\r\n" +
                 $"TS Request: {Convert.ToBoolean(ucase.TsRequested)}", true);
         }

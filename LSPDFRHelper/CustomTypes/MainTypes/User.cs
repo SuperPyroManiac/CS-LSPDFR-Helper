@@ -9,9 +9,9 @@ public class User
     public bool Blocked { get; set; }
     public string LogPath { get; set; }
 
-    public async Task<bool> IsTs()
+    public async Task<bool> IsManager(ulong guild)
     {
-        var usr = await Functions.Functions.GetMember(Id);
-        return usr.Roles.Any(role => role.Id == Program.Settings.TsRoleId);
+        var usr = await Functions.Functions.GetMember(guild, Id);
+        return usr.Roles.Any(role => role.Id == Program.Cache.GetServer(guild).ManagerRoleId);
     }
 }

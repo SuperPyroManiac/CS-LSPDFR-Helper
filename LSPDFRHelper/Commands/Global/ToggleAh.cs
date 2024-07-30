@@ -15,17 +15,16 @@ public class ToggleAh
     
     public async Task ToggleAhCmd(SlashCommandContext ctx)
     {
-        if (!await PermissionManager.RequireBotAdmin(ctx)) return;
-        var ahStatus = !DbManager.AutoHelperStatus();
-        DbManager.AutoHelperStatus(ahStatus);
+        if (!await PermissionManager.RequireServerManager(ctx)) return;
+        var ahStatus = !DbManager.AutoHelperStatus(ctx.Guild!.Id);
+        DbManager.AutoHelperStatus(ctx.Guild!.Id, ahStatus);
 
-        await AutoHelper.UpdateMainAhMessage();
+        await AutoHelper.UpdateMainAhMessage(ctx.Guild.Id);
         
         var bd = new DiscordInteractionResponseBuilder();
         bd.IsEphemeral = true;
         
         bd.AddEmbed(BasicEmbeds.Success($"__AutoHelper Status Changed!__\r\n> Enabled: {ahStatus}", true));
         await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, bd);
-        await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info($"__AutoHelper Status Changed!__\r\n> Enabled: {ahStatus}"));
     }
 }

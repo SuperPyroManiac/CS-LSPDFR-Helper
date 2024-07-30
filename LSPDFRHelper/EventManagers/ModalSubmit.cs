@@ -103,8 +103,8 @@ public static class ModalSubmit
 
                     switch (e.Values.First().Key)
                     {
-                        case "Error Regex":
-                            err.Pattern = e.Values["Error Regex"];
+                        case "Error Pattern":
+                            err.Pattern = e.Values["Error Pattern"];
                             break;
                         case "Error Solution":
                             err.Solution = e.Values["Error Solution"];
@@ -174,7 +174,7 @@ public static class ModalSubmit
                 msg.IsEphemeral = true;
                 var ac = Program.Cache.GetCases().First(x => x.ChannelId.Equals(e.Interaction.Channel.Id));
 
-                if (e.Interaction.User.Id.Equals(ac.OwnerId) || await Program.Cache.GetUser(e.Interaction.User.Id).IsTs())
+                if (e.Interaction.User.Id.Equals(ac.OwnerId) || await Program.Cache.GetUser(e.Interaction.User.Id).IsManager(e.Interaction.Guild!.Id))
                 {
                     if (!ac.TsRequested)
                     {
@@ -186,10 +186,9 @@ public static class ModalSubmit
                             $"\r\n__**Ensure you have explained your issue well!!**__\r\n```{e.Values["issueDsc"]}```"));
                         await e.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, msg);
                         var tsMsg = new DiscordMessageBuilder();
-                        var tmpownr = await Functions.Functions.GetMember(ac.OwnerId);
                         tsMsg.AddEmbed(BasicEmbeds.Info(
                             $"__Help Requested! Case: {ac.CaseId}__\r\n" +
-                            $">>> Author: <@{ac.OwnerId}> ({tmpownr.DisplayName})\r\n" +
+                            $">>> Author: <@{ac.OwnerId}> ({Program.Cache.GetUser(ac.OwnerId).Username})\r\n" +
                             $"Thread: <#{ac.ChannelId}>\r\n" +
                             $"Reason:\r\n```{e.Values["issueDsc"]}```\r\n" +
                             $"Created: <t:{e.Interaction.Channel.CreationTimestamp.ToUnixTimeSeconds()}:R>"));
@@ -200,7 +199,7 @@ public static class ModalSubmit
                             new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.IgnoreRequest,
                                 "Ignore", false,
                                 new DiscordComponentEmoji("🪠"))]);
-                        var tsMsgSent = await Functions.Functions.GetGuild().GetChannelAsync(Program.Settings.MonitorChId);
+                        var tsMsgSent = await Program.Client.GetChannelAsync(Program.Cache.GetServer(e.Interaction.Guild!.Id).MonitorChId);
                         var rCh = await tsMsgSent.SendMessageAsync(tsMsg);
                         ac.TsRequested = true;
                         ac.RequestId = rCh.Id;

@@ -20,7 +20,7 @@ public class EditError
         [Description("The error ID.")] string errorId,
         [Description("The error level.")] Level newlevel = default)
     {
-        if (!await PermissionManager.RequireAdvancedTs(ctx)) return;
+        if (!await PermissionManager.RequireBotEditor(ctx)) return;
         var bd = new DiscordInteractionResponseBuilder();
 
         if (DbManager.GetError(errorId) == null)
@@ -36,7 +36,7 @@ public class EditError
         if (newlevel != default) error.Level = newlevel;
         var errorValues = new List<DiscordSelectComponentOption>
         {
-            new("Pattern", "Error Regex"),
+            new("Pattern", "Error Pattern"),
             new("Solution", "Error Solution"),
             new("Description", "Error Description"),
             new("String Match", "Error String Match"),
@@ -70,7 +70,7 @@ public class EditError
                 CustomIds.SelectErrorValueToFinish,
                 "Done Editing",
                 false,
-                new DiscordComponentEmoji(DiscordEmoji.FromName(Program.Client, ":yes:"))));
+                new DiscordComponentEmoji(DiscordEmoji.FromName(Program.Client, ":checkyes:"))));
 
         try
         {

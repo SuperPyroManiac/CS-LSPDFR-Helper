@@ -8,14 +8,14 @@ public class Functions
 {
     private static readonly DiscordClient Client = Program.Client;
     
-    public static DiscordGuild GetGuild()
+    public static DiscordGuild GetGuild(ulong id)
     {
-        return Client.Guilds[Program.Settings.ServerId];
+        return Client.Guilds[id];
     }
     
-    public static  async Task<DiscordMember> GetMember(ulong uid)
+    public static  async Task<DiscordMember> GetMember(ulong guildid, ulong memberid)
     {
-        return await GetGuild().GetMemberAsync(uid);
+        return await GetGuild(guildid).GetMemberAsync(memberid);
     }
     
     public static async Task Blacklist(ulong userId, string reason)

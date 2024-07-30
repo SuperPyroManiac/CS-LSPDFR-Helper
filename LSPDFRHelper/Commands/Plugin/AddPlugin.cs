@@ -21,7 +21,7 @@ public class AddPlugin
         [Description("Plugin type")] PluginType plugintype,
         [Description("Plugin state")] State pluginstate)
     {
-        if (!await PermissionManager.RequireAdvancedTs(ctx)) return;
+        if (!await PermissionManager.RequireBotEditor(ctx)) return;
         
         if (DbManager.GetPlugins().Any(plugin => plugin.Name == pluginname))
         {
@@ -87,7 +87,7 @@ public class AddPlugin
             CustomIds.SelectPluginValueToFinish,
             "Done Editing",
             false,
-            new DiscordComponentEmoji(DiscordEmoji.FromName(Program.Client, ":yes:"))));
+            new DiscordComponentEmoji(DiscordEmoji.FromName(Program.Client, ":checkyes:"))));
         
         try
         {

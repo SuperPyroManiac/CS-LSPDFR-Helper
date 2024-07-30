@@ -41,10 +41,10 @@ public class CheckPlugin
             + $"**Notes:** \r\n```{plugin.Description}```\r\n");
 		
 		await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, response.AddEmbed(embed));
-		await Logging.SendPubLog(BasicEmbeds.Info(
-			$"__User checked a plugin!__{BasicEmbeds.AddBlanks(25)}\r\n"
-			+ $">>> Sender: {ctx.Member!.Mention} ({ctx.Member.Username})\r\n"
-			+ $"Channel: <#{ctx.Channel.Id}>\r\n"
-			+ $"Plugin: {name}\r\n"));
+		// await Logging.SendPubLog(BasicEmbeds.Info(
+		// 	$"__User checked a plugin!__{BasicEmbeds.AddBlanks(25)}\r\n"
+		// 	+ $">>> Sender: {ctx.Member!.Mention} ({ctx.Member.Username})\r\n"
+		// 	+ $"Channel: <#{ctx.Channel.Id}>\r\n"
+		// 	+ $"Plugin: {name}\r\n"));
 	}
 }

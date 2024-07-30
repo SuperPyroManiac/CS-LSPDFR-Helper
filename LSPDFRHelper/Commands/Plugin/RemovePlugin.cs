@@ -18,7 +18,7 @@ public class RemovePlugin
         [Description("Must match an existing plugin name!"), 
          SlashAutoCompleteProvider<PluginAutoComplete>] string pluginName)
     {
-        if (!await PermissionManager.RequireAdvancedTs(ctx)) return;
+        if (!await PermissionManager.RequireBotEditor(ctx)) return;
         var bd = new DiscordInteractionResponseBuilder();
         bd.IsEphemeral = true;
         

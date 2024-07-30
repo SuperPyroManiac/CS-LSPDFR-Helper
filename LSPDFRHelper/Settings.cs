@@ -1,5 +1,6 @@
 ﻿using System.Text.Encodings.Web;
 using System.Text.Json;
+using DSharpPlus.Entities;
 using LSPDFRHelper.CustomTypes.SpecialTypes;
 
 namespace LSPDFRHelper;
@@ -52,8 +53,24 @@ public class Settings
             DbServer: "Example.com",
             DbUser: "Username",
             DbPass: "Password",
-            DbName: "Database",
-            BotId: "666"
+            DbName: "Database"
         );
-    } 
+    }
+
+    public async Task<DiscordGuild> MainGuild()
+    {
+        return await Program.Client.GetGuildAsync(736140566311600138);
+    }
+    public async Task<DiscordChannel> BasicLogs()
+    {
+        return await Program.Client.GetChannelAsync(1267186938012635290);
+    }
+    public async Task<DiscordChannel> ReportLogs()
+    {
+        return await Program.Client.GetChannelAsync(1267186900280672338);
+    }
+    public async Task<DiscordChannel> ErrorLogs()
+    {
+        return await Program.Client.GetChannelAsync(1267186854302846976);
+    }
 }
