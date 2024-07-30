@@ -25,7 +25,7 @@ public static class Servers
                     continue;
                 }
                 cnt++;
-                DbManager.AddServer(new Server
+                var srv = new Server()
                 {
                     ServerId = serv.Value.Id,
                     Enabled = true,
@@ -35,7 +35,12 @@ public static class Servers
                     MonitorChId = 0,
                     AnnounceChId = 0,
                     ManagerRoleId = 0
-                });
+                };
+                if ( Program.Cache.GetUser(serv.Value.OwnerId) != null )
+                    if ( Program.Cache.GetUser(serv.Value.OwnerId).Blocked ) srv.Blocked = true;
+                
+
+                DbManager.AddServer(srv);
             }
             return cnt;
         }
@@ -83,22 +88,10 @@ public static class Servers
             {
                 var server = Program.Cache.GetServer(serv.Key);
                 if (server == null) continue;
-
-                if ( server.Blocked )
-                {
-                    //var owner = await serv.Value.GetGuildOwnerAsync();
-                    var owner = serv.Value.Owner;
-                    await Logging.ReportPubLog(
-                        BasicEmbeds.Error($"__Left Blocked Server__\r\n>>> " + 
-                                          $"**Name:** {serv.Value.Name}\r\n" +
-                                          $"**ID:** {serv.Value.Id}\r\n" +
-                                          $"**Owner:** {owner.Id} ({owner.Username})"));
-                    var ch = await serv.Value.GetPublicUpdatesChannelAsync();
-                    if ( ch != null )
-                        await ch.SendMessageAsync(
-                            BasicEmbeds.Error("__Server Is Blacklisted!__\r\n>>> If you think this is an error, you may contact us at https://dsc.PyrosFun.com"));
-                    await serv.Value.LeaveAsync();
-                }
+                
+                if ( Program.Cache.GetUser(serv.Value.OwnerId) != null )
+                    if ( Program.Cache.GetUser(serv.Value.OwnerId).Blocked ) server.Blocked = true;
+                DbManager.EditServer(server);
             }
         }
         catch ( Exception ex )

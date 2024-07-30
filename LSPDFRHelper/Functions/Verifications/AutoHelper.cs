@@ -13,7 +13,7 @@ public class AutoHelper
     {
         try
         {
-            const string description = 
+            var description = 
                 "\r\n> The AutoHelper can read a variety of file types and will attempt to find issues. Currently supported log files are **RagePluginHook** and **ELS** logs. The AutoHelper can also parse **.xml** and *.meta* files."+
                 "\r\n> Please note that frequent issues can often be detected, but human assistance may be required for more advanced problems. you may wish to use the request button to ask for human help." +
                 "\r\n\r\n## __AutoHelper Terms Of Use__" +
@@ -41,7 +41,7 @@ public class AutoHelper
                     }
                     if (origMsg == null) origMsg = await ch.SendMessageAsync("Starting...");
 
-                    embed.Description = description; 
+                    embed.Description += description; 
                     if (!stt) embed.Description += "\r\n\r\n## __AutoHelper Disabled!__\r\n>>> **System has been disabled by staff temporarily!**";
         
                     await new DiscordMessageBuilder()
@@ -66,7 +66,7 @@ public class AutoHelper
             }
             if (origMsgg == null) origMsgg = await chh.SendMessageAsync("Starting...");
 
-            embedd.Description = description;
+            embedd.Description += description;
             if (!st) embedd.Description += "\r\n\r\n## __AutoHelper Disabled!__\r\n>>> **System has been disabled by staff temporarily!**";
         
             await new DiscordMessageBuilder()

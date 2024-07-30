@@ -2,6 +2,7 @@ using System.ComponentModel;
 using DSharpPlus.Commands;
 using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Entities;
+using LSPDFRHelper.Functions;
 using LSPDFRHelper.Functions.Messages;
 using LSPDFRHelper.Functions.Verifications;
 
@@ -13,6 +14,7 @@ public enum Choice
     USERS,
     CASES,
     SERVERS,
+    CACHE,
     ALL
 }
 
@@ -45,7 +47,7 @@ public class ForceVerification
                     bd.AddEmbed(BasicEmbeds.Success($"__Forced User Verification!__\r\n>>> User count: {Program.Cache.GetUsers().Count}\r\nMissing users added: {missing}\r\nUsernames updated: {usernames}")));
                 await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info($"__Forced User Verification!__\r\n>>> User count: {Program.Cache.GetUsers().Count}\r\nMissing users added: {missing}\r\nUsernames updated: {usernames}"));
                 break;
-            case Choice.CASES://TODO: Figure out why the closed nmber never goes back to 0.
+            case Choice.CASES:
                 closed = await AutoHelper.ValidateClosedCases();
                 closed += await AutoHelper.ValidateOpenCases();
                 await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
@@ -60,6 +62,12 @@ public class ForceVerification
                     bd.AddEmbed(BasicEmbeds.Success($"__Forced Server Verification!__\r\n>>> Server Count: {Program.Cache.ServerCacheDict.Count}\r\nModified: {servers} servers.")));
                 await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info($"__Forced Server Verification!__\r\n>>> Server count: {Program.Cache.ServerCacheDict.Count}\r\nModified: {servers} servers."));
                 break;
+            case Choice.CACHE:
+                Program.Cache.ResetCaches();
+                await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
+                    bd.AddEmbed(BasicEmbeds.Success("__Forced Cache Update!__\r\n>>> All caches have been cleared and reset!")));
+                await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info("__Forced Cache Update!__\r\n>>> All caches have been cleared and reset!"));
+                break;
             case Choice.ALL:
                 _ = Task.Run(Plugins.UpdateVersions);
                 missing = await Users.Missing();
@@ -69,6 +77,7 @@ public class ForceVerification
                 servers = await Servers.AddMissing();
                 servers += await Servers.RemoveMissing();
                 await Servers.Validate();
+                Program.Cache.ResetCaches();
                 await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
                     bd.AddEmbed(BasicEmbeds.Success($"__Forced All Verifications!__\r\n>>> Plugin count: {Program.Cache.GetPlugins().Count}\r\nAllow 10 - 15 minutes for updater to finish.\r\nUser count: {Program.Cache.GetUsers().Count}\r\nMissing users added: {missing}\r\nUsernames updated: {usernames}\r\nCase count: {Program.Cache.GetCases().Count}\r\nClosed: {closed} cases.\r\nServer count: {Program.Cache.ServerCacheDict.Count}\r\nModified: {servers} servers.")));
                 await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info($"__Forced All Verifications!__\r\n>>> Plugin count: {Program.Cache.GetPlugins().Count}\r\nAllow 10 - 15 minutes for updater to finish.\r\nUser count: {Program.Cache.GetUsers().Count}\r\nMissing users added: {missing}\r\nUsernames updated: {usernames}\r\nCase count: {Program.Cache.GetCases().Count}\r\nClosed: {closed} cases.\r\nServer count: {Program.Cache.ServerCacheDict.Count}\r\nModified: {servers} servers."));

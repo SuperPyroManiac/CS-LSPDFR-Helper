@@ -66,6 +66,7 @@ public static class OnJoinLeave
             await Servers.AddMissing();
             await Servers.RemoveMissing();
             await Servers.Validate();
+            _ = Users.Missing();
         }
         catch ( Exception ex )
         {
