@@ -51,8 +51,8 @@ jobs:
     - name: Store build info in file
       run: |
         BRANCH_NAME=${GITHUB_REF#refs/heads/}
-        echo "Current Branch: $BRANCH_NAME | Commit Hash: $GITHUB_SHA" > /home/ULSS/build_info.txt
+        echo "Current Branch: $BRANCH_NAME | Commit Hash: $GITHUB_SHA" > /home/LSPDFRHelper/build_info.txt
       continue-on-error: true
 
     - name: Restart app
-      run: pm2 restart 3
+      run: pm2 restart 0
