@@ -6,79 +6,105 @@ namespace LSPDFRHelper.Functions.Verifications;
 
 public static class Servers
 {
-    public static Task<int> AddMissing()
+    public static async Task<int> AddMissing()
     {
-        var cnt = 0;
-        foreach (var serv in Program.Client.Guilds)
+        try
         {
-            var dbserv = DbManager.GetServers().FirstOrDefault(x => x.ServerId == serv.Key);
-            if ( dbserv != null )
+            var cnt = 0;
+            foreach (var serv in Program.Client.Guilds)
             {
-                if ( !dbserv.Enabled )
+                var dbserv = DbManager.GetServers().FirstOrDefault(x => x.ServerId == serv.Key);
+                if ( dbserv != null )
                 {
-                    dbserv.Enabled = true;
-                    DbManager.EditServer(dbserv);
-                    cnt++;
+                    if ( !dbserv.Enabled )
+                    {
+                        dbserv.Enabled = true;
+                        DbManager.EditServer(dbserv);
+                        cnt++;
+                    }
+                    continue;
                 }
-                continue;
+                cnt++;
+                DbManager.AddServer(new Server
+                {
+                    ServerId = serv.Value.Id,
+                    Enabled = true,
+                    Blocked = false,
+                    AhEnabled = false,
+                    AutoHelperChId = 0,
+                    MonitorChId = 0,
+                    AnnounceChId = 0,
+                    ManagerRoleId = 0
+                });
             }
-            cnt++;
-            DbManager.AddServer(new Server
-            {
-                ServerId = serv.Value.Id,
-                Enabled = true,
-                Blocked = false,
-                AhEnabled = false,
-                AutoHelperChId = 0,
-                MonitorChId = 0,
-                AnnounceChId = 0,
-                ManagerRoleId = 0
-            });
+            return cnt;
         }
-        return Task.FromResult(cnt);
+        catch ( Exception ex )
+        {
+            Console.WriteLine(ex);
+            await Logging.ErrLog($"{ex}");
+            return 0;
+        }
     }
 
-    public static Task<int> RemoveMissing()
+    public static async Task<int> RemoveMissing()
     {
-        var cnt = 0;
-        foreach ( var serv in DbManager.GetServers() )
+        try
         {
-            try
-            { _ = Program.Client.Guilds[serv.ServerId]; }
-            catch ( Exception )
+            var cnt = 0;
+            foreach ( var serv in DbManager.GetServers() )
             {
-                if (!serv.Enabled) continue;
-                cnt++;
-                serv.Enabled = false;
-                DbManager.EditServer(serv);
+                try
+                { _ = Program.Client.Guilds[serv.ServerId]; }
+                catch ( Exception )
+                {
+                    if (!serv.Enabled) continue;
+                    cnt++;
+                    serv.Enabled = false;
+                    DbManager.EditServer(serv);
+                }
             }
-        }
 
-        return Task.FromResult(cnt);
+            return cnt;
+        }
+        catch ( Exception ex )
+        {
+            Console.WriteLine(ex);
+            await Logging.ErrLog($"{ex}");
+            return 0;
+        }
     }
 
     public static async Task Validate()
     {
-        foreach ( var serv in Program.Client.Guilds )
+        try
         {
-            var server = Program.Cache.GetServer(serv.Key);
-            if (server == null) continue;
-
-            if ( server.Blocked )
+            foreach ( var serv in Program.Client.Guilds )
             {
-                //var owner = await serv.Value.GetGuildOwnerAsync();
-                var owner = serv.Value.Owner;
-                await Logging.ReportPubLog(
-                    BasicEmbeds.Error($"__Left Blocked Server__\r\n>>> " + 
-                                      $"**Name:** {serv.Value.Name}\r\n" +
-                                      $"**ID:** {serv.Value.Id}\r\n" +
-                                      $"**Owner:** {owner.Id} ({owner.Username})"));
-                var ch = await serv.Value.GetPublicUpdatesChannelAsync();
-                if ( ch != null )
-                    await ch.SendMessageAsync(
-                        BasicEmbeds.Error("__Server Is Blacklisted!__\r\n>>> If you think this is an error, you may contact us at https://dsc.PyrosFun.com"));
-                await serv.Value.LeaveAsync();
+                var server = Program.Cache.GetServer(serv.Key);
+                if (server == null) continue;
+
+                if ( server.Blocked )
+                {
+                    //var owner = await serv.Value.GetGuildOwnerAsync();
+                    var owner = serv.Value.Owner;
+                    await Logging.ReportPubLog(
+                        BasicEmbeds.Error($"__Left Blocked Server__\r\n>>> " + 
+                                          $"**Name:** {serv.Value.Name}\r\n" +
+                                          $"**ID:** {serv.Value.Id}\r\n" +
+                                          $"**Owner:** {owner.Id} ({owner.Username})"));
+                    var ch = await serv.Value.GetPublicUpdatesChannelAsync();
+                    if ( ch != null )
+                        await ch.SendMessageAsync(
+                            BasicEmbeds.Error("__Server Is Blacklisted!__\r\n>>> If you think this is an error, you may contact us at https://dsc.PyrosFun.com"));
+                    await serv.Value.LeaveAsync();
+                }
             }
+        }
+        catch ( Exception ex )
+        {
+            Console.WriteLine(ex);
+            await Logging.ErrLog($"{ex}");
         }
     }
 }

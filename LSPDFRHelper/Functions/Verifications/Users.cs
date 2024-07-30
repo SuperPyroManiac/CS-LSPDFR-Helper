@@ -1,5 +1,6 @@
 using DSharpPlus.Entities;
 using LSPDFRHelper.CustomTypes.MainTypes;
+using LSPDFRHelper.Functions.Messages;
 
 namespace LSPDFRHelper.Functions.Verifications;
 
@@ -8,56 +9,74 @@ public static class Users
     
     public static async Task<int> Missing()
     {
-        var serverUsers = new List<DiscordUser>();
+        try
+        {
+            var serverUsers = new List<DiscordUser>();
             
-        foreach ( var srv in Program.Client.Guilds.Values )
-        foreach ( var usr in srv.Members )
+            foreach ( var srv in Program.Client.Guilds.Values )
+            foreach ( var usr in srv.Members )
                 if (!serverUsers.Contains(usr.Value)) serverUsers.Add(usr.Value);
         
-        var dbUsers = DbManager.GetUsers();
+            var dbUsers = DbManager.GetUsers();
         
-        var cnt = 0;
-        foreach (var user in serverUsers)
-        {
-            if (dbUsers.All(x => x.Id != user.Id))
+            var cnt = 0;
+            foreach (var user in serverUsers)
             {
-                if (user == null) continue;
-                cnt++;
-
-                var newUser = new User
+                if (dbUsers.All(x => x.Id != user.Id))
                 {
-                    Id = user.Id,
-                    Username = user.Username,
-                    BotEditor = false,
-                    BotAdmin = false,
-                    Blocked = false
-                };
-                await Task.Delay(100);
-                DbManager.AddUser(newUser);
+                    if (user == null) continue;
+                    cnt++;
+
+                    var newUser = new User
+                    {
+                        Id = user.Id,
+                        Username = user.Username,
+                        BotEditor = false,
+                        BotAdmin = false,
+                        Blocked = false
+                    };
+                    await Task.Delay(100);
+                    DbManager.AddUser(newUser);
+                }
             }
+            return cnt;
         }
-        return cnt;
+        catch ( Exception ex )
+        {
+            Console.WriteLine(ex);
+            await Logging.ErrLog($"{ex}");
+            return 0;
+        }
     }
     
     public static async Task<int> Usernames()
     {
-        var cnt = 0;
-        foreach ( var srv in Program.Client.Guilds.Values )
+        try
         {
-            var dbUsers = DbManager.GetUsers();
-            
-            foreach (var user in dbUsers)
+            var cnt = 0;
+            foreach ( var srv in Program.Client.Guilds.Values )
             {
-                if (!srv.Members.ContainsKey(user.Id)) continue;
-                if (srv.Members[user.Id].Username != user.Username)
+                var dbUsers = DbManager.GetUsers();
+            
+                foreach (var user in dbUsers)
                 {
-                    cnt++;
-                    user.Username = srv.Members[user.Id].Username;
-                    await Task.Delay(100);
-                    DbManager.EditUser(user);
+                    if (!srv.Members.ContainsKey(user.Id)) continue;
+                    if (srv.Members[user.Id].Username != user.Username)
+                    {
+                        cnt++;
+                        user.Username = srv.Members[user.Id].Username;
+                        await Task.Delay(100);
+                        DbManager.EditUser(user);
+                    }
                 }
             }
+            return cnt;
         }
-        return cnt;
+        catch ( Exception ex )
+        {
+            Console.WriteLine(ex);
+            await Logging.ErrLog($"{ex}");
+            return 0;
+        }
     }
 }
