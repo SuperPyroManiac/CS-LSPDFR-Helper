@@ -47,6 +47,7 @@ public static class Servers
             { _ = Program.Client.Guilds[serv.ServerId]; }
             catch ( Exception )
             {
+                if (!serv.Enabled) continue;
                 cnt++;
                 serv.Enabled = false;
                 DbManager.EditServer(serv);
@@ -65,7 +66,8 @@ public static class Servers
 
             if ( server.Blocked )
             {
-                var owner = await serv.Value.GetGuildOwnerAsync();
+                //var owner = await serv.Value.GetGuildOwnerAsync();
+                var owner = serv.Value.Owner;
                 await Logging.ReportPubLog(
                     BasicEmbeds.Error($"__Left Blocked Server__\r\n>>> " + 
                                       $"**Name:** {serv.Value.Name}\r\n" +
