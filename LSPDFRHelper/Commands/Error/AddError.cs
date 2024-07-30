@@ -16,7 +16,7 @@ public class AddError
     [Description("Adds an error to the database!")]
         public async Task AddErrorCmd(SlashCommandContext ctx, [Description("Error Level")] Level level)
     {
-        if (!await PermissionManager.RequireAdvancedTs(ctx)) return;
+        if (!await PermissionManager.RequireBotEditor(ctx)) return;
         var error = new CustomTypes.MainTypes.Error
         {
             Pattern = "- REQUIRED -",
@@ -63,7 +63,7 @@ public class AddError
                 CustomIds.SelectErrorValueToFinish,
                 "Done Editing",
                 false,
-                new DiscordComponentEmoji(DiscordEmoji.FromName(Program.Client, ":yes:"))));
+                new DiscordComponentEmoji(DiscordEmoji.FromName(Program.Client, ":checkyes:"))));
 
         try
         {

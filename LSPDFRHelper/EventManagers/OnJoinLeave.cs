@@ -3,6 +3,7 @@ using DSharpPlus.EventArgs;
 using LSPDFRHelper.CustomTypes.MainTypes;
 using LSPDFRHelper.Functions;
 using LSPDFRHelper.Functions.AutoHelper;
+using LSPDFRHelper.Functions.Messages;
 
 namespace LSPDFRHelper.EventManagers;
 
@@ -35,5 +36,29 @@ public static class OnJoinLeave
         foreach ( var ac in Program.Cache.GetCases().Where(x => x.Solved == false) )
             if ( ac.OwnerId == ctx.Member.Id ) await CloseCase.Close(ac);
         
+    }
+
+    public static async Task GuildJoinEvent(DiscordClient cl, GuildCreatedEventArgs args)
+    {
+        while ( !Program.IsStarted ) await Task.Delay(500);
+        
+        //var owner = await args.Guild.GetGuildOwnerAsync();
+        var owner = args.Guild.Owner;
+        await Logging.ReportPubLog(BasicEmbeds.Info($"__Added To Server__\r\n>>> **Name:** {args.Guild.Name}\r\n**ID:** {args.Guild.Id}\r\n**Owner:** {owner.Id} ({owner.Username})"));
+        await Functions.Verifications.Servers.AddMissing();
+        await Functions.Verifications.Servers.RemoveMissing();
+        await Functions.Verifications.Servers.Validate();
+    }
+    
+    public static async Task GuildLeaveEvent(DiscordClient cl, GuildDeletedEventArgs args)
+    {
+        while ( !Program.IsStarted ) await Task.Delay(500);
+        
+        //var owner = await args.Guild.GetGuildOwnerAsync();
+        var owner = args.Guild.Owner;
+        await Logging.ReportPubLog(BasicEmbeds.Info($"__Removed From Server__\r\n>>> **Name:** {args.Guild.Name}\r\n**ID:** {args.Guild.Id}\r\n**Owner:** {owner.Id} ({owner.Username})"));
+        await Functions.Verifications.Servers.AddMissing();
+        await Functions.Verifications.Servers.RemoveMissing();
+        await Functions.Verifications.Servers.Validate();
     }
 }

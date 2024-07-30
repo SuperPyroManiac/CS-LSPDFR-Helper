@@ -17,7 +17,7 @@ public class ValidateLog
     [SlashCommandTypes(DiscordApplicationCommandType.MessageContextMenu)]
     public async Task ValidateLogCmd(SlashCommandContext ctx, DiscordMessage targetMessage)
     {
-        if (!await PermissionManager.RequireTs(ctx)) return;
+        if (!await PermissionManager.RequireNotBlacklisted(ctx)) return;
             
         //===//===//===////===//===//===////===//Attachment Checks/===////===//===//===////===//===//===//
         DiscordAttachment attach = null;

@@ -15,7 +15,7 @@ public class ExportPlugins
     [Description("Exports all plugins as an xml!")]
     public async Task ExportPluginssCmd(SlashCommandContext ctx)
     {
-        if (!await PermissionManager.RequireAdvancedTs(ctx)) return;
+        if (!await PermissionManager.RequireBotEditor(ctx)) return;
         var bd = new DiscordInteractionResponseBuilder();
         bd.IsEphemeral = true;
         

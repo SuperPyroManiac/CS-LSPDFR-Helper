@@ -46,7 +46,7 @@ jobs:
     - name: Publish
       env: 
         version: 1
-      run: dotnet publish -c Release -o /home/ULSS
+      run: dotnet publish -c Release -o /home/LSPDFRHelper
 
     - name: Store build info in file
       run: |

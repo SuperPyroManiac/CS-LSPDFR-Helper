@@ -15,7 +15,7 @@ public class ExportErrors
     [Description("Exports all errors as an xml!")]
     public async Task ExportErrorsCmd(SlashCommandContext ctx)
     {
-        if (!await PermissionManager.RequireAdvancedTs(ctx)) return;
+        if (!await PermissionManager.RequireBotEditor(ctx)) return;
         var bd = new DiscordInteractionResponseBuilder();
         bd.IsEphemeral = true;
         

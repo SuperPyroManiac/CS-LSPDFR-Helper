@@ -7,11 +7,11 @@ namespace LSPDFRHelper.Functions.AutoHelper;
 
 public class OpenCase
 {
-    public static async Task<DiscordThreadChannel> CreateCase(DiscordMember user)
+    public static async Task<DiscordThreadChannel> CreateCase(ulong user, ulong guild)
     {
         var caseId = new Random().Next(int.MaxValue).ToString("x");
 
-        var ahCh = await Program.Client.GetChannelAsync(Program.Settings.AutoHelperChId);
+        var ahCh = await Program.Client.GetChannelAsync(Program.Cache.GetServer(guild).AutoHelperChId);
         var ch = await ahCh.CreateThreadAsync($"AutoHelper - Case: {caseId}", DiscordAutoArchiveDuration.ThreeDays, DiscordChannelType.PrivateThread);
         var caseMsg = new DiscordMessageBuilder();
         caseMsg.AddEmbed(BasicEmbeds.Ts(
@@ -20,24 +20,26 @@ public class OpenCase
             $"\r\n> - RagePluginHook.log" +
             $"\r\n> - - __**Not**__ from your `logs` folder!" +
             $"\r\n> - ELS.log" +
-            $"\r\n> - asiloader.log" +
+            //$"\r\n> - asiloader.log" +
             //$"\r\n> - ScriptHookVDotNet.log" +
             $"\r\n> - .xml and .meta files" +
             //$"\r\n> - Screenshots of .png or .jpg - BETA" +
-            $"\r\n\r\n*Do not abuse the request help button. Only use it if you have tried all the steps provided and have exhausted your own options. Abuse of this feature may result in your access being revoked!*" +
-            $"\r\n\r\n__Please check the FAQ for common issues!__", null));
+            $"\r\n\r\n*Do not abuse the request help button. Only use it if you have tried all the steps provided and have exhausted your own options.*" +
+            $"\r\n\r\n__This bot is maintained by https://dsc.PyrosFun.com!__", null));
         caseMsg.AddComponents(
             new DiscordButtonComponent(DiscordButtonStyle.Success, CustomIds.MarkSolved, "Mark Solved", false,
                 new DiscordComponentEmoji("👍")),
             new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.RequestHelp, "Request Help", false,
                 new DiscordComponentEmoji("❓")));
-        await ch.AddThreadMemberAsync(user);
+        var mem = await Program.Client.Guilds[guild].GetMemberAsync(user);
+        await ch.AddThreadMemberAsync(mem);
 
         var newCase = new AutoCase
         {
             CaseId = caseId,
-            OwnerId = user.Id,
+            OwnerId = user,
             ChannelId = ch.Id,
+            ServerId = ch.Guild.Id,
             Solved = false,
             TsRequested = false,
             CreateDate = DateTime.Now.ToUniversalTime(),

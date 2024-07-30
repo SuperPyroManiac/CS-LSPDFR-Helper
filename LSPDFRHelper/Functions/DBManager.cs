@@ -47,7 +47,7 @@ public static class DbManager
         try
         {
             await using var cnn = new MySqlConnection(ConnStr);
-            await cnn.ExecuteAsync("insert into Cases (CaseId, OwnerID, ChannelID, Solved, TsRequested, RequestID, CreateDate, ExpireDate) VALUES (@CaseId, @OwnerID, @ChannelID, @Solved, @TsRequested, @RequestID, @CreateDate, @ExpireDate)", acase);
+            await cnn.ExecuteAsync("insert into Cases (CaseId, OwnerID, ChannelID, ServerID, Solved, TsRequested, RequestID, CreateDate, ExpireDate) VALUES (@CaseId, @OwnerID, @ChannelID, @ServerID, @Solved, @TsRequested, @RequestID, @CreateDate, @ExpireDate)", acase);
             Program.Cache.UpdateCases(GetCases());
         }
         catch (MySqlException e)
@@ -63,7 +63,7 @@ public static class DbManager
         try
         {
             await using var cnn = new MySqlConnection(ConnStr);
-            await cnn.ExecuteAsync("UPDATE Cases SET OwnerID = @OwnerID, ChannelID = @ChannelID, Solved = @Solved, TsRequested = @TsRequested, RequestID = @RequestID, CreateDate = @CreateDate, ExpireDate = @ExpireDate WHERE CaseId = (@CaseId)", acase);
+            await cnn.ExecuteAsync("UPDATE Cases SET OwnerID = @OwnerID, ChannelID = @ChannelID, ServerID = @ServerID, Solved = @Solved, TsRequested = @TsRequested, RequestID = @RequestID, CreateDate = @CreateDate, ExpireDate = @ExpireDate WHERE CaseId = (@CaseId)", acase);
             Program.Cache.UpdateCases(GetCases());
         }
         catch (MySqlException e)
@@ -359,14 +359,14 @@ public static class DbManager
     }
     
     //Msc Functions
-    public static bool AutoHelperStatus(bool? state = null)
+    public static bool AutoHelperStatus(ulong serverid, bool? state = null)
     {
         if (state == null)
         {
             try
             {
                 using var cnn = new MySqlConnection(ConnStr);
-                return cnn.Query<bool>($"select AhStatus from ServerOptions where Id = '{Program.BotSettings.Env.BotId}'").First();
+                return cnn.Query<bool>($"select AhEnabled from ServerOptions where ServerId = '{serverid}'").First();
             }
             catch (MySqlException e)
             {
@@ -378,7 +378,7 @@ public static class DbManager
         try
         {
             using var cnn = new MySqlConnection(ConnStr);
-            cnn.Execute($"UPDATE ServerOptions SET AhStatus = {state} WHERE Id = '{Program.BotSettings.Env.BotId}'");
+            cnn.Execute($"UPDATE ServerOptions SET AhEnabled = {state} WHERE ServerId = '{serverid}'");
             var output = !state;
             return output.Value;
         }
@@ -390,14 +390,46 @@ public static class DbManager
         }
     }
     
-    public static GlobalSettings GetGlobalSettings(string botid)
+    public static async void AddServer(Server server)
+    {
+        try
+        {
+            await using var cnn = new MySqlConnection(ConnStr);
+            await cnn.ExecuteAsync("insert into ServerOptions (ServerId, Enabled, Blocked, AhEnabled, AutoHelperChId, MonitorChId, AnnounceChId, ManagerRoleId) VALUES (@ServerId, @Enabled, @Blocked, @AhEnabled, @AutoHelperChId, @MonitorChId, @AnnounceChId, @ManagerRoleId)", server);
+            Program.Cache.UpdateServers(GetServers());
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine(e);
+            await Logging.ErrLog($"SQL Issue: {e}");
+            throw;
+        }
+    }
+    
+    public static async void EditServer(Server server)
+    {
+        try
+        {
+            await using var cnn = new MySqlConnection(ConnStr);
+            await cnn.ExecuteAsync("UPDATE ServerOptions SET ServerId = @ServerId, Enabled = @Enabled, Blocked = @Blocked, AhEnabled = @AhEnabled, AutoHelperChId = @AutoHelperChId, MonitorChId = @MonitorChId, AnnounceChId = @AnnounceChId, ManagerRoleId = @ManagerRoleId WHERE ServerId = @ServerId", server);
+            Program.Cache.UpdateServers(GetServers());
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine(e);
+            await Logging.ErrLog($"SQL Issue: {e}");
+            throw;
+        }
+    }
+    
+    public static List<Server> GetServers()
     {
         try
         {
             using var cnn = new MySqlConnection(ConnStr);
-            return cnn.Query<GlobalSettings>($"select * from ServerOptions where Id = '{botid}'").First();
+            return cnn.Query<Server>("select * from ServerOptions").ToList();
         }
-        catch ( MySqlException e )
+        catch (MySqlException e)
         {
             Console.WriteLine(e);
             Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();

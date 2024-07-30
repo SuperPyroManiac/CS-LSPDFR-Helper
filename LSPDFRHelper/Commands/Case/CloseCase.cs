@@ -15,16 +15,17 @@ public class CloseCase
     [Description("Close a case.")]
     public async Task CloseCaseCmd(SlashCommandContext ctx, [Description("The case - Type 'all' to close all cases!"), SlashAutoCompleteProvider<CaseAutoComplete>] string caseid)
     {
-        if (!await PermissionManager.RequireTs(ctx)) return;
+        if (!await PermissionManager.RequireServerManager(ctx)) return;
         await ctx.Interaction.DeferAsync(true);
         var acase = Program.Cache.GetCase(caseid);
+        if (acase != null) if ( acase.ServerId != ctx.Guild!.Id ) acase = null;
         var msg = new DiscordInteractionResponseBuilder();
         msg.IsEphemeral = true;
 
         if (caseid.Equals("all", StringComparison.CurrentCultureIgnoreCase) )
         {
             var count = 0;
-            foreach (var aacase in Program.Cache.GetCases())
+            foreach (var aacase in Program.Cache.GetCases().Where(ac => ac.ServerId == ctx.Guild!.Id))
             {
                 if (aacase.Solved) continue;
                 await Functions.AutoHelper.CloseCase.Close(aacase);
