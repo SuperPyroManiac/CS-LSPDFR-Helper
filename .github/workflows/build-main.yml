@@ -35,7 +35,7 @@ jobs:
 
   deploy:
     if: github.ref == 'refs/heads/main' # this prevents that the "deploy" job is executed during Pull Request checks
-    runs-on: main-runner
+    runs-on: Main
     needs: build
 
     strategy:
