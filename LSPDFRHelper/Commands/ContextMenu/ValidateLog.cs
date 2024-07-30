@@ -18,6 +18,15 @@ public class ValidateLog
     public async Task ValidateLogCmd(SlashCommandContext ctx, DiscordMessage targetMessage)
     {
         if (!await PermissionManager.RequireNotBlacklisted(ctx)) return;
+        
+        if ( Program.Cache.GetServer(ctx.Guild!.Id).Blocked )
+        {
+            var res = new DiscordInteractionResponseBuilder();
+            res.AddEmbed(BasicEmbeds.Error("__Server Blacklisted!__\r\n>>> If you think this is an error, you can contact the devs at https://dsc.PyrosFun.com"));
+            await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, res);
+            await Servers.Validate();
+            return;
+        }
             
         //===//===//===////===//===//===////===//Attachment Checks/===////===//===//===////===//===//===//
         DiscordAttachment attach = null;

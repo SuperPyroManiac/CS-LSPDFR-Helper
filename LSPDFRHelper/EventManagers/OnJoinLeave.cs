@@ -53,7 +53,11 @@ public static class OnJoinLeave
     public static async Task GuildLeaveEvent(DiscordClient cl, GuildDeletedEventArgs args)
     {
         while ( !Program.IsStarted ) await Task.Delay(500);
-        
+
+        foreach ( var ac in Program.Cache.GetCases().Where(x => x.ServerId.Equals(args.Guild.Id) && !x.Solved) )
+        {
+            await CloseCase.Close(ac, true);
+        }
         //var owner = await args.Guild.GetGuildOwnerAsync();
         var owner = args.Guild.Owner;
         await Logging.ReportPubLog(BasicEmbeds.Info($"__Removed From Server__\r\n>>> **Name:** {args.Guild.Name}\r\n**ID:** {args.Guild.Id}\r\n**Owner:** {owner.Id} ({owner.Username})"));

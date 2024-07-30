@@ -11,11 +11,22 @@ public class AutoHelper
 {
     public static async Task UpdateMainAhMessage(ulong serverId = default)
     {
+        const string description = 
+            "\r\n> The AutoHelper can read a variety of file types and will attempt to find issues. Currently supported log files are **RagePluginHook** and **ELS** logs. The AutoHelper can also parse **.xml** and *.meta* files."+
+            "\r\n> Please note that frequent issues can often be detected, but human assistance may be required for more advanced problems. you may wish to use the request button to ask for human help." +
+            "\r\n\r\n## __AutoHelper Terms Of Use__" +
+            "\r\n> - Do not send modified logs to 'test' the bot. Access will instantly be revoked." +
+            "\r\n> - Do not upload logs or files greater than **__3MB__**. Access will instantly be revoked." +
+            "\r\n> - Do not spam cases. You can upload multiple logs to a single case." +
+            "\r\n> - Proxy support is frowned upon. Ideally you should have the user upload their log directly." +
+            "\r\n\r\n## __Other Info__" +
+            "\r\n> Anyone can join and assist in cases, using /JoinCase to do so. You can request help from others using the button, we ask that you do not abuse this feature though." + 
+            "\r\n\r\n> __Created by: SuperPyroManiac & Hammer__\r\n> More information at: https://dsc.PyrosFun.com";
+        
         if ( serverId == default )
         {
             foreach ( var serv in Program.Cache.ServerCacheDict.Values.Where(ac => ac.AutoHelperChId != 0) )
             {
-                if ( serv.Blocked ) continue;
                 var ch = await Program.Client.GetChannelAsync(serv.AutoHelperChId);
                 var stt = DbManager.AutoHelperStatus(serv.ServerId);
                 DiscordMessage origMsg = null;
@@ -28,16 +39,7 @@ public class AutoHelper
                 }
                 if (origMsg == null) origMsg = await ch.SendMessageAsync("Starting...");
 
-                embed.Description = embed.Description + 
-                                    "\r\n> The AutoHelper can read a variety of file types and will attempt to find issues. Currently supported log files are RagePluginHook and ELS logs. The AutoHelper can also read XML and .meta files."+
-                                    "\r\n> Please note that frequent issues can often be detected, but human assistance may be required for more advanced problems. you may wish to use the request button to ask for human help." +
-                                    "\r\n\r\n## __AutoHelper Terms Of Use__" +
-                                    "\r\n> - Do not send modified logs to 'test' the bot. We already have, it won't crash." +
-                                    "\r\n> - Do not upload logs or files greater than **__3MB__**! Access will instantly be revoked." +
-                                    "\r\n> - Do not spam cases. You can upload multiple logs to a single case." +
-                                    "\r\n\r\n## __Other Info__" +
-                                    "\r\n> Anyone can join and assist in cases, using /JoinCase to do so. You can request help from others using the button, we ask that you do not abuse this feature though." + 
-                                    "\r\n\r\n> __Created by: SuperPyroManiac & Hammer__\r\nhttps://dsc.PyrosFun.com";
+                embed.Description = description; 
                 if (!stt) embed.Description += "\r\n\r\n## __AutoHelper Disabled!__\r\n>>> **System has been disabled by staff temporarily!**";
         
                 await new DiscordMessageBuilder()
@@ -62,21 +64,12 @@ public class AutoHelper
         }
         if (origMsgg == null) origMsgg = await chh.SendMessageAsync("Starting...");
 
-        embedd.Description = embedd.Description + 
-                            "\r\n> The AutoHelper can read a variety of file types and will attempt to find issues. Currently supported log files are RagePluginHook and ELS logs. The AutoHelper can also read XML and .meta files."+
-                            "\r\n> Please note that frequent issues can often be detected, but human assistance may be required for more advanced problems. you may wish to use the request button to ask for human help." +
-                            "\r\n\r\n## __AutoHelper Terms Of Use__" +
-                            "\r\n> - Do not send modified logs to 'test' the bot. We already have, it won't crash." +
-                            "\r\n> - Do not upload logs or files greater than **__3MB__**! Access will instantly be revoked." +
-                            "\r\n> - Do not spam cases. You can upload multiple logs to a single case." +
-                            "\r\n\r\n## __Other Info__" +
-                            "\r\n> Anyone can join and assist in cases, using /JoinCase to do so. You can request help from others using the button, we ask that you do not abuse this feature though." + 
-                            "\r\n\r\n> __Created by: SuperPyroManiac & Hammer__\r\nhttps://dsc.PyrosFun.com";
+        embedd.Description = description;
         if (!st) embedd.Description += "\r\n\r\n## __AutoHelper Disabled!__\r\n>>> **System has been disabled by staff temporarily!**";
         
         await new DiscordMessageBuilder()
             .AddEmbed(embedd)
-            .AddComponents(new DiscordButtonComponent(DiscordButtonStyle.Success, CustomIds.OpenCase, "Open Case", !st))//TODO: Replace False with !st
+            .AddComponents(new DiscordButtonComponent(DiscordButtonStyle.Success, CustomIds.OpenCase, "Open Case", !st))
             .ModifyAsync(origMsgg);
     }
     
@@ -84,30 +77,20 @@ public class AutoHelper
     {
         foreach ( var serv in Program.Cache.ServerCacheDict.Values.Where(ac => ac.MonitorChId != 0) )
         {
-            if ( serv.Blocked ) continue;
             var ch = await Program.Client.GetChannelAsync(serv.MonitorChId);
-            List<DiscordMessage> msgPurge = [];
             DiscordMessage origMsg = null;
             var embed = BasicEmbeds.Ts("# __AutoHelper Active Cases__", null);
             await foreach (var msg in ch.GetMessagesAsync())
             {
-                if (msg.Embeds.Count == 0) msgPurge.Add(msg);
+                if (msg.Author != null && !msg.Author.IsBot) continue;
+                if (msg.Embeds.Count == 0) continue;
                 foreach (var emb in msg.Embeds)
                 {
-                    if (!emb.Description!.Contains("AutoHelper Active Cases") &&
-                        !emb.Description.Contains("Help Requested!"))
-                    {
-                        msgPurge.Add(msg);
-                    }
-                    if (emb.Description.Contains("AutoHelper Active Cases"))
+                    if (emb.Description!.Contains("AutoHelper Active Cases"))
                     {
                         origMsg = msg;
                     }
                 }
-            }
-            foreach (var msg in msgPurge)
-            {
-                await ch.DeleteMessageAsync(msg);
             }
             if (origMsg == null) origMsg = await ch.SendMessageAsync("Starting...");
 
@@ -138,6 +121,7 @@ public class AutoHelper
         
         foreach ( var ac in Program.Cache.GetCases().Where(x => x.Solved == false) )
         {
+            if ( !Program.Cache.GetServer(ac.ServerId).Enabled ) await CloseCase.Close(ac, true);
             if ( ac.ExpireDate <= DateTime.Now.ToUniversalTime() ) { await CloseCase.Close(ac); cnt++; }
 
             if ( Program.Cache.GetUser(ac.OwnerId).Blocked )
@@ -154,9 +138,8 @@ public class AutoHelper
     public static async Task<int> ValidateClosedCases()
     {
         var cnt = 0;
-        foreach ( var serv in Program.Cache.ServerCacheDict.Values.Where(ac => ac.AutoHelperChId != 0) )
+        foreach ( var serv in Program.Cache.ServerCacheDict.Values.Where(ac => ac.AutoHelperChId != 0 && ac.Enabled) )
         {
-            if ( serv.Blocked ) continue;
             Dictionary<DiscordThreadChannel, AutoCase> caseChannelDict = new();
     
             var parentCh = await Program.Client.Guilds[serv.ServerId].GetChannelAsync(serv.AutoHelperChId);

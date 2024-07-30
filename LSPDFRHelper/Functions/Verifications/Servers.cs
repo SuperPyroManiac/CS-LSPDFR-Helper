@@ -81,6 +81,4 @@ public static class Servers
             }
         }
     }
-    
-    //TODO Verify serv Channels
 }

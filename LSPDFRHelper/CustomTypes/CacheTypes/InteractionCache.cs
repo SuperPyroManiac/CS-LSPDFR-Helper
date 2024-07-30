@@ -13,6 +13,7 @@ public class InteractionCache
     public Plugin Plugin { get; }
     public Error Error { get; }
     public User User { get; }
+    public Server Server { get; }
     public DiscordMessage Msg { get; }
 
     public InteractionCache(DiscordInteraction interaction, Plugin plugin, DiscordMessage msg = null)
@@ -33,6 +34,13 @@ public class InteractionCache
     {
         Interaction = interaction;
         User = user;
+        Msg = msg;
+    }
+    
+    public InteractionCache(DiscordInteraction interaction, Server server, DiscordMessage msg = null)
+    {
+        Interaction = interaction;
+        Server = server;
         Msg = msg;
     }
 }

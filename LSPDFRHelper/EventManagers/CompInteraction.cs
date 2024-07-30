@@ -6,6 +6,7 @@ using LSPDFRHelper.Functions;
 using LSPDFRHelper.Functions.AutoHelper;
 using LSPDFRHelper.Functions.Messages;
 using LSPDFRHelper.Functions.Messages.ModifiedProperties;
+using LSPDFRHelper.Functions.Verifications;
 
 namespace LSPDFRHelper.EventManagers;
 
@@ -19,6 +20,8 @@ public static class CompInteraction
         CustomIds.SelectPluginValueToFinish,
         CustomIds.SelectErrorValueToEdit,
         CustomIds.SelectErrorValueToFinish,
+        CustomIds.SelectServerValueToEdit,
+        CustomIds.SelectServerValueToFinish,
         CustomIds.RphGetQuickInfo,
         CustomIds.RphGetErrorInfo,
         CustomIds.RphGetPluginInfo,
@@ -216,6 +219,53 @@ public static class CompInteraction
                         required: true, 
                         value: value,
                         style: DiscordTextInputStyle.Paragraph
+                    )
+                );
+
+                await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.Modal, modal);
+            }
+            
+            if (eventArgs.Id is CustomIds.SelectServerValueToEdit or CustomIds.SelectServerValueToFinish)
+            {
+                var usercache = Program.Cache.GetUserAction(eventArgs.User.Id, CustomIds.SelectServerValueToEdit);
+                if (usercache == null)
+                {
+                    var bd = new DiscordInteractionResponseBuilder();
+                    bd.IsEphemeral = true;
+                    bd.AddEmbed(BasicEmbeds.Error("There was a problem!\r\n>>> You are not the original editor, or the bot reset during this editor session!"));
+                    await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, bd);
+                    return;
+                }
+
+                if (eventArgs.Id == CustomIds.SelectServerValueToFinish)
+                {
+                    DbManager.EditServer(usercache.Server);
+                    Program.Cache.RemoveUserAction(eventArgs.User.Id, CustomIds.SelectServerValueToEdit);
+                    await eventArgs.Message.DeleteAsync();
+                    await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate);
+                    await AutoHelper.UpdateMainAhMessage(eventArgs.Guild.Id);
+                    return;
+                }
+                    
+                var selected = eventArgs.Values.FirstOrDefault();
+                var value = selected switch
+                {
+                    "AhCh" => usercache.Server.AutoHelperChId.ToString(),
+                    "MonitorCh" => usercache.Server.MonitorChId.ToString(),
+                    "ManagerRole" => usercache.Server.ManagerRoleId.ToString(),
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+
+                DiscordInteractionResponseBuilder modal = new();
+                modal.WithCustomId(CustomIds.SelectServerValueToEdit);
+                modal.WithTitle($"Editing {selected}");
+                modal.AddComponents(
+                    new DiscordTextInputComponent(
+                        label: selected!, 
+                        customId: selected!, 
+                        required: true, 
+                        value: value,
+                        style: DiscordTextInputStyle.Short
                     )
                 );
 
