@@ -18,6 +18,7 @@ public class JoinCase
         if (!await PermissionManager.RequireNotBlacklisted(ctx)) return;
         await ctx.Interaction.DeferAsync(true);
         var acase = Program.Cache.GetCase(caseid);
+        if ( acase.ServerId != ctx.Guild!.Id ) acase = null;
         var msg = new DiscordWebhookBuilder();
         if (acase == null)
         {
@@ -33,7 +34,7 @@ public class JoinCase
                 $">>> Case: `{caseid}` has already been closed!")));
             return;
         }
-        if ( !await Functions.AutoHelper.JoinCase.Join(acase, await Functions.Functions.GetMember(ctx.User.Id)) )
+        if ( !await Functions.AutoHelper.JoinCase.Join(acase, ctx.User.Id, ctx.Guild!.Id) )
         {
             await ctx.Interaction.EditOriginalResponseAsync(msg.AddEmbed(BasicEmbeds.Error(
                 $"__Already joined!__\r\n>>> You have already joined case: `{acase.CaseId}`!\r\nSee: <#{acase.ChannelId}>")));

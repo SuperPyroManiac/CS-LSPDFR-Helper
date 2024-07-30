@@ -1,5 +1,7 @@
 using System.Collections.Concurrent;
 using LSPDFRHelper.CustomTypes.MainTypes;
+using LSPDFRHelper.CustomTypes.SpecialTypes;
+using LSPDFRHelper.Functions;
 
 namespace LSPDFRHelper.CustomTypes.CacheTypes;
 
@@ -11,7 +13,24 @@ public class Cache
     private readonly ConcurrentDictionary<int, Error> _errorCacheDict = new();
     private readonly ConcurrentDictionary<string, Plugin> _pluginCacheDict = new();
     private readonly ConcurrentDictionary<string, AutoCase> _caseCacheDict = new();
-
+    internal readonly ConcurrentDictionary<ulong, Server> ServerCacheDict = new();
+    
+    /// <summary>Replaces all cache entries with the specified server list.</summary>
+    public void UpdateServers(List<Server> cases)
+    {
+        ServerCacheDict.Clear();
+        foreach ( var gs in DbManager.GetServers().Where(x => x.Enabled) ) ServerCacheDict.TryAdd(gs.ServerId, gs);
+    }
+    
+    /// <summary>Returns server settings based off server id.</summary>
+    public Server GetServer(ulong server)
+    {
+        try
+        { return ServerCacheDict[server]; }
+        catch ( Exception e )
+        { return null; }
+    }
+    
     /// <summary>Replaces all cache entries with the specified case list.</summary>
     public void UpdateCases(List<AutoCase> cases)
     {

@@ -8,7 +8,7 @@ public static class Plugins
 {
     public static async Task UpdateVersions()
     {
-        
+        await UpdateAllVersions();
     }
     
     public static async Task UpdateAllVersions()
@@ -16,7 +16,7 @@ public static class Plugins
         HttpClient webClient = new();
 	    var plugins = DbManager.GetPlugins();
         var logMsg = BasicEmbeds.Info($"__Plugin Updates__\r\n*These plugins have updated!*{BasicEmbeds.AddBlanks(45)}\r\n");
-        var annMsg = BasicEmbeds.Success($"__Featured Plugin Updates__{BasicEmbeds.AddBlanks(50)}\r\n");
+        var annMsg = BasicEmbeds.Success($"__Plugin Updates__{BasicEmbeds.AddBlanks(50)}\r\n");
         var upCnt = 0;
         var annCnt = 0;
         
@@ -25,7 +25,7 @@ public static class Plugins
             try
             {
                 if (plugin.Id == 0 || string.IsNullOrEmpty(plugin.Id.ToString()) || plugin.State == State.IGNORE || plugin.State == State.EXTERNAL) continue;
-                Thread.Sleep(3500);
+                //Thread.Sleep(3500);
 
                 var onlineVersion = await webClient.GetStringAsync(
                     $"https://www.lcpdfr.com/applications/downloadsng/interface/api.php?do=checkForUpdates&fileId={plugin.Id}&textOnly=1");
@@ -85,7 +85,7 @@ public static class Plugins
         if ( upCnt == 0 ) return;
         await Logging.SendLog(0, 0, logMsg, false);
         if ( annCnt == 0 ) return;
-        var ch = await Functions.GetGuild().GetChannelAsync(Program.Settings.AnnounceChId);
+        var ch = await Program.BotSettings.BasicLogs();
         await ch.SendMessageAsync(annMsg);
     }
 }

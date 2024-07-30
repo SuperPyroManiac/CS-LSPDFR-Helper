@@ -29,7 +29,7 @@ public class FindPlugins
         [Description("true = enabled, false = disabled (approximate search)")] bool exactmatch=false
         )
     {
-        if (!await PermissionManager.RequireTs(ctx)) return;
+        if (!await PermissionManager.RequireBotEditor(ctx)) return;
         await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder { IsEphemeral = true });
         
         try 

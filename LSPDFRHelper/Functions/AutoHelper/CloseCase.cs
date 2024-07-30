@@ -14,7 +14,7 @@ public static class CloseCase
             ac.ExpireDate = DateTime.Now.ToUniversalTime();
             if (ac.TsRequested && ac.RequestId != 0)
             {
-                var chTs = await Program.Client.GetChannelAsync(Program.Settings.MonitorChId);
+                var chTs = await Program.Client.GetChannelAsync(Program.Cache.GetServer(ac.ServerId).MonitorChId);
                 var msg = await chTs.GetMessageAsync(ac.RequestId);
                 await chTs.DeleteMessageAsync(msg);
                 ac.RequestId = 0;

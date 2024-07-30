@@ -10,6 +10,7 @@ public class CaseAutoComplete : IAutoCompleteProvider
         Dictionary<string, object> cases = new Dictionary<string, object>();
         foreach (var acase in Program.Cache.GetCases().Where(c => !c.Solved))
         {
+            if (acase.ServerId != ctx.Guild!.Id) continue;
             if (cases.Count < 25 && acase.CaseId.Contains(ctx.Options.First().Value!.ToString()!, StringComparison.CurrentCultureIgnoreCase) )
             {
                 cases.Add($"{Program.Cache.GetUser(acase.OwnerId).Username} - Case: {acase.CaseId}", acase.CaseId);

@@ -15,7 +15,7 @@ public class RemoveError
     public async Task RemoveErrorCmd
     (SlashCommandContext ctx, [Description("Must match an existing error id!")] string errorId)
     {
-        if (!await PermissionManager.RequireAdvancedTs(ctx)) return;
+        if (!await PermissionManager.RequireBotEditor(ctx)) return;
         var bd = new DiscordInteractionResponseBuilder();
         bd.IsEphemeral = true;
         
@@ -26,7 +26,7 @@ public class RemoveError
                 bd.AddEmbed(BasicEmbeds.Success($"**Removed error with id: {errorId}**")));
             await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Warning(
                 $"Removed error: {errorId}!\r\n>>> " +
-                $"**Regex:**\r\n" +
+                $"**Pattern:**\r\n" +
                 $"```{error.Pattern}```\r\n" +
                 $"**Solution:**\r\n" +
                 $"```{error.Solution}```\r\n" +

@@ -24,14 +24,15 @@ public static class RPHSpecialErrors
         }
         
         //===//===//===////===//===//===////===//Combined Error Lists//===////===//===//===////===//===//===//
-        var err1 = Program.Cache.GetError(1);
+        var err1 = Program.Cache.GetError(1).Clone();
+        Console.WriteLine("new Error" + err1.Solution);
         foreach (Match match in new Regex(err1.Pattern, RegexOptions.Multiline).Matches(wholeLog))
         {
             if (err1.PluginList.Any(x => x.Name.Equals(match.Groups[2].Value))) continue;
             if (log.Current.Any(x => x.Name.Equals(match.Groups[2].Value))) continue;
             if (log.Outdated.Any(x => x.Name.Equals(match.Groups[2].Value))) continue;
             var errPlug = Program.Cache.GetPlugin(match.Groups[2].Value);
-            if ( errPlug == null ) errPlug = new Plugin { Name = match.Groups[2].Value };
+            if ( errPlug == null ) errPlug = new Plugin { Name = match.Groups[2].Value, DName = match.Groups[2].Value};
             err1.PluginList.Add(errPlug);
         }
         if (err1.PluginList.Count > 0)
@@ -39,9 +40,9 @@ public static class RPHSpecialErrors
             var linkedDepend = err1.PluginList.Select(
 	            plugin => plugin?.Link != null && plugin.Link.StartsWith("https://")
 		            ? $"[{plugin.DName}]({plugin.Link})"
-		            : $"[{plugin?.DName}](https://www.google.com/search?q=lspdfr+{plugin.Name.Replace(" ", "+")})").ToList();
+		            : $"[{plugin?.DName}](https://www.google.com/search?q=lspdfr+{plugin!.Name.Replace(" ", "+")})").ToList();
             var linkedDependstring = string.Join("\r\n- ", linkedDepend);
-            var dependErr = err1;
+            var dependErr = err1.Clone();
             dependErr.Solution = $"{err1.Solution}\r\n- {linkedDependstring}";
             if (dependErr.Solution.Length >= 1023) dependErr.Solution = "Too many to show! God damn!";
             log.Errors.Add(dependErr);

@@ -22,7 +22,7 @@ public class MessageMonitor
         //     if (errmatch.Success)
         //     {
         //         var emb = BasicEmbeds.Public(
-        //             $"## __ULSS AutoHelper__\r\n>>> {error.Solution}");
+        //             $"## __LSPDFR AutoHelper__\r\n>>> {error.Solution}");
         //         emb.Footer.Text = emb.Footer.Text + $" - ID: {error.ID}";
         //         await ctx.Message.RespondAsync(emb);
         //     }

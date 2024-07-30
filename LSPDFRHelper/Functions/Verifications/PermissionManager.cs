@@ -17,41 +17,27 @@ public static class PermissionManager
     {
         await ctx.Interaction.DeferAsync(true);
         var responseBuilder = new DiscordInteractionResponseBuilder { IsEphemeral = true };
-        await ctx.EditResponseAsync(responseBuilder.AddEmbed(BasicEmbeds.Error($"__You are blacklisted!__\r\n>>> Contact server staff in <#{Program.Settings.StaffContactChId}> if you think this is an error!")));
-    }
-    
-    private static async Task SendNoAdvancedPermissionError(SlashCommandContext ctx)
-    {
-        await Logging.SendLog(
-            ctx.Channel.Id, 
-            ctx.User.Id,
-            BasicEmbeds.Warning($"__TS attempted to use an advanced command!__\r\n>>> Command name: {ctx.Command.Name}")
-        );
+        await ctx.EditResponseAsync(responseBuilder.AddEmbed(BasicEmbeds.Error($"__You are blacklisted from the bot!__\r\n>>> Contact the devs at https://dsc.PyrosFun.com if you think this is an error!")));
     }
     
     /// <summary>
-    /// Checks whether the user has the TS role for commands.
+    /// Checks whether the user is a server manager.
     /// </summary>
-    public static async Task<bool> RequireTs(SlashCommandContext ctx)
+    public static async Task<bool> RequireServerManager(SlashCommandContext ctx)
     {
-        if (await Program.Cache.GetUser(ctx.User.Id).IsTs()) return true;
+        if ( Program.Cache.GetUser(ctx.User.Id).BotAdmin ) return true;
+        if (await Program.Cache.GetUser(ctx.User.Id).IsManager(ctx.Guild!.Id)) return true;
         await SendNoPermissionError(ctx);
         return false;
     }
     
     /// <summary>
-    /// Checks whether the user has the TS role and is allowed to use advanced commands.
+    /// Checks whether the user is a bot editor.
     /// </summary>
-    public static async Task<bool> RequireAdvancedTs(SlashCommandContext ctx)
+    public static async Task<bool> RequireBotEditor(SlashCommandContext ctx)
     {
-        var isWhitelistedForCommands = false;
-        var ts = Program.Cache.GetUser(ctx.User.Id);
-        if (ts != null && !ts.BotEditor) await SendNoAdvancedPermissionError(ctx);
-        else 
-            isWhitelistedForCommands = ts != null;
-        
-        if (await Program.Cache.GetUser(ctx.User.Id).IsTs() && isWhitelistedForCommands)
-            return true;
+        if ( Program.Cache.GetUser(ctx.User.Id).BotAdmin ) return true;
+        if (Program.Cache.GetUser(ctx.User.Id).BotEditor) return true;
         await SendNoPermissionError(ctx);
         return false;
     }
@@ -65,7 +51,6 @@ public static class PermissionManager
         await SendNoPermissionError(ctx);
         return false;
     }
-    
     
     /// <summary>
     /// Checks whether the user is blocked from public usage.

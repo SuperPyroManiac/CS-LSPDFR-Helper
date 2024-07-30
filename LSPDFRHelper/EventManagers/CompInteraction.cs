@@ -231,8 +231,7 @@ public static class CompInteraction
             var msg = new DiscordWebhookBuilder();
             if (Program.Cache.GetUser(eventArgs.User.Id).Blocked)
             {
-                await eventArgs.Interaction.EditOriginalResponseAsync(msg.AddEmbed(BasicEmbeds.Error(
-                    $"__You are blacklisted from the bot!__\r\nContact server staff in <#{Program.Settings.StaffContactChId}> if you think this is an error!")));
+                await eventArgs.Interaction.EditOriginalResponseAsync(msg.AddEmbed(BasicEmbeds.Error("__You are blacklisted from the bot!__\r\n>>> Contact the devs at https://dsc.PyrosFun.com if you think this is an error!")));
                 return;
             }
 
@@ -243,7 +242,7 @@ public static class CompInteraction
                 return;
             }
 
-            var newCase = await OpenCase.CreateCase(await Functions.Functions.GetMember(eventArgs.User.Id));
+            var newCase = await OpenCase.CreateCase(eventArgs.User.Id, eventArgs.Guild.Id);
             msg.AddEmbed(BasicEmbeds.Success($"__Created new case!__\r\n> {newCase.Mention}"));
             await eventArgs.Interaction.EditOriginalResponseAsync(msg);
         }
@@ -254,7 +253,7 @@ public static class CompInteraction
             msg.IsEphemeral = true;
             var ac = Program.Cache.GetCases().First(x => x.ChannelId.Equals(eventArgs.Channel.Id));
 
-            if (eventArgs.User.Id.Equals(ac.OwnerId) || await Program.Cache.GetUser(eventArgs.User.Id).IsTs())
+            if (eventArgs.User.Id.Equals(ac.OwnerId) || await Program.Cache.GetUser(eventArgs.User.Id).IsManager(eventArgs.Guild.Id))
             {
                 msg.AddEmbed(BasicEmbeds.Info("Closing case!", false));
                 await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, msg);
@@ -273,11 +272,11 @@ public static class CompInteraction
             if ( Program.Cache.GetUser(eventArgs.User.Id).Blocked )
             {
                 await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
-                    msg.AddEmbed(BasicEmbeds.Error($"__You are blacklisted from the bot!__\r\nContact server staff in <#{Program.Settings.StaffContactChId}> if you think this is an error!")));
+                    msg.AddEmbed(BasicEmbeds.Error("__You are blacklisted from the bot!__\r\n>>> Contact the devs at https://dsc.PyrosFun.com if you think this is an error!")));
                 return;
             }
 
-            if ( !await JoinCase.Join(ac, await Functions.Functions.GetMember(eventArgs.User.Id)) )
+            if ( !await JoinCase.Join(ac, eventArgs.User.Id, eventArgs.Guild.Id) )
             {
                 await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, msg.AddEmbed(BasicEmbeds.Error(
                     $"__Already joined!__\r\n>>> You have already joined case: `{ac.CaseId}`!\r\nSee: <#{ac.ChannelId}>")));
@@ -291,13 +290,13 @@ public static class CompInteraction
         {
             var msg = new DiscordInteractionResponseBuilder();
             msg.IsEphemeral = true;
-            if ( await Program.Cache.GetUser(eventArgs.User.Id).IsTs() )
+            if ( await Program.Cache.GetUser(eventArgs.User.Id).IsManager(eventArgs.Guild.Id) )
             {
                 var ac = Program.Cache.GetCases().First(x => x.CaseId.Equals(eventArgs.Message.Embeds.First().Description!.Split("Case: ")[1].Split("_").First()));
                 var ch = await Program.Client.GetChannelAsync(ac.ChannelId);
                 await ch.SendMessageAsync(BasicEmbeds.Error("__Request Denied!__\r\n>>> This is likely due to you not providing any info, " +
                                                             "or you have not tried any steps to help yourself.\r\nDirect basic support questions to: <#672541961969729540>"));
-                var chTs = await Program.Client.GetChannelAsync(Program.Settings.MonitorChId);
+                var chTs = await Program.Client.GetChannelAsync(Program.Cache.GetServer(eventArgs.Guild.Id).MonitorChId);
                 await chTs.DeleteMessageAsync(await chTs.GetMessageAsync(ac.RequestId));
                 ac.RequestId = 0;
                 DbManager.EditCase(ac);
