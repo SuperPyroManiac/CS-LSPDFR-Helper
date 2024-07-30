@@ -42,7 +42,8 @@ public static class OnJoinLeave
     {
         while ( !Program.IsStarted ) await Task.Delay(500);
         
-        await Logging.ReportPubLog(BasicEmbeds.Info($"__Added To Server__\r\n>>> **Name:** {args.Guild.Name}\r\n**ID:** {args.Guild.Id}\r\n**Owner:** {args.Guild.Owner.Id} ({args.Guild.Owner.Username})"));
+        var owner = await args.Guild.GetGuildOwnerAsync();
+        await Logging.ReportPubLog(BasicEmbeds.Info($"__Added To Server__\r\n>>> **Name:** {args.Guild.Name}\r\n**ID:** {args.Guild.Id}\r\n**Owner:** {owner.Id} ({owner.Username})"));
         await Functions.Verifications.Servers.AddMissing();
         await Functions.Verifications.Servers.RemoveMissing();
         await Functions.Verifications.Servers.Validate();
@@ -52,7 +53,8 @@ public static class OnJoinLeave
     {
         while ( !Program.IsStarted ) await Task.Delay(500);
         
-        await Logging.ReportPubLog(BasicEmbeds.Info($"__Removed From Server__\r\n>>> **Name:** {args.Guild.Name}\r\n**ID:** {args.Guild.Id}\r\n**Owner:** {args.Guild.Owner.Id} ({args.Guild.Owner.Username})"));
+        var owner = await args.Guild.GetGuildOwnerAsync();
+        await Logging.ReportPubLog(BasicEmbeds.Info($"__Removed From Server__\r\n>>> **Name:** {args.Guild.Name}\r\n**ID:** {args.Guild.Id}\r\n**Owner:** {owner.Id} ({owner.Username})"));
         await Functions.Verifications.Servers.AddMissing();
         await Functions.Verifications.Servers.RemoveMissing();
         await Functions.Verifications.Servers.Validate();

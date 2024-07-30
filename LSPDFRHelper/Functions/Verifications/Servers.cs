@@ -65,11 +65,12 @@ public static class Servers
 
             if ( server.Blocked )
             {
+                var owner = await serv.Value.GetGuildOwnerAsync();
                 await Logging.ReportPubLog(
                     BasicEmbeds.Error($"__Left Blocked Server__\r\n>>> " + 
                                       $"**Name:** {serv.Value.Name}\r\n" +
                                       $"**ID:** {serv.Value.Id}\r\n" +
-                                      $"**Owner:** {serv.Value.Owner.Id} ({serv.Value.Owner.Username})"));
+                                      $"**Owner:** {owner.Id} ({owner.Username})"));
                 var ch = await serv.Value.GetPublicUpdatesChannelAsync();
                 if ( ch != null )
                     await ch.SendMessageAsync(

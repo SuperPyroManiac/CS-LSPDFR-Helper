@@ -7,6 +7,7 @@ namespace LSPDFRHelper.Functions;
 public static class Startup
 {
     private static int _addedSrvCnt;
+    private static int _removedSrvCnt;
     private static int _addedUsrCnt;
     private static int _changedUsrCnt;
     private static int _closedCaseCnt;
@@ -32,7 +33,7 @@ public static class Startup
     {
         //Server Verifications
         _addedSrvCnt = await Servers.AddMissing();
-        await Servers.RemoveMissing();
+        _removedSrvCnt = await Servers.RemoveMissing();
         await Servers.Validate();
         
         //User Verifications
@@ -67,14 +68,11 @@ public static class Startup
                    $"> **Cached errors:** {Program.Cache.GetErrors().Count}\r\n" +
                    $"> **Cached cases:** {Program.Cache.GetCases().Count}\r\n" +
                    $"> **Cached users:** {Program.Cache.GetUsers().Count}\r\n\r\n";
-        if (_addedSrvCnt > 0)
-            msgText += $"> *{_addedSrvCnt} New servers found, added them to the DB!*\r\n";
-        if (_addedUsrCnt > 0)
-            msgText += $"> *{_addedUsrCnt} New users found, added them to the DB!*\r\n";
-        if (_changedUsrCnt > 0)
-            msgText += $"> *{_changedUsrCnt} Username changes, updated the DB!*\r\n";
-        if (_closedCaseCnt > 0)
-            msgText += $"> *{_closedCaseCnt} Cases failed verification, closed!*\r\n";
+        if (_addedSrvCnt > 0) msgText += $"> *{_addedSrvCnt} New servers found, added them to the DB!*\r\n";
+        if (_removedSrvCnt > 0) msgText += $"> *{_removedSrvCnt} Servers not found, removed them from the DB!*\r\n";
+        if (_addedUsrCnt > 0) msgText += $"> *{_addedUsrCnt} New users found, added them to the DB!*\r\n";
+        if (_changedUsrCnt > 0) msgText += $"> *{_changedUsrCnt} Username changes, updated the DB!*\r\n";
+        if (_closedCaseCnt > 0) msgText += $"> *{_closedCaseCnt} Cases failed verification, closed!*\r\n";
         
         var embed = BasicEmbeds.Success(msgText);
         var ch = await Program.BotSettings.BasicLogs();
