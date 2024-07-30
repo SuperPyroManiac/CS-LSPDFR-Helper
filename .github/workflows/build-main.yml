@@ -35,7 +35,7 @@ jobs:
 
   deploy:
     if: github.ref == 'refs/heads/main' # this prevents that the "deploy" job is executed during Pull Request checks
-    runs-on: main-runner
+    runs-on: LSPDFRHelper-Main
     needs: build
 
     strategy:
@@ -46,7 +46,7 @@ jobs:
     - name: Publish
       env: 
         version: 1
-      run: dotnet publish -c Release -o /home/ULSS
+      run: dotnet publish -c Release -o /home/LSPDFRHelper
 
     - name: Store build info in file
       run: |
