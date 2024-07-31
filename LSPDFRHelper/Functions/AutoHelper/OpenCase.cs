@@ -19,7 +19,7 @@ public class OpenCase
             $"\r\n> **You have opened a new case! You can upload the following files to be automatically checked:**" +
             $"\r\n> - RagePluginHook.log" +
             $"\r\n> - - __**Not**__ from your `logs` folder!" +
-            $"\r\n> - ELS.log" +
+            //$"\r\n> - ELS.log" +
             //$"\r\n> - asiloader.log" +
             //$"\r\n> - ScriptHookVDotNet.log" +
             $"\r\n> - .xml and .meta files" +
