@@ -99,53 +99,39 @@ public static class RPHSpecialErrors
             log.Errors.Add(plugOth);
         }
         
-        // //===//===//===////===//===//===////===//Outdated RPH Plugins to Outdated list//===////===//===//===////===//===//===//
-        // var rph1Match = Regex.Match(wholeLog, @"DamageTrackingFramework: \[VERSION OUTDATED\]");
-        // if (rph1Match.Success && log.Outdated.All(x => x.Name != "DamageTrackingFramework")) 
-        //     log.Outdated.Add(
-        //         new Plugin
-        //         {
-        //             Name = "DamageTrackingFramework", 
-        //             DName = "DamageTrackingFramework", 
-        //             Link = "https://www.lcpdfr.com/downloads/gta5mods/scripts/42767-damage-tracker-framework/"
-        //         });
-        //
-        // //===//===//===////===//===//===////===//Exception Detection//===////===//===//===////===//===//===//
-        // var crashMatch = Regex.Matches(wholeLog, @"Stack trace:.*\n(?:.+at (\w+)\..+\n)+");
-        // var causedCrash = new List<Plugin>();
-        // var causedCrashName = new List<string>();
-        // foreach (Match match in crashMatch)
-        // {
-        //     for (var i = match.Groups.Count; i > 0; i--)
-        //     {
-        //         foreach (Capture capture in match.Groups[i].Captures)
-        //         {
-        //             if (causedCrash.Any(x => x.Name.Equals(capture.Value))) continue;
-        //             foreach (var plugin in pluginData.Where(plugin => plugin.Name.Equals(capture.Value) && plugin.State is "LSPDFR" or "EXTERNAL" or "BROKEN"))
-        //             {
-        //                 if (!causedCrash.Contains(plugin) || !log.IncorrectLibs.Contains(plugin.Name) || 
-        //                     !log.IncorrectOther.Contains(plugin.Name) || !log.IncorrectPlugins.Contains(plugin.Name) || 
-        //                     !log.IncorrectScripts.Contains(plugin.Name))
-        //                 {
-        //                     causedCrash.Add(plugin);
-        //                     if (plugin.State is "LSPDFR" or "EXTERNAL" && !string.IsNullOrEmpty(plugin.Link))
-        //                         causedCrashName.Add($"[{plugin.DName}]({plugin.Link})");
-        //                     else causedCrashName.Add(plugin.DName);
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-        // if (causedCrashName.Count > 0)
-        //     log.Errors.Add(new Error
-        //     {
-        //     ID = "20",
-        //     Solution = "**These plugins threw an error:**" +
-        //                $"\r\n- {string.Join("\r\n- ", causedCrashName)}" +
-        //                "\r\nEnsure you follow all other steps listed to fix these!" +
-        //                "\r\n*If the issue persists, you may want to report it to the author.*",
-        //     Level = "SEVERE"
-        //     });
+        //===//===//===////===//===//===////===//Outdated RPH Plugins to Outdated list//===////===//===//===////===//===//===//
+        if (Regex.Match(wholeLog, @"DamageTrackingFramework: \[VERSION OUTDATED\]").Success && log.Outdated.All(x => x.Name != "DamageTrackingFramework")) 
+            log.Outdated.Add(
+                new Plugin
+                {
+                    Name = "DamageTrackingFramework", 
+                    DName = "DamageTrackingFramework", 
+                    Link = "https://www.lcpdfr.com/downloads/gta5mods/scripts/42767-damage-tracker-framework/"
+                });
+        
+        //===//===//===////===//===//===////===//Exception Detection//===////===//===//===////===//===//===//
+        var exErr = new Error();
+        foreach (Match match in Regex.Matches(wholeLog, @"Stack trace:.*\n(?:.+at (\w+)\..+\n)+"))
+            for (var i = match.Groups.Count; i > 0; i--)
+                foreach (Capture capture in match.Groups[i].Captures)
+                {
+                    if (exErr.PluginList.Any(x => x.Name.Equals(capture.Value))) continue;
+                    var plugin = Program.Cache.GetPlugin(capture.Value);
+                    if (plugin == null) continue;
+                    if ( exErr.PluginList.Contains(plugin) ) continue;
+                    exErr.PluginList.Add(plugin);
+                }
+
+        if ( exErr.PluginList.Count > 0 )
+        {
+            exErr.Id = 20;
+            exErr.Solution =
+                "**These plugins threw an error:**" +
+                $"\r\n- {string.Join("\r\n- ", exErr.PluginList.Select(x => x.LinkedName()))}" +
+                "\r\nEnsure you follow all other steps listed to fix these!" +
+                "\r\n*If the issue persists, you may want to report it to the author or remove the plugin.*";
+            exErr.Level = Level.SEVERE;
+        }
         
         return log;
     }

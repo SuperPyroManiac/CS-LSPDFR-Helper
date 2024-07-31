@@ -15,4 +15,11 @@ public class Plugin
     public bool Announce { get; set; }
     public PluginType PluginType { get; set; }
     public State State { get; set; }
+
+    public string LinkedName()
+    {
+        if ( string.IsNullOrEmpty(Link) ) 
+            return $"[{DName}](https://www.google.com/search?q=lspdfr+{DName.Replace(" ", "+")})";
+        return $"[{DName}]({Link})";
+    }
 }
