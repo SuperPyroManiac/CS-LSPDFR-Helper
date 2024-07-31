@@ -34,7 +34,7 @@ jobs:
       run: dotnet test --no-build --verbosity normal
 
   deploy:
-    if: github.ref == 'refs/heads/main' # this prevents that the "deploy" job is executed during Pull Request checks
+    #if: github.ref == 'refs/heads/main' # this prevents that the "deploy" job is executed during Pull Request checks
     runs-on: Main
     needs: build
 
