@@ -2,7 +2,7 @@ using DSharpPlus.Entities;
 
 namespace LSPDFRHelper.Functions.Messages;
 
-public class Logging//TODO: redo this all
+public class Logging
 {
     //Standard Logging
     public static async Task ErrLog(string e)
