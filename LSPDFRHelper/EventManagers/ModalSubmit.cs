@@ -14,6 +14,7 @@ public static class ModalSubmit
     [
         CustomIds.SelectPluginValueToEdit,
         CustomIds.SelectErrorValueToEdit,
+        CustomIds.SelectServerValueToEdit,
         CustomIds.SelectUserValueToEdit
     ];
 
@@ -139,6 +140,60 @@ public static class ModalSubmit
                 
                     var msg = await cache.Msg.ModifyAsync(bd);
                     Program.Cache.SaveUserAction(e.Interaction.User.Id, CustomIds.SelectErrorValueToEdit, new InteractionCache(e.Interaction, err, msg));
+                    await e.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate);
+                }
+                
+                if (e.Interaction.Data.CustomId == CustomIds.SelectServerValueToEdit)
+                {
+                    var server = cache.Server;
+
+                    switch (e.Values.First().Key)
+                    {
+                        case "AhCh":
+                            try
+                            {
+                                server.AutoHelperChId = ulong.Parse(e.Values["AhCh"]);
+                                _ = await e.Interaction.Guild.GetChannelAsync(server.AutoHelperChId);
+                            }
+                            catch ( Exception )
+                            { server.AutoHelperChId = 0; }
+                            break;
+                        case "MonitorCh":
+                            try
+                            {
+                                server.MonitorChId = ulong.Parse(e.Values["MonitorCh"]);
+                                _ = await e.Interaction.Guild.GetChannelAsync(server.MonitorChId);
+                            }
+                            catch ( Exception exception )
+                            { server.MonitorChId = 0; }
+                            break;
+                        case "ManagerRole":
+                            try
+                            { server.ManagerRoleId = ulong.Parse(e.Values["ManagerRole"]); }
+                            catch ( Exception exception )
+                            { server.ManagerRoleId = 0; }
+                            break;
+                    }
+                
+                    var bd = new DiscordMessageBuilder();
+                    var embed = BasicEmbeds.Info(
+                        $"__Editing Server Settings__\r\n*Leaving a field as '0' will disable it.*\r\n\r\n" +
+                        $">>> **AutoHelper Channel Id:**\r\n" +
+                        $"<#{server.AutoHelperChId}> \r\n(`{server.AutoHelperChId}`)\r\n" +
+                        $"**AutoHelper Monitor Id:**\r\n" +
+                        $"<#{server.MonitorChId}> \r\n(`{server.MonitorChId}`)\r\n" +
+                        $"**Bot Manager Role Id:**\r\n" +
+                        $"`{server.ManagerRoleId}`\r\n");
+                    embed.Footer = new DiscordEmbedBuilder.EmbedFooter
+                    {
+                        Text = $"Current Editor: {e.Interaction.User.Username}",
+                        IconUrl = e.Interaction.User.AvatarUrl
+                    };
+                    bd.AddEmbed(embed);
+                    bd.AddComponents(cache.Msg.Components!);
+                
+                    var msg = await cache.Msg.ModifyAsync(bd);
+                    Program.Cache.SaveUserAction(e.Interaction.User.Id, CustomIds.SelectServerValueToEdit, new InteractionCache(e.Interaction, server, msg));
                     await e.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate);
                 }
             

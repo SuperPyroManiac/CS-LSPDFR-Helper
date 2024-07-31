@@ -12,6 +12,8 @@ public record CustomIds
     public const string SelectErrorValueToEdit = "SelectErrorValueToEdit";
     public const string SelectErrorValueToFinish = "SelectErrorValueToFinish";
     public const string SelectUserValueToEdit = "SelectUserValueToEdit";
+    public const string SelectServerValueToEdit = "SelectServerValueToEdit";
+    public const string SelectServerValueToFinish = "SelectServerValueToFinish";
     
     // public
     public const string RequestHelp = "RequestHelp";

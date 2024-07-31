@@ -26,7 +26,19 @@ public static class PermissionManager
     public static async Task<bool> RequireServerManager(SlashCommandContext ctx)
     {
         if ( Program.Cache.GetUser(ctx.User.Id).BotAdmin ) return true;
+        if ((ctx.Member!.Permissions & DiscordPermissions.Administrator) != 0) return true;
         if (await Program.Cache.GetUser(ctx.User.Id).IsManager(ctx.Guild!.Id)) return true;
+        await SendNoPermissionError(ctx);
+        return false;
+    }
+    
+    /// <summary>
+    /// Checks whether the user is a server admin.
+    /// </summary>
+    public static async Task<bool> RequireServerAdmin(SlashCommandContext ctx)
+    {
+        if ( Program.Cache.GetUser(ctx.User.Id).BotAdmin ) return true;
+        if ((ctx.Member!.Permissions & DiscordPermissions.Administrator) != 0) return true;
         await SendNoPermissionError(ctx);
         return false;
     }

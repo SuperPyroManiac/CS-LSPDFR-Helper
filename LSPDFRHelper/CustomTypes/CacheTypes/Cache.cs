@@ -14,9 +14,27 @@ public class Cache
     private readonly ConcurrentDictionary<string, Plugin> _pluginCacheDict = new();
     private readonly ConcurrentDictionary<string, AutoCase> _caseCacheDict = new();
     internal readonly ConcurrentDictionary<ulong, Server> ServerCacheDict = new();
+
+    /// <summary>Reset all caches.</summary>
+    public void ResetCaches()
+    {
+        _processCacheDict.Clear();
+        _interactionCacheDict.Clear();
+        _userCacheDict.Clear();
+        _errorCacheDict.Clear();
+        _pluginCacheDict.Clear();
+        _caseCacheDict.Clear();
+        ServerCacheDict.Clear();
+        
+        UpdateServers();
+        UpdateCases(DbManager.GetCases());
+        UpdateErrors(DbManager.GetErrors());
+        UpdatePlugins(DbManager.GetPlugins());
+        UpdateUsers(DbManager.GetUsers());
+    }
     
     /// <summary>Replaces all cache entries with the specified server list.</summary>
-    public void UpdateServers(List<Server> cases)
+    public void UpdateServers()
     {
         ServerCacheDict.Clear();
         foreach ( var gs in DbManager.GetServers().Where(x => x.Enabled) ) ServerCacheDict.TryAdd(gs.ServerId, gs);

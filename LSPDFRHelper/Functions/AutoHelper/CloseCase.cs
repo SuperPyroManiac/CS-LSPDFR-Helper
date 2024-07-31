@@ -6,10 +6,19 @@ namespace LSPDFRHelper.Functions.AutoHelper;
 
 public static class CloseCase
 {
-    public static async Task Close(AutoCase ac)
+    public static async Task Close(AutoCase ac, bool force = false)
     {
         try
         {
+            if ( force )
+            {
+                ac.Solved = true;
+                ac.ExpireDate = DateTime.Now.ToUniversalTime();
+                ac.RequestId = 0;
+                DbManager.EditCase(ac);
+                return;
+            }
+            
             ac.Solved = true;
             ac.ExpireDate = DateTime.Now.ToUniversalTime();
             if (ac.TsRequested && ac.RequestId != 0)

@@ -25,7 +25,7 @@ public static class Startup
         Program.Cache.UpdateErrors(DbManager.GetErrors());
         Program.Cache.UpdatePlugins(DbManager.GetPlugins());
         Program.Cache.UpdateCases(DbManager.GetCases());
-        Program.Cache.UpdateServers(DbManager.GetServers());
+        Program.Cache.UpdateServers();
         return Task.CompletedTask;
     }
     

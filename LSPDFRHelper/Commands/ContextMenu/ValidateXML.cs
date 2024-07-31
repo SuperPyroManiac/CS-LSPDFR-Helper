@@ -15,6 +15,15 @@ public class ValidateXML
     public async Task ValidateXmlCmd(SlashCommandContext ctx, DiscordMessage targetMessage)
     {
         if (!await PermissionManager.RequireNotBlacklisted(ctx)) return;
+        
+        if ( Program.Cache.GetServer(ctx.Guild!.Id).Blocked )
+        {
+            var res = new DiscordInteractionResponseBuilder();
+            res.AddEmbed(BasicEmbeds.Error("__Server Blacklisted!__\r\n>>> If you think this is an error, you can contact the devs at https://dsc.PyrosFun.com"));
+            await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, res);
+            await Servers.Validate();
+            return;
+        }
 
         var msg = new DiscordInteractionResponseBuilder();
         msg.IsEphemeral = true;

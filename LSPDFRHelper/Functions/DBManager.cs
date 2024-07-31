@@ -396,7 +396,7 @@ public static class DbManager
         {
             await using var cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("insert into ServerOptions (ServerId, Enabled, Blocked, AhEnabled, AutoHelperChId, MonitorChId, AnnounceChId, ManagerRoleId) VALUES (@ServerId, @Enabled, @Blocked, @AhEnabled, @AutoHelperChId, @MonitorChId, @AnnounceChId, @ManagerRoleId)", server);
-            Program.Cache.UpdateServers(GetServers());
+            Program.Cache.UpdateServers();
         }
         catch (MySqlException e)
         {
@@ -412,7 +412,7 @@ public static class DbManager
         {
             await using var cnn = new MySqlConnection(ConnStr);
             await cnn.ExecuteAsync("UPDATE ServerOptions SET ServerId = @ServerId, Enabled = @Enabled, Blocked = @Blocked, AhEnabled = @AhEnabled, AutoHelperChId = @AutoHelperChId, MonitorChId = @MonitorChId, AnnounceChId = @AnnounceChId, ManagerRoleId = @ManagerRoleId WHERE ServerId = @ServerId", server);
-            Program.Cache.UpdateServers(GetServers());
+            Program.Cache.UpdateServers();
         }
         catch (MySqlException e)
         {
