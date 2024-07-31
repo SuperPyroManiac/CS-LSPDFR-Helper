@@ -22,7 +22,7 @@ public class Error
             Description = Description,
             StringMatch = StringMatch,
             Level = Level,
-            PluginList = PluginList
+            PluginList = PluginList.ToList()
         };
     }
 }

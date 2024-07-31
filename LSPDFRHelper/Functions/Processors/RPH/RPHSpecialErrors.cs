@@ -25,15 +25,12 @@ public static class RPHSpecialErrors
         
         //===//===//===////===//===//===////===//Combined Error Lists//===////===//===//===////===//===//===//
         var err1 = Program.Cache.GetError(1).Clone();
-        Console.WriteLine("new Error" + err1.Solution);
         foreach (Match match in new Regex(err1.Pattern, RegexOptions.Multiline).Matches(wholeLog))
         {
             if (err1.PluginList.Any(x => x.Name.Equals(match.Groups[2].Value))) continue;
             if (log.Current.Any(x => x.Name.Equals(match.Groups[2].Value))) continue;
             if (log.Outdated.Any(x => x.Name.Equals(match.Groups[2].Value))) continue;
-            var errPlug = Program.Cache.GetPlugin(match.Groups[2].Value);
-            if ( errPlug == null ) errPlug = new Plugin { Name = match.Groups[2].Value, DName = match.Groups[2].Value};
-            err1.PluginList.Add(errPlug);
+            err1.PluginList.Add(Program.Cache.GetPlugin(match.Groups[2].Value) ?? new Plugin { Name = match.Groups[2].Value, DName = match.Groups[2].Value});
         }
         if (err1.PluginList.Count > 0)
         {
@@ -42,68 +39,66 @@ public static class RPHSpecialErrors
 		            ? $"[{plugin.DName}]({plugin.Link})"
 		            : $"[{plugin?.DName}](https://www.google.com/search?q=lspdfr+{plugin!.Name.Replace(" ", "+")})").ToList();
             var linkedDependstring = string.Join("\r\n- ", linkedDepend);
-            var dependErr = err1.Clone();
-            dependErr.Solution = $"{err1.Solution}\r\n- {linkedDependstring}";
-            if (dependErr.Solution.Length >= 1023) dependErr.Solution = "Too many to show! God damn!";
-            log.Errors.Add(dependErr);
+            err1.Solution = $"{err1.Solution}\r\n- {linkedDependstring}";
+            if (err1.Solution.Length >= 1023) err1.Solution = "Too many to show!";
+            log.Errors.Add(err1);
         }
         
-        // var libErr = errorData.Find(x => x.ID == "97");
-        // var libssmatch = new Regex(@libErr.Regex, RegexOptions.Multiline).Matches(wholeLog);
-        // foreach (Match match in libssmatch)
-        // {
-        //     if (log.IncorrectLibs.Any(x => x.Equals(match.Groups[1].Value))) continue;
-        //     log.IncorrectLibs.Add(match.Groups[1].Value);
-        // }
-        // if (log.IncorrectLibs.Count != 0)
-        // {
-        //     libErr.Solution = $"{libErr.Solution}\r\n- {string.Join("\r\n- ", log.IncorrectLibs)}";
-        //     if (libErr.Solution.Length >= 1024) libErr.Solution = "Too many to show! God damn!";
-        //     log.Errors.Add(libErr);
-        // }
-        //
-        // var scriptErr = errorData.Find(x => x.ID == "98");
-        // var scriptsmatch = new Regex(@scriptErr.Regex, RegexOptions.Multiline).Matches(wholeLog);
-        // foreach (Match match in scriptsmatch)
-        // {
-        //     if (log.IncorrectScripts.Any(x => x.Equals(match.Groups[1].Value))) continue;
-        //     log.IncorrectScripts.Add(match.Groups[1].Value);
-        // }
-        // if (log.IncorrectScripts.Count != 0)
-        // {
-        //     scriptErr.Solution = $"{scriptErr.Solution}\r\n- {string.Join("\r\n- ", log.IncorrectScripts)}";
-        //     if (scriptErr.Solution.Length >= 1024) scriptErr.Solution = "Too many to show! God damn!";
-        //     log.Errors.Add(scriptErr);
-        // }
-        //
-        // var plugErr = errorData.Find(x => x.ID == "99");
-        // var plugssmatch = new Regex(@plugErr.Regex, RegexOptions.Multiline).Matches(wholeLog);
-        // foreach (Match match in plugssmatch)
-        // {
-        //     if (log.IncorrectPlugins.Any(x => x.Equals(match.Groups[1].Value))) continue;
-        //     log.IncorrectPlugins.Add(match.Groups[1].Value);
-        // }
-        // if (log.IncorrectPlugins.Count != 0)
-        // {
-        //     plugErr.Solution = $"{plugErr.Solution}\r\n- {string.Join("\r\n- ", log.IncorrectPlugins)}";
-        //     if (plugErr.Solution.Length >= 1024) plugErr.Solution = "Too many to show! God damn!";
-        //     log.Errors.Add(plugErr);
-        // }
-        //
-        // var plugOth = errorData.Find(x => x.ID == "41");
-        // var othsmatch = new Regex(@plugOth.Regex, RegexOptions.Multiline).Matches(wholeLog);
-        // foreach (Match match in othsmatch)
-        // {
-        //     if (log.IncorrectOther.Any(x => x.Equals(match.Groups[2].Value))) continue;
-        //     log.IncorrectOther.Add(match.Groups[2].Value);
-        // }
-        // if (log.IncorrectOther.Count != 0)
-        // {
-        //     plugOth.Solution = $"{plugOth.Solution}\r\n- {string.Join("\r\n- ", log.IncorrectOther)}";
-        //     if (plugOth.Solution.Length >= 1024) plugOth.Solution = "Too many to show! God damn!";
-        //     log.Errors.Add(plugOth);
-        // }
-        //
+        var libErr = errorData.Find(x => x.Id == 97).Clone();
+        foreach (Match match in new Regex(libErr.Pattern, RegexOptions.Multiline).Matches(wholeLog))
+        {
+            if (libErr.PluginList.Any(x => x.Name.Equals(match.Groups[1].Value))) continue;
+            libErr.PluginList.Add(Program.Cache.GetPlugin(match.Groups[1].Value) ?? new Plugin {Name = match.Groups[1].Value});
+        }
+        if (libErr.PluginList.Count != 0)
+        {
+            libErr.Solution = $"{libErr.Solution}\r\n- {string.Join("\r\n- ", libErr.PluginList.Select(x => x.Name).ToList())}";
+            if (libErr.Solution.Length >= 1023) libErr.Solution = "Too many to show!";
+            log.Errors.Add(libErr);
+        }
+        
+        var scriptErr = errorData.Find(x => x.Id == 98).Clone();
+        foreach (Match match in new Regex(scriptErr.Pattern, RegexOptions.Multiline).Matches(wholeLog))
+        {
+            if (scriptErr.PluginList.Any(x => x.Name.Equals(match.Groups[1].Value))) continue;
+            var errPlug = Program.Cache.GetPlugin(match.Groups[1].Value) ?? new Plugin {Name = match.Groups[1].Value};
+            scriptErr.PluginList.Add(errPlug);
+        }
+        if (scriptErr.PluginList.Count != 0)
+        {
+            scriptErr.Solution = $"{scriptErr.Solution}\r\n- {string.Join("\r\n- ", scriptErr.PluginList.Select(x => x.Name).ToList())}";
+            if (scriptErr.Solution.Length >= 1024) scriptErr.Solution = "Too many to show! God damn!";
+            log.Errors.Add(scriptErr);
+        }
+        
+        var plugErr = errorData.Find(x => x.Id == 99).Clone();
+        foreach (Match match in new Regex(plugErr.Pattern, RegexOptions.Multiline).Matches(wholeLog))
+        {
+            if (plugErr.PluginList.Any(x => x.Name.Equals(match.Groups[1].Value))) continue;
+            var errPlug = Program.Cache.GetPlugin(match.Groups[1].Value) ?? new Plugin {Name = match.Groups[1].Value};
+            plugErr.PluginList.Add(errPlug);
+        }
+        if (plugErr.PluginList.Count != 0)
+        {
+            plugErr.Solution = $"{plugErr.Solution}\r\n- {string.Join("\r\n- ", plugErr.PluginList.Select(x => x.Name).ToList())}";
+            if (plugErr.Solution.Length >= 1024) plugErr.Solution = "Too many to show! God damn!";
+            log.Errors.Add(plugErr);
+        }
+        
+        var plugOth = errorData.Find(x => x.Id == 41).Clone();
+        foreach (Match match in new Regex(plugOth.Pattern, RegexOptions.Multiline).Matches(wholeLog))
+        {
+            if (plugOth.PluginList.Any(x => x.Name.Equals(match.Groups[2].Value))) continue;
+            var errPlug = Program.Cache.GetPlugin(match.Groups[2].Value) ?? new Plugin {Name = match.Groups[2].Value};
+            plugOth.PluginList.Add(errPlug);
+        }
+        if (plugOth.PluginList.Count != 0)
+        {
+            plugOth.Solution = $"{plugOth.Solution}\r\n- {string.Join("\r\n- ", plugOth.PluginList.Select(x => x.Name).ToList())}";
+            if (plugOth.Solution.Length >= 1024) plugOth.Solution = "Too many to show! God damn!";
+            log.Errors.Add(plugOth);
+        }
+        
         // //===//===//===////===//===//===////===//Outdated RPH Plugins to Outdated list//===////===//===//===////===//===//===//
         // var rph1Match = Regex.Match(wholeLog, @"DamageTrackingFramework: \[VERSION OUTDATED\]");
         // if (rph1Match.Success && log.Outdated.All(x => x.Name != "DamageTrackingFramework")) 

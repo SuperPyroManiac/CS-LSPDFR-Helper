@@ -62,7 +62,7 @@ public static class OnJoinLeave
         
             //var owner = await args.Guild.GetGuildOwnerAsync();
             var owner = args.Guild.Owner;
-            await Logging.ReportPubLog(BasicEmbeds.Info($"__Added To Server__\r\n>>> **Name:** {args.Guild.Name}\r\n**ID:** {args.Guild.Id}\r\n**Owner:** {owner.Id} ({owner.Username})"));
+            await Logging.ReportPubLog(BasicEmbeds.Info($"__Added To Server__\r\n>>> **Name:** {args.Guild.Name}\r\n**ID:** {args.Guild.Id}\r\n**Members:** {args.Guild.Members.Count}\r\n**Owner:** {owner.Id} ({owner.Username})"));
             await Servers.AddMissing();
             await Servers.RemoveMissing();
             await Servers.Validate();
@@ -87,7 +87,7 @@ public static class OnJoinLeave
             }
             //var owner = await args.Guild.GetGuildOwnerAsync();
             var owner = args.Guild.Owner;
-            await Logging.ReportPubLog(BasicEmbeds.Info($"__Removed From Server__\r\n>>> **Name:** {args.Guild.Name}\r\n**ID:** {args.Guild.Id}\r\n**Owner:** {owner.Id} ({owner.Username})"));
+            await Logging.ReportPubLog(BasicEmbeds.Info($"__Removed From Server__\r\n>>> **Name:** {args.Guild.Name}\r\n**ID:** {args.Guild.Id}\r\n**Members:** {args.Guild.Members.Count}\r\n**Owner:** {owner.Id} ({owner.Username})"));
             await Servers.AddMissing();
             await Servers.RemoveMissing();
             await Servers.Validate();
