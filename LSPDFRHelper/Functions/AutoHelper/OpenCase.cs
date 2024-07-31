@@ -25,7 +25,7 @@ public class OpenCase
             $"\r\n> - .xml and .meta files" +
             //$"\r\n> - Screenshots of .png or .jpg - BETA" +
             $"\r\n\r\n*Do not abuse the request help button. Only use it if you have tried all the steps provided and have exhausted your own options.*" +
-            $"\r\n\r\n__This bot is maintained by https://dsc.PyrosFun.com!__", null));
+            $"\r\n\r\n__This bot is maintained by https://dsc.PyrosFun.com__", null));
         caseMsg.AddComponents(
             new DiscordButtonComponent(DiscordButtonStyle.Success, CustomIds.MarkSolved, "Mark Solved", false,
                 new DiscordComponentEmoji("👍")),
@@ -49,6 +49,8 @@ public class OpenCase
 
         var smsg = await ch.SendMessageAsync(caseMsg);
         await smsg.PinAsync();
+        await Verifications.AutoHelper.UpdateAhMonitor(guild);
+        await Verifications.AutoHelper.UpdateMainAhMessage(guild);
         return ch;
     }
 }

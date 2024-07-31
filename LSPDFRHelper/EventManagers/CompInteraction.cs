@@ -246,6 +246,7 @@ public static class CompInteraction
                         await eventArgs.Message.DeleteAsync();
                         await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate);
                         await AutoHelper.UpdateMainAhMessage(eventArgs.Guild.Id);
+                        await AutoHelper.UpdateAhMonitor(eventArgs.Guild.Id);
                         return;
                     }
                     

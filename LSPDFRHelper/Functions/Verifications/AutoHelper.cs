@@ -9,12 +9,12 @@ namespace LSPDFRHelper.Functions.Verifications;
 
 public class AutoHelper
 {
-    public static async Task UpdateMainAhMessage(ulong serverId = default)
+    public static async Task UpdateMainAhMessage(ulong serverId)
     {
         try
         {
             var description = 
-                "\r\n> The AutoHelper can read a variety of file types and will attempt to find issues. Currently supported log files are **RagePluginHook** and **ELS** logs. The AutoHelper can also parse **.xml** and **.meta** files."+
+                "\r\n> The AutoHelper can read a variety of file types and will attempt to find issues. Currently supported log files are **RagePluginHook** logs. *ELS logs will be supported soon!* The AutoHelper can also parse **.xml** and **.meta** files."+
                 "\r\n> Please note that frequent issues can often be detected, but human assistance may be required for more advanced problems. you may wish to use the request button to ask for human help." +
                 "\r\n\r\n## __AutoHelper Terms Of Use__" +
                 "\r\n> - Do not send modified logs to 'test' the bot. Access will instantly be revoked." +
@@ -24,33 +24,7 @@ public class AutoHelper
                 "\r\n\r\n## __Other Info__" +
                 "\r\n> Anyone can join and assist in cases, using /JoinCase to do so. You can request help from others using the button, we ask that you do not abuse this feature though." + 
                 "\r\n\r\n> __Created by: SuperPyroManiac & Hammer__\r\n> More information at: https://dsc.PyrosFun.com";
-        
-            if ( serverId == default )
-            {
-                foreach ( var serv in Program.Cache.ServerCacheDict.Values.Where(ac => ac.AutoHelperChId != 0) )
-                {
-                    var ch = await Program.Client.GetChannelAsync(serv.AutoHelperChId);
-                    var stt = DbManager.AutoHelperStatus(serv.ServerId);
-                    DiscordMessage origMsg = null;
-                    var embed = BasicEmbeds.Ts("# __LSPDFR AutoHelper__", null);
-                    await foreach (var msg in ch.GetMessagesAsync())
-                    {
-                        if (msg.Embeds.Count <= 0) continue;
-                        var first = msg.Embeds.FirstOrDefault();
-                        if (first!.Description != null && msg.Embeds.FirstOrDefault()!.Description!.Contains("LSPDFR AutoHelper")) origMsg = msg;
-                    }
-                    if (origMsg == null) origMsg = await ch.SendMessageAsync("Starting...");
-
-                    embed.Description += description; 
-                    if (!stt) embed.Description += "\r\n\r\n## __AutoHelper Disabled!__\r\n>>> **System has been disabled by staff temporarily!**";
-        
-                    await new DiscordMessageBuilder()
-                        .AddEmbed(embed)
-                        .AddComponents(new DiscordButtonComponent(DiscordButtonStyle.Success, CustomIds.OpenCase, "Open Case", !stt))
-                        .ModifyAsync(origMsg); 
-                }
-                return;
-            }
+            
 
             var server = Program.Cache.GetServer(serverId);
             if ( server.AutoHelperChId == 0 ) return;
@@ -81,48 +55,47 @@ public class AutoHelper
         }
     }
     
-    public static async Task UpdateAhMonitor()
+    public static async Task UpdateAhMonitor(ulong serverId)
     {
         try
         {
-            foreach ( var serv in Program.Cache.ServerCacheDict.Values.Where(ac => ac.MonitorChId != 0) )
+            var server = Program.Cache.GetServer(serverId);
+            if ( server.MonitorChId == 0 ) return;
+            var ch = await Program.Client.GetChannelAsync(server.MonitorChId);
+            DiscordMessage origMsg = null;
+            var embed = BasicEmbeds.Ts("# __AutoHelper Active Cases__", null);
+            await foreach (var msg in ch.GetMessagesAsync())
             {
-                var ch = await Program.Client.GetChannelAsync(serv.MonitorChId);
-                DiscordMessage origMsg = null;
-                var embed = BasicEmbeds.Ts("# __AutoHelper Active Cases__", null);
-                await foreach (var msg in ch.GetMessagesAsync())
+                if (msg.Author!.Id != 1189354194205950072) continue;
+                if (msg.Embeds.Count == 0) continue;
+                foreach (var emb in msg.Embeds)
                 {
-                    if (msg.Author!.Id != 1189354194205950072) continue;
-                    if (msg.Embeds.Count == 0) continue;
-                    foreach (var emb in msg.Embeds)
+                    if (emb.Description!.Contains("AutoHelper Active Cases"))
                     {
-                        if (emb.Description!.Contains("AutoHelper Active Cases"))
-                        {
-                            origMsg = msg;
-                        }
+                        origMsg = msg;
                     }
                 }
-                if (origMsg == null) origMsg = await ch.SendMessageAsync("Starting...");
-
-                var allCases = Program.Cache.GetCases().Where(ac => !ac.Solved).ToList().OrderBy(ac => ac.ExpireDate);
-                foreach (var ac in allCases.TakeWhile(ac => embed.Fields.Count < 16))
-                {
-                    if (embed.Fields.Count == 15)
-                    {
-                        embed.AddField("..And More", "There are too many cases to show!");
-                        break;
-                    }
-            
-                    if (!ac.Solved && ac.ServerId == serv.ServerId)
-                        embed.AddField($"__<#{ac.ChannelId}>__",
-                            $">>> Author: <@{ac.OwnerId}>"
-                            + $"\r\nHelp Requested: {Convert.ToBoolean(ac.TsRequested)}"
-                            + $"\r\nCreated: {Formatter.Timestamp(ac.CreateDate.ToLocalTime())} | AutoClose: {Formatter.Timestamp(ac.ExpireDate.ToLocalTime())}");
-                }
-                if (embed.Fields.Count == 0) embed.AddField("None", "No open cases!");
-
-                await new DiscordMessageBuilder().AddEmbed(embed).ModifyAsync(origMsg);
             }
+            if (origMsg == null) origMsg = await ch.SendMessageAsync("Starting...");
+
+            var allCases = Program.Cache.GetCases().Where(ac => !ac.Solved).ToList().OrderBy(ac => ac.ExpireDate);
+            foreach (var ac in allCases.TakeWhile(ac => embed.Fields.Count < 16))
+            {
+                if (embed.Fields.Count == 15)
+                {
+                    embed.AddField("..And More", "There are too many cases to show!");
+                    break;
+                }
+            
+                if (!ac.Solved && ac.ServerId == server.ServerId)
+                    embed.AddField($"__<#{ac.ChannelId}>__",
+                        $">>> Author: <@{ac.OwnerId}>"
+                        + $"\r\nHelp Requested: {Convert.ToBoolean(ac.TsRequested)}"
+                        + $"\r\nCreated: {Formatter.Timestamp(ac.CreateDate.ToLocalTime())} | AutoClose: {Formatter.Timestamp(ac.ExpireDate.ToLocalTime())}");
+            }
+            if (embed.Fields.Count == 0) embed.AddField("None", "No open cases!");
+
+            await new DiscordMessageBuilder().AddEmbed(embed).ModifyAsync(origMsg);
         }
         catch ( Exception ex )
         {

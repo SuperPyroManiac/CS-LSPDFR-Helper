@@ -19,7 +19,6 @@ public static class Timer
     {
         Task.WaitAll(Program.Cache.RemoveExpiredCaches(), Verifications.AutoHelper.ValidateOpenCases());
         //TODO: PLUGIN VERSION CHECKER
-        await Verifications.AutoHelper.UpdateAhMonitor();
     }
     
     private static async void LongTimer(object _, ElapsedEventArgs e)

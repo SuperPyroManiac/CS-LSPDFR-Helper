@@ -12,9 +12,8 @@ public static class AutoReplies
         
         foreach (var attach in ctx.Message.Attachments)
         {
-            if (attach.FileName!.EndsWith(".log"))
-                if (attach.FileName.ToLower() != "RagePluginHook.log" && attach.FileName.ToLower() != "els.log")
-                    await ctx.Message.RespondAsync(BasicEmbeds.Public("## __LSPDFR AutoHelper__\r\n>>> This log is not correct. Supported logs are:\r\n- RagePluginHook.log\r\n- ELS.log\r\n- .xml or .meta files.\r\n\r\nEnsure RagePluginHook logs are from the main directory, and not the logs folder!"));
+            if (attach.FileName!.EndsWith(".log") && !attach.FileName.Equals("RagePluginHook.log", StringComparison.CurrentCultureIgnoreCase) && !attach.FileName.Equals("els.log", StringComparison.CurrentCultureIgnoreCase) )
+                await ctx.Message.RespondAsync(BasicEmbeds.Public("## __LSPDFR AutoHelper__\r\n>>> This log is not correct. Supported logs are:\r\n- RagePluginHook.log\r\n- .xml or .meta files.\r\n\r\nEnsure RagePluginHook logs are from the main directory, and not the logs folder!"));
             
             if (attach.FileName.EndsWith(".rcr"))
                 await ctx.Message.RespondAsync(BasicEmbeds.Public("## __LSPDFR AutoHelper__\r\n>>> This file is not supported! Please send `RagePluginHook.log` from your main GTA directory instead. Not the logs folder."));

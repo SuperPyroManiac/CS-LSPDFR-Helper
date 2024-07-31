@@ -52,6 +52,7 @@ public static class CloseCase
             await ch.ModifyAsync(model => model.IsArchived = true);
 
             DbManager.EditCase(ac);
+            await Verifications.AutoHelper.UpdateAhMonitor(ac.ServerId);
         }
         catch (Exception e)
         {

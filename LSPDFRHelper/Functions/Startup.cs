@@ -43,8 +43,6 @@ public static class Startup
         //AH Verifications
         _closedCaseCnt = await Verifications.AutoHelper.ValidateClosedCases();
         _closedCaseCnt += await Verifications.AutoHelper.ValidateOpenCases();
-        await Verifications.AutoHelper.UpdateMainAhMessage();
-        await Verifications.AutoHelper.UpdateAhMonitor();
     }
 
     private static async Task SendStartupMessage()

@@ -5,6 +5,7 @@ using LSPDFRHelper.CustomTypes.CacheTypes;
 using LSPDFRHelper.Functions;
 using LSPDFRHelper.Functions.Messages;
 using LSPDFRHelper.Functions.Messages.ModifiedProperties;
+using LSPDFRHelper.Functions.Verifications;
 
 namespace LSPDFRHelper.EventManagers;
 
@@ -260,6 +261,7 @@ public static class ModalSubmit
                         ac.RequestId = rCh.Id;
                         ac.ExpireDate = DateTime.Now.ToUniversalTime().AddHours(12);
                         DbManager.EditCase(ac);
+                        await AutoHelper.UpdateAhMonitor(e.Interaction.Guild.Id);
                         return;
                     }
                     if (ac.TsRequested)

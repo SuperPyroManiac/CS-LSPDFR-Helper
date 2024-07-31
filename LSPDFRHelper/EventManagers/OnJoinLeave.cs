@@ -60,6 +60,7 @@ public static class OnJoinLeave
         {
             while ( !Program.IsStarted ) await Task.Delay(500);
         
+            //await cl.SendMessageAsync(cl.GetChannelAsync(args.Guild.SystemChannelId.Value), BasicEmbeds.Info("d"))
             //var owner = await args.Guild.GetGuildOwnerAsync();
             var owner = args.Guild.Owner;
             await Logging.ReportPubLog(BasicEmbeds.Info($"__Added To Server__\r\n>>> **Name:** {args.Guild.Name}\r\n**ID:** {args.Guild.Id}\r\n**Members:** {args.Guild.Members.Count}\r\n**Owner:** {owner.Id} ({owner.Username})"));
