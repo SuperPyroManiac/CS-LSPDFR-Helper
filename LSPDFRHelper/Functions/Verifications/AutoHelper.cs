@@ -92,7 +92,7 @@ public class AutoHelper
                 var embed = BasicEmbeds.Ts("# __AutoHelper Active Cases__", null);
                 await foreach (var msg in ch.GetMessagesAsync())
                 {
-                    if (msg.Author != null && !msg.Author.IsBot) continue;
+                    if (msg.Author!.Id != 1189354194205950072) continue;
                     if (msg.Embeds.Count == 0) continue;
                     foreach (var emb in msg.Embeds)
                     {
