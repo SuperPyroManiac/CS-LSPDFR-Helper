@@ -53,24 +53,28 @@ public class Settings
             DbServer: "Example.com",
             DbUser: "Username",
             DbPass: "Password",
-            DbName: "Database"
+            DbName: "Database",
+            MainServ: 0,
+            LogCh: 0,
+            SLogCh: 0,
+            ErrLogCh: 0
         );
     }
 
     public async Task<DiscordGuild> MainGuild()
     {
-        return await Program.Client.GetGuildAsync(736140566311600138);
+        return await Program.Client.GetGuildAsync(Program.BotSettings.Env.MainServ);
     }
-    public async Task<DiscordChannel> BasicLogs()
+    public async Task<DiscordChannel> BotLogs()
     {
-        return await Program.Client.GetChannelAsync(1267186938012635290);
+        return await Program.Client.GetChannelAsync(Program.BotSettings.Env.LogCh);
     }
-    public async Task<DiscordChannel> ReportLogs()
+    public async Task<DiscordChannel> ServerLogs()
     {
-        return await Program.Client.GetChannelAsync(1267186900280672338);
+        return await Program.Client.GetChannelAsync(Program.BotSettings.Env.SLogCh);
     }
     public async Task<DiscordChannel> ErrorLogs()
     {
-        return await Program.Client.GetChannelAsync(1267186854302846976);
+        return await Program.Client.GetChannelAsync(Program.BotSettings.Env.ErrLogCh);
     }
 }
