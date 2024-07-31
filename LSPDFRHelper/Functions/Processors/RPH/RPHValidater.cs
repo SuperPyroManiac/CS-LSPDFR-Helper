@@ -32,7 +32,7 @@ public static class RPHValidater
             return log;
         }
 
-        var allMatch = new Regex(@"(?:(?<!CalloutManager\.cs:line 738)\n.+LSPD First Response: (?!無法載入檔案或組件|\[|Creating|CalloutInterface: \[ERROR\] there was an error| |Error)\W?(.+), Version=(.+), Culture=\w+, PublicKeyToken=\w+)|(?:Loading plugin .+\wlugins(?:\\|/)(.+).dll.*)", RegexOptions.Multiline).Matches(rawLog);
+        var allMatch = new Regex(@"(?:(?<!CalloutManager\.cs:line 738)\n.+LSPD First Response: (?!無法載入檔案或組件|\[|Creating| |Error)\W?(.{1,40}), Version=(.+), Culture=\w{1,10}, PublicKeyToken=\w{1,10})|(?:Loading plugin .+\wlugins(?:\\|/)(.+).dll.*)", RegexOptions.Multiline).Matches(rawLog);
         foreach ( Match match in allMatch )
         {
             if ( match.Groups[1].Value.Length > 0 )

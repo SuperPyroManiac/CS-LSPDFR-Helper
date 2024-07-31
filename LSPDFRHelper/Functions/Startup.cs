@@ -73,7 +73,7 @@ public static class Startup
         if (_closedCaseCnt > 0) msgText += $"> *{_closedCaseCnt} Cases failed verification, closed!*\r\n";
         
         var embed = BasicEmbeds.Success(msgText);
-        var ch = await Program.BotSettings.BasicLogs();
+        var ch = await Program.BotSettings.BotLogs();
         await new DiscordMessageBuilder().AddEmbed(embed).SendAsync(ch);
     }
 }

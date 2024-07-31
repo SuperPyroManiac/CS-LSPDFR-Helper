@@ -89,9 +89,9 @@ public static class Servers
                 var server = Program.Cache.GetServer(serv.Key);
                 if (server == null) continue;
                 
-                if ( Program.Cache.GetUser(serv.Value.OwnerId) != null )
-                    if ( Program.Cache.GetUser(serv.Value.OwnerId).Blocked ) server.Blocked = true;
-                DbManager.EditServer(server);
+                // if ( Program.Cache.GetUser(serv.Value.OwnerId) != null )
+                //     if ( Program.Cache.GetUser(serv.Value.OwnerId).Blocked ) server.Blocked = true;
+                // DbManager.EditServer(server);
             }
         }
         catch ( Exception ex )

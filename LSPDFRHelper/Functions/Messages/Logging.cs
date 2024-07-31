@@ -2,7 +2,7 @@ using DSharpPlus.Entities;
 
 namespace LSPDFRHelper.Functions.Messages;
 
-public class Logging//TODO: redo this all
+public class Logging
 {
     //Standard Logging
     public static async Task ErrLog(string e)
@@ -20,7 +20,7 @@ public class Logging//TODO: redo this all
     
     public static async Task SendLog(ulong chLink, ulong msgSender, DiscordEmbedBuilder e, bool blame = true)
     {
-        var tsBotLogCh = await Program.BotSettings.BasicLogs();
+        var tsBotLogCh = await Program.BotSettings.BotLogs();
         if (blame) e.AddField("Sent By", $"<@{msgSender}> in: <#{chLink}>");
         await new DiscordMessageBuilder().AddEmbed(e).SendAsync(tsBotLogCh);
     }
@@ -28,12 +28,12 @@ public class Logging//TODO: redo this all
     //Public Logging
     public static async Task SendPubLog(DiscordEmbedBuilder e)
     {
-        var pubBotLogCh = await Program.BotSettings.BasicLogs();
+        var pubBotLogCh = await Program.BotSettings.BotLogs();
         await new DiscordMessageBuilder().AddEmbed(e).SendAsync(pubBotLogCh);
     }
     public static async Task ReportPubLog(DiscordEmbedBuilder e)
     {
-        var pubBotLogCh = await Program.BotSettings.ReportLogs();
+        var pubBotLogCh = await Program.BotSettings.ServerLogs();
         await new DiscordMessageBuilder().AddEmbed(e).SendAsync(pubBotLogCh);
     }
 }

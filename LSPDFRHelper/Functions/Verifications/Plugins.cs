@@ -85,7 +85,7 @@ public static class Plugins
         if ( upCnt == 0 ) return;
         await Logging.SendLog(0, 0, logMsg, false);
         if ( annCnt == 0 ) return;
-        var ch = await Program.BotSettings.BasicLogs();
+        var ch = await Program.BotSettings.BotLogs();
         await ch.SendMessageAsync(annMsg);
     }
 }

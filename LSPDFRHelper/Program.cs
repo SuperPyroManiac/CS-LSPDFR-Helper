@@ -57,19 +57,19 @@ public class Program
         var commandsExtension = Client.UseCommands(cc);
         
         //Special Commands
-        commandsExtension.AddCommands(typeof(AddPlugin), 736140566311600138);
-        commandsExtension.AddCommands(typeof(EditPlugin), 736140566311600138);
-        commandsExtension.AddCommands(typeof(RemovePlugin), 736140566311600138);
-        commandsExtension.AddCommands(typeof(FindPlugins), 736140566311600138);
-        commandsExtension.AddCommands(typeof(ExportPlugins), 736140566311600138);
-        commandsExtension.AddCommands(typeof(AddError), 736140566311600138);
-        commandsExtension.AddCommands(typeof(EditError), 736140566311600138);
-        commandsExtension.AddCommands(typeof(RemoveError), 736140566311600138);
-        commandsExtension.AddCommands(typeof(FindErrors), 736140566311600138);
-        commandsExtension.AddCommands(typeof(ExportErrors), 736140566311600138);
-        commandsExtension.AddCommands(typeof(EditUser), 736140566311600138);
-        commandsExtension.AddCommands(typeof(ForceVerification), 736140566311600138);
-        commandsExtension.AddCommands(typeof(EditServer), 736140566311600138);
+        commandsExtension.AddCommands(typeof(AddPlugin), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(EditPlugin), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(RemovePlugin), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(FindPlugins), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(ExportPlugins), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(AddError), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(EditError), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(RemoveError), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(FindErrors), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(ExportErrors), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(EditUser), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(ForceVerification), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(EditServer), BotSettings.Env.MainServ);
         
         //Public Commands
         commandsExtension.AddCommands(typeof(Setup));
@@ -82,7 +82,7 @@ public class Program
         commandsExtension.AddCommands(typeof(ValidateXML));
 
         //WIP Commands
-        commandsExtension.AddCommands(typeof(ForwardToAh), 736140566311600138);
+        commandsExtension.AddCommands(typeof(ForwardToAh), BotSettings.Env.MainServ);
         
         
         Client.UseInteractivity(new InteractivityConfiguration());
