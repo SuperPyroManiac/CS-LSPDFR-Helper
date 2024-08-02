@@ -69,11 +69,11 @@ public static class Plugins
             }
             catch (HttpRequestException e)
             {
-                Console.WriteLine($"{plugin.Name} skipped.\r\n{e}");
+                await Logging.ErrLog($"{plugin.Name} skipped. Likely hidden on LSPDFR!\r\n\r\n{e}");
             }
             catch (TaskCanceledException e)
             {
-                Console.WriteLine($"{plugin.Name} skipped.\r\n{e}");
+                await Logging.ErrLog($"{plugin.Name} skipped. Likely hidden on LSPDFR!\r\n\r\n{e}");
             }
             catch (Exception e)
             {

@@ -12,6 +12,6 @@ public class User
     public async Task<bool> IsManager(ulong guild)
     {
         var usr = await Functions.Functions.GetMember(guild, Id);
-        return usr.Roles.Any(role => role.Id == Program.Cache.GetServer(guild).ManagerRoleId);
+        return BotAdmin || usr.Roles.Any(role => role.Id == Program.Cache.GetServer(guild).ManagerRoleId);
     }
 }

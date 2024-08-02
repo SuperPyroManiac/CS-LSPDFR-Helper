@@ -34,8 +34,8 @@ public class SharedData
         if (missmatchDashListStr.Length is > 3 and < 1024) embed.AddField(":bangbang:  **Plugin version newer than DB:**", missmatchDashListStr);
 
         if (missingDashListStr.Length >= 1024 || missmatchDashListStr.Length >= 1024)
-            embed.AddField("Attention!", "Too many unknown plugins to display them in this message. Please check the log manually.");//TODO: This is most likely abuse!
-
+            embed.AddField("Attention!", "Too many unknown plugins to display them in this message. Please check the log manually.");
+        
         await Logging.SendLog(originalMsgChannelId, originalMsgUserId, embed);
     }
 }
