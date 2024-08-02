@@ -113,7 +113,7 @@ public static class RPHValidater
         }
 
         log = RPHSpecialErrors.ProcessSpecialErrors(log, rawLog);
-        log.Errors = log.Errors.OrderBy(x => x.Level).ToList();
+        log.Errors = log.Errors.OrderByDescending(x => x.Level).ToList();
 
         log.ValidaterCompletedAt = DateTime.Now;
         log.ElapsedTime = DateTime.Now.Subtract(log.ValidaterStartedAt).Milliseconds.ToString();
