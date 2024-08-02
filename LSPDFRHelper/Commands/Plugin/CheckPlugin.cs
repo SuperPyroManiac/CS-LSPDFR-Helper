@@ -28,15 +28,16 @@ public class CheckPlugin
 				response.AddEmbed(BasicEmbeds.Error($"No plugin found with name {name}")));
 			return;
 		}
-		
-		if (!string.IsNullOrEmpty(plugin.Link)) plugin.Link = $"[Here]({plugin.Link})";
-		plugin.Link ??= "N/A";
+
+        var link = "";
+		if (!string.IsNullOrEmpty(plugin.Link)) link = $"[Here]({plugin.Link})";
+		link ??= "N/A";
 		
 		var embed = BasicEmbeds.Public(            
             $"## __{plugin.Name}__{BasicEmbeds.AddBlanks(25)}\r\n"
             + $">>> **Display Name:** {plugin.DName}\n"
             + $"**Version:** {plugin.Version}\n"
-            + $"**Link:** {plugin.Link}\n"
+            + $"**Link:** {link}\n"
             + $"**Type:** {plugin.PluginType} | **State:** {plugin.State}\n"
             + $"**Notes:** \r\n```{plugin.Description}```\r\n");
 		
