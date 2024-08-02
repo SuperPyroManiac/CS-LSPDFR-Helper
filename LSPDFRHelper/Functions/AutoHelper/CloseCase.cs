@@ -56,7 +56,8 @@ public static class CloseCase
         }
         catch (Exception e)
         {
-            await Logging.ErrLog(e.ToString());
+            await Logging.ErrLog($"Error closing case: {ac.CaseId}\r\n{e}\r\n\r\nClosing case forcefully!");
+            await Close(ac, true);
             Console.WriteLine(e);
         }
     }
