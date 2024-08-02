@@ -7,13 +7,13 @@ namespace LSPDFRHelper.CustomTypes.CacheTypes;
 
 public class Cache
 {
+    internal Dictionary<ulong, Server> ServerCacheDict = new();
     private Dictionary<ulong, ProcessCache> _processCacheDict = new();
     private Dictionary<string, InteractionCache> _interactionCacheDict = new();
     private readonly ConcurrentDictionary<ulong, User> _userCacheDict = new();
     private readonly ConcurrentDictionary<int, Error> _errorCacheDict = new();
     private readonly ConcurrentDictionary<string, Plugin> _pluginCacheDict = new();
     private readonly ConcurrentDictionary<string, AutoCase> _caseCacheDict = new();
-    internal readonly ConcurrentDictionary<ulong, Server> ServerCacheDict = new();
 
     /// <summary>Reset all caches.</summary>
     public void ResetCaches()
@@ -39,7 +39,7 @@ public class Cache
     {
         try
         { return ServerCacheDict[server]; }
-        catch ( Exception e )
+        catch ( Exception )
         { return null; }
     }
     
@@ -61,7 +61,7 @@ public class Cache
     {
         try
         { return _caseCacheDict[caseId]; }
-        catch ( Exception e )
+        catch ( Exception )
         { return null; }
     }
     
@@ -83,7 +83,7 @@ public class Cache
     {
         try
         { return _pluginCacheDict[pluginname]; }
-        catch ( Exception e )
+        catch ( Exception )
         { return null; }
     }
     
@@ -124,7 +124,7 @@ public class Cache
     {
         try
         { return _userCacheDict[userId]; }
-        catch ( Exception e )
+        catch ( Exception )
         { return null; }
     }
 

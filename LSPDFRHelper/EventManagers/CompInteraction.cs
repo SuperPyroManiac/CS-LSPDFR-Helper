@@ -243,10 +243,10 @@ public static class CompInteraction
                     {
                         DbManager.EditServer(usercache.Server);
                         Program.Cache.RemoveUserAction(eventArgs.User.Id, CustomIds.SelectServerValueToEdit);
-                        await eventArgs.Message.DeleteAsync();
-                        await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate);
                         await AutoHelper.UpdateMainAhMessage(eventArgs.Guild.Id);
                         await AutoHelper.UpdateAhMonitor(eventArgs.Guild.Id);
+                        await Task.Delay(500);
+                        Task.WaitAll(eventArgs.Message.DeleteAsync(), eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate));
                         return;
                     }
                     
@@ -292,6 +292,12 @@ public static class CompInteraction
                 if (findCase != null)
                 {
                     await eventArgs.Interaction.EditOriginalResponseAsync(msg.AddEmbed(BasicEmbeds.Error($"__You already have an open case!__\r\n> Check <#{findCase.ChannelId}>")));
+                    return;
+                }
+                
+                if (!Program.Cache.GetServer(eventArgs.Guild.Id).AutoHelperChId.Equals(eventArgs.Channel.Id))
+                {
+                    await eventArgs.Interaction.EditOriginalResponseAsync(msg.AddEmbed(BasicEmbeds.Error($"__Server setup incorrectly!__\r\n>>> Please report this to the server staff!\r\n*An admin needs to run `/setup` and ensure the channel id's are correct!*")));
                     return;
                 }
 
