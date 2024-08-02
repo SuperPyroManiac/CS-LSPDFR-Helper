@@ -66,7 +66,7 @@ public class AutoHelper
             var embed = BasicEmbeds.Ts("# __AutoHelper Active Cases__", null);
             await foreach (var msg in ch.GetMessagesAsync())
             {
-                if (msg.Author!.Id != 1189354194205950072 || msg.Author!.Id != 1140824901104701440 || msg.Author!.Id != 1268392593243373577) continue;
+                if (msg.Author!.Id != 1189354194205950072 && msg.Author!.Id != 1140824901104701440 && msg.Author!.Id != 1268392593243373577) continue;
                 if (msg.Embeds.Count == 0) continue;
                 foreach (var emb in msg.Embeds)
                 {

@@ -20,12 +20,6 @@ public class Cache
     {
         _processCacheDict.Clear();
         _interactionCacheDict.Clear();
-        _userCacheDict.Clear();
-        _errorCacheDict.Clear();
-        _pluginCacheDict.Clear();
-        _caseCacheDict.Clear();
-        ServerCacheDict.Clear();
-        
         UpdateServers();
         UpdateCases(DbManager.GetCases());
         UpdateErrors(DbManager.GetErrors());
