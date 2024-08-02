@@ -58,51 +58,51 @@ public class Program
         
         //Special Commands
         Console.WriteLine("Registering AddPlugin");
-        commandsExtension.AddCommand(typeof(AddPlugin), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(AddPlugin), BotSettings.Env.MainServ);
         Console.WriteLine("Registering EditPlugin");
-        commandsExtension.AddCommand(typeof(EditPlugin), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(EditPlugin), BotSettings.Env.MainServ);
         Console.WriteLine("Registering RemovePlugin");
-        commandsExtension.AddCommand(typeof(RemovePlugin), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(RemovePlugin), BotSettings.Env.MainServ);
         Console.WriteLine("Registering FindPlugins");
-        commandsExtension.AddCommand(typeof(FindPlugins), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(FindPlugins), BotSettings.Env.MainServ);
         Console.WriteLine("Registering ExportPlugins");
-        commandsExtension.AddCommand(typeof(ExportPlugins), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(ExportPlugins), BotSettings.Env.MainServ);
         Console.WriteLine("Registering AddError");
-        commandsExtension.AddCommand(typeof(AddError), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(AddError), BotSettings.Env.MainServ);
         Console.WriteLine("Registering EditError");
-        commandsExtension.AddCommand(typeof(EditError), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(EditError), BotSettings.Env.MainServ);
         Console.WriteLine("Registering RemoveError");
-        commandsExtension.AddCommand(typeof(RemoveError), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(RemoveError), BotSettings.Env.MainServ);
         Console.WriteLine("Registering FindErrors");
-        commandsExtension.AddCommand(typeof(FindErrors), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(FindErrors), BotSettings.Env.MainServ);
         Console.WriteLine("Registering ExportErrors");
-        commandsExtension.AddCommand(typeof(ExportErrors), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(ExportErrors), BotSettings.Env.MainServ);
         Console.WriteLine("Registering EditUser");
-        commandsExtension.AddCommand(typeof(EditUser), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(EditUser), BotSettings.Env.MainServ);
         Console.WriteLine("Registering ForceVerification");
-        commandsExtension.AddCommand(typeof(ForceVerification), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(ForceVerification), BotSettings.Env.MainServ);
         
         //Public Commands
         Console.WriteLine("Registering Setup");
-        commandsExtension.AddCommand(typeof(Setup));
+        commandsExtension.AddCommands(typeof(Setup));
         Console.WriteLine("Registering ToggleAh");
-        commandsExtension.AddCommand(typeof(ToggleAh));
+        commandsExtension.AddCommands(typeof(ToggleAh));
         Console.WriteLine("Registering JoinCase");
-        commandsExtension.AddCommand(typeof(JoinCase));
+        commandsExtension.AddCommands(typeof(JoinCase));
         Console.WriteLine("Registering CloseCase");
-        commandsExtension.AddCommand(typeof(CloseCase));
+        commandsExtension.AddCommands(typeof(CloseCase));
         Console.WriteLine("Registering FindCases");
-        commandsExtension.AddCommand(typeof(FindCases));
+        commandsExtension.AddCommands(typeof(FindCases));
         Console.WriteLine("Registering CheckPlugin");
-        commandsExtension.AddCommand(typeof(CheckPlugin));
+        commandsExtension.AddCommands(typeof(CheckPlugin));
         Console.WriteLine("Registering ValidateLog");
-        commandsExtension.AddCommand(typeof(ValidateLog));
+        commandsExtension.AddCommands(typeof(ValidateLog));
         Console.WriteLine("Registering ValidateXML");
-        commandsExtension.AddCommand(typeof(ValidateXML));
+        commandsExtension.AddCommands(typeof(ValidateXML));
 
         //WIP Commands
-        //commandsExtension.AddCommand(typeof(EditServer), BotSettings.Env.MainServ);
-        //commandsExtension.AddCommand(typeof(ForwardToAh), BotSettings.Env.MainServ);
+        //commandsExtension.AddCommands(typeof(EditServer), BotSettings.Env.MainServ);
+        //commandsExtension.AddCommands(typeof(ForwardToAh), BotSettings.Env.MainServ);
         
         
         Client.UseInteractivity(new InteractivityConfiguration());
