@@ -4,6 +4,8 @@ namespace LSPDFRHelper.CustomTypes.MainTypes;
 public class Server
 {
     public ulong ServerId { get; set; }
+    public string Name { get; set; }
+    public ulong OwnerId { get; set; }
     public bool Enabled { get; set; }
     public bool Blocked { get; set; }
     public bool AhEnabled { get; set; }
