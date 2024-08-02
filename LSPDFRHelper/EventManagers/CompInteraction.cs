@@ -294,6 +294,12 @@ public static class CompInteraction
                     await eventArgs.Interaction.EditOriginalResponseAsync(msg.AddEmbed(BasicEmbeds.Error($"__You already have an open case!__\r\n> Check <#{findCase.ChannelId}>")));
                     return;
                 }
+                
+                if (!Program.Cache.GetServer(eventArgs.Guild.Id).AutoHelperChId.Equals(eventArgs.Channel.Id))
+                {
+                    await eventArgs.Interaction.EditOriginalResponseAsync(msg.AddEmbed(BasicEmbeds.Error($"__Server setup incorrectly!__\r\n>>> Please report this to the server staff!\r\n*An admin needs to run `/setup` and ensure the channel id's are correct!*")));
+                    return;
+                }
 
                 var newCase = await OpenCase.CreateCase(eventArgs.User.Id, eventArgs.Guild.Id);
                 msg.AddEmbed(BasicEmbeds.Success($"__Created new case!__\r\n> {newCase.Mention}"));
