@@ -395,7 +395,7 @@ public static class DbManager
         try
         {
             await using var cnn = new MySqlConnection(ConnStr);
-            await cnn.ExecuteAsync("insert into ServerOptions (ServerId, Enabled, Blocked, AhEnabled, AutoHelperChId, MonitorChId, AnnounceChId, ManagerRoleId) VALUES (@ServerId, @Enabled, @Blocked, @AhEnabled, @AutoHelperChId, @MonitorChId, @AnnounceChId, @ManagerRoleId)", server);
+            await cnn.ExecuteAsync("insert into ServerOptions (ServerId, Name, OwnerId, Enabled, Blocked, AhEnabled, AutoHelperChId, MonitorChId, AnnounceChId, ManagerRoleId) VALUES (@ServerId, @Name, @OwnerId, @Enabled, @Blocked, @AhEnabled, @AutoHelperChId, @MonitorChId, @AnnounceChId, @ManagerRoleId)", server);
             Program.Cache.UpdateServers();
         }
         catch (MySqlException e)
@@ -411,7 +411,7 @@ public static class DbManager
         try
         {
             await using var cnn = new MySqlConnection(ConnStr);
-            await cnn.ExecuteAsync("UPDATE ServerOptions SET ServerId = @ServerId, Enabled = @Enabled, Blocked = @Blocked, AhEnabled = @AhEnabled, AutoHelperChId = @AutoHelperChId, MonitorChId = @MonitorChId, AnnounceChId = @AnnounceChId, ManagerRoleId = @ManagerRoleId WHERE ServerId = @ServerId", server);
+            await cnn.ExecuteAsync("UPDATE ServerOptions SET ServerId = @ServerId, Name = @Name, OwnerId = @OwnerId, Enabled = @Enabled, Blocked = @Blocked, AhEnabled = @AhEnabled, AutoHelperChId = @AutoHelperChId, MonitorChId = @MonitorChId, AnnounceChId = @AnnounceChId, ManagerRoleId = @ManagerRoleId WHERE ServerId = @ServerId", server);
             Program.Cache.UpdateServers();
         }
         catch (MySqlException e)

@@ -22,15 +22,21 @@ public static class Servers
                         DbManager.EditServer(dbserv);
                         cnt++;
                     }
+
+                    dbserv.Name = serv.Value.Name;
+                    dbserv.OwnerId = serv.Value.OwnerId;
+                    DbManager.EditServer(dbserv);
                     continue;
                 }
                 cnt++;
                 var srv = new Server()
                 {
                     ServerId = serv.Value.Id,
+                    Name = serv.Value.Name,
+                    OwnerId = serv.Value.OwnerId,
                     Enabled = true,
                     Blocked = false,
-                    AhEnabled = false,
+                    AhEnabled = true,
                     AutoHelperChId = 0,
                     MonitorChId = 0,
                     AnnounceChId = 0,
