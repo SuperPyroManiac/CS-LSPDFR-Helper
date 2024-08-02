@@ -118,8 +118,8 @@ public static class RPHSpecialErrors
                     if (exErr.PluginList.Any(x => x.Name.Equals(capture.Value))) continue;
                     var plugin = Program.Cache.GetPlugin(capture.Value);
                     if (plugin == null) continue;
-                    if ( exErr.PluginList.Contains(plugin) ) continue;
                     exErr.PluginList.Add(plugin);
+                    Console.WriteLine(plugin.Name);
                 }
 
         if ( exErr.PluginList.Count > 0 )
@@ -131,6 +131,7 @@ public static class RPHSpecialErrors
                 "\r\nEnsure you follow all other steps listed to fix these!" +
                 "\r\n*If the issue persists, you may want to report it to the author or remove the plugin.*";
             exErr.Level = Level.SEVERE;
+            log.Errors.Add(exErr);
         }
         
         return log;
