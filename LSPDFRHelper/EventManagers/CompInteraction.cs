@@ -243,10 +243,10 @@ public static class CompInteraction
                     {
                         DbManager.EditServer(usercache.Server);
                         Program.Cache.RemoveUserAction(eventArgs.User.Id, CustomIds.SelectServerValueToEdit);
-                        await eventArgs.Message.DeleteAsync();
-                        await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate);
                         await AutoHelper.UpdateMainAhMessage(eventArgs.Guild.Id);
                         await AutoHelper.UpdateAhMonitor(eventArgs.Guild.Id);
+                        await Task.Delay(500);
+                        Task.WaitAll(eventArgs.Message.DeleteAsync(), eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate));
                         return;
                     }
                     

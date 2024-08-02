@@ -25,7 +25,6 @@ public class AutoHelper
                 "\r\n> Anyone can join and assist in cases, using /JoinCase to do so. You can request help from others using the button, we ask that you do not abuse this feature though." + 
                 "\r\n\r\n> __Created by: SuperPyroManiac & Hammer__\r\n> More information at: https://dsc.PyrosFun.com";
             
-
             var server = Program.Cache.GetServer(serverId);
             if ( server.AutoHelperChId == 0 ) return;
             var chh = await Program.Client.GetChannelAsync(server.AutoHelperChId);

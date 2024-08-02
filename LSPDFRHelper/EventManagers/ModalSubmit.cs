@@ -165,13 +165,13 @@ public static class ModalSubmit
                                 server.MonitorChId = ulong.Parse(e.Values["MonitorCh"]);
                                 _ = await e.Interaction.Guild.GetChannelAsync(server.MonitorChId);
                             }
-                            catch ( Exception exception )
+                            catch ( Exception )
                             { server.MonitorChId = 0; }
                             break;
                         case "ManagerRole":
                             try
                             { server.ManagerRoleId = ulong.Parse(e.Values["ManagerRole"]); }
-                            catch ( Exception exception )
+                            catch ( Exception )
                             { server.ManagerRoleId = 0; }
                             break;
                     }
