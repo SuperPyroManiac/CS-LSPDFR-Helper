@@ -14,7 +14,7 @@ public class AutoHelper
         try
         {
             var description = 
-                "\r\n> The AutoHelper can read a variety of file types and will attempt to find issues. Currently supported log files are **RagePluginHook** logs. *ELS logs will be supported soon!* The AutoHelper can also parse **.xml** and **.meta** files."+
+                "\r\n> The AutoHelper can read a variety of file types and will attempt to find issues. Currently supported log files are **RagePluginHook**, **ELS**, and **ASI** logs. The AutoHelper can also parse **.xml** and **.meta** files."+
                 "\r\n> Please note that frequent issues can often be detected, but human assistance may be required for more advanced problems. you may wish to use the request button to ask for human help." +
                 "\r\n\r\n## __AutoHelper Terms Of Use__" +
                 "\r\n> - Do not send modified logs to 'test' the bot. Access will instantly be revoked." +

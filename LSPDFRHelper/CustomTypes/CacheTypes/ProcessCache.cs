@@ -51,7 +51,7 @@ public class ProcessCache
         RphProcessor = newCache.RphProcessor ?? RphProcessor;
         ElsProcessor = newCache.ElsProcessor ?? ElsProcessor;
         AsiProcessor = newCache.AsiProcessor ?? AsiProcessor;
-        Expire = DateTime.Now.AddMinutes(15);
+        Expire = DateTime.Now.AddMinutes(5);
         return this;
     }
 

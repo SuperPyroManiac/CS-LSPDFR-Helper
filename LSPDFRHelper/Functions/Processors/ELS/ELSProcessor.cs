@@ -79,4 +79,29 @@ public class ELSProcessor : SharedData
         await eventArgs.Interaction.DeleteOriginalResponseAsync();
         await newMessage.SendAsync(eventArgs.Channel);
     }
+
+    public async Task SendAutoHelperMessage(MessageCreatedEventArgs ctx)
+    {
+        var embed = GetBaseEmbed("## ELS.log Info");
+        
+        if (Log.FaultyVcfFile != null) 
+        {
+            embed.AddField(":red_circle:     Faulty VCF found!", $">>> `ELS/pack_default/{Log.FaultyVcfFile}` is faulty and should be removed!");
+            Log.ValidElsVcfFiles.Clear();
+            Log.ValidElsVcfFiles.Add("\r\n__**Cannot show until the fault is fixed!**__");
+        }
+        else switch (Log.FaultyVcfFile)
+        {
+            case null when Log.InvalidElsVcfFiles.Count > 0:
+                embed.AddField(":orange_circle:     No serious issues detected!", ">>> No real issues found. Though you have multiple unused VCF's installed! You can ignore or remove these from: `ELS/pack_default/`");
+                var invalidVcFiles = ">>> " + string.Join(" - ", Log.InvalidElsVcfFiles);
+                if ( invalidVcFiles.Length < 1024 ) embed.AddField("Unused:", invalidVcFiles);
+                else embed.AddField("Too many to show!", $">>> Manually review the log to see all `{Log.InvalidElsVcfFiles.Count}` unused VCF's!");
+                break;
+            case null when Log.InvalidElsVcfFiles.Count == 0:
+                embed.AddField(":green_circle:     No issues detected!", ">>> This log shows no issues. If you still have ELS issues, try checking the ASILoader.log!");
+                break;
+        }
+        await ctx.Message.RespondAsync(new DiscordMessageBuilder().AddEmbed(embed));
+    }
 }

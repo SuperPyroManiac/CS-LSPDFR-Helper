@@ -2,10 +2,14 @@ using System.Text.RegularExpressions;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using LSPDFRHelper.CustomTypes.CacheTypes;
 using LSPDFRHelper.Functions;
 using LSPDFRHelper.Functions.AutoHelper;
 using LSPDFRHelper.Functions.Messages;
 using LSPDFRHelper.Functions.Messages.ModifiedProperties;
+using LSPDFRHelper.Functions.Processors.ASI;
+using LSPDFRHelper.Functions.Processors.ELS;
+using LSPDFRHelper.Functions.Processors.RPH;
 using LSPDFRHelper.Functions.Verifications;
 
 namespace LSPDFRHelper.EventManagers;
@@ -64,6 +68,74 @@ public static class CompInteraction
                 
                 if (eventArgs.Id is CustomIds.RphSendToUser) 
                     await cache.RphProcessor.SendMessageToUser(eventArgs);
+                
+                //===//===//===////===//===//===////===//Multi Selector//===////===//===//===////===//===//===//
+                if (eventArgs.Id.Equals(CustomIds.SelectAttachmentForAnalysis))
+                {
+                    var selectedValue = eventArgs.Values.FirstOrDefault();
+                    var ids = selectedValue!.Split("&");
+                    var messageId = ulong.Parse(ids[0]);
+                    var targetAttachmentId = ulong.Parse(ids[1]);
+                    var message = await eventArgs.Channel.GetMessageAsync(messageId);
+                    var targetAttachment = message.Attachments.FirstOrDefault(attachment => attachment.Id == targetAttachmentId);
+                    
+                    if (targetAttachment!.FileName!.Contains("RagePluginHook"))
+                    {
+                        await eventArgs.Interaction.DeferAsync(true);
+                        RphProcessor rphProcess;
+                        if (ProcessCache.IsCacheUsagePossible("RagePluginHook", cache, message.Attachments.ToList()))
+                            rphProcess = cache.RphProcessor;
+                        else
+                        {
+                            rphProcess = new RphProcessor();
+                            rphProcess.Log = await RPHValidater.Run(targetAttachment.Url);
+                            rphProcess.Log.MsgId = cache.OriginalMessage.Id;
+                            //ProxyCheck.Run(rphProcess.log, Program.Cache.GetUser(eventArgs.Message.Author!.Id.ToString()), eventArgs.Message);
+                            Program.Cache.SaveProcess(messageId: eventArgs.Message.Id, new ProcessCache(eventArgs.Message.Interaction, cache.OriginalMessage, rphProcess));
+                        }
+
+                        await rphProcess.SendQuickInfoMessage(eventArgs: eventArgs);
+                        return;
+                    }
+                    if (targetAttachment.FileName.Contains("ELS"))
+                    {
+                        await eventArgs.Interaction.DeferAsync(true);
+                        ELSProcessor elsProcess;
+                        if (ProcessCache.IsCacheUsagePossible("ELS", cache, message.Attachments.ToList()))
+                            elsProcess = cache.ElsProcessor;
+                        else
+                        {
+                            elsProcess = new ELSProcessor();
+                            elsProcess.Log = await ELSValidater.Run(targetAttachment.Url);
+                            elsProcess.Log.MsgId = cache.OriginalMessage.Id;
+                            Program.Cache.SaveProcess(eventArgs.Message.Id, new ProcessCache(eventArgs.Message.Interaction, cache.OriginalMessage, elsProcess));
+                        }
+
+                        await elsProcess.SendQuickInfoMessage(eventArgs: eventArgs);
+                        return;
+                    }
+                    if (targetAttachment.FileName.Contains("asiloader"))
+                    {
+                        await eventArgs.Interaction.DeferAsync(true);
+                        ASIProcessor asiProcess;
+                        if (ProcessCache.IsCacheUsagePossible("asiloader", cache, message.Attachments.ToList()))
+                            asiProcess = cache.AsiProcessor;
+                        else 
+                        {
+                            asiProcess = new ASIProcessor();
+                            asiProcess.Log = await ASIValidater.Run(targetAttachment.Url);
+                            asiProcess.Log.MsgId = cache.OriginalMessage.Id;
+                            Program.Cache.SaveProcess(eventArgs.Message.Id, new ProcessCache(eventArgs.Message.Interaction, cache.OriginalMessage, asiProcess));
+                        }
+                        
+                        await asiProcess.SendQuickInfoMessage(eventArgs: eventArgs);
+                        return;
+                    }
+                    if (targetAttachment.FileName.Contains("ScriptHookVDotNet"))
+                    {
+                        //TODO
+                    }
+                }
             
                 //===//===//===////===//===//===////===//Remove Errors//===////===//===//===////===//===//===//
                 if (eventArgs.Id.Equals(CustomIds.SelectIdForRemoval))
