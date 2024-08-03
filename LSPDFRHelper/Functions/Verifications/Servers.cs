@@ -1,5 +1,6 @@
 using DSharpPlus.Entities;
 using LSPDFRHelper.CustomTypes.MainTypes;
+using LSPDFRHelper.EventManagers;
 using LSPDFRHelper.Functions.Messages;
 
 namespace LSPDFRHelper.Functions.Verifications;
@@ -12,30 +13,22 @@ public static class Servers
         {
             var dsc =
                 "__LSPDFR Helper Added!__" +
-                "\r\n*Here is everything you need to know!*" +
+                "\r\nThis bot is able to read a multitude of different log types! It can provide solutions to many common problems, and has info on every plugin added to LSPDFR!" +
                 "\r\n" +
-                "\r\n__**Initial Setup**__" +
-                "\r\n> -# If you do not care to use the AutoHelper or have a support role, then you are done! You now have `Validate Log` in your context menu!" +
-                "\r\n> - Choose a manager role you want to have access to the support commands." +
-                "\r\n> - Choose a channel for the AutoHelper. Recommend creating an empty where people cannot type. The AutoHelper creates private threads in this channel that are used for the individual cases." +
-                "\r\n> - Choose a channel for the AutoHelper Monitor. This shows all open cases as well as is where messages are posted when the request help button is used. Recommend setting this to a new channel where people cannot type." +
-                "\r\n> - Run `/setup` and assign the channel id's and role id if applicable." +
+                "\r\nCreated by SuperPyroManiac with the help of Hammer and Hendrik from ULSS, RPH, and DG." +
+                "\r\nFor more information see https://dsc.PyrosFun.com" +
                 "\r\n" +
-                "\r\n__**Usage**__" +
-                "\r\n> Right click context menu apps:" +
-                "\r\n> - `Validate Log`: This will process the selected logs. *(Public)*" +
-                "\r\n> - `Validate XML`: This will parse XML and META files. *(Public)*" +
-                "\r\n> Console commands:" +
-                "\r\n> - `/setup`: Change bot settings. *(Server Admins)*" +
-                "\r\n> - `/ToggleAH`: Enables or disables the AutoHelper. *(Manager Role)*" +
-                "\r\n> - `/FindCases <User>`: Finds the last 25 AutoHelper cases from a user. *(Manager Role)*" +
-                "\r\n> - `/CloseCase <Case/All>`: Closes the specified case. Can put `all` to close all cases. *(Manager Role)*" +
-                "\r\n> - `/CheckPlugin <Plugin>`: View information on any plugin in our DB. *(Public)*" +
-                "\r\n> - `/JoinCase <Case>`: Join an open AutoHelper case. *(Public)*" +
-                "\r\n> **You can adjust these by setting up the integration permissions in your server settings!**" +
+                "\r\nYou can delete this message or click the buttons below for more info!" +
                 "\r\n*Suggestions or support? [Contact the developer!](https://dsc.PyrosFun.com)*";
             var emb = BasicEmbeds.Info(dsc);
             emb.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = "https://i.imgur.com/jxODw4N.png" };
+            var msg = new DiscordMessageBuilder().AddEmbed(emb);
+            msg.AddComponents(
+            [
+                new DiscordButtonComponent(DiscordButtonStyle.Secondary, CustomIds.SelectSetupInfo, "Setup Info", false, new DiscordComponentEmoji("🛠️")),
+                new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.SelectCommandInfo, "Command Info", false, new DiscordComponentEmoji("📋"))
+            ]);
+            
             var cnt = 0;
             
             foreach (var serv in Program.Client.Guilds)
@@ -50,7 +43,7 @@ public static class Servers
                         if ( serv.Value.SystemChannelId != null )
                         {
                             var ch = await Program.Client.GetChannelAsync(serv.Value.SystemChannelId.Value);
-                            await ch.SendMessageAsync(emb);
+                            await ch.SendMessageAsync(msg);
                         }
 
                         cnt++;
@@ -81,7 +74,7 @@ public static class Servers
                 if ( serv.Value.SystemChannelId != null )
                 {
                     var ch = await Program.Client.GetChannelAsync(serv.Value.SystemChannelId.Value);
-                    await ch.SendMessageAsync(emb);
+                    await ch.SendMessageAsync(msg);
                 }
             }
             return cnt;
