@@ -18,13 +18,12 @@ public class OpenCase
             $"# __AutoHelper Case: {caseId}__" +
             $"\r\n> **You have opened a new case! You can upload the following files to be automatically checked:**" +
             $"\r\n> - RagePluginHook.log" +
-            $"\r\n> - - __**Not**__ from your `logs` folder!" +
-            //$"\r\n> - ELS.log" +
-            //$"\r\n> - asiloader.log" +
+            $"\r\n> - ELS.log" +
+            $"\r\n> - asiloader.log" +
             //$"\r\n> - ScriptHookVDotNet.log" +
             $"\r\n> - .xml and .meta files" +
             //$"\r\n> - Screenshots of .png or .jpg - BETA" +
-            $"\r\n\r\n*Do not abuse the request help button. Only use it if you have tried all the steps provided and have exhausted your own options.*" +
+            $"\r\n\r\n-# Do not abuse the request help button. Only use it if you have tried all the steps provided and have exhausted your own options." +
             $"\r\n\r\n__This bot is maintained by https://dsc.PyrosFun.com__", null));
         caseMsg.AddComponents(
             new DiscordButtonComponent(DiscordButtonStyle.Success, CustomIds.MarkSolved, "Mark Solved", false,

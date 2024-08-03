@@ -1,6 +1,8 @@
 using DSharpPlus;
 using DSharpPlus.EventArgs;
 using LSPDFRHelper.Functions.Messages;
+using LSPDFRHelper.Functions.Processors.ASI;
+using LSPDFRHelper.Functions.Processors.ELS;
 using LSPDFRHelper.Functions.Processors.RPH;
 using LSPDFRHelper.Functions.Processors.XML;
 
@@ -51,8 +53,14 @@ public class MessageMonitor
                         await rphProcessor.SendAutoHelperMessage(ctx);
                         break;
                     case "ELS.log":
+                        var elsProcessor = new ELSProcessor();
+                        elsProcessor.Log = await ELSValidater.Run(attach.Url);
+                        await elsProcessor.SendAutoHelperMessage(ctx);
                         break;
                     case "asiloader.log":
+                        var asiProcessor = new ASIProcessor();
+                        asiProcessor.Log = await ASIValidater.Run(attach.Url);
+                        await asiProcessor.SendAutoHelperMessage(ctx);
                         break;
                 }
             }
