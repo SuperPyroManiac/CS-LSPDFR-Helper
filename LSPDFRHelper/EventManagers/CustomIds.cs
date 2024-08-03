@@ -5,6 +5,8 @@ public record CustomIds
     // Msc
     public const string SelectAttachmentForAnalysis = "SelectAttachmentForAnalysis";
     public const string SelectIdForRemoval = "SelectIdForRemoval";
+    public const string SelectSetupInfo = "SelectSetupInfo";
+    public const string SelectCommandInfo = "SelectCommandInfo";
     
     // Editor
     public const string SelectPluginValueToEdit = "SelectPluginValueToEdit";

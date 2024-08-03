@@ -453,6 +453,41 @@ public static class CompInteraction
 
                 await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.Modal, modal);
             }
+            
+            //===//===//===////===//===//===////===//Setup Buttons//===////===//===//===////===//===//===//
+            
+            if (eventArgs.Id == CustomIds.SelectSetupInfo)
+            {
+                var msg = new DiscordInteractionResponseBuilder()
+                    .AddEmbed(BasicEmbeds.Info(
+                        "__Setup Info__" +
+                        "\r\n> - Choose a manager role you want to have access to the support commands." +
+                        "\r\n> - Choose a channel for the AutoHelper. Recommend creating an empty where people cannot type. The AutoHelper creates private threads in this channel that are used for the individual cases." +
+                        "\r\n> - Choose a channel for the AutoHelper Monitor. This shows all open cases as well as is where messages are posted when the request help button is used. Recommend setting this to a new channel where people cannot type." +
+                        "\r\n> - Run `/setup` and assign the channel id's and role id if applicable."))
+                    .AddComponents(new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.SelectCommandInfo, "Command Info", false, new DiscordComponentEmoji("📋")));
+                await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage, msg);
+            }
+            
+            if (eventArgs.Id == CustomIds.SelectCommandInfo)
+            {
+                var msg = new DiscordInteractionResponseBuilder()
+                    .AddEmbed(BasicEmbeds.Info(
+                        "__Command Info__" +
+                        "\r\n> Right click context menu apps:" +
+                        "\r\n> - `Validate Log`: This will process the selected logs. *(Public)*" +
+                        "\r\n> - `Validate XML`: This will parse XML and META files. *(Public)*" +
+                        "\r\n> Console commands:" +
+                        "\r\n> - `/setup`: Change bot settings. *(Server Admins)*" +
+                        "\r\n> - `/ToggleAH`: Enables or disables the AutoHelper. *(Manager Role)*" +
+                        "\r\n> - `/FindCases <User>`: Finds the last 25 AutoHelper cases from a user. *(Manager Role)*" +
+                        "\r\n> - `/CloseCase <Case/All>`: Closes the specified case. Can put `all` to close all cases. *(Manager Role)*" +
+                        "\r\n> - `/CheckPlugin <Plugin>`: View information on any plugin in our DB. *(Public)*" +
+                        "\r\n> - `/JoinCase <Case>`: Join an open AutoHelper case. *(Public)*" +
+                        "\r\n> **You can adjust these by setting up the integration permissions in your server settings!**"))
+                    .AddComponents(new DiscordButtonComponent(DiscordButtonStyle.Secondary, CustomIds.SelectSetupInfo, "Setup Info", false, new DiscordComponentEmoji("🛠️")));
+                await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage, msg);
+            }
         }
         catch ( Exception ex )
         {
