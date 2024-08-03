@@ -1,4 +1,5 @@
 using DSharpPlus;
+using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using LSPDFRHelper.CustomTypes.MainTypes;
 using LSPDFRHelper.Functions;
@@ -58,10 +59,7 @@ public static class OnJoinLeave
     {
         try
         {
-            while ( !Program.IsStarted ) await Task.Delay(500);
-
-            var ch = await cl.GetChannelAsync(args.Guild.SystemChannelId.Value);
-            await cl.SendMessageAsync(ch, BasicEmbeds.Info("__LSPDFR Helper Added!__\r\n>>> *Thank you for adding me!* \r\nYou may check logs using the right click context menu. By default anyone can use these. You can set them to specific roles or channels by adjusting your integrations server settings.\r\n\r\nYou can also run `/setup` to assign channels for the AutoHelper and assign a manager role!\r\n\r\nThe manager role has access to all commands excluding `/setup` and can close cases. They also have a special message when using `/joincase`."));
+            while ( !Program.IsStarted ) await Task.Delay(500); 
             //var owner = await args.Guild.GetGuildOwnerAsync();
             var owner = args.Guild.Owner;
             await Logging.ReportPubLog(BasicEmbeds.Info($"__Added To Server__\r\n>>> **Name:** {args.Guild.Name}\r\n**ID:** {args.Guild.Id}\r\n**Members:** {args.Guild.Members.Count}\r\n**Owner:** {owner.Id} ({owner.Username})"));
