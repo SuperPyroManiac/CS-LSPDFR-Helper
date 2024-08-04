@@ -1,3 +1,4 @@
+using System.Xml.Serialization;
 using LSPDFRHelper.CustomTypes.Enums;
 
 namespace LSPDFRHelper.CustomTypes.MainTypes;
@@ -14,15 +15,10 @@ public class Error
 
     public Error Clone()
     {
-        return new Error
-        {
-            Id = Id,
-            Pattern = Pattern,
-            Solution = Solution,
-            Description = Description,
-            StringMatch = StringMatch,
-            Level = Level,
-            PluginList = PluginList.ToList()
-        };
+        using var stream = new MemoryStream();
+        var xml = new XmlSerializer(typeof(Error));
+        xml.Serialize(stream, this);
+        stream.Position = 0;
+        return (Error)xml.Deserialize(stream);
     }
 }

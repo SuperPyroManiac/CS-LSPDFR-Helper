@@ -1,3 +1,4 @@
+using System.Xml.Serialization;
 using LSPDFRHelper.CustomTypes.Enums;
 
 namespace LSPDFRHelper.CustomTypes.MainTypes;
@@ -21,5 +22,14 @@ public class Plugin
         if ( string.IsNullOrEmpty(Link) ) 
             return $"[{DName}](https://www.google.com/search?q=lspdfr+{DName.Replace(" ", "+")})";
         return $"[{DName}]({Link})";
+    }
+
+    public Plugin Clone()
+    {
+        using var stream = new MemoryStream();
+        var xml = new XmlSerializer(typeof(Plugin));
+        xml.Serialize(stream, this);
+        stream.Position = 0;
+        return (Plugin)xml.Deserialize(stream);
     }
 }
