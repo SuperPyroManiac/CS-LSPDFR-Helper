@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using LSPDFRHelper.CustomTypes.MainTypes;
-using LSPDFRHelper.CustomTypes.SpecialTypes;
 using LSPDFRHelper.Functions;
 
 namespace LSPDFRHelper.CustomTypes.CacheTypes;

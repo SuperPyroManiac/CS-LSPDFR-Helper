@@ -37,12 +37,11 @@ public static class RPHValidater
         {
             if ( match.Groups[1].Value.Length > 0 )
             {
-                var existingPlug = Program.Cache.GetPlugin(match.Groups[1].Value);
-                if ( existingPlug != null )
+                var plug = Program.Cache.GetPlugin(match.Groups[1].Value).Clone();
+                if ( plug != null )
                 {
-                    var newPlug = existingPlug;
-                    newPlug.Version = match.Groups[2].Value;
-                    if ( unsorted.All(x => x.Name != newPlug.Name) ) unsorted.Add(newPlug);
+                    plug.Version = match.Groups[2].Value;
+                    if ( unsorted.All(x => x.Name != plug.Name) ) unsorted.Add(plug);
                     continue;
                 }
                 if ( log.Missing.All(x => x.Name != match.Groups[1].Value) )
@@ -105,7 +104,7 @@ public static class RPHValidater
             var errMatch = new Regex(error.Pattern).Matches(rawLog);
             foreach ( Match match in errMatch )
             {
-                var newError = error;
+                var newError = error.Clone();
                 for ( var i = 0; i <= 3; i++ )
                     newError.Solution = newError.Solution.Replace("{" + i + "}", match.Groups[i].Value);
                 if ( log.Errors.All(x => x.Solution != newError.Solution) ) log.Errors.Add(newError);

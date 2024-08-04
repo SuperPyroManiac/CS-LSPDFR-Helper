@@ -1,7 +1,6 @@
 using Dapper;
 using LSPDFRHelper.CustomTypes.Enums;
 using LSPDFRHelper.CustomTypes.MainTypes;
-using LSPDFRHelper.CustomTypes.SpecialTypes;
 using LSPDFRHelper.Functions.Messages;
 using MySqlConnector;
 

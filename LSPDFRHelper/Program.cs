@@ -11,7 +11,6 @@ using LSPDFRHelper.Commands.Global;
 using LSPDFRHelper.Commands.Plugin;
 using LSPDFRHelper.Commands.User;
 using LSPDFRHelper.CustomTypes.CacheTypes;
-using LSPDFRHelper.Functions.AutoHelper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using static LSPDFRHelper.EventManagers.ModalSubmit;

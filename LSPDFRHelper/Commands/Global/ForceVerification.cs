@@ -2,7 +2,6 @@ using System.ComponentModel;
 using DSharpPlus.Commands;
 using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Entities;
-using LSPDFRHelper.Functions;
 using LSPDFRHelper.Functions.Messages;
 using LSPDFRHelper.Functions.Verifications;
 
