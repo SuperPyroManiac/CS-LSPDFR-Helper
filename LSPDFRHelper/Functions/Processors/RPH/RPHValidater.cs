@@ -37,11 +37,12 @@ public static class RPHValidater
         {
             if ( match.Groups[1].Value.Length > 0 )
             {
-                var plug = Program.Cache.GetPlugin(match.Groups[1].Value).Clone();
+                var plug = Program.Cache.GetPlugin(match.Groups[1].Value);
                 if ( plug != null )
                 {
-                    plug.Version = match.Groups[2].Value;
-                    if ( unsorted.All(x => x.Name != plug.Name) ) unsorted.Add(plug);
+                    var newPlug = plug.Clone();
+                    newPlug.Version = match.Groups[2].Value;
+                    if ( unsorted.All(x => x.Name != newPlug.Name) ) unsorted.Add(newPlug);
                     continue;
                 }
                 if ( log.Missing.All(x => x.Name != match.Groups[1].Value) )
