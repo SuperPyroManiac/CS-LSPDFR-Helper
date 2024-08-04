@@ -11,7 +11,7 @@ public class XmlValidator
         
         try {
             var contacts = XElement.Parse(xmlFile);
-            return "XML is valid!";
+            return "File is valid!";
         }
         catch (XmlException e)
         {

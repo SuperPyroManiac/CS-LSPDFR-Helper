@@ -7,13 +7,14 @@ using LSPDFRHelper.Functions.Messages;
 using LSPDFRHelper.Functions.Processors.ASI;
 using LSPDFRHelper.Functions.Processors.ELS;
 using LSPDFRHelper.Functions.Processors.RPH;
+using LSPDFRHelper.Functions.Processors.XML;
 using LSPDFRHelper.Functions.Verifications;
 
 namespace LSPDFRHelper.Commands.ContextMenu;
 
-public class ValidateLog
+public class ValidateFiles
 {
-    [Command("Validate Log")]
+    [Command("Validate Files")]
     [SlashCommandTypes(DiscordApplicationCommandType.MessageContextMenu)]
     public async Task ValidateLogCmd(SlashCommandContext ctx, DiscordMessage targetMessage)
     {
@@ -30,7 +31,7 @@ public class ValidateLog
             
         //===//===//===////===//===//===////===//Attachment Checks/===////===//===//===////===//===//===//
         DiscordAttachment attach = null;
-        List<string> acceptedFileNames = ["RagePluginHook", "ELS", "asiloader", "ScriptHookVDotNet"];
+        List<string> acceptedFileNames = ["RagePluginHook", "ELS", "asiloader", "ScriptHookVDotNet", ".xml", ".meta"];
         var response = new DiscordInteractionResponseBuilder();
         response.IsEphemeral = true;
         
@@ -49,7 +50,7 @@ public class ValidateLog
                 switch (acceptedAttachments.Count)
                 {
                     case 0:
-                        await ctx.RespondAsync(response.AddEmbed(BasicEmbeds.Error("__No Valid File Found!__\r\n>>> The selected message must include a valid log type!\r\n- RagePluginHook.log\r\n- ELS.log\r\n- ScriptHookVDotNet.log\r\n- asiloader.log")));
+                        await ctx.RespondAsync(response.AddEmbed(BasicEmbeds.Error("__No Valid File Found!__\r\n>>> The selected message must include a valid log type!\r\n- RagePluginHook.log\r\n- ELS.log\r\n- ScriptHookVDotNet.log\r\n- asiloader.log\r\n- .xml\r\n- .meta")));
                         return;
                     case 1:
                         attach = acceptedAttachments[0];
@@ -143,6 +144,12 @@ public class ValidateLog
             }
             await asiProcessor.SendQuickInfoMessage(targetMessage, ctx);
             return;
+        }
+
+        if ( attach.FileName.EndsWith(".xml") || attach.FileName.EndsWith(".meta") )
+        {
+            var xmlData = await XmlValidator.Run(attach.Url);
+            await ctx.RespondAsync(BasicEmbeds.Ts($"## __XML Validator__{BasicEmbeds.AddBlanks(35)}", null).AddField(attach.FileName, $">>> ```xml\r\n{xmlData}\r\n```"));
         }
     }
 }

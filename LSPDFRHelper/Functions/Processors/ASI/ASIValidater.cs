@@ -15,7 +15,7 @@ public class ASIValidater
 
         foreach ( Match match in new Regex(@"^\s+.(.+.asi). failed to load.*", RegexOptions.Multiline).Matches(wholeLog) )
         {
-            var plug = Program.Cache.GetPlugin(match.Groups[1].Value).Clone();
+            var plug = Program.Cache.GetPlugin(match.Groups[1].Value);
             if ( plug == null )
             {
                 plug = new Plugin { Name = match.Groups[1].Value, Version = "ASI", PluginType = PluginType.ASI };
@@ -27,7 +27,7 @@ public class ASIValidater
         
         foreach ( Match match in new Regex(@"^\s+.(.+.asi). (?!failed to load).*", RegexOptions.Multiline).Matches(wholeLog) )
         {
-            var plug = Program.Cache.GetPlugin(match.Groups[1].Value).Clone();
+            var plug = Program.Cache.GetPlugin(match.Groups[1].Value);
             if ( plug == null )
             {
                 plug = new Plugin { Name = match.Groups[1].Value, Version = "ASI", PluginType = PluginType.ASI };

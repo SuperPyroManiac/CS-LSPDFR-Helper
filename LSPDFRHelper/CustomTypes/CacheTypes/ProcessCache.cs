@@ -72,16 +72,17 @@ public class ProcessCache
             var countOfType = attachments.Count(attachment => attachment.FileName!.Contains(logType));
             if (countOfType > 1) return false;
         }
+        
         switch (logType)
         {
             case "RagePluginHook":
-                if (cache.RphProcessor.Log == null) return false;
+                if (cache.RphProcessor?.Log == null) return false;
                 break;
             case "ELS":
-                if (cache.ElsProcessor.Log == null) return false;
+                if (cache.ElsProcessor?.Log == null) return false;
                 break;
             case "ASI":
-                if (cache.AsiProcessor.Log == null) return false;
+                if (cache.AsiProcessor?.Log == null) return false;
                 break;
             default:
                 throw new ArgumentException($"Invalid log type '{logType}'.");

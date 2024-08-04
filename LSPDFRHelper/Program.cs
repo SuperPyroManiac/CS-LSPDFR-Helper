@@ -4,12 +4,8 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
-using LSPDFRHelper.Commands.Case;
+using LSPDFRHelper.Commands;
 using LSPDFRHelper.Commands.ContextMenu;
-using LSPDFRHelper.Commands.Error;
-using LSPDFRHelper.Commands.Global;
-using LSPDFRHelper.Commands.Plugin;
-using LSPDFRHelper.Commands.User;
 using LSPDFRHelper.CustomTypes.CacheTypes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,8 +13,6 @@ using static LSPDFRHelper.EventManagers.ModalSubmit;
 using static LSPDFRHelper.EventManagers.CompInteraction;
 using static LSPDFRHelper.EventManagers.MessageSent;
 using static LSPDFRHelper.EventManagers.OnJoinLeave;
-using CloseCase = LSPDFRHelper.Commands.Case.CloseCase;
-using JoinCase = LSPDFRHelper.Commands.Case.JoinCase;
 using Timer = LSPDFRHelper.Functions.Timer;
 
 namespace LSPDFRHelper;
@@ -34,7 +28,7 @@ public class Program
     {
         
         var builder = DiscordClientBuilder.CreateDefault(BotSettings.Env.BotToken, DiscordIntents.All);
-        builder.SetLogLevel(LogLevel.Trace);
+        builder.SetLogLevel(LogLevel.Error);
 
         builder.ConfigureEventHandlers(
             e => e
@@ -56,48 +50,17 @@ public class Program
         var commandsExtension = Client.UseCommands(cc);
         
         //Special Commands
-        Console.WriteLine("Registering AddPlugin");
-        commandsExtension.AddCommands(typeof(AddPlugin), BotSettings.Env.MainServ);
-        Console.WriteLine("Registering EditPlugin");
-        commandsExtension.AddCommands(typeof(EditPlugin), BotSettings.Env.MainServ);
-        Console.WriteLine("Registering RemovePlugin");
-        commandsExtension.AddCommands(typeof(RemovePlugin), BotSettings.Env.MainServ);
-        Console.WriteLine("Registering FindPlugins");
-        commandsExtension.AddCommands(typeof(FindPlugins), BotSettings.Env.MainServ);
-        Console.WriteLine("Registering ExportPlugins");
-        commandsExtension.AddCommands(typeof(ExportPlugins), BotSettings.Env.MainServ);
-        Console.WriteLine("Registering AddError");
-        commandsExtension.AddCommands(typeof(AddError), BotSettings.Env.MainServ);
-        Console.WriteLine("Registering EditError");
-        commandsExtension.AddCommands(typeof(EditError), BotSettings.Env.MainServ);
-        Console.WriteLine("Registering RemoveError");
-        commandsExtension.AddCommands(typeof(RemoveError), BotSettings.Env.MainServ);
-        Console.WriteLine("Registering FindErrors");
-        commandsExtension.AddCommands(typeof(FindErrors), BotSettings.Env.MainServ);
-        Console.WriteLine("Registering ExportErrors");
-        commandsExtension.AddCommands(typeof(ExportErrors), BotSettings.Env.MainServ);
-        Console.WriteLine("Registering EditUser");
+        commandsExtension.AddCommands(typeof(Plugins), BotSettings.Env.MainServ);
+        commandsExtension.AddCommands(typeof(Errors), BotSettings.Env.MainServ);
         commandsExtension.AddCommands(typeof(EditUser), BotSettings.Env.MainServ);
-        Console.WriteLine("Registering ForceVerification");
         commandsExtension.AddCommands(typeof(ForceVerification), BotSettings.Env.MainServ);
         
         //Public Commands
-        Console.WriteLine("Registering Setup");
         commandsExtension.AddCommands(typeof(Setup));
-        Console.WriteLine("Registering ToggleAh");
+        commandsExtension.AddCommands(typeof(Cases));
         commandsExtension.AddCommands(typeof(ToggleAh));
-        Console.WriteLine("Registering JoinCase");
-        commandsExtension.AddCommands(typeof(JoinCase));
-        Console.WriteLine("Registering CloseCase");
-        commandsExtension.AddCommands(typeof(CloseCase));
-        Console.WriteLine("Registering FindCases");
-        commandsExtension.AddCommands(typeof(FindCases));
-        Console.WriteLine("Registering CheckPlugin");
         commandsExtension.AddCommands(typeof(CheckPlugin));
-        Console.WriteLine("Registering ValidateLog");
-        commandsExtension.AddCommands(typeof(ValidateLog));
-        Console.WriteLine("Registering ValidateXML");
-        commandsExtension.AddCommands(typeof(ValidateXML));
+        commandsExtension.AddCommands(typeof(ValidateFiles));
 
         //WIP Commands
         //commandsExtension.AddCommands(typeof(EditServer), BotSettings.Env.MainServ);

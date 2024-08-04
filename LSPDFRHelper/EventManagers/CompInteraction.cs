@@ -10,6 +10,7 @@ using LSPDFRHelper.Functions.Messages.ModifiedProperties;
 using LSPDFRHelper.Functions.Processors.ASI;
 using LSPDFRHelper.Functions.Processors.ELS;
 using LSPDFRHelper.Functions.Processors.RPH;
+using LSPDFRHelper.Functions.Processors.XML;
 using LSPDFRHelper.Functions.Verifications;
 
 namespace LSPDFRHelper.EventManagers;
@@ -118,7 +119,7 @@ public static class CompInteraction
                     {
                         await eventArgs.Interaction.DeferAsync(true);
                         ASIProcessor asiProcess;
-                        if (ProcessCache.IsCacheUsagePossible("asiloader", cache, message.Attachments.ToList()))
+                        if (ProcessCache.IsCacheUsagePossible("ASI", cache, message.Attachments.ToList()))
                             asiProcess = cache.AsiProcessor;
                         else 
                         {
@@ -134,6 +135,12 @@ public static class CompInteraction
                     if (targetAttachment.FileName.Contains("ScriptHookVDotNet"))
                     {
                         //TODO
+                    }
+                    if ( targetAttachment.FileName.EndsWith(".xml") || targetAttachment.FileName.EndsWith(".meta") )
+                    {
+                        var xmlData = await XmlValidator.Run(targetAttachment.Url);
+                        await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Ts($"## __XML Validator__{BasicEmbeds.AddBlanks(35)}", null).AddField(targetAttachment.FileName, $">>> ```xml\r\n{xmlData}\r\n```")));
+                        return;
                     }
                 }
             
@@ -480,10 +487,10 @@ public static class CompInteraction
                         "\r\n> Console commands:" +
                         "\r\n> - `/setup`: Change bot settings. *(Server Admins)*" +
                         "\r\n> - `/ToggleAH`: Enables or disables the AutoHelper. *(Manager Role)*" +
-                        "\r\n> - `/FindCases <User>`: Finds the last 25 AutoHelper cases from a user. *(Manager Role)*" +
-                        "\r\n> - `/CloseCase <Case/All>`: Closes the specified case. Can put `all` to close all cases. *(Manager Role)*" +
+                        "\r\n> - `/Case Find <User>`: Finds the last 25 AutoHelper cases from a user. *(Manager Role)*" +
+                        "\r\n> - `/Case Close <Case/All>`: Closes the specified case. Can put `all` to close all cases. *(Manager Role)*" +
                         "\r\n> - `/CheckPlugin <Plugin>`: View information on any plugin in our DB. *(Public)*" +
-                        "\r\n> - `/JoinCase <Case>`: Join an open AutoHelper case. *(Public)*" +
+                        "\r\n> - `/Case Join <Case>`: Join an open AutoHelper case. *(Public)*" +
                         "\r\n> **You can adjust these by setting up the integration permissions in your server settings!**"))
                     .AddComponents(new DiscordButtonComponent(DiscordButtonStyle.Secondary, CustomIds.SelectSetupInfo, "Setup Info", false, new DiscordComponentEmoji("🛠️")));
                 await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage, msg);
