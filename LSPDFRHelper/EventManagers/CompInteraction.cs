@@ -487,10 +487,10 @@ public static class CompInteraction
                         "\r\n> Console commands:" +
                         "\r\n> - `/setup`: Change bot settings. *(Server Admins)*" +
                         "\r\n> - `/ToggleAH`: Enables or disables the AutoHelper. *(Manager Role)*" +
-                        "\r\n> - `/FindCases <User>`: Finds the last 25 AutoHelper cases from a user. *(Manager Role)*" +
-                        "\r\n> - `/CloseCase <Case/All>`: Closes the specified case. Can put `all` to close all cases. *(Manager Role)*" +
+                        "\r\n> - `/Case Find <User>`: Finds the last 25 AutoHelper cases from a user. *(Manager Role)*" +
+                        "\r\n> - `/Case Close <Case/All>`: Closes the specified case. Can put `all` to close all cases. *(Manager Role)*" +
                         "\r\n> - `/CheckPlugin <Plugin>`: View information on any plugin in our DB. *(Public)*" +
-                        "\r\n> - `/JoinCase <Case>`: Join an open AutoHelper case. *(Public)*" +
+                        "\r\n> - `/Case Join <Case>`: Join an open AutoHelper case. *(Public)*" +
                         "\r\n> **You can adjust these by setting up the integration permissions in your server settings!**"))
                     .AddComponents(new DiscordButtonComponent(DiscordButtonStyle.Secondary, CustomIds.SelectSetupInfo, "Setup Info", false, new DiscordComponentEmoji("🛠️")));
                 await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage, msg);
