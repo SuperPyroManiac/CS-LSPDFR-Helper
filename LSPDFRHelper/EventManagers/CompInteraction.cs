@@ -10,6 +10,7 @@ using LSPDFRHelper.Functions.Messages.ModifiedProperties;
 using LSPDFRHelper.Functions.Processors.ASI;
 using LSPDFRHelper.Functions.Processors.ELS;
 using LSPDFRHelper.Functions.Processors.RPH;
+using LSPDFRHelper.Functions.Processors.XML;
 using LSPDFRHelper.Functions.Verifications;
 
 namespace LSPDFRHelper.EventManagers;
@@ -118,7 +119,7 @@ public static class CompInteraction
                     {
                         await eventArgs.Interaction.DeferAsync(true);
                         ASIProcessor asiProcess;
-                        if (ProcessCache.IsCacheUsagePossible("asiloader", cache, message.Attachments.ToList()))
+                        if (ProcessCache.IsCacheUsagePossible("ASI", cache, message.Attachments.ToList()))
                             asiProcess = cache.AsiProcessor;
                         else 
                         {
@@ -134,6 +135,12 @@ public static class CompInteraction
                     if (targetAttachment.FileName.Contains("ScriptHookVDotNet"))
                     {
                         //TODO
+                    }
+                    if ( targetAttachment.FileName.EndsWith(".xml") || targetAttachment.FileName.EndsWith(".meta") )
+                    {
+                        var xmlData = await XmlValidator.Run(targetAttachment.Url);
+                        await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Ts($"## __XML Validator__{BasicEmbeds.AddBlanks(35)}", null).AddField(targetAttachment.FileName, $">>> ```xml\r\n{xmlData}\r\n```")));
+                        return;
                     }
                 }
             

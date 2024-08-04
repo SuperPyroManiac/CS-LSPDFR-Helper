@@ -7,7 +7,7 @@ using LSPDFRHelper.EventManagers;
 using LSPDFRHelper.Functions.Messages;
 using LSPDFRHelper.Functions.Verifications;
 
-namespace LSPDFRHelper.Commands.Global;
+namespace LSPDFRHelper.Commands;
 
 public class Setup
 {

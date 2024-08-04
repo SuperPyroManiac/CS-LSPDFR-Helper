@@ -7,7 +7,7 @@ using LSPDFRHelper.CustomTypes.AutoCompleteTypes;
 using LSPDFRHelper.Functions.Messages;
 using LSPDFRHelper.Functions.Verifications;
 
-namespace LSPDFRHelper.Commands.Plugin;
+namespace LSPDFRHelper.Commands;
 
 public class CheckPlugin
 {

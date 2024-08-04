@@ -5,7 +5,7 @@ using DSharpPlus.Entities;
 using LSPDFRHelper.Functions.Messages;
 using LSPDFRHelper.Functions.Verifications;
 
-namespace LSPDFRHelper.Commands.Global;
+namespace LSPDFRHelper.Commands;
 
 public enum Choice
 {
@@ -34,7 +34,7 @@ public class ForceVerification
         switch ( choice )
         {
             case Choice.PLUGINS:
-                _ = Task.Run(Plugins.UpdateVersions);
+                _ = Task.Run(Functions.Verifications.Plugins.UpdateVersions);
                 await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
                     bd.AddEmbed(BasicEmbeds.Success($"__Forced Plugin Verification!__\r\n>>> Plugin count: {Program.Cache.GetPlugins().Count}\r\nAllow 10 - 15 minutes for updater to finish.")));
                 await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info($"__Forced Plugin Verification!__\r\n>>> Plugin count: {Program.Cache.GetPlugins().Count}\r\nAllow 10 - 15 minutes for updater to finish."));
@@ -68,7 +68,7 @@ public class ForceVerification
                 await Logging.SendLog(ctx.Interaction.Channel.Id, ctx.Interaction.User.Id, BasicEmbeds.Info("__Forced Cache Update!__\r\n>>> All caches have been cleared and reset!"));
                 break;
             case Choice.ALL:
-                _ = Task.Run(Plugins.UpdateVersions);
+                _ = Task.Run(Functions.Verifications.Plugins.UpdateVersions);
                 missing = await Users.Missing();
                 usernames = await Users.Usernames();
                 closed = await AutoHelper.ValidateClosedCases();
