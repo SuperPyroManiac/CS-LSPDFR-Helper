@@ -28,7 +28,7 @@ public class Program
     {
         
         var builder = DiscordClientBuilder.CreateDefault(BotSettings.Env.BotToken, DiscordIntents.All);
-        builder.ConfigureLogging(x => x.AddConsole().SetMinimumLevel(LogLevel.Trace));
+        builder.ConfigureLogging(x => x.AddConsole().SetMinimumLevel(LogLevel.Error));
 
         builder.ConfigureEventHandlers(
             e => e
