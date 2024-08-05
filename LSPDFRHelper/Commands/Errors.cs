@@ -25,6 +25,7 @@ public class Errors
         public async Task AddErrorCmd(SlashCommandContext ctx, [Description("Error Level")] Level level)
     {
         if (!await PermissionManager.RequireBotEditor(ctx)) return;
+        
         var error = new CustomTypes.MainTypes.Error
         {
             Pattern = "- REQUIRED -",

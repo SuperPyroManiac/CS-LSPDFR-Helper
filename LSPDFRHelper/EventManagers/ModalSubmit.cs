@@ -91,17 +91,6 @@ public static class ModalSubmit
                 if (e.Interaction.Data.CustomId == CustomIds.SelectErrorValueToEdit)
                 {
                     var err = cache.Error;
-                    if (string.IsNullOrEmpty(err.Id.ToString()))
-                    {
-                        if (DbManager.GetErrors().Any(error => error.Pattern == err.Pattern))
-                        {
-                            await e.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
-                                new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Error("This error already exists!\r\nConsider using /EditError")));
-                            return;
-                        }
-                        err.Id = DbManager.AddError(err);
-                        await FindErrorMessages.SendDbOperationConfirmation(newError: err, operation: DbOperation.CREATE, e.Interaction.ChannelId, e.Interaction.User.Id);
-                    }
 
                     switch (e.Values.First().Key)
                     {
@@ -117,6 +106,18 @@ public static class ModalSubmit
                         case "Error String Match":
                             err.StringMatch = e.Values["Error String Match"].Equals("true", StringComparison.OrdinalIgnoreCase);
                             break;
+                    }
+                    
+                    if (err.Id.Equals(0))
+                    {
+                        if (DbManager.GetErrors().Any(error => error.Pattern == err.Pattern))
+                        {
+                            await e.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
+                                new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Error("This error already exists!\r\nConsider using /Error edit")));
+                            return;
+                        }
+                        err.Id = DbManager.AddError(err);
+                        await FindErrorMessages.SendDbOperationConfirmation(newError: err, operation: DbOperation.CREATE, e.Interaction.ChannelId, e.Interaction.User.Id);
                     }
                 
                     var bd = new DiscordMessageBuilder();

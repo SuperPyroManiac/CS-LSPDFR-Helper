@@ -267,7 +267,7 @@ public static class DbManager
             using var cnn = new MySqlConnection(ConnStr);
             cnn.Execute("insert into Error (Pattern, Solution, Description, Level, StringMatch) VALUES (@Pattern, @Solution, @Description, @Level, @StringMatch)", error);
             Program.Cache.UpdateErrors(GetErrors());
-            return int.Parse(cnn.ExecuteScalar("SELECT LAST_INSERT_ID();")!.ToString()!);
+            return int.Parse(cnn.ExecuteScalar("SELECT Id FROM Error ORDER BY Id DESC LIMIT 1;")!.ToString()!);
         }
         catch (MySqlException e)
         {

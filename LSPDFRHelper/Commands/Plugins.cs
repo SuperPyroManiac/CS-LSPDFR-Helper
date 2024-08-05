@@ -36,7 +36,7 @@ public class Plugins
             var err = new DiscordInteractionResponseBuilder();
             err.IsEphemeral = true;
             await ctx.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
-                err.AddEmbed(BasicEmbeds.Error("__This plugin already exists!__\r\n> Consider using /EditPlugin")));
+                err.AddEmbed(BasicEmbeds.Error("__This plugin already exists!__\r\n> Consider using /Plugins edit")));
             return;
         }
 
