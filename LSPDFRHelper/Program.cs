@@ -50,10 +50,10 @@ public class Program
         var commandsExtension = Client.UseCommands(cc);
         
         //Special Commands
-        commandsExtension.AddCommands(typeof(Plugins), BotSettings.Env.MainServ);
-        commandsExtension.AddCommands(typeof(Errors), BotSettings.Env.MainServ);
-        commandsExtension.AddCommands(typeof(EditUser), BotSettings.Env.MainServ);
-        commandsExtension.AddCommands(typeof(ForceVerification), BotSettings.Env.MainServ);
+        // commandsExtension.AddCommands(typeof(Plugins), BotSettings.Env.MainServ);
+        // commandsExtension.AddCommands(typeof(Errors), BotSettings.Env.MainServ);
+        // commandsExtension.AddCommands(typeof(EditUser), BotSettings.Env.MainServ);
+        // commandsExtension.AddCommands(typeof(ForceVerification), BotSettings.Env.MainServ);
         
         //Public Commands
         commandsExtension.AddCommands(typeof(Setup));
