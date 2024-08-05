@@ -21,21 +21,23 @@ public class SharedData
         return embed.RemoveFieldRange(0, 3);
     }
     
-    public async Task SendUnknownPluginsLog(ulong originalMsgChannelId, ulong originalMsgUserId, string dLink, List<Plugin> missing, List<Plugin> newer)
+    public async Task SendUnknownPluginsLog(DiscordMessage msg, string dLink, List<Plugin> missing, List<Plugin> newer)
     {
-        var rphLogLink = dLink != null && dLink.StartsWith("http") ? $"[Log]({dLink})" : "Log";
-        var embed = BasicEmbeds.Warning($"__Unknown Plugin / Version!__{BasicEmbeds.AddBlanks(35)}\r\n\r\n>>> " +
-                                        $"There was a {rphLogLink} uploaded that has plugin versions that are unknown to the bot's DB!\r\n\r\n");
+        var rphLogLink = dLink != null && dLink.StartsWith("http") ? $"[here!]({dLink})" : $"here: {dLink}";
+        var embed = BasicEmbeds.Warning(
+            $"__Unknown Plugin / Version!__{BasicEmbeds.AddBlanks(35)}\r\n\r\n-# You can download the log {rphLogLink}\r\n");
         
-        var missingDashListStr = "- " + string.Join("\n- ", missing.Select(plugin => $"{plugin?.Name} ({plugin?.Version})").ToList()) + "\n";
-        if (missingDashListStr.Length is > 3 and < 1024) embed.AddField(":bangbang:  **Plugins not recognized:**", missingDashListStr);
+        var missingDashListStr = "> - " + string.Join("\n> - ", missing.Select(plugin => $"{plugin?.Name} ({plugin?.Version})").ToList()) + "\n";
+        if (missingDashListStr.Length is > 5 and < 1024) embed.Description += $"\r\n:bangbang:  **Plugins not recognized:** \r\n{missingDashListStr}";
 
-        var missmatchDashListStr = "- " + string.Join("\n- ", newer.Select(plugin => $"{plugin?.Name} ({plugin?.EaVersion})").ToList()) + "\n";
-        if (missmatchDashListStr.Length is > 3 and < 1024) embed.AddField(":bangbang:  **Plugin version newer than DB:**", missmatchDashListStr);
+        var missmatchDashListStr = "> - " + string.Join("\n> - ", newer.Select(plugin => $"{plugin?.Name} ({plugin?.EaVersion})").ToList()) + "\n";
+        if (missmatchDashListStr.Length is > 5 and < 1024) embed.Description += $"\r\n:bangbang:  **Plugin version newer than DB:** \r\n{missmatchDashListStr}";
 
         if (missingDashListStr.Length >= 1024 || missmatchDashListStr.Length >= 1024)
             embed.AddField("Attention!", "Too many unknown plugins to display them in this message. Please check the log manually.");
+
+        embed.Description += $"\r\n-# Sender: {msg.Author!.Username} ({msg.Author.Id})\r\n-# Server: {msg.Channel!.Guild.Name} ({msg.Channel.Guild.Id})\r\n-# Channel: {msg.Channel.Name} ({msg.Channel.Id})";
         
-        await Logging.SendLog(originalMsgChannelId, originalMsgUserId, embed);
+        await Logging.SendLog(embed);
     }
 }

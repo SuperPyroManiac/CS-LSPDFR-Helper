@@ -56,7 +56,7 @@ public class ASIProcessor : SharedData
         else sentMessage = await eventArgs.Interaction.EditOriginalResponseAsync(webhookBuilder);
         
         if (Log.Missing.Count > 0) 
-            await SendUnknownPluginsLog(cache.OriginalMessage.Channel!.Id, cache.OriginalMessage.Author!.Id, Log.DownloadLink, Log.Missing, []);
+            await SendUnknownPluginsLog(cache.OriginalMessage, Log.DownloadLink, Log.Missing, []);
             
         Program.Cache.SaveProcess(sentMessage.Id, new ProcessCache(cache.Interaction, cache.OriginalMessage, this));
     }
@@ -108,6 +108,6 @@ public class ASIProcessor : SharedData
         await ctx.Message.RespondAsync(new DiscordMessageBuilder().AddEmbed(embed));
         
         if (Log.Missing.Count > 0) 
-            await SendUnknownPluginsLog(ctx.Message.Channel!.Id, ctx.Message.Author!.Id, Log.DownloadLink, Log.Missing, []);
+            await SendUnknownPluginsLog(ctx.Message, Log.DownloadLink, Log.Missing, []);
     }
 }

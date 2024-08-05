@@ -52,8 +52,6 @@ public class RphProcessor : SharedData
 
         if (_outdated.Length > 0) embed.AddField(":orange_circle:     **Update:**", "\r\n>>> - " + _outdated, true);
         if (_remove.Length > 0) embed.AddField(":red_circle:     **Remove:**", "\r\n>>> - " + _remove, true);
-        if (_missing.Length > 0 && ts) embed.AddField(":bangbang:  **Plugins not recognized:**", _missing);
-        if (_missmatch.Length > 0 && ts) embed.AddField(":bangbang:  **Plugin version newer than DB:**", _missmatch);
 
         if (_current.Length > 0 && _outdated.Length == 0 && _remove.Length == 0 && !string.IsNullOrEmpty(Log.LSPDFRVersion))
             embed.AddField(":green_circle:     **No outdated or broken plugins!**", "- All up to date!");
@@ -75,7 +73,7 @@ public class RphProcessor : SharedData
         var cache = Program.Cache.GetProcess(targetMessage.Id);
         
         InitValues();
-        if (_missmatch.Length > 0 || _missing.Length > 0) await SendUnknownPluginsLog(cache.OriginalMessage.Channel!.Id, cache.OriginalMessage.Author!.Id, Log.DownloadLink, Log.Missing, Log.NewVersion);
+        if (_missmatch.Length > 0 || _missing.Length > 0) await SendUnknownPluginsLog(cache.OriginalMessage, Log.DownloadLink, Log.Missing, Log.NewVersion);
 
         var embed = GetBaseEmbed("## __RPH.log Quick Info__");
         embed = AddTsViewFields(embed, cache, Log);
@@ -240,7 +238,7 @@ public class RphProcessor : SharedData
     public async Task SendAutoHelperMessage(MessageCreatedEventArgs ctx)
     {
         InitValues();
-        if (_missmatch.Length > 0 || _missing.Length > 0) await SendUnknownPluginsLog(ctx.Message.Channel!.Id, ctx.Message.Author!.Id, Log.DownloadLink, Log.Missing, Log.NewVersion);
+        if (_missmatch.Length > 0 || _missing.Length > 0) await SendUnknownPluginsLog(ctx.Message, Log.DownloadLink, Log.Missing, Log.NewVersion);
 
         
         var embed = GetBaseEmbed("## __AutoHelper RPH.log Info__");

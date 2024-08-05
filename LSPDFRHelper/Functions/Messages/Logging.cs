@@ -18,10 +18,16 @@ public class Logging
         await new DiscordMessageBuilder().WithContent($"### Error Detected\r\n```{e}```").SendAsync(tsBotLogCh);
     }
     
-    public static async Task SendLog(ulong chLink, ulong msgSender, DiscordEmbedBuilder e, bool blame = true)
+    public static async Task SendLog(ulong chLink, ulong msgSender, DiscordEmbedBuilder e)
     {
         var tsBotLogCh = await Program.BotSettings.BotLogs();
-        if (blame) e.AddField("Sent By", $"<@{msgSender}> in: <#{chLink}>");
+        e.AddField("Sent By", $"<@{msgSender}> in: <#{chLink}>");
+        await new DiscordMessageBuilder().AddEmbed(e).SendAsync(tsBotLogCh);
+    }
+    
+    public static async Task SendLog(DiscordEmbedBuilder e)
+    {
+        var tsBotLogCh = await Program.BotSettings.BotLogs();
         await new DiscordMessageBuilder().AddEmbed(e).SendAsync(tsBotLogCh);
     }
     
