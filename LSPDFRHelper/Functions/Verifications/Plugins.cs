@@ -15,6 +15,7 @@ public static class Plugins
         var annMsg = BasicEmbeds.Success($"__Plugin Updates__{BasicEmbeds.AddBlanks(50)}\r\n");
         var upCnt = 0;
         var annCnt = 0;
+        var skip = 0;
         
         foreach (var plugin in plugins)
         {
@@ -65,14 +66,32 @@ public static class Plugins
             }
             catch (HttpRequestException e)
             {
+                if ( skip > 4 )
+                {
+                    await Logging.ErrLog($"5 updater failures in a row. Likely LSPDFR is down or experiencing issues. Skipping update checks.");
+                    return;
+                }
+                skip++;
                 await Logging.ErrLog($"{plugin.Name} skipped. Likely hidden on LSPDFR!\r\n\r\n{e}");
             }
             catch (TaskCanceledException e)
             {
+                if ( skip > 4 )
+                {
+                    await Logging.ErrLog($"5 updater failures in a row. Likely LSPDFR is down or experiencing issues. Skipping update checks.");
+                    return;
+                }
+                skip++;
                 await Logging.ErrLog($"{plugin.Name} skipped. Likely hidden on LSPDFR!\r\n\r\n{e}");
             }
             catch (Exception e)
             {
+                if ( skip > 4 )
+                {
+                    await Logging.ErrLog($"5 updater failures in a row. Likely LSPDFR is down or experiencing issues. Skipping update checks.");
+                    return;
+                }
+                skip++;
                 Console.WriteLine(e);
                 await Logging.ErrLog($"Version Updater Exception:\r\n {e}");
             }
@@ -87,7 +106,6 @@ public static class Plugins
     
     public static async Task UpdateQuick()
     {
-        var plugName = "N/A";
         try
         {
             var logMsg = BasicEmbeds.Info($"__Plugin Updates__\r\n*These plugins have updated!*{BasicEmbeds.AddBlanks(45)}\r\n");
@@ -100,7 +118,6 @@ public static class Plugins
                 {
                     if ( plug.Id == 0 || plug.State is State.IGNORE or State.EXTERNAL) continue;
                     
-                    plugName = plug.Name;
                     webPlug.file_version = webPlug.file_version.Split(" ")[0].Trim();
                     webPlug.file_version = Regex.Replace(webPlug.file_version, "[^0-9.]", "");
                     var onlineVersionSplit = webPlug.file_version.Split(".");
@@ -127,18 +144,9 @@ public static class Plugins
             if ( upCnt == 0 ) return;
             await Logging.SendLog(logMsg);
         }
-        catch (HttpRequestException e)
+        catch ( Exception e )
         {
-            await Logging.ErrLog($"{plugName} skipped. Likely hidden on LSPDFR!\r\n\r\n{e}");
-        }
-        catch (TaskCanceledException e)
-        {
-            await Logging.ErrLog($"{plugName} skipped. Likely hidden on LSPDFR!\r\n\r\n{e}");
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            await Logging.ErrLog($"Version Updater Exception:\r\n {e}");
+            // ignored
         }
     }
 }
