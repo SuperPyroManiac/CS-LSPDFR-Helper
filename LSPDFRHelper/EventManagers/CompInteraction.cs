@@ -443,7 +443,7 @@ public static class CompInteraction
                     return;
                 }
                 await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
-                    msg.AddEmbed(BasicEmbeds.Error("__No Permission!__\r\n> Only server TS can use this!")));
+                    msg.AddEmbed(BasicEmbeds.Error("__No Permission!__\r\n> Only server managers can use this!")));
             }
 
             if (eventArgs.Id == CustomIds.RequestHelp)

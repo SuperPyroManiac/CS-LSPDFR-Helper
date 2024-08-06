@@ -1,19 +1,15 @@
 using System.Text.RegularExpressions;
 using LSPDFRHelper.CustomTypes.Enums;
 using LSPDFRHelper.Functions.Messages;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace LSPDFRHelper.Functions.Verifications;
 
 public static class Plugins
 {
-    public static async Task UpdateVersions()
+    public static async Task UpdateAll()
     {
-        await UpdateAllVersions();
-    }
-    
-    public static async Task UpdateAllVersions()
-    {
-        HttpClient webClient = new();
 	    var plugins = DbManager.GetPlugins();
         var logMsg = BasicEmbeds.Info($"__Plugin Updates__\r\n*These plugins have updated!*{BasicEmbeds.AddBlanks(45)}\r\n");
         var annMsg = BasicEmbeds.Success($"__Plugin Updates__{BasicEmbeds.AddBlanks(50)}\r\n");
@@ -27,7 +23,7 @@ public static class Plugins
                 if (plugin.Id == 0 || string.IsNullOrEmpty(plugin.Id.ToString()) || plugin.State == State.IGNORE || plugin.State == State.EXTERNAL) continue;
                 //Thread.Sleep(3500);
 
-                var onlineVersion = await webClient.GetStringAsync(
+                var onlineVersion = await new HttpClient().GetStringAsync(
                     $"https://www.lcpdfr.com/applications/downloadsng/interface/api.php?do=checkForUpdates&fileId={plugin.Id}&textOnly=1");
                 onlineVersion = onlineVersion.Split(" ")[0].Trim();
                 onlineVersion = Regex.Replace(onlineVersion, "[^0-9.]", "");
@@ -87,5 +83,62 @@ public static class Plugins
         if ( annCnt == 0 ) return;
         var ch = await Program.BotSettings.BotLogs();
         await ch.SendMessageAsync(annMsg);
+    }
+    
+    public static async Task UpdateQuick()
+    {
+        var plugName = "N/A";
+        try
+        {
+            var logMsg = BasicEmbeds.Info($"__Plugin Updates__\r\n*These plugins have updated!*{BasicEmbeds.AddBlanks(45)}\r\n");
+            var webPlugs = JsonConvert.DeserializeObject<List<LSPDFRPlugin>>(JObject.Parse(await new HttpClient().GetStringAsync("https://www.lcpdfr.com/applications/downloadsng/interface/api.php?do=getAllVersions&categoryId=45"))["results"]!.ToString());
+            var upCnt = 0;
+            
+            foreach ( var webPlug in webPlugs )
+            {
+                foreach ( var plug in Program.Cache.GetPlugins().Where(x => x.Id.ToString() == webPlug.file_id) )
+                {
+                    if ( plug.Id == 0 || plug.State is State.IGNORE or State.EXTERNAL) continue;
+                    
+                    plugName = plug.Name;
+                    webPlug.file_version = webPlug.file_version.Split(" ")[0].Trim();
+                    webPlug.file_version = Regex.Replace(webPlug.file_version, "[^0-9.]", "");
+                    var onlineVersionSplit = webPlug.file_version.Split(".");
+                    if (onlineVersionSplit.Length == 2) webPlug.file_version += ".0.0";
+                    if (onlineVersionSplit.Length == 3) webPlug.file_version += ".0";
+                    if ( string.IsNullOrEmpty(plug.Version) ) plug.Version = "0";
+                    if ( string.IsNullOrEmpty(webPlug.file_version) ) webPlug.file_version = "0";
+                    if ( plug.Version.Equals(webPlug.file_version) ) continue;
+                    
+                    logMsg.Description +=
+                        $"## __[{plug.Name}]({plug.Link})__\r\n" +
+                        $"> **Previous Version:** `{plug.Version}`\r\n" +
+                        $"> **New Version:** `{webPlug.file_version}`\r\n" +
+                        $"> **Type:** `{plug.PluginType}` | **State:** `{plug.State}`\r\n" +
+                        $"> **EA Version?:** `{!string.IsNullOrEmpty(plug.EaVersion) && plug.EaVersion != "0"}`\r\n";
+                    
+                    Console.WriteLine($"Updating Plugin {plug.Name} from {plug.Version} to {webPlug.file_version}");
+                    plug.Version = webPlug.file_version;
+                    DbManager.EditPlugin(plug);
+                    upCnt++;
+                }
+            }
+            
+            if ( upCnt == 0 ) return;
+            await Logging.SendLog(logMsg);
+        }
+        catch (HttpRequestException e)
+        {
+            await Logging.ErrLog($"{plugName} skipped. Likely hidden on LSPDFR!\r\n\r\n{e}");
+        }
+        catch (TaskCanceledException e)
+        {
+            await Logging.ErrLog($"{plugName} skipped. Likely hidden on LSPDFR!\r\n\r\n{e}");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            await Logging.ErrLog($"Version Updater Exception:\r\n {e}");
+        }
     }
 }
