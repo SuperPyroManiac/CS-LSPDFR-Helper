@@ -18,11 +18,11 @@ public static class Timer
     private static async void ShortTimer(object _, ElapsedEventArgs e)
     {
         Task.WaitAll(Program.Cache.RemoveExpiredCaches(), Verifications.AutoHelper.ValidateOpenCases());
-        //TODO: PLUGIN VERSION CHECKER
+        var __ = Verifications.Plugins.UpdateQuick();
     }
     
     private static async void LongTimer(object _, ElapsedEventArgs e)
     {
-        await Verifications.Plugins.UpdateAllVersions();
+        var __ = Verifications.Plugins.UpdateAll();
     }
 }
