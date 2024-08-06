@@ -1,5 +1,7 @@
 using DSharpPlus;
 using DSharpPlus.EventArgs;
+using FuzzySharp;
+using LSPDFRHelper.CustomTypes.Enums;
 using LSPDFRHelper.Functions.Messages;
 using LSPDFRHelper.Functions.Processors.ASI;
 using LSPDFRHelper.Functions.Processors.ELS;
@@ -17,18 +19,15 @@ public class MessageMonitor
         if (ac.OwnerId != ctx.Author.Id) return;
         if ( Program.Cache.GetUser(ac.OwnerId).Blocked ) return;
         
-        // foreach (var error in Program.Cache.GetErrors().Where(error => error.Level == "PMSG")) TODO: Fuzzymatch errors!
-        // {
-        //     var errregex = new Regex(error.Regex, RegexOptions.IgnoreCase | RegexOptions.Multiline);
-        //     var errmatch = errregex.Match(ctx.Message.Content);
-        //     if (errmatch.Success)
-        //     {
-        //         var emb = BasicEmbeds.Public(
-        //             $"## __LSPDFR AutoHelper__\r\n>>> {error.Solution}");
-        //         emb.Footer.Text = emb.Footer.Text + $" - ID: {error.ID}";
-        //         await ctx.Message.RespondAsync(emb);
-        //     }
-        // }
+        foreach (var error in Program.Cache.GetErrors().Where(error => error.Level == Level.PMSG))
+        {
+            var ratio = Fuzz.WeightedRatio(ctx.Message.Content, error.Pattern);
+            if ( ratio <= 85 ) continue;
+            var emb = BasicEmbeds.Public(
+                $"## __LSPDFR AutoHelper__\r\n>>> {error.Solution}");
+            emb.Footer!.Text = emb.Footer.Text + $" - ID: {error.Id} - Match {ratio}%";
+            await ctx.Message.RespondAsync(emb);
+        }
         
         if (ctx.Message.Attachments.Count == 0) return;
 

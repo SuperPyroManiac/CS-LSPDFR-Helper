@@ -287,7 +287,7 @@ public class RphProcessor : SharedData
 
         var responseBuilder = new DiscordMessageBuilder();
         responseBuilder.AddEmbed(embed);
-        if ( _outdated.Length == 0 && _remove.Length == 0 && cnt == 0 ) responseBuilder.AddEmbed(BasicEmbeds.Success("__No Issues Detected__\r\n>>> If you do have any problems, you may want to post in the public support channels!"));//TODO: Better gen message
+        if ( _outdated.Length == 0 && _remove.Length == 0 && cnt == 0 ) responseBuilder.AddEmbed(BasicEmbeds.Success("__No Issues Detected__\r\n>>> If you do have any problems, you may want to post in a public support channel!"));
         await ctx.Message.RespondAsync(responseBuilder);
     }
 }
