@@ -44,17 +44,16 @@ public class ValidateFiles
             case 1:
                 attach = targetMessage.Attachments[0];
                 
-                if ( attach.FileSize / 1000000 > 3 )
+                switch (attach.FileSize / 1000000)
                 {
-                    await ctx.RespondAsync(BasicEmbeds.Warning("__Skipped!__\r\n>>> You have sent a log bigger than 3MB! We do not support logs greater than 3MB."));
-                    await Logging.ReportPubLog(BasicEmbeds.Warning($"__Possible Abuse__\r\n>>> **User:** {ctx.Member!.Mention} ({ctx.Member.Id})\r\n**Log:** [HERE]({attach.Url})\r\nUser sent a log greater than 3MB!\r\n**File Size:** {attach.FileSize / 1000000}MB\r\n**Server:** {ctx.Guild.Name} ({ctx.Guild.Id}\r\n**Channel:** {ctx.Channel.Name})"));
-                    return;
-                }
-                if ( attach.FileSize / 1000000 > 10 )
-                {
-                    await ctx.RespondAsync(BasicEmbeds.Error("__Blacklisted!__\r\n>>> You have sent a log bigger than 10MB! Your access to the bot has been revoked. You can appeal this at https://dsc.PyrosFun.com"));
-                    await Functions.Functions.Blacklist(ctx.Member!.Id, $">>> **User:** {ctx.Member!.Mention} ({ctx.Member.Id})\r\n**Log:** [HERE]({attach.Url})\r\nUser sent a log greater than 10MB!\r\n**File Size:** {attach.FileSize / 1000000}MB");
-                    return;
+                    case > 10:
+                        await ctx.RespondAsync(BasicEmbeds.Error("__Blacklisted!__\r\n>>> You have sent a log bigger than 10MB! Your access to the bot has been revoked. You can appeal this at https://dsc.PyrosFun.com"));
+                        await Functions.Functions.Blacklist(ctx.Member!.Id, $">>> **User:** {ctx.Member!.Mention} ({ctx.Member.Id})\r\n**Log:** [HERE]({attach.Url})\r\nUser sent a log greater than 10MB!\r\n**File Size:** {attach.FileSize / 1000000}MB");
+                        return;
+                    case > 3:
+                        await ctx.RespondAsync(BasicEmbeds.Warning("__Skipped!__\r\n>>> You have sent a log bigger than 3MB! We do not support logs greater than 3MB."));
+                        await Logging.ReportPubLog(BasicEmbeds.Warning($"__Possible Abuse__\r\n>>> **User:** {ctx.Member!.Mention} ({ctx.Member.Id})\r\n**Log:** [HERE]({attach.Url})\r\nUser sent a log greater than 3MB!\r\n**File Size:** {attach.FileSize / 1000000}MB\r\n**Server:** {ctx.Guild.Name} ({ctx.Guild.Id}\r\n**Channel:** {ctx.Channel.Name})"));
+                        return;
                 }
                 break;
             case > 1:
