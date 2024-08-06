@@ -39,7 +39,7 @@ public class MessageMonitor
                 if ( attach.FileSize / 1000000 > 3 )
                 {
                     await ctx.Message.RespondAsync(BasicEmbeds.Error("__Blacklisted!__\r\n>>> You have sent a log bigger than 3MB! Your access to the bot has been revoked. You can appeal this at https://dsc.PyrosFun.com"));
-                    await Functions.Blacklist(ctx.Author.Id, $">>> **User:** {ctx.Author.Mention} ({ctx.Author.Id.ToString()})\r\n**Log:** {ctx.Message.JumpLink}\r\nUser sent a log greater than 3MB!\r\n**File Size:** {attach.FileSize / 1000000}MB\r\n**Server:** {ctx.Guild.Name} ({ctx.Guild.Id}\r\n**Channel:** {ctx.Channel.Name})");
+                    await Functions.Blacklist(ctx.Author.Id, $">>> **User:** {ctx.Author.Mention} ({ctx.Author.Id.ToString()})\r\n**Log:** [HERE]({attach.Url})\r\nUser sent a log greater than 3MB!\r\n**File Size:** {attach.FileSize / 1000000}MB\r\n**Server:** {ctx.Guild.Name} ({ctx.Guild.Id}\r\n**Channel:** {ctx.Channel.Name})");
                     return;
                 }
 
@@ -51,7 +51,7 @@ public class MessageMonitor
                         if ( rphProcessor.Log.LogModified )
                         {
                             await ctx.Message.RespondAsync(BasicEmbeds.Warning("__Skipped!__\r\n>>> You have sent a modified log! Your log has been flagged as modified. If you renamed a file or this was an accident then you can disregard this."));
-                            await Logging.ReportPubLog(BasicEmbeds.Warning($"__Possible Abuse__\r\n>>> **User:** {ctx.Author!.Mention} ({ctx.Author.Id})\r\n**Log:** [{attach.Url}](HERE)\r\nUser sent a modified log!\r\n**File Size:** {attach.FileSize / 1000000}MB\r\n**Server:** {ctx.Guild.Name} ({ctx.Guild.Id}\r\n**Channel:** {ctx.Channel.Name})"));
+                            await Logging.ReportPubLog(BasicEmbeds.Warning($"__Possible Abuse__\r\n>>> **User:** {ctx.Author!.Mention} ({ctx.Author.Id})\r\n**Log:** [HERE]({attach.Url})\r\nUser sent a modified log!\r\n**File Size:** {attach.FileSize / 1000000}MB\r\n**Server:** {ctx.Guild.Name} ({ctx.Guild.Id}\r\n**Channel:** {ctx.Channel.Name})"));
                             return;
                         }
                         await rphProcessor.SendAutoHelperMessage(ctx);
