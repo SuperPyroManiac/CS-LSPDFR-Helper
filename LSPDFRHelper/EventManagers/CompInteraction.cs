@@ -433,7 +433,7 @@ public static class CompInteraction
                     var ac = Program.Cache.GetCases().First(x => x.CaseId.Equals(eventArgs.Message.Embeds.First().Description!.Split("Case: ")[1].Split("_").First()));
                     var ch = await Program.Client.GetChannelAsync(ac.ChannelId);
                     await ch.SendMessageAsync(BasicEmbeds.Error("__Request Denied!__\r\n>>> This is likely due to you not providing any info, " +
-                                                                "or you have not tried any steps to help yourself.\r\nDirect basic support questions to: <#672541961969729540>"));
+                                                                "or you have not tried any steps to help yourself."));
                     var chTs = await Program.Client.GetChannelAsync(Program.Cache.GetServer(eventArgs.Guild.Id).MonitorChId);
                     await chTs.DeleteMessageAsync(await chTs.GetMessageAsync(ac.RequestId));
                     ac.RequestId = 0;
