@@ -43,6 +43,19 @@ public class ValidateFiles
                 return;
             case 1:
                 attach = targetMessage.Attachments[0];
+                
+                if ( attach.FileSize / 1000000 > 3 )
+                {
+                    await ctx.RespondAsync(BasicEmbeds.Warning("__Skipped!__\r\n>>> You have sent a log bigger than 3MB! We do not support logs greater than 3MB."));
+                    await Logging.ReportPubLog(BasicEmbeds.Warning($"__Possible Abuse__\r\n>>> **User:** {ctx.Member!.Mention} ({ctx.Member.Id})\r\n**Log:** [{attach.Url}](HERE)\r\nUser sent a log greater than 3MB!\r\n**File Size:** {attach.FileSize / 1000000}MB\r\n**Server:** {ctx.Guild.Name} ({ctx.Guild.Id}\r\n**Channel:** {ctx.Channel.Name})"));
+                    return;
+                }
+                if ( attach.FileSize / 1000000 > 10 )
+                {
+                    await ctx.RespondAsync(BasicEmbeds.Error("__Blacklisted!__\r\n>>> You have sent a log bigger than 10MB! Your access to the bot has been revoked. You can appeal this at https://dsc.PyrosFun.com"));
+                    await Functions.Functions.Blacklist(ctx.Member!.Id, $">>> **User:** {ctx.Member!.Mention} ({ctx.Member.Id})\r\n**Log:** [{attach.Url}](HERE)\r\nUser sent a log greater than 10MB!\r\n**File Size:** {attach.FileSize / 1000000}MB");
+                    return;
+                }
                 break;
             case > 1:
                 List<DiscordAttachment> acceptedAttachments = [];
@@ -107,8 +120,13 @@ public class ValidateFiles
             {
                 rphProcessor.Log = await RPHValidater.Run(attach.Url);
                 rphProcessor.Log.MsgId = targetMessage.Id;
-                //TODO: ProxyCheck.Run(rphProcess.log, Program.Cache.GetUser(targetMessage.Author!.Id.ToString()), targetMessage);
                 Program.Cache.SaveProcess(targetMessage.Id, new ProcessCache(targetMessage.Interaction, targetMessage, rphProcessor));
+            }
+            if ( rphProcessor.Log.LogModified )
+            {
+                await ctx.RespondAsync(BasicEmbeds.Warning("__Skipped!__\r\n>>> You have sent a modified log! Your log has been flagged as modified. If you renamed a file or this was an accident then you can disregard this."));
+                await Logging.ReportPubLog(BasicEmbeds.Warning($"__Possible Abuse__\r\n>>> **User:** {ctx.Member!.Mention} ({ctx.Member.Id})\r\n**Log:** [{attach.Url}](HERE)\r\nUser sent a modified log!\r\n**File Size:** {attach.FileSize / 1000000}MB\r\n**Server:** {ctx.Guild.Name} ({ctx.Guild.Id}\r\n**Channel:** {ctx.Channel.Name})"));
+                return;
             }
             await rphProcessor.SendQuickInfoMessage(targetMessage, ctx);
             return;

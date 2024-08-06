@@ -23,6 +23,6 @@ public class Functions
         var user = Program.Cache.GetUser(userId);
         user.Blocked = true;
         DbManager.EditUser(user);
-        await Logging.ReportPubLog(BasicEmbeds.Error("__User Blacklisted!__\r\n" + reason));
+        await Logging.ReportPubLog(BasicEmbeds.Error("__User Blacklisted__\r\n" + reason));
     }
 }
