@@ -1,5 +1,7 @@
 using DSharpPlus;
 using DSharpPlus.EventArgs;
+using FuzzySharp;
+using LSPDFRHelper.CustomTypes.Enums;
 using LSPDFRHelper.Functions.Messages;
 using LSPDFRHelper.Functions.Processors.ASI;
 using LSPDFRHelper.Functions.Processors.ELS;
@@ -17,18 +19,15 @@ public class MessageMonitor
         if (ac.OwnerId != ctx.Author.Id) return;
         if ( Program.Cache.GetUser(ac.OwnerId).Blocked ) return;
         
-        // foreach (var error in Program.Cache.GetErrors().Where(error => error.Level == "PMSG")) TODO: Fuzzymatch errors!
-        // {
-        //     var errregex = new Regex(error.Regex, RegexOptions.IgnoreCase | RegexOptions.Multiline);
-        //     var errmatch = errregex.Match(ctx.Message.Content);
-        //     if (errmatch.Success)
-        //     {
-        //         var emb = BasicEmbeds.Public(
-        //             $"## __LSPDFR AutoHelper__\r\n>>> {error.Solution}");
-        //         emb.Footer.Text = emb.Footer.Text + $" - ID: {error.ID}";
-        //         await ctx.Message.RespondAsync(emb);
-        //     }
-        // }
+        foreach (var error in Program.Cache.GetErrors().Where(error => error.Level == Level.PMSG))
+        {
+            var ratio = Fuzz.WeightedRatio(ctx.Message.Content, error.Pattern);
+            if ( ratio <= 85 ) continue;
+            var emb = BasicEmbeds.Public(
+                $"## __LSPDFR AutoHelper__\r\n>>> {error.Solution}");
+            emb.Footer!.Text = emb.Footer.Text + $" - ID: {error.Id} - Match {ratio}%";
+            await ctx.Message.RespondAsync(emb);
+        }
         
         if (ctx.Message.Attachments.Count == 0) return;
 
@@ -39,10 +38,9 @@ public class MessageMonitor
             {
                 if ( attach.FileSize / 1000000 > 3 )
                 {
-                    await ctx.Message.RespondAsync(
-                        BasicEmbeds.Error("__Blacklisted!__\r\n>>> You have sent a log bigger than 3MB! You may not use the AutoHelper until staff review this!"));
-                    await Functions.Blacklist(ctx.Author.Id,
-                        $">>> **User:** {ctx.Author.Mention} ({ctx.Author.Id.ToString()})\r\n**Log:** {ctx.Message.JumpLink}\r\nUser sent a log greater than 3MB!\r\n**File Size:** {attach.FileSize / 1000000}MB");
+                    await ctx.Message.RespondAsync(BasicEmbeds.Error("__Blacklisted!__\r\n>>> You have sent a log bigger than 3MB! Your access to the bot has been revoked. You can appeal this at https://dsc.PyrosFun.com"));
+                    await Functions.Blacklist(ctx.Author.Id, $">>> **User:** {ctx.Author.Mention} ({ctx.Author.Id.ToString()})\r\n**Log:** [HERE]({attach.Url})\r\nUser sent a log greater than 3MB!\r\n**File Size:** {attach.FileSize / 1000000}MB\r\n**Server:** {ctx.Guild.Name} ({ctx.Guild.Id}\r\n**Channel:** {ctx.Channel.Name})");
+                    return;
                 }
 
                 switch ( attach.FileName )
@@ -50,6 +48,12 @@ public class MessageMonitor
                     case "RagePluginHook.log":
                         var rphProcessor = new RphProcessor();
                         rphProcessor.Log = await RPHValidater.Run(attach.Url);
+                        if ( rphProcessor.Log.LogModified )
+                        {
+                            await ctx.Message.RespondAsync(BasicEmbeds.Warning("__Skipped!__\r\n>>> You have sent a modified log! Your log has been flagged as modified. If you renamed a file or this was an accident then you can disregard this."));
+                            await Logging.ReportPubLog(BasicEmbeds.Warning($"__Possible Abuse__\r\n>>> **User:** {ctx.Author!.Mention} ({ctx.Author.Id})\r\n**Log:** [HERE]({attach.Url})\r\nUser sent a modified log!\r\n**File Size:** {attach.FileSize / 1000000}MB\r\n**Server:** {ctx.Guild.Name} ({ctx.Guild.Id}\r\n**Channel:** {ctx.Channel.Name})"));
+                            return;
+                        }
                         await rphProcessor.SendAutoHelperMessage(ctx);
                         break;
                     case "ELS.log":

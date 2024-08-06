@@ -102,6 +102,12 @@ public static class RPHValidater
         {
             if ( error.Id is 1 or 97 or 98 or 99 or 41 or 176 ) continue;
             if ( error.Level is Level.PMSG or Level.PIMG ) continue;
+            if ( error.StringMatch )
+            {
+                if (rawLog.Contains(error.Pattern)) log.Errors.Add(error);
+                continue;
+            }
+            
             var errMatch = new Regex(error.Pattern).Matches(rawLog);
             foreach ( Match match in errMatch )
             {
