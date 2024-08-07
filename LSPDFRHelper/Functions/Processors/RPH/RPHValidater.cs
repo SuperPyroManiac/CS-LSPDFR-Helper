@@ -7,14 +7,17 @@ namespace LSPDFRHelper.Functions.Processors.RPH;
 
 public static class RPHValidater
 {
-    public static async Task<RPHLog> Run(string attachmentUrl)
+    public static async Task<RPHLog> Run(string attachmentUrl, bool useString = false)
     {
         var log = new RPHLog();
+        string rawLog;
 
-        var rawLog = await new HttpClient().GetStringAsync(attachmentUrl);
-
+        if ( useString ) rawLog = attachmentUrl;
+        else rawLog = await new HttpClient().GetStringAsync(attachmentUrl);
+        
         List<Plugin> unsorted = [];
         log.DownloadLink = attachmentUrl;
+        if ( useString ) log.DownloadLink = "LSPDFR Desktop Helper";
         log.LogPath = new Regex(@"Log path: (.+)RagePluginHook\.log").Match(rawLog).Groups[1].Value;
         log.RPHVersion = new Regex(@".+ Version: RAGE Plugin Hook v(\d+\.\d+\.\d+\.\d+) for Grand Theft Auto V").Match(rawLog).Groups[1].Value;
         log.LSPDFRVersion = new Regex(@".+ Running LSPD First Response 0\.4\.9 \((\d+\.\d+\.\d+\.\d+)\)").Match(rawLog).Groups[1].Value;
