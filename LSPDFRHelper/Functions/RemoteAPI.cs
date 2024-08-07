@@ -25,19 +25,9 @@ public class RemoteApi
     
     public async Task Start()
     {
-        //if ( Program.BotSettings.Env.DbName.Contains("DEV", StringComparison.OrdinalIgnoreCase) ) return;
-        Console.WriteLine("Starting...");
-        try
-        {
-            _listener.Start();
-        }
-        catch ( Exception e )
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-        Console.WriteLine("Started!");
-
+        if ( Program.BotSettings.Env.DbName.Contains("DEV", StringComparison.OrdinalIgnoreCase) ) return;
+        
+        _listener.Start();
         
         while ( true )
         {
