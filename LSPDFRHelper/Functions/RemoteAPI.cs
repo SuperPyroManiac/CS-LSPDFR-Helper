@@ -1,8 +1,6 @@
-using System.Collections.Concurrent;
 using System.Globalization;
 using System.Net;
 using System.Text;
-using System.Xml.Serialization;
 using Newtonsoft.Json;
 
 namespace LSPDFRHelper.Functions;
@@ -28,7 +26,6 @@ public class RemoteAPI
     public async Task Start()
     {
         //if ( Program.BotSettings.Env.DbName.Contains("DEV", StringComparison.OrdinalIgnoreCase) || Program.BotSettings.Env.DbName.Contains("PYRO", StringComparison.OrdinalIgnoreCase) ) return;
-        if ( Program.BotSettings.Env.DbName.Contains("PYRO", StringComparison.OrdinalIgnoreCase) ) return;
         _listener.Start();
         
         while ( true )

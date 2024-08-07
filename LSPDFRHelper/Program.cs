@@ -28,7 +28,7 @@ public class Program
     static async Task Main()
     {
         //Startup API Server
-        string[] prefixes = { "http://localhost:8055/" };
+        string[] prefixes = { "http://localhost:8055/", "http://www.pyrosfun.com:8055/" };
         var apiServ = new RemoteAPI(prefixes);
         _ = apiServ.Start();
         
