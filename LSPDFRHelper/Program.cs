@@ -29,6 +29,7 @@ public class Program
     {
         //Startup API Server
         string[] prefixes = { "http://localhost:8055/", "http://www.pyrosfun.com:8055/" };
+        //string[] prefixes = { "http://localhost:8055/" };
         var apiServ = new RemoteApi(prefixes);
         _ = apiServ.Start();
         
