@@ -68,6 +68,8 @@ public class RemoteAPI
         var allowedDrift = TimeSpan.FromMinutes(1);
     
         var authorizationHeader = request.Headers["Authorization"];
+        Console.WriteLine(authorizationHeader);
+        Console.WriteLine(DateTime.UtcNow);
         if (authorizationHeader == null) return false;
     
         var parts = authorizationHeader.Split(' ');
