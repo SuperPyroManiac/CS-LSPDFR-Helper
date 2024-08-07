@@ -46,7 +46,7 @@ public class RemoteAPI
         if (!IsAuthenticated(request))
         {
             response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            byte[] errorBuffer = Encoding.UTF8.GetBytes("{\"error\":\"Unauthorized access!\"}");
+            var errorBuffer = Encoding.UTF8.GetBytes("{\"error\":\"Unauthorized access!\"}");
             response.ContentLength64 = errorBuffer.Length;
             await response.OutputStream.WriteAsync(errorBuffer, 0, errorBuffer.Length);
             response.OutputStream.Close();
@@ -63,10 +63,25 @@ public class RemoteAPI
         response.OutputStream.Close();
     }
     
-    private bool IsAuthenticated(HttpListenerRequest request)
+    private static bool IsAuthenticated(HttpListenerRequest request)
     {
-        _authToken = DateTime.UtcNow.ToString(CultureInfo.CurrentCulture);
-        if (request.Headers["Authorization"] == null) return false;
-        return request.Headers["Authorization"] == $"Session {_authToken}";
+        var allowedDrift = TimeSpan.FromMinutes(1);
+    
+        var authorizationHeader = request.Headers["Authorization"];
+        if (authorizationHeader == null) return false;
+    
+        var parts = authorizationHeader.Split(' ');
+        if (parts.Length != 2 || parts[0] != "Session") return false;
+    
+        var token = parts[1];
+        DateTime tokenTime;
+    
+        if (!DateTime.TryParseExact(token, "yyyyMMddHHmmss", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out tokenTime))
+        {
+            return false;
+        }
+
+        var currentTime = DateTime.UtcNow;
+        return currentTime - tokenTime <= allowedDrift;
     }
 }
