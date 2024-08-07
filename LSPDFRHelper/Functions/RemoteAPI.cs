@@ -26,7 +26,10 @@ public class RemoteApi
     public async Task Start()
     {
         //if ( Program.BotSettings.Env.DbName.Contains("DEV", StringComparison.OrdinalIgnoreCase) ) return;
+        Console.WriteLine("1");
         _listener.Start();
+        Console.WriteLine("2");
+
         
         while ( true )
         {
@@ -40,9 +43,13 @@ public class RemoteApi
     {
         var request = ctx.Request;
         var response = ctx.Response;
+        Console.WriteLine("connect");
+
 
         if (request.HttpMethod == "POST" && request.Url!.AbsolutePath == "/api/lsRph" && IsAuthenticated(request))
         {
+            Console.WriteLine("post");
+
             using var reader = new StreamReader(request.InputStream, request.ContentEncoding);
             Console.WriteLine("Got here");
             byte[] buffer;
