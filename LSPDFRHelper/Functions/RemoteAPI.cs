@@ -44,10 +44,12 @@ public class RemoteApi
         if (request.HttpMethod == "POST" && request.Url!.AbsolutePath == "/api/lsRph" && IsAuthenticated(request))
         {
             using var reader = new StreamReader(request.InputStream, request.ContentEncoding);
+            Console.WriteLine("Got here");
             byte[] buffer;
             var requestData = await reader.ReadToEndAsync();
             var rphProcessor = new RphProcessor();
             rphProcessor.Log = await RPHValidater.Run(requestData, true);
+            Console.WriteLine(rphProcessor.Log.ElapsedTime);
             if ( rphProcessor.Log.LogModified )
             {
                 response.StatusCode = (int)HttpStatusCode.Unauthorized;
