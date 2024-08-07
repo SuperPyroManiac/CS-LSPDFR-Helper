@@ -5,12 +5,12 @@ using Newtonsoft.Json;
 
 namespace LSPDFRHelper.Functions;
 
-public class RemoteAPI
+public class RemoteApi
 {
     private readonly HttpListener _listener = new();
     private string _authToken;
     
-    public RemoteAPI(string[] prefixes)
+    public RemoteApi(string[] prefixes)
     {
         if (!HttpListener.IsSupported)
         {
@@ -63,13 +63,10 @@ public class RemoteAPI
         response.OutputStream.Close();
     }
     
-    private static bool IsAuthenticated(HttpListenerRequest request)
+    private bool IsAuthenticated(HttpListenerRequest request)
     {
-        var allowedDrift = TimeSpan.FromMinutes(1);
-    
+        const int timeWindowInMinutes = 3; // Allow a 3-minute window
         var authorizationHeader = request.Headers["Authorization"];
-        Console.WriteLine(authorizationHeader);
-        Console.WriteLine(DateTime.UtcNow);
         if (authorizationHeader == null) return false;
     
         var parts = authorizationHeader.Split(' ');
@@ -78,12 +75,9 @@ public class RemoteAPI
         var token = parts[1];
         DateTime tokenTime;
     
-        if (!DateTime.TryParseExact(token, "yyyyMMddHHmmss", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out tokenTime))
-        {
-            return false;
-        }
+        if (!DateTime.TryParseExact(token, "yyyyMMddHHmmss", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out tokenTime)) return false;
 
         var currentTime = DateTime.UtcNow;
-        return currentTime - tokenTime <= allowedDrift;
+        return Math.Abs((currentTime - tokenTime).TotalMinutes) <= timeWindowInMinutes;
     }
 }
