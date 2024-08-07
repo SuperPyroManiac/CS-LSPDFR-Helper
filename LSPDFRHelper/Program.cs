@@ -7,6 +7,7 @@ using DSharpPlus.Interactivity.Extensions;
 using LSPDFRHelper.Commands;
 using LSPDFRHelper.Commands.ContextMenu;
 using LSPDFRHelper.CustomTypes.CacheTypes;
+using LSPDFRHelper.Functions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using static LSPDFRHelper.EventManagers.ModalSubmit;
@@ -26,7 +27,12 @@ public class Program
     
     static async Task Main()
     {
+        //Startup API Server
+        string[] prefixes = { "http://localhost:8055/" };
+        var apiServ = new RemoteAPI(prefixes);
+        _ = apiServ.Start();
         
+        //Start Bot
         var builder = DiscordClientBuilder.CreateDefault(BotSettings.Env.BotToken, DiscordIntents.All);
         builder.ConfigureLogging(x => x.AddConsole().SetMinimumLevel(LogLevel.Error));
 
