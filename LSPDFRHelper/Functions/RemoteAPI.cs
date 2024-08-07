@@ -26,9 +26,17 @@ public class RemoteApi
     public async Task Start()
     {
         //if ( Program.BotSettings.Env.DbName.Contains("DEV", StringComparison.OrdinalIgnoreCase) ) return;
-        Console.WriteLine("1");
-        _listener.Start();
-        Console.WriteLine("2");
+        Console.WriteLine("Starting...");
+        try
+        {
+            _listener.Start();
+        }
+        catch ( Exception e )
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        Console.WriteLine("Started!");
 
         
         while ( true )
@@ -43,20 +51,15 @@ public class RemoteApi
     {
         var request = ctx.Request;
         var response = ctx.Response;
-        Console.WriteLine("connect");
 
 
         if (request.HttpMethod == "POST" && request.Url!.AbsolutePath == "/api/lsRph" && IsAuthenticated(request))
         {
-            Console.WriteLine("post");
-
             using var reader = new StreamReader(request.InputStream, request.ContentEncoding);
-            Console.WriteLine("Got here");
             byte[] buffer;
             var requestData = await reader.ReadToEndAsync();
             var rphProcessor = new RphProcessor();
             rphProcessor.Log = await RPHValidater.Run(requestData, true);
-            Console.WriteLine(rphProcessor.Log.ElapsedTime);
             if ( rphProcessor.Log.LogModified )
             {
                 response.StatusCode = (int)HttpStatusCode.Unauthorized;
