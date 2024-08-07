@@ -25,7 +25,7 @@ public class RemoteApi
     
     public async Task Start()
     {
-        //if ( Program.BotSettings.Env.DbName.Contains("DEV", StringComparison.OrdinalIgnoreCase) || Program.BotSettings.Env.DbName.Contains("PYRO", StringComparison.OrdinalIgnoreCase) ) return;
+        if ( Program.BotSettings.Env.DbName.Contains("DEV", StringComparison.OrdinalIgnoreCase) || Program.BotSettings.Env.DbName.Contains("PYRO", StringComparison.OrdinalIgnoreCase) ) return;
         _listener.Start();
         
         while ( true )
@@ -56,6 +56,13 @@ public class RemoteApi
         if ( request.HttpMethod == "GET" && request.Url!.AbsolutePath == "/api/lsPlugs" )
         {
             var buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(DbManager.GetPlugins()));
+
+            response.ContentLength64 = buffer.Length;
+            await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
+        }
+        if ( request.HttpMethod == "GET" && request.Url!.AbsolutePath == "/api/lsErrs" )
+        {
+            var buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(DbManager.GetErrors()));
 
             response.ContentLength64 = buffer.Length;
             await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
