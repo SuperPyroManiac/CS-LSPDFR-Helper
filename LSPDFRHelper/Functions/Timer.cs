@@ -10,7 +10,7 @@ public static class Timer
         timer.Elapsed += ShortTimer;
         timer.Start();
         
-        var longTimer = new System.Timers.Timer(TimeSpan.FromHours(2));
+        var longTimer = new System.Timers.Timer(TimeSpan.FromHours(5));
         longTimer.Elapsed += LongTimer;
         longTimer.Start();
     }
