@@ -22,7 +22,7 @@ public static class Plugins
             try
             {
                 if (plugin.Id == 0 || string.IsNullOrEmpty(plugin.Id.ToString()) || plugin.State == State.IGNORE || plugin.State == State.EXTERNAL) continue;
-                //Thread.Sleep(3500);
+                Thread.Sleep(3500);
 
                 var onlineVersion = await new HttpClient().GetStringAsync(
                     $"https://www.lcpdfr.com/applications/downloadsng/interface/api.php?do=checkForUpdates&fileId={plugin.Id}&textOnly=1");
@@ -66,29 +66,29 @@ public static class Plugins
             }
             catch (HttpRequestException e)
             {
-                if ( skip > 4 )
+                if ( skip > 2 )
                 {
-                    await Logging.ErrLog($"5 updater failures in a row. Likely LSPDFR is down or experiencing issues. Skipping update checks.");
+                    await Logging.ErrLog($"3 updater failures in a row. Likely LSPDFR is down or experiencing issues. Skipping update checks.");
                     return;
                 }
                 skip++;
-                await Logging.ErrLog($"{plugin.Name} skipped. Likely hidden on LSPDFR!\r\n\r\n{e}");
+                await Logging.ErrLog($"{plugin.Name} skipped. Likely hidden on LSPDFR!");
             }
             catch (TaskCanceledException e)
             {
-                if ( skip > 4 )
+                if ( skip > 2 )
                 {
-                    await Logging.ErrLog($"5 updater failures in a row. Likely LSPDFR is down or experiencing issues. Skipping update checks.");
+                    await Logging.ErrLog($"3 updater failures in a row. Likely LSPDFR is down or experiencing issues. Skipping update checks.");
                     return;
                 }
                 skip++;
-                await Logging.ErrLog($"{plugin.Name} skipped. Likely hidden on LSPDFR!\r\n\r\n{e}");
+                await Logging.ErrLog($"{plugin.Name} skipped. Likely hidden on LSPDFR!");
             }
             catch (Exception e)
             {
-                if ( skip > 4 )
+                if ( skip > 2 )
                 {
-                    await Logging.ErrLog($"5 updater failures in a row. Likely LSPDFR is down or experiencing issues. Skipping update checks.");
+                    await Logging.ErrLog($"3 updater failures in a row. Likely LSPDFR is down or experiencing issues. Skipping update checks.");
                     return;
                 }
                 skip++;
