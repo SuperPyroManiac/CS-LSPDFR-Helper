@@ -8,6 +8,8 @@ namespace LSPDFRHelper.Functions.Verifications;
 
 public static class Plugins
 {
+    private static List<LSPDFRPlugin> _pCache = [];
+    
     public static async Task UpdateAll()
     {
 	    var plugins = DbManager.GetPlugins();
@@ -109,8 +111,10 @@ public static class Plugins
         try
         {
             var logMsg = BasicEmbeds.Info($"__Plugin Updates__\r\n*These plugins have updated!*{BasicEmbeds.AddBlanks(45)}\r\n");
+            var missingMsg = BasicEmbeds.Info($"__Unknown Plugins__\r\n*These plugins have been found on the site but are not in the DB!*{BasicEmbeds.AddBlanks(45)}\r\n");
             var webPlugs = JsonConvert.DeserializeObject<List<LSPDFRPlugin>>(JObject.Parse(await new HttpClient().GetStringAsync("https://www.lcpdfr.com/applications/downloadsng/interface/api.php?do=getAllVersions&categoryId=45"))["results"]!.ToString());
             var upCnt = 0;
+            var misgCnt = 0;
             
             foreach ( var webPlug in webPlugs )
             {
@@ -139,10 +143,20 @@ public static class Plugins
                     DbManager.EditPlugin(plug);
                     upCnt++;
                 }
+                
+                // if (Program.Cache.GetPlugins().Any(x => x.Id.ToString() == webPlug.file_id)) continue;
+                // if ( _pCache.Any(x => x.file_id == webPlug.file_id) ) continue;
+                // missingMsg.Description +=
+                //     $"## __{webPlug.file_name}__\r\n" +
+                //     $"> **Version:** `{webPlug.file_version}`\r\n" +
+                //     $"> **File Id:** `{webPlug.file_id}`\r\n" +
+                //     $"> **Uploader:** `{webPlug.file_submitter}`\r\n";
+                // _pCache.Add(webPlug);
+                // misgCnt++;
             }
             
-            if ( upCnt == 0 ) return;
-            await Logging.SendLog(logMsg);
+            if ( upCnt > 0 ) await Logging.SendLog(logMsg);
+            // if ( misgCnt > 0 ) await Logging.SendLog(missingMsg);
         }
         catch ( Exception e )
         {
