@@ -33,7 +33,7 @@ public class RemoteApi
         while ( true )
         {
             var ctx = await _listener.GetContextAsync();
-            await HandleRequestsAsync(ctx);
+            _ = HandleRequestsAsync(ctx);
 
         }
     }
@@ -44,7 +44,6 @@ public class RemoteApi
         {
             var request = ctx.Request;
             var response = ctx.Response;
-
 
             if (request.HttpMethod == "POST" && request.Url!.AbsolutePath == "/api/lsRph" && IsAuthenticated(request))
             {
