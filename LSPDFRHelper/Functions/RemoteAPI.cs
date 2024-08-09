@@ -45,15 +45,18 @@ public class RemoteApi
 
         if (request.HttpMethod == "POST" && request.Url!.AbsolutePath == "/api/lsRph" && IsAuthenticated(request))
         {
+            Console.WriteLine("Post captured!");
             using var reader = new StreamReader(request.InputStream, request.ContentEncoding);
             byte[] buffer;
             var requestData = await reader.ReadToEndAsync();
+            Console.WriteLine("Response Collected!");
             var rphProcessor = new RphProcessor();
             rphProcessor.Log = await RPHValidater.Run(requestData, true);
+            Console.WriteLine("Response processed!");
             if ( rphProcessor.Log.LogModified )
             {
                 response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                buffer = Encoding.UTF8.GetBytes("Rejected!");
+                buffer = "Rejected!"u8.ToArray();
                 response.ContentLength64 = buffer.Length;
                 response.OutputStream.Write(buffer, 0, buffer.Length);
             }
@@ -67,7 +70,7 @@ public class RemoteApi
         else
         {
             response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            byte[] buffer = Encoding.UTF8.GetBytes("Unauthorized!");
+            byte[] buffer = "Unauthorized!"u8.ToArray();
             response.ContentLength64 = buffer.Length;
             response.OutputStream.Write(buffer, 0, buffer.Length);
         }
