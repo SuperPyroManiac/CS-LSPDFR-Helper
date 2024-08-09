@@ -39,44 +39,52 @@ public class RemoteApi
 
     private async Task HandleRequestsAsync(HttpListenerContext ctx)
     {
-        var request = ctx.Request;
-        var response = ctx.Response;
-
-
-        if (request.HttpMethod == "POST" && request.Url!.AbsolutePath == "/api/lsRph" && IsAuthenticated(request))
+        try
         {
-            Console.WriteLine("Post captured!");
-            using var reader = new StreamReader(request.InputStream, request.ContentEncoding);
-            byte[] buffer;
-            var requestData = await reader.ReadToEndAsync();
-            Console.WriteLine("Response Collected!");
-            var rphProcessor = new RphProcessor();
-            rphProcessor.Log = await RPHValidater.Run(requestData, true);
-            Console.WriteLine("Response processed!");
-            if ( rphProcessor.Log.LogModified )
+            var request = ctx.Request;
+            var response = ctx.Response;
+
+
+            if (request.HttpMethod == "POST" && request.Url!.AbsolutePath == "/api/lsRph" && IsAuthenticated(request))
             {
-                response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                buffer = "Rejected!"u8.ToArray();
+                Console.WriteLine("Post captured!");
+                using var reader = new StreamReader(request.InputStream, request.ContentEncoding);
+                byte[] buffer;
+                var requestData = await reader.ReadToEndAsync();
+                Console.WriteLine("Response Collected!");
+                var rphProcessor = new RphProcessor();
+                rphProcessor.Log = await RPHValidater.Run(requestData, true);
+                Console.WriteLine("Response processed!");
+                if ( rphProcessor.Log.LogModified )
+                {
+                    response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    buffer = "Rejected!"u8.ToArray();
+                    response.ContentLength64 = buffer.Length;
+                    response.OutputStream.Write(buffer, 0, buffer.Length);
+                }
+                
+                var result = JsonConvert.SerializeObject(rphProcessor.Log);
+
+                buffer = Encoding.UTF8.GetBytes(result);
                 response.ContentLength64 = buffer.Length;
                 response.OutputStream.Write(buffer, 0, buffer.Length);
             }
-                
-            var result = JsonConvert.SerializeObject(rphProcessor.Log);
-
-            buffer = Encoding.UTF8.GetBytes(result);
-            response.ContentLength64 = buffer.Length;
-            response.OutputStream.Write(buffer, 0, buffer.Length);
-        }
-        else
-        {
-            response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            byte[] buffer = "Unauthorized!"u8.ToArray();
-            response.ContentLength64 = buffer.Length;
-            response.OutputStream.Write(buffer, 0, buffer.Length);
-        }
+            else
+            {
+                response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                byte[] buffer = "Unauthorized!"u8.ToArray();
+                response.ContentLength64 = buffer.Length;
+                response.OutputStream.Write(buffer, 0, buffer.Length);
+            }
         
 
-        response.Close();
+            response.Close();
+        }
+        catch ( Exception e )
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
     
     private bool IsAuthenticated(HttpListenerRequest request)
