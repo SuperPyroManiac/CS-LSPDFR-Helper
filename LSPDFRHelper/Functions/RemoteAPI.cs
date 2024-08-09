@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Net;
 using System.Text;
+using LSPDFRHelper.Functions.Messages;
 using LSPDFRHelper.Functions.Processors.RPH;
 using Newtonsoft.Json;
 
@@ -47,14 +48,11 @@ public class RemoteApi
 
             if (request.HttpMethod == "POST" && request.Url!.AbsolutePath == "/api/lsRph" && IsAuthenticated(request))
             {
-                Console.WriteLine("Post captured!");
                 using var reader = new StreamReader(request.InputStream, request.ContentEncoding);
                 byte[] buffer;
                 var requestData = await reader.ReadToEndAsync();
-                Console.WriteLine("Response Collected!");
                 var rphProcessor = new RphProcessor();
                 rphProcessor.Log = await RPHValidater.Run(requestData, true);
-                Console.WriteLine("Response processed!");
                 if ( rphProcessor.Log.LogModified )
                 {
                     response.StatusCode = (int)HttpStatusCode.Unauthorized;
@@ -83,7 +81,7 @@ public class RemoteApi
         catch ( Exception e )
         {
             Console.WriteLine(e);
-            throw;
+            await Logging.ErrLog($"Public API Error:\r\n {e}");
         }
     }
     
