@@ -10,15 +10,15 @@ public static class Timer
         timer.Elapsed += ShortTimer;
         timer.Start();
         
-        var longTimer = new System.Timers.Timer(TimeSpan.FromHours(5));
-        longTimer.Elapsed += LongTimer;
-        longTimer.Start();
+        // var longTimer = new System.Timers.Timer(TimeSpan.FromHours(5));
+        // longTimer.Elapsed += LongTimer;
+        // longTimer.Start();
     }
 
     private static async void ShortTimer(object _, ElapsedEventArgs e)
     {
         Task.WaitAll(Program.Cache.RemoveExpiredCaches(), Verifications.AutoHelper.ValidateOpenCases());
-        var __ = Verifications.Plugins.UpdateQuick();
+        //var __ = Verifications.Plugins.UpdateQuick();
     }
     
     private static async void LongTimer(object _, ElapsedEventArgs e)
