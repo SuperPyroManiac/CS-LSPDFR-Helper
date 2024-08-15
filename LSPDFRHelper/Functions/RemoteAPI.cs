@@ -65,7 +65,7 @@ public class RemoteApi
 
     private HttpStatusCode ValidateRequest(HttpListenerRequest request)
     {
-        return request.HttpMethod != "POST" || request.Url!.AbsolutePath != "/api/lsRph" || !IsAuthenticated(request)
+        return request.HttpMethod != "POST" || !IsAuthenticated(request)
             ? HttpStatusCode.Unauthorized
             : HttpStatusCode.OK;
     }
