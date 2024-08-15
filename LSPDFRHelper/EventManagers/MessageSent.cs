@@ -1,7 +1,6 @@
 using DSharpPlus;
 using DSharpPlus.EventArgs;
 using LSPDFRHelper.Functions.Messages;
-using LSPDFRHelper.Functions.Verifications;
 
 namespace LSPDFRHelper.EventManagers;
 
