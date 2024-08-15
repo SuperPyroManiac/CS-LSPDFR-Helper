@@ -1,7 +1,6 @@
 using System.Globalization;
 using System.Net;
 using System.Text;
-using LSPDFRHelper.Functions.Messages;
 using LSPDFRHelper.Functions.Processors.RPH;
 using Newtonsoft.Json;
 
@@ -10,78 +9,73 @@ namespace LSPDFRHelper.Functions;
 public class RemoteApi
 {
     private readonly HttpListener _listener = new();
-    
+
     public RemoteApi(string[] prefixes)
     {
         if (!HttpListener.IsSupported)
         {
             throw new NotSupportedException("HttpListener is not supported.");
         }
-
         foreach (var prefix in prefixes)
         {
             _listener.Prefixes.Add(prefix);
         }
     }
-    
+
     public async Task Start()
     {
-        if ( Program.BotSettings.Env.DbName.Contains("DEV", StringComparison.OrdinalIgnoreCase) ) return;
-        
-        _listener.Start();
-        
-        while ( true )
-        {
-            var ctx = await _listener.GetContextAsync();
-            _ = HandleRequestsAsync(ctx);
+        if (Program.BotSettings.Env.DbName.Contains("DEV", StringComparison.OrdinalIgnoreCase)) return;
 
+        _listener.Start();
+
+        while (true)
+        {
+            var context = await _listener.GetContextAsync();
+            _ = HandleRequestsAsync(context);
         }
     }
 
-    private async Task HandleRequestsAsync(HttpListenerContext ctx)
+    private async Task HandleRequestsAsync(HttpListenerContext context)
     {
-        try
+        var request = context.Request;
+        var response = context.Response;
+        var statusCode = ValidateRequest(request);
+
+        if (statusCode == HttpStatusCode.OK)
         {
-            var request = ctx.Request;
-            var response = ctx.Response;
+            using var reader = new StreamReader(request.InputStream, request.ContentEncoding);
+            var requestData = await reader.ReadToEndAsync();
+            var rphProcessor = new RphProcessor();
+            rphProcessor.Log = await RPHValidater.Run(requestData, true);
 
-            if (request.HttpMethod == "POST" && request.Url!.AbsolutePath == "/api/lsRph" && IsAuthenticated(request))
-            {
-                using var reader = new StreamReader(request.InputStream, request.ContentEncoding);
-                byte[] buffer;
-                var requestData = await reader.ReadToEndAsync();
-                var rphProcessor = new RphProcessor();
-                rphProcessor.Log = await RPHValidater.Run(requestData, true);
-                if ( rphProcessor.Log.LogModified )
-                {
-                    response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                    buffer = "Rejected!"u8.ToArray();
-                    response.ContentLength64 = buffer.Length;
-                    response.OutputStream.Write(buffer, 0, buffer.Length);
-                }
-                
-                var result = JsonConvert.SerializeObject(rphProcessor.Log);
+            var responseText = rphProcessor.Log.LogModified
+                ? "Rejected!"
+                : JsonConvert.SerializeObject(rphProcessor.Log);
 
-                buffer = Encoding.UTF8.GetBytes(result);
-                response.ContentLength64 = buffer.Length;
-                response.OutputStream.Write(buffer, 0, buffer.Length);
-            }
-            else
-            {
-                response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                byte[] buffer = "Unauthorized!"u8.ToArray();
-                response.ContentLength64 = buffer.Length;
-                response.OutputStream.Write(buffer, 0, buffer.Length);
-            }
-        
-
-            response.Close();
+            SendResponse(response, rphProcessor.Log.LogModified ? HttpStatusCode.Unauthorized : HttpStatusCode.OK, responseText);
         }
-        catch ( Exception e )
+        else
         {
-            Console.WriteLine(e);
-            await Logging.ErrLog($"Public API Error:\r\n {e}");
+            SendResponse(response, statusCode, "Unauthorized!");
         }
+
+        response.Close();
+    }
+
+    private HttpStatusCode ValidateRequest(HttpListenerRequest request)
+    {
+        return request.HttpMethod != "POST" || request.Url!.AbsolutePath != "/api/lsRph" || !IsAuthenticated(request)
+            ? HttpStatusCode.Unauthorized
+            : HttpStatusCode.OK;
+    }
+
+    private void SendResponse(HttpListenerResponse response, HttpStatusCode statusCode, string content)
+    {
+        var buffer = Encoding.UTF8.GetBytes(content);
+
+        response.StatusCode = (int)statusCode;
+        response.ContentLength64 = buffer.Length;
+        response.OutputStream.Write(buffer, 0, buffer.Length);
     }
     
     private bool IsAuthenticated(HttpListenerRequest request)
@@ -102,9 +96,8 @@ public class RemoteApi
         }
 
         var token = parts[1];
-        DateTime tokenTime;
 
-        if (!DateTime.TryParseExact(token, "yyyyMMddHHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out tokenTime)) 
+        if (!DateTime.TryParseExact(token, "yyyyMMddHHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var tokenTime)) 
         {
             Console.WriteLine($"Invalid token format: {token}");
             return false;
@@ -112,9 +105,6 @@ public class RemoteApi
 
         var currentTime = DateTime.UtcNow;
         var timeDifference = Math.Abs((currentTime - tokenTime).TotalMinutes);
-        //Console.WriteLine($"Token time: {tokenTime}, Current time: {currentTime}, Difference: {timeDifference} minutes");
-
         return timeDifference <= timeWindowInMinutes;
     }
-
 }

@@ -42,7 +42,6 @@ public class Settings
         if (env.BotToken.Equals(GetDefaultEnvConfig().BotToken))
             throw new InvalidDataException($"Error in Environment Config: Please replace the token placeholder '{GetDefaultEnvConfig().BotToken}' in the {ConfigFileName} with an actual Discord bot token!");
         
-        Console.WriteLine($"Successfully loaded environment config from '{ConfigFileName}'!");
         return env;
     }
 
