@@ -22,6 +22,7 @@ public class IMGProcessor
             var logEmbedContent = new StringBuilder("**__Uploaded image was processed__**\r\n\r\n>>> ");
             logEmbedContent.Append($"**Sender:** <@{ctx.Message.Author!.Id}>\r\n");
             logEmbedContent.Append($"**Message:** {ctx.Message.JumpLink}\r\n");
+            logEmbedContent.Append($"**Server:** {ctx.Guild.Name}\r\n");
             logEmbedContent.Append($"**Image:** [{attachment.FileName}]({attachment.Url}) ({attachment.FileSize / 1000}KB)\r\n");
             if (string.IsNullOrEmpty(imageText))
             {

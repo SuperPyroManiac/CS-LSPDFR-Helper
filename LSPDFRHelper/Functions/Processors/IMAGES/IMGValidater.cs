@@ -5,6 +5,7 @@ namespace LSPDFRHelper.Functions.Processors.IMAGES;
 
 public static class IMGValidater
 {
+    private static readonly TesseractEngine Engine = new("./tessdata", "eng", EngineMode.Default);
     public static async Task<string> Run(string imgLink)
     {
         try
@@ -13,7 +14,8 @@ public static class IMGValidater
             var response = await client.GetAsync(imgLink);
             response.EnsureSuccessStatusCode();
             var imageBytes = await response.Content.ReadAsByteArrayAsync();
-            return new TesseractEngine(@"./tessdata", "eng", EngineMode.Default).Process(Pix.LoadFromMemory(imageBytes)).GetText();
+            using var page = Engine.Process(Pix.LoadFromMemory(imageBytes));
+            return page.GetText();
         }
         catch (Exception e)
         {
