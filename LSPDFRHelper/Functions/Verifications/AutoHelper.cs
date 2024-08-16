@@ -14,7 +14,7 @@ public class AutoHelper
         try
         {
             var description = 
-                "\r\n> The AutoHelper can read a variety of file types and will attempt to find issues. Currently supported log files are **RagePluginHook**, **ELS**, and **ASI** logs. The AutoHelper can also parse **.xml** and **.meta** files."+
+                "\r\n> The AutoHelper can read a variety of file types and will attempt to find issues. Currently supported log files are **RagePluginHook**, **ELS**, and **ASI** logs. The AutoHelper can also parse **.xml** and **.meta** files as well as **.png** and **.jpg** images!"+
                 "\r\n> Please note that frequent issues can often be detected, but human assistance may be required for more advanced problems. you may wish to use the request button to ask for human help." +
                 "\r\n\r\n## __AutoHelper Terms Of Use__" +
                 "\r\n> - Do not send modified logs to 'test' the bot. Access will instantly be revoked." +
@@ -23,7 +23,7 @@ public class AutoHelper
                 "\r\n> - Proxy support is frowned upon. Ideally you should have the user upload their log directly." +
                 "\r\n\r\n## __Other Info__" +
                 "\r\n> Anyone can join and assist in cases, using /JoinCase to do so. You can request help from others using the button, we ask that you do not abuse this feature though." + 
-                "\r\n\r\n> __Created by: SuperPyroManiac & Hammer__\r\n> More information at: https://dsc.PyrosFun.com";
+                "\r\n\r\n> __Managed by: SuperPyroManiac & Hammer__\r\n> More information at: https://dsc.PyrosFun.com";
             
             var server = Program.Cache.GetServer(serverId);
             if ( server.AutoHelperChId == 0 ) return;
