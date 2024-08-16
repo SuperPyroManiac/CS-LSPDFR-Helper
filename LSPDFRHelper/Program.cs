@@ -25,8 +25,8 @@ public class Program
     public static bool IsStarted { get; set; }
     public static Cache Cache = new();
     public static Settings BotSettings = new();
-    
-    static async Task Main()
+
+    private static async Task Main()
     {
         //Startup API Server
         string[] prefixes = { "http://localhost:8055/", "http://www.pyrosfun.com:8055/" };

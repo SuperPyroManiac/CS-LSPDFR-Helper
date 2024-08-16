@@ -138,7 +138,7 @@ public static class CompInteraction
                     }
                     if ( targetAttachment.FileName.EndsWith(".xml") || targetAttachment.FileName.EndsWith(".meta") )
                     {
-                        var xmlData = await XmlValidator.Run(targetAttachment.Url);
+                        var xmlData = await XMLValidator.Run(targetAttachment.Url);
                         await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(BasicEmbeds.Ts($"## __XML Validator__{BasicEmbeds.AddBlanks(35)}", null).AddField(targetAttachment.FileName, $">>> ```xml\r\n{xmlData}\r\n```")));
                         return;
                     }

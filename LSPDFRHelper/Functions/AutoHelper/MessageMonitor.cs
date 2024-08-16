@@ -72,7 +72,7 @@ public class MessageMonitor
             if ( attach.FileName!.EndsWith(".xml") || attach.FileName.EndsWith(".meta") )
             {
                 var response = BasicEmbeds.Public($"## __AutoHelper XML Info__{BasicEmbeds.AddBlanks(35)}");
-                response.AddField(attach.FileName, $"```xml\r\n{await XmlValidator.Run(attach.Url)}\r\n```");
+                response.AddField(attach.FileName, $"```xml\r\n{await XMLValidator.Run(attach.Url)}\r\n```");
                 await ctx.Message.RespondAsync(response);
             }
         }
