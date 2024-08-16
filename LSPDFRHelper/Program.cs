@@ -8,6 +8,7 @@ using LSPDFRHelper.Commands;
 using LSPDFRHelper.Commands.ContextMenu;
 using LSPDFRHelper.CustomTypes.CacheTypes;
 using LSPDFRHelper.Functions;
+using LSPDFRHelper.Functions.Processors.IMAGES;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using static LSPDFRHelper.EventManagers.ModalSubmit;

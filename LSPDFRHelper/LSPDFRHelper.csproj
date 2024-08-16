@@ -17,12 +17,17 @@
       <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0-preview.6.24327.7" />
       <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.0-preview.6.24327.7" />
       <PackageReference Include="MySqlConnector" Version="2.3.7" />
+      <PackageReference Include="Tesseract" Version="5.2.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Functions\Processors\IMAGES\" />
       <Folder Include="Functions\Processors\SHVDN\" />
       <Folder Include="Functions\Processors\SHV\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="tessdata\eng.traineddata" />
+      <None Remove="tessdata\pdf.ttf" />
     </ItemGroup>
 
 </Project>
