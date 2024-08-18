@@ -8,7 +8,6 @@ using LSPDFRHelper.Commands;
 using LSPDFRHelper.Commands.ContextMenu;
 using LSPDFRHelper.CustomTypes.CacheTypes;
 using LSPDFRHelper.Functions;
-using LSPDFRHelper.Functions.Processors.IMAGES;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using static LSPDFRHelper.EventManagers.ModalSubmit;
@@ -34,21 +33,21 @@ public class Program
         _ = apiServ.Start();
         
         //Start Bot
-        var builder = DiscordClientBuilder.CreateDefault(BotSettings.Env.BotToken, DiscordIntents.All);
-        builder.ConfigureLogging(x => x.AddConsole().SetMinimumLevel(LogLevel.Error));
-
-        builder.ConfigureEventHandlers(
-            e => e
-                .HandleGuildDownloadCompleted(Startup)
-                .HandleModalSubmitted(HandleModalSubmit)
-                .HandleComponentInteractionCreated(HandleInteraction)
-                .HandleMessageCreated(MessageSentEvent)
-                .HandleGuildMemberAdded(JoinEvent)
-                .HandleGuildMemberRemoved(LeaveEvent)
-                .HandleGuildCreated(GuildJoinEvent)
-                .HandleGuildDeleted(GuildLeaveEvent));
-            
-        Client = builder.Build();
+         var builder = DiscordClientBuilder.CreateDefault(BotSettings.Env.BotToken, DiscordIntents.All);
+         builder.ConfigureLogging(x => x.AddConsole().SetMinimumLevel(LogLevel.Error));
+        
+         builder.ConfigureEventHandlers(
+             e => e
+                 .HandleGuildDownloadCompleted(Startup)
+                 .HandleModalSubmitted(HandleModalSubmit)
+                 .HandleComponentInteractionCreated(HandleInteraction)
+                 .HandleMessageCreated(MessageSentEvent)
+                 .HandleGuildMemberAdded(JoinEvent)
+                 .HandleGuildMemberRemoved(LeaveEvent)
+                 .HandleGuildCreated(GuildJoinEvent)
+                 .HandleGuildDeleted(GuildLeaveEvent));
+             
+         Client = builder.Build();
         
         new ServiceCollection().AddLogging(x => x.AddConsole()).BuildServiceProvider();
 

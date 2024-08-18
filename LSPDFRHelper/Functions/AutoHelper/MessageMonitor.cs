@@ -77,7 +77,7 @@ public class MessageMonitor
                 await ctx.Message.RespondAsync(response);
             }
             
-            //if (attach.FileName.EndsWith(".png") || attach.FileName.EndsWith(".jpg")) await IMGProcessor.ProcessImage(attach, ctx);
+            if (attach.FileName.EndsWith(".png") || attach.FileName.EndsWith(".jpg")) await IMGProcessor.ProcessImage(attach, ctx);
         }
     }
 }
