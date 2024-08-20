@@ -46,12 +46,12 @@ jobs:
     - name: Publish
       env: 
         version: 1
-      run: dotnet publish -c Release -o /LSPDFRHelperMain
+      run: dotnet publish -c Release -o /home/github/LSPDFRHelperMain
 
     - name: Store build info in file
       run: |
         BRANCH_NAME=${GITHUB_REF#refs/heads/}
-        echo "Current Branch: $BRANCH_NAME | Commit Hash: $GITHUB_SHA" > /LSPDFRHelperMain/build_info.txt
+        echo "Current Branch: $BRANCH_NAME | Commit Hash: $GITHUB_SHA" > /home/github/LSPDFRHelperMain/build_info.txt
       continue-on-error: true
 
     - name: Deploy app
