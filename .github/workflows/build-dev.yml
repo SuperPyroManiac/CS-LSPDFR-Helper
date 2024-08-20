@@ -63,11 +63,11 @@ jobs:
                   docker pull superpyromaniac/lspdfrhelperdev:latest
                   
                   # Stop and remove the old container
-                  docker stop lspdfrhelperdevbuild || true
-                  docker rm lspdfrhelperdevbuild || true
+                  docker stop helperdev || true
+                  docker rm helperdev || true
                   
                   # Run the new container
-                  docker run -d --name lspdfrhelperdevbuild superpyromaniac/lspdfrhelperdev:latest
+                  docker run -d --name helperdev superpyromaniac/lspdfrhelperdev:latest
                   
                   # Optionally, clean up old images
                   docker image prune -f
