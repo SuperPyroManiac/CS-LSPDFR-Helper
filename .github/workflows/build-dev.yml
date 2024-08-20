@@ -52,22 +52,22 @@ jobs:
                   password: ${{ secrets.DOCKER_PASSWORD }}
 
             - name: Build Docker image
-              run: docker build -t SuperPyroManiac/lspdfrhelperdev:latest /home/github/LSPDFRHelperDev
+              run: docker build -t superpyromaniac/lspdfrhelperdev:latest /home/github/LSPDFRHelperDev
 
             - name: Push Docker image to Docker Hub
-              run: docker push SuperPyroManiac/lspdfrhelperdev:latest
+              run: docker push superpyromaniac/lspdfrhelperdev:latest
 
             - name: Deploy app
               run: |
                   # Pull the latest image
-                  docker pull SuperPyroManiac/lspdfrhelperdev:latest
+                  docker pull superpyromaniac/lspdfrhelperdev:latest
                   
                   # Stop and remove the old container
                   docker stop lspdfrhelperdevbuild || true
                   docker rm lspdfrhelperdevbuild || true
                   
                   # Run the new container
-                  docker run -d --name lspdfrhelperdevbuild SuperPyroManiac/lspdfrhelperdev:latest
+                  docker run -d --name lspdfrhelperdevbuild superpyromaniac/lspdfrhelperdev:latest
                   
                   # Optionally, clean up old images
                   docker image prune -f
