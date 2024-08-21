@@ -53,6 +53,7 @@ public class Settings
             DbUser: "Username",
             DbPass: "Password",
             DbName: "Database",
+            SchemaName: "Schema",
             MainServ: 0,
             LogCh: 0,
             SLogCh: 0,
