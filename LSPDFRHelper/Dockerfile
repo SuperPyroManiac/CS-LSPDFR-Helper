@@ -1,27 +1,18 @@
-# Use a slim Debian base image
-FROM debian:stable-slim AS runtime
+# Use an official .NET runtime as a parent image.
+FROM mcr.microsoft.com/dotnet/runtime:8.0 AS runtime
 
-# Install dependencies and .NET runtime
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        libc6 \
-        libtesseract-dev \
-        libleptonica-dev \
-        wget \
-        ca-certificates \
-    && wget https://packages.microsoft.com/config/debian/12/prod.list \
-    && mv prod.list /etc/apt/sources.list.d/microsoft-prod.list \
-    && wget -qO- https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends dotnet-runtime-8.0 \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+# Install required libraries
+RUN apt-get update && \
+    apt-get install -y libc6 libleptonica-dev libtesseract-dev tesseract-ocr
 
-    # Set the working directory inside the container
-    WORKDIR /app
+# Create a symbolic link (if needed)
+RUN ln -s /lib/x86_64-linux-gnu/libdl.so.2 /lib/x86_64-linux-gnu/libdl.so
 
-    # Copy your compiled DLL and other necessary files into the container
-    COPY LSPDFRHelper.dll .
+# Set the working directory inside the container
+WORKDIR /app
 
-    # Command to run your application
-    CMD ["dotnet", "LSPDFRHelper.dll"]
+# Copy your compiled DLL and other necessary files into the container
+COPY . .
+
+# Command to run your Discord bot
+CMD ["dotnet", "LSPDFRHelper.dll"]
