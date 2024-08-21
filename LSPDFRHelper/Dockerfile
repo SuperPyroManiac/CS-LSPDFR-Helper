@@ -1,6 +1,10 @@
 # Use an official .NET runtime as a parent image
 FROM mcr.microsoft.com/dotnet/runtime:8.0 AS runtime
 
+# Install required libraries
+RUN apt-get update && apt-get install -y libdl-dev
+RUN ln -s /usr/lib/x86_64-linux-gnu/libdl.so.2 /usr/lib/x86_64-linux-gnu/libdl.so
+
 # Set the working directory inside the container
 WORKDIR /app
 
