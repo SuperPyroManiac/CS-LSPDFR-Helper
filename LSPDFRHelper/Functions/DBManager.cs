@@ -19,7 +19,7 @@ public static class DbManager
             using var cnn = new NpgsqlConnection(ConnStr);
             return cnn.Query<AutoCase>("select * from cases").ToList();
         }
-        catch (MySqlException e)
+        catch (NpgsqlException e)
         {
             Console.WriteLine(e);
             Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
@@ -34,7 +34,7 @@ public static class DbManager
             using var cnn = new NpgsqlConnection(ConnStr);
             return cnn.Query<AutoCase>($"select * from cases where caseid='{caseId}'").First();
         }
-        catch (MySqlException e)
+        catch (NpgsqlException e)
         {
             Console.WriteLine(e);
             Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
@@ -50,7 +50,7 @@ public static class DbManager
             await cnn.ExecuteAsync($"insert into cases (caseid, ownerid, channelid, serverid, solved, tsrequested, requestid, createdate, expiredate) VALUES (@CaseId, {Convert.ToInt64(acase.OwnerId)}, {Convert.ToInt64(acase.ChannelId)}, {Convert.ToInt64(acase.ServerId)}, @Solved, @TsRequested, {Convert.ToInt64(acase.RequestId)}, @CreateDate, @ExpireDate)", acase);
             Program.Cache.UpdateCases(GetCases());
         }
-        catch (MySqlException e)
+        catch (NpgsqlException e)
         {
             Console.WriteLine(e);
             Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
@@ -66,7 +66,7 @@ public static class DbManager
             await cnn.ExecuteAsync($"UPDATE cases SET ownerid = {Convert.ToInt64(acase.OwnerId)}, channelid = {Convert.ToInt64(acase.ChannelId)}, serverid = {Convert.ToInt64(acase.ServerId)}, solved = @Solved, tsrequested = @TsRequested, requestid = {Convert.ToInt64(acase.RequestId)}, createdate = @CreateDate, expiredate = @ExpireDate WHERE caseid = (@CaseId)", acase);
             Program.Cache.UpdateCases(GetCases());
         }
-        catch (MySqlException e)
+        catch (NpgsqlException e)
         {
             Console.WriteLine(e);
             await Logging.ErrLog($"SQL Issue: {e}");
@@ -82,7 +82,7 @@ public static class DbManager
             using var cnn = new NpgsqlConnection(ConnStr);
             return cnn.Query<Plugin>("select * from plugin").ToList();
         }
-        catch (MySqlException e)
+        catch (NpgsqlException e)
         {
             Console.WriteLine(e);
             Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
@@ -97,7 +97,7 @@ public static class DbManager
             using var cnn = new NpgsqlConnection(ConnStr);
             return cnn.Query<Plugin>($"select * from plugin where name='{pluginname}'").First();
         }
-        catch (MySqlException e)
+        catch (NpgsqlException e)
         {
             Console.WriteLine(e);
             Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
@@ -128,7 +128,7 @@ public static class DbManager
             var conditionsString = string.Join(" and ", conditions);
             return cnn.Query<Plugin>($"select * from plugin where {conditionsString}").ToList();
         }
-        catch (MySqlException e)
+        catch (NpgsqlException e)
         {
             Console.WriteLine(e);
             Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
@@ -150,7 +150,7 @@ public static class DbManager
             await cnn.ExecuteAsync($"insert into plugin (name, dname, version, eaversion, id, state, plugintype, link, description, authorid, announce) VALUES (@Name, @DName, @Version, @EaVersion, @Id, @State, @PluginType, @Link, @Description, {Convert.ToInt64(plugin.AuthorId)}, @Announce)", plugin);
             Program.Cache.UpdatePlugins(GetPlugins());
         }
-        catch (MySqlException e)
+        catch (NpgsqlException e)
         {
             Console.WriteLine(e);
             Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
@@ -166,7 +166,7 @@ public static class DbManager
             await cnn.ExecuteAsync($"UPDATE plugin SET dname = @DName, version = @Version, eaversion = @EaVersion, id = @Id, state = @State, plugintype = @PluginType, link = @Link, description = @Description, authorid = {Convert.ToInt64(plugin.AuthorId)}, announce = @Announce WHERE Name = (@Name)", plugin);
             Program.Cache.UpdatePlugins(GetPlugins());
         }
-        catch (MySqlException e)
+        catch (NpgsqlException e)
         {
             Console.WriteLine(e);
             await Logging.ErrLog($"SQL Issue: {e}");
@@ -182,7 +182,7 @@ public static class DbManager
             await cnn.ExecuteAsync("delete from plugin where name = (@Name)", plugin);
             Program.Cache.UpdatePlugins(GetPlugins());
         }
-        catch (MySqlException e)
+        catch (NpgsqlException e)
         {
             Console.WriteLine(e);
             await Logging.ErrLog($"SQL Issue: {e}");
@@ -198,7 +198,7 @@ public static class DbManager
             using var cnn = new NpgsqlConnection(ConnStr);
             return cnn.Query<Error>("select * from error").ToList();
         }
-        catch (MySqlException e)
+        catch (NpgsqlException e)
         {
             Console.WriteLine(e);
             Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
@@ -213,7 +213,7 @@ public static class DbManager
             using var cnn = new NpgsqlConnection(ConnStr);
             return cnn.Query<Error>($"select * from error where id='{errorId}'").First();
         }
-        catch (MySqlException e)
+        catch (NpgsqlException e)
         {
             Console.WriteLine(e);
             Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
@@ -244,7 +244,7 @@ public static class DbManager
             var conditionsString = string.Join(" and ", conditions);
             return cnn.Query<Error>($"select * from error where {conditionsString}", new DynamicParameters()).ToList();
         }
-        catch (MySqlException e)
+        catch (NpgsqlException e)
         {
             Console.WriteLine(e);
             Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
@@ -267,7 +267,7 @@ public static class DbManager
             Program.Cache.UpdateErrors(GetErrors());
             return int.Parse(cnn.ExecuteScalar("SELECT id FROM error ORDER BY id DESC LIMIT 1;")!.ToString()!);
         }
-        catch (MySqlException e)
+        catch (NpgsqlException e)
         {
             Console.WriteLine(e);
             Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
@@ -283,7 +283,7 @@ public static class DbManager
             await cnn.ExecuteAsync("UPDATE error SET pattern = @Pattern, solution = @Solution, description = @Description, level = @Level, stringmatch = @StringMatch WHERE Id = (@Id)", error);
             Program.Cache.UpdateErrors(GetErrors());
         }
-        catch (MySqlException e)
+        catch (NpgsqlException e)
         {
             Console.WriteLine(e);
             await Logging.ErrLog($"SQL Issue: {e}");
@@ -298,7 +298,7 @@ public static class DbManager
             await using var cnn = new NpgsqlConnection(ConnStr);
             await cnn.ExecuteAsync("delete from error where id = (@Id)", error);
         }
-        catch (MySqlException e)
+        catch (NpgsqlException e)
         {
             Console.WriteLine(e);
             await Logging.ErrLog($"SQL Issue: {e}");
@@ -314,7 +314,7 @@ public static class DbManager
             using var cnn = new NpgsqlConnection(ConnStr);
             return cnn.Query<User>("select * from users").ToList();
         }
-        catch (MySqlException e)
+        catch (NpgsqlException e)
         {
             Console.WriteLine(e);
             Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
@@ -330,7 +330,7 @@ public static class DbManager
             await cnn.ExecuteAsync($"insert into users (id, username, boteditor, botadmin, blocked, logpath) VALUES ({Convert.ToInt64(user.Id)}, @Username, @BotEditor, @BotAdmin, @Blocked, @LogPath)", user);
             Program.Cache.UpdateUsers(GetUsers());
         }
-        catch (MySqlException e)
+        catch (NpgsqlException e)
         {
             Console.WriteLine(e);
             await Logging.ErrLog($"SQL Issue: {e}");
@@ -346,7 +346,7 @@ public static class DbManager
             await cnn.ExecuteAsync($"UPDATE users SET id = {Convert.ToInt64(user.Id)}, username = @Username, boteditor = @BotEditor, botadmin = @BotAdmin, blocked = @Blocked, logpath = @LogPath WHERE id = {Convert.ToInt64(user.Id)}", user);
             Program.Cache.UpdateUsers(GetUsers());
         }
-        catch (MySqlException e)
+        catch (NpgsqlException e)
         {
             Console.WriteLine(e);
             await Logging.ErrLog($"SQL Issue: {e}");
@@ -364,7 +364,7 @@ public static class DbManager
                 using var cnn = new NpgsqlConnection(ConnStr);
                 return cnn.Query<bool>($"select ahenabled from serveroptions where serverid = '{Convert.ToInt64(serverid)}'").First();
             }
-            catch (MySqlException e)
+            catch (NpgsqlException e)
             {
                 Console.WriteLine(e);
                 Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
@@ -378,7 +378,7 @@ public static class DbManager
             var output = !state;
             return output.Value;
         }
-        catch (MySqlException e)
+        catch (NpgsqlException e)
         {
             Console.WriteLine(e);
             Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
@@ -394,7 +394,7 @@ public static class DbManager
             await cnn.ExecuteAsync($"insert into serveroptions (serverId, name, ownerid, enabled, blocked, ahenabled, autohelperchid, monitorchid, announcechid, managerroleid) VALUES ({Convert.ToInt64(server.ServerId)}, @Name, {Convert.ToInt64(server.OwnerId)}, @Enabled, @Blocked, @AhEnabled, {Convert.ToInt64(server.AutoHelperChId)}, {Convert.ToInt64(server.MonitorChId)}, {Convert.ToInt64(server.AnnounceChId)}, {Convert.ToInt64(server.ManagerRoleId)})", server);
             Program.Cache.UpdateServers();
         }
-        catch (MySqlException e)
+        catch (NpgsqlException e)
         {
             Console.WriteLine(e);
             await Logging.ErrLog($"SQL Issue: {e}");
@@ -410,7 +410,7 @@ public static class DbManager
             await cnn.ExecuteAsync($"UPDATE serveroptions SET serverId = {Convert.ToInt64(server.ServerId)}, name = @Name, ownerid = {Convert.ToInt64(server.OwnerId)}, enabled = @Enabled, blocked = @Blocked, ahenabled = @AhEnabled, autohelperchid = {Convert.ToInt64(server.AutoHelperChId)}, monitorchid = {Convert.ToInt64(server.MonitorChId)}, announcechid = {Convert.ToInt64(server.AnnounceChId)}, managerroleid = {Convert.ToInt64(server.ManagerRoleId)} WHERE ServerId = {Convert.ToInt64(server.ServerId)}", server);
             Program.Cache.UpdateServers();
         }
-        catch (MySqlException e)
+        catch (NpgsqlException e)
         {
             Console.WriteLine(e);
             await Logging.ErrLog($"SQL Issue: {e}");
@@ -425,7 +425,7 @@ public static class DbManager
             using var cnn = new NpgsqlConnection(ConnStr);
             return cnn.Query<Server>("select * from serveroptions").ToList();
         }
-        catch (MySqlException e)
+        catch (NpgsqlException e)
         {
             Console.WriteLine(e);
             Logging.ErrLog($"SQL Issue: {e}").GetAwaiter();
