@@ -1,7 +1,10 @@
-FROM debian:stable-slim
-# Install required libraries
+FROM mcr.microsoft.com/dotnet/runtime:8.0-slim AS runtime
+
+# Install required libraries and dependencies
 RUN apt-get update && \
-    apt-get install -y libc6 libleptonica-dev libtesseract-dev tesseract-ocr
+    apt-get install -y libc6 libtesseract-dev libleptonica-dev && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Create a symbolic link (if needed)
 RUN ln -s /lib/x86_64-linux-gnu/libdl.so.2 /lib/x86_64-linux-gnu/libdl.so
