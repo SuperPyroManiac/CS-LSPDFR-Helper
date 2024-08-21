@@ -3,6 +3,9 @@ FROM mcr.microsoft.com/dotnet/runtime:8.0 AS runtime
 
 # Install required libraries
 RUN apt-get update && \
+    apt-get install -y libc6
+
+RUN apt-get update && \
     apt-get install -y libleptonica-dev
 
 # Set the working directory inside the container
