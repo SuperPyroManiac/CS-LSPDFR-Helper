@@ -3,20 +3,21 @@ using LSPDFRHelper.CustomTypes.Enums;
 using LSPDFRHelper.CustomTypes.MainTypes;
 using LSPDFRHelper.Functions.Messages;
 using MySqlConnector;
+using Npgsql;
 
 namespace LSPDFRHelper.Functions;
 
 public static class DbManager
 {
-    private static readonly string ConnStr = $"Server={Program.BotSettings.Env.DbServer};User ID={Program.BotSettings.Env.DbUser};Password={Program.BotSettings.Env.DbPass};Database={Program.BotSettings.Env.DbName}";
-    
-    //Case Functions
+    private static readonly string ConnStr = $"Host={Program.BotSettings.Env.DbServer};User ID={Program.BotSettings.Env.DbUser};Password={Program.BotSettings.Env.DbPass};Database={Program.BotSettings.Env.DbName};SearchPath=lspdfrhelperpyro";
+        
+    // Case Functions
     public static List<AutoCase> GetCases()
     {
         try
         {
-            using var cnn = new MySqlConnection(ConnStr);
-            return cnn.Query<AutoCase>("select * from Cases").ToList();
+            using var cnn = new NpgsqlConnection(ConnStr);
+            return cnn.Query<AutoCase>("select * from cases").ToList();
         }
         catch (MySqlException e)
         {
@@ -25,13 +26,13 @@ public static class DbManager
             throw;
         }
     }
-    
+        
     public static AutoCase GetCase(string caseId)
     {
         try
         {
-            using var cnn = new MySqlConnection(ConnStr);
-            return cnn.Query<AutoCase>($"select * from Cases where CaseID='{caseId}'").First();
+            using var cnn = new NpgsqlConnection(ConnStr);
+            return cnn.Query<AutoCase>($"select * from cases where caseid='{caseId}'").First();
         }
         catch (MySqlException e)
         {
@@ -40,13 +41,13 @@ public static class DbManager
             throw;
         }
     }
-    
+        
     public static async void AddCase(AutoCase acase)
     {
         try
         {
-            await using var cnn = new MySqlConnection(ConnStr);
-            await cnn.ExecuteAsync("insert into Cases (CaseId, OwnerID, ChannelID, ServerID, Solved, TsRequested, RequestID, CreateDate, ExpireDate) VALUES (@CaseId, @OwnerID, @ChannelID, @ServerID, @Solved, @TsRequested, @RequestID, @CreateDate, @ExpireDate)", acase);
+            await using var cnn = new NpgsqlConnection(ConnStr);
+            await cnn.ExecuteAsync($"insert into cases (caseid, ownerid, channelid, serverid, solved, tsrequested, requestid, createdate, expiredate) VALUES (@CaseId, {Convert.ToInt64(acase.OwnerId)}, {Convert.ToInt64(acase.ChannelId)}, {Convert.ToInt64(acase.ServerId)}, @Solved, @TsRequested, {Convert.ToInt64(acase.RequestId)}, @CreateDate, @ExpireDate)", acase);
             Program.Cache.UpdateCases(GetCases());
         }
         catch (MySqlException e)
@@ -56,13 +57,13 @@ public static class DbManager
             throw;
         }
     }
-    
+        
     public static async void EditCase(AutoCase acase)
     {
         try
         {
-            await using var cnn = new MySqlConnection(ConnStr);
-            await cnn.ExecuteAsync("UPDATE Cases SET OwnerID = @OwnerID, ChannelID = @ChannelID, ServerID = @ServerID, Solved = @Solved, TsRequested = @TsRequested, RequestID = @RequestID, CreateDate = @CreateDate, ExpireDate = @ExpireDate WHERE CaseId = (@CaseId)", acase);
+            await using var cnn = new NpgsqlConnection(ConnStr);
+            await cnn.ExecuteAsync($"UPDATE cases SET ownerid = {Convert.ToInt64(acase.OwnerId)}, channelid = {Convert.ToInt64(acase.ChannelId)}, serverid = {Convert.ToInt64(acase.ServerId)}, solved = @Solved, tsrequested = @TsRequested, requestid = {Convert.ToInt64(acase.RequestId)}, createdate = @CreateDate, expiredate = @ExpireDate WHERE caseid = (@CaseId)", acase);
             Program.Cache.UpdateCases(GetCases());
         }
         catch (MySqlException e)
@@ -72,14 +73,14 @@ public static class DbManager
             throw;
         }
     }
-    
-    //Plugin Functions
+
+    // Plugin Functions
     public static List<Plugin> GetPlugins()
     {
         try
         {
-            using var cnn = new MySqlConnection(ConnStr);
-            return cnn.Query<Plugin>("select * from Plugin").ToList();
+            using var cnn = new NpgsqlConnection(ConnStr);
+            return cnn.Query<Plugin>("select * from plugin").ToList();
         }
         catch (MySqlException e)
         {
@@ -88,13 +89,13 @@ public static class DbManager
             throw;
         }
     }
-    
+        
     public static Plugin GetPlugin(string pluginname)
     {
         try
         {
-            using var cnn = new MySqlConnection(ConnStr);
-            return cnn.Query<Plugin>($"select * from Plugin where Name='{pluginname}'").First();
+            using var cnn = new NpgsqlConnection(ConnStr);
+            return cnn.Query<Plugin>($"select * from plugin where name='{pluginname}'").First();
         }
         catch (MySqlException e)
         {
@@ -103,13 +104,13 @@ public static class DbManager
             throw;
         }
     }
-    
+        
     public static List<Plugin> FindPlugins(string name = null, string dName = null, string id = null, State? state = null, PluginType? type = null, string description = null, bool? exactMatch = false)
     {
         try
         {
-            using var cnn = new MySqlConnection(ConnStr);
-            List<string> conditions = [];
+            using var cnn = new NpgsqlConnection(ConnStr);
+            List<string> conditions = new();
             var comparisonOperator = " = '";
             var endOfComparison = "'";
             if (!(exactMatch ?? true))  
@@ -117,17 +118,15 @@ public static class DbManager
                 comparisonOperator = " like '%";
                 endOfComparison = "%'";
             }
-
-            if (name != null) conditions.Add("Name" + comparisonOperator + name + endOfComparison);
-            if (dName != null) conditions.Add("DName" + comparisonOperator + dName + endOfComparison);
-            if (id != null) conditions.Add("Id" + comparisonOperator + id + endOfComparison);
-            if (state != null) conditions.Add("State" + comparisonOperator + state + endOfComparison);
-            if (type != null) conditions.Add("PluginType" + comparisonOperator + type + endOfComparison);
-            if (description != null) conditions.Add("Description" + comparisonOperator + description + endOfComparison);
-
+            if (name != null) conditions.Add("name" + comparisonOperator + name + endOfComparison);
+            if (dName != null) conditions.Add("dname" + comparisonOperator + dName + endOfComparison);
+            if (id != null) conditions.Add("id" + comparisonOperator + id + endOfComparison);
+            if (state != null) conditions.Add("state" + comparisonOperator + state + endOfComparison);
+            if (type != null) conditions.Add("plugintype" + comparisonOperator + type + endOfComparison);
+            if (description != null) conditions.Add("description" + comparisonOperator + description + endOfComparison);
             if (conditions.Count == 0) throw new InvalidDataException("At least one of the input parameters has to have a non-null value!");
             var conditionsString = string.Join(" and ", conditions);
-            return cnn.Query<Plugin>($"select * from Plugin where {conditionsString}").ToList();
+            return cnn.Query<Plugin>($"select * from plugin where {conditionsString}").ToList();
         }
         catch (MySqlException e)
         {
@@ -142,13 +141,13 @@ public static class DbManager
             throw;
         }
     }
-    
+        
     public static async void AddPlugin(Plugin plugin)
     {
         try
         {
-            await using var cnn = new MySqlConnection(ConnStr);
-            await cnn.ExecuteAsync("insert into Plugin (Name, DName, Version, EaVersion, Id, State, PluginType, Link, Description, AuthorId, Announce) VALUES (@Name, @DName, @Version, @EaVersion, @Id, @State, @PluginType, @Link, @Description, @AuthorId, @Announce)", plugin);
+            await using var cnn = new NpgsqlConnection(ConnStr);
+            await cnn.ExecuteAsync("insert into plugin (name, dname, version, eaversion, id, state, plugintype, link, description, authorid, announce) VALUES (@Name, @DName, @Version, @EaVersion, @Id, @State, @PluginType, @Link, @Description, @AuthorId, @Announce)", plugin);
             Program.Cache.UpdatePlugins(GetPlugins());
         }
         catch (MySqlException e)
@@ -158,13 +157,13 @@ public static class DbManager
             throw;
         }
     }
-    
+        
     public static async void EditPlugin(Plugin plugin)
     {
         try
         {
-            await using var cnn = new MySqlConnection(ConnStr);
-            await cnn.ExecuteAsync("UPDATE Plugin SET DName = @DName, Version = @Version, EaVersion = @EaVersion, Id = @Id, State = @State, PluginType = @PluginType, Link = @Link, Description = @Description, AuthorId = @AuthorId, Announce = @Announce WHERE Name = (@Name)", plugin);
+            await using var cnn = new NpgsqlConnection(ConnStr);
+            await cnn.ExecuteAsync("UPDATE plugin SET dname = @DName, version = @Version, eaversion = @EaVersion, id = @Id, state = @State, plugintype = @PluginType, link = @Link, description = @Description, authorid = @AuthorId, announce = @Announce WHERE Name = (@Name)", plugin);
             Program.Cache.UpdatePlugins(GetPlugins());
         }
         catch (MySqlException e)
@@ -174,13 +173,13 @@ public static class DbManager
             throw;
         }
     }
-    
+        
     public static async void DeletePlugin(Plugin plugin)
     {
         try
         {
-            await using var cnn = new MySqlConnection(ConnStr);
-            await cnn.ExecuteAsync("delete from Plugin where Name = (@Name)", plugin);
+            await using var cnn = new NpgsqlConnection(ConnStr);
+            await cnn.ExecuteAsync("delete from plugin where name = (@Name)", plugin);
             Program.Cache.UpdatePlugins(GetPlugins());
         }
         catch (MySqlException e)
@@ -190,14 +189,14 @@ public static class DbManager
             throw;
         }
     }
-    
-    //Error Functions
+
+    // Error Functions
     public static List<Error> GetErrors()
     {
         try
         {
-            using var cnn = new MySqlConnection(ConnStr);
-            return cnn.Query<Error>("select * from Error").ToList();
+            using var cnn = new NpgsqlConnection(ConnStr);
+            return cnn.Query<Error>("select * from error").ToList();
         }
         catch (MySqlException e)
         {
@@ -206,13 +205,13 @@ public static class DbManager
             throw;
         }
     }
-    
+        
     public static Error GetError(string errorId)
     {
         try
         {
-            using var cnn = new MySqlConnection(ConnStr);
-            return cnn.Query<Error>($"select * from Error where Id='{errorId}'").First();
+            using var cnn = new NpgsqlConnection(ConnStr);
+            return cnn.Query<Error>($"select * from error where id='{errorId}'").First();
         }
         catch (MySqlException e)
         {
@@ -221,13 +220,13 @@ public static class DbManager
             throw;
         }
     }
-    
+        
     public static List<Error> FindErrors(string id, string pattern, string solution, string description, Level? level, bool? exactMatch = false)
     {
         try
         {
-            using var cnn = new MySqlConnection(ConnStr);
-            List<string> conditions = [];
+            using var cnn = new NpgsqlConnection(ConnStr);
+            List<string> conditions = new();
             var comparisonOperator = " = '";
             var endOfComparison = "'";
             if (!(exactMatch ?? true))  
@@ -235,16 +234,15 @@ public static class DbManager
                 comparisonOperator = " like '%";
                 endOfComparison = "%'";
             }
-
-            if (id != null) conditions.Add("Id" + comparisonOperator + id + endOfComparison);
-            if (pattern != null) conditions.Add("Pattern" + comparisonOperator + pattern + endOfComparison);
-            if (solution != null) conditions.Add("Solution" + comparisonOperator + solution + endOfComparison);
-            if (description != null) conditions.Add("Description" + comparisonOperator + description + endOfComparison);
-            conditions.Add("Level" + comparisonOperator + level + endOfComparison);
-            
+            if (id != null) conditions.Add("id" + comparisonOperator + id + endOfComparison);
+            if (pattern != null) conditions.Add("pattern" + comparisonOperator + pattern + endOfComparison);
+            if (solution != null) conditions.Add("solution" + comparisonOperator + solution + endOfComparison);
+            if (description != null) conditions.Add("description" + comparisonOperator + description + endOfComparison);
+            conditions.Add("level" + comparisonOperator + level + endOfComparison);
+                
             if (conditions.Count == 0) throw new InvalidDataException("At least one of the input parameters has to have a non-null value!");
             var conditionsString = string.Join(" and ", conditions);
-            return cnn.Query<Error>($"select * from Error where {conditionsString}", new DynamicParameters()).ToList();
+            return cnn.Query<Error>($"select * from error where {conditionsString}", new DynamicParameters()).ToList();
         }
         catch (MySqlException e)
         {
@@ -259,15 +257,15 @@ public static class DbManager
             throw;
         }
     }
-    
+        
     public static int AddError(Error error)
     {
         try
         {
-            using var cnn = new MySqlConnection(ConnStr);
-            cnn.Execute("insert into Error (Pattern, Solution, Description, Level, StringMatch) VALUES (@Pattern, @Solution, @Description, @Level, @StringMatch)", error);
+            using var cnn = new NpgsqlConnection(ConnStr);
+            cnn.Execute("insert into error (pattern, solution, description, level, stringmatch) VALUES (@Pattern, @Solution, @Description, @Level, @StringMatch)", error);
             Program.Cache.UpdateErrors(GetErrors());
-            return int.Parse(cnn.ExecuteScalar("SELECT Id FROM Error ORDER BY Id DESC LIMIT 1;")!.ToString()!);
+            return int.Parse(cnn.ExecuteScalar("SELECT id FROM error ORDER BY id DESC LIMIT 1;")!.ToString()!);
         }
         catch (MySqlException e)
         {
@@ -276,13 +274,13 @@ public static class DbManager
             throw;
         }
     }
-    
+        
     public static async void EditError(Error error)
     {
         try
         {
-            await using var cnn = new MySqlConnection(ConnStr);
-            await cnn.ExecuteAsync("UPDATE Error SET Pattern = @Pattern, Solution = @Solution, Description = @Description, Level = @Level, StringMatch = @StringMatch WHERE Id = (@Id)", error);
+            await using var cnn = new NpgsqlConnection(ConnStr);
+            await cnn.ExecuteAsync("UPDATE error SET pattern = @Pattern, solution = @Solution, description = @Description, level = @Level, stringmatch = @StringMatch WHERE Id = (@Id)", error);
             Program.Cache.UpdateErrors(GetErrors());
         }
         catch (MySqlException e)
@@ -292,13 +290,13 @@ public static class DbManager
             throw;
         }
     }
-    
+        
     public static async void DeleteError(Error error)
     {
         try
         {
-            await using var cnn = new MySqlConnection(ConnStr);
-            await cnn.ExecuteAsync("delete from Error where Id = (@Id)", error);
+            await using var cnn = new NpgsqlConnection(ConnStr);
+            await cnn.ExecuteAsync("delete from error where id = (@Id)", error);
         }
         catch (MySqlException e)
         {
@@ -307,14 +305,14 @@ public static class DbManager
             throw;
         }
     }
-    
-    //User Functions
+
+    // User Functions
     public static List<User> GetUsers()
     {
         try
         {
-            using var cnn = new MySqlConnection(ConnStr);
-            return cnn.Query<User>("select * from Users").ToList();
+            using var cnn = new NpgsqlConnection(ConnStr);
+            return cnn.Query<User>("select * from users").ToList();
         }
         catch (MySqlException e)
         {
@@ -323,14 +321,13 @@ public static class DbManager
             throw;
         }
     }
-    
-    
+        
     public static async void AddUser(User user)
     {
         try
         {
-            await using var cnn = new MySqlConnection(ConnStr);
-            await cnn.ExecuteAsync("insert into Users (Id, Username, BotEditor, BotAdmin, Blocked, LogPath) VALUES (@Id, @Username, @BotEditor, @BotAdmin, @Blocked, @LogPath)", user);
+            await using var cnn = new NpgsqlConnection(ConnStr);
+            await cnn.ExecuteAsync($"insert into users (id, username, boteditor, botadmin, blocked, logpath) VALUES ({Convert.ToInt64(user.Id)}, @Username, @BotEditor, @BotAdmin, @Blocked, @LogPath)", user);
             Program.Cache.UpdateUsers(GetUsers());
         }
         catch (MySqlException e)
@@ -340,13 +337,13 @@ public static class DbManager
             throw;
         }
     }
-    
+        
     public static async void EditUser(User user)
     {
         try
         {
-            await using var cnn = new MySqlConnection(ConnStr);
-            await cnn.ExecuteAsync("UPDATE Users SET Id = @Id, Username = @Username, BotEditor = @BotEditor, BotAdmin = @BotAdmin, Blocked = @Blocked, LogPath = @LogPath WHERE Id = @Id", user);
+            await using var cnn = new NpgsqlConnection(ConnStr);
+            await cnn.ExecuteAsync($"UPDATE users SET id = {Convert.ToInt64(user.Id)}, username = @Username, boteditor = @BotEditor, botadmin = @BotAdmin, blocked = @Blocked, logpath = @LogPath WHERE id = {Convert.ToInt64(user.Id)}", user);
             Program.Cache.UpdateUsers(GetUsers());
         }
         catch (MySqlException e)
@@ -356,16 +353,16 @@ public static class DbManager
             throw;
         }
     }
-    
-    //Msc Functions
+
+    // Misc Functions
     public static bool AutoHelperStatus(ulong serverid, bool? state = null)
     {
         if (state == null)
         {
             try
             {
-                using var cnn = new MySqlConnection(ConnStr);
-                return cnn.Query<bool>($"select AhEnabled from ServerOptions where ServerId = '{serverid}'").First();
+                using var cnn = new NpgsqlConnection(ConnStr);
+                return cnn.Query<bool>($"select ahenabled from serveroptions where serverid = '{Convert.ToInt64(serverid)}'").First();
             }
             catch (MySqlException e)
             {
@@ -376,8 +373,8 @@ public static class DbManager
         }
         try
         {
-            using var cnn = new MySqlConnection(ConnStr);
-            cnn.Execute($"UPDATE ServerOptions SET AhEnabled = {state} WHERE ServerId = '{serverid}'");
+            using var cnn = new NpgsqlConnection(ConnStr);
+            cnn.Execute($"UPDATE serveroptions SET ahenabled = {state} WHERE serverid = '{Convert.ToInt64(serverid)}'");
             var output = !state;
             return output.Value;
         }
@@ -388,13 +385,13 @@ public static class DbManager
             throw;
         }
     }
-    
+        
     public static async void AddServer(Server server)
     {
         try
         {
-            await using var cnn = new MySqlConnection(ConnStr);
-            await cnn.ExecuteAsync("insert into ServerOptions (ServerId, Name, OwnerId, Enabled, Blocked, AhEnabled, AutoHelperChId, MonitorChId, AnnounceChId, ManagerRoleId) VALUES (@ServerId, @Name, @OwnerId, @Enabled, @Blocked, @AhEnabled, @AutoHelperChId, @MonitorChId, @AnnounceChId, @ManagerRoleId)", server);
+            await using var cnn = new NpgsqlConnection(ConnStr);
+            await cnn.ExecuteAsync($"insert into serveroptions (serverId, name, ownerid, enabled, blocked, ahenabled, autohelperchid, monitorchid, announcechid, managerroleid) VALUES ({Convert.ToInt64(server.ServerId)}, @Name, {Convert.ToInt64(server.OwnerId)}, @Enabled, @Blocked, @AhEnabled, {Convert.ToInt64(server.AutoHelperChId)}, {Convert.ToInt64(server.MonitorChId)}, {Convert.ToInt64(server.AnnounceChId)}, {Convert.ToInt64(server.ManagerRoleId)})", server);
             Program.Cache.UpdateServers();
         }
         catch (MySqlException e)
@@ -404,13 +401,13 @@ public static class DbManager
             throw;
         }
     }
-    
+        
     public static async void EditServer(Server server)
     {
         try
         {
-            await using var cnn = new MySqlConnection(ConnStr);
-            await cnn.ExecuteAsync("UPDATE ServerOptions SET ServerId = @ServerId, Name = @Name, OwnerId = @OwnerId, Enabled = @Enabled, Blocked = @Blocked, AhEnabled = @AhEnabled, AutoHelperChId = @AutoHelperChId, MonitorChId = @MonitorChId, AnnounceChId = @AnnounceChId, ManagerRoleId = @ManagerRoleId WHERE ServerId = @ServerId", server);
+            await using var cnn = new NpgsqlConnection(ConnStr);
+            await cnn.ExecuteAsync($"UPDATE serveroptions SET serverId = {Convert.ToInt64(server.ServerId)}, name = @Name, ownerid = {Convert.ToInt64(server.OwnerId)}, enabled = @Enabled, blocked = @Blocked, ahenabled = @AhEnabled, autohelperchid = {Convert.ToInt64(server.AutoHelperChId)}, monitorchid = {Convert.ToInt64(server.MonitorChId)}, announcechid = {Convert.ToInt64(server.AnnounceChId)}, managerroleid = {Convert.ToInt64(server.ManagerRoleId)} WHERE ServerId = {Convert.ToInt64(server.ServerId)}", server);
             Program.Cache.UpdateServers();
         }
         catch (MySqlException e)
@@ -420,13 +417,13 @@ public static class DbManager
             throw;
         }
     }
-    
+        
     public static List<Server> GetServers()
     {
         try
         {
-            using var cnn = new MySqlConnection(ConnStr);
-            return cnn.Query<Server>("select * from ServerOptions").ToList();
+            using var cnn = new NpgsqlConnection(ConnStr);
+            return cnn.Query<Server>("select * from serveroptions").ToList();
         }
         catch (MySqlException e)
         {
