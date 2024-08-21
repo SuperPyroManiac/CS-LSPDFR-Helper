@@ -147,7 +147,7 @@ public static class DbManager
         try
         {
             await using var cnn = new NpgsqlConnection(ConnStr);
-            await cnn.ExecuteAsync("insert into plugin (name, dname, version, eaversion, id, state, plugintype, link, description, authorid, announce) VALUES (@Name, @DName, @Version, @EaVersion, @Id, @State, @PluginType, @Link, @Description, @AuthorId, @Announce)", plugin);
+            await cnn.ExecuteAsync($"insert into plugin (name, dname, version, eaversion, id, state, plugintype, link, description, authorid, announce) VALUES (@Name, @DName, @Version, @EaVersion, @Id, @State, @PluginType, @Link, @Description, {Convert.ToInt64(plugin.AuthorId)}, @Announce)", plugin);
             Program.Cache.UpdatePlugins(GetPlugins());
         }
         catch (MySqlException e)
@@ -163,7 +163,7 @@ public static class DbManager
         try
         {
             await using var cnn = new NpgsqlConnection(ConnStr);
-            await cnn.ExecuteAsync("UPDATE plugin SET dname = @DName, version = @Version, eaversion = @EaVersion, id = @Id, state = @State, plugintype = @PluginType, link = @Link, description = @Description, authorid = @AuthorId, announce = @Announce WHERE Name = (@Name)", plugin);
+            await cnn.ExecuteAsync($"UPDATE plugin SET dname = @DName, version = @Version, eaversion = @EaVersion, id = @Id, state = @State, plugintype = @PluginType, link = @Link, description = @Description, authorid = {Convert.ToInt64(plugin.AuthorId)}, announce = @Announce WHERE Name = (@Name)", plugin);
             Program.Cache.UpdatePlugins(GetPlugins());
         }
         catch (MySqlException e)
