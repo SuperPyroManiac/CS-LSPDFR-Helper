@@ -6,6 +6,7 @@ public record EnvironmentConfig(
     string DbUser,
     string DbPass,
     string DbName,
+    string SchemaName,
     ulong MainServ,
     ulong LogCh,
     ulong SLogCh,
