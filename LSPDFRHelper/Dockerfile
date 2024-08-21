@@ -6,7 +6,10 @@ RUN apt-get update && \
     apt-get install -y libc6
 
 RUN apt-get update && \
-    apt-get install -y libleptonica-dev
+    apt-get install -y libleptonica-dev 
+
+# Create a symbolic link (if needed)
+RUN ln -s /lib/x86_64-linux-gnu/libdl.so.2 /lib/x86_64-linux-gnu/libdl.so
 
 # Set the working directory inside the container
 WORKDIR /app
