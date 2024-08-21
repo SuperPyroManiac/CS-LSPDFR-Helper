@@ -1,4 +1,4 @@
-# Use an official .NET runtime as a parent image
+# Use an official .NET runtime as a parent image.
 FROM mcr.microsoft.com/dotnet/runtime:8.0 AS runtime
 
 # Install required libraries
