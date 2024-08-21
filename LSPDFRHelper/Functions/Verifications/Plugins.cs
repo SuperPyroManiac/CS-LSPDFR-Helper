@@ -14,9 +14,7 @@ public static class Plugins
     {
 	    var plugins = DbManager.GetPlugins();
         var logMsg = BasicEmbeds.Info($"__Plugin Updates__\r\n*These plugins have updated!*{BasicEmbeds.AddBlanks(45)}\r\n");
-        var annMsg = BasicEmbeds.Success($"__Plugin Updates__{BasicEmbeds.AddBlanks(50)}\r\n");
         var upCnt = 0;
-        var annCnt = 0;
         var skip = 0;
         
         foreach (var plugin in plugins)
@@ -35,7 +33,6 @@ public static class Plugins
                 if (onlineVersionSplit.Length == 2) onlineVersion += ".0.0";
                 if (onlineVersionSplit.Length == 3) onlineVersion += ".0";
                 if (plugin.Version == onlineVersion) continue;
-                if ( plugin.Announce ) annCnt++;
                 upCnt++;
 
                 if ( string.IsNullOrEmpty(plugin.Version) ) plugin.Version = "0";
@@ -50,16 +47,6 @@ public static class Plugins
                         $"> **New Version:** `{onlineVersion}`\r\n" +
                         $"> **Type:** `{plugin.PluginType}` | **State:** `{plugin.State}`\r\n" +
                         $"> **EA Version?:** `{ea}`\r\n";
-                }
-                
-                if ( annCnt < 11 && plugin.Announce )
-                {
-                    var ea = (!string.IsNullOrEmpty(plugin.EaVersion) && plugin.EaVersion != "0");
-                    annMsg.Description +=
-                        $"## __[{plugin.Name}]({plugin.Link})__\r\n" +
-                        $"> **Previous Version:** `{plugin.Version}`\r\n" +
-                        $"> **New Version:** `{onlineVersion}`\r\n" +
-                        $"> **Type:** `{plugin.PluginType}` | **State:** `{plugin.State}`\r\n";
                 }
                 
                 Console.WriteLine($"Updating Plugin {plugin.Name} from {plugin.Version} to {onlineVersion}");
@@ -101,9 +88,6 @@ public static class Plugins
 
         if ( upCnt == 0 ) return;
         await Logging.SendLog(logMsg);
-        if ( annCnt == 0 ) return;
-        var ch = await Program.BotSettings.BotLogs();
-        await ch.SendMessageAsync(annMsg);
     }
     
     public static async Task UpdateQuick()

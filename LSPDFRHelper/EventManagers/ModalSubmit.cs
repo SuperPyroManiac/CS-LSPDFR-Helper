@@ -47,17 +47,11 @@ public static class ModalSubmit
                         case "Plugin Id":
                             plugin.Id = int.Parse(e.Values["Plugin Id"]);
                             break;
-                        case "Plugin AuthorId":
-                            plugin.AuthorId = ulong.Parse(e.Values["Plugin AuthorId"]);
-                            break;
                         case "Plugin Link":
                             plugin.Link = e.Values["Plugin Link"];
                             break;
                         case "Plugin Notes":
                             plugin.Description = e.Values["Plugin Notes"];
-                            break;
-                        case "Plugin Announce":
-                            plugin.Announce = e.Values["Plugin Announce"].Equals("true", StringComparison.OrdinalIgnoreCase);
                             break;
                     }
                 
@@ -69,8 +63,6 @@ public static class ModalSubmit
                         $"**Ea Version:** {plugin.EaVersion}\r\n" +
                         $"**Id:** {plugin.Id}\r\n" +
                         $"**Link:** {plugin.Link}\r\n" +
-                        $"**Author Id:** {plugin.AuthorId}\r\n" +
-                        $"**Announce:** {plugin.Announce}\r\n" +
                         $"**Notes:**\r\n" +
                         $"```{plugin.Description}```\r\n" +
                         $"**Type:** {plugin.PluginType}\r\n" +

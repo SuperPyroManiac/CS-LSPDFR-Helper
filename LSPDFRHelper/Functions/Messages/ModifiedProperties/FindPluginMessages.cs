@@ -35,11 +35,10 @@ public abstract class FindPluginMessages : FindBaseMessages
         var pluginEaVersion = $"**Ea Version:** {newPlugin.EaVersion}\r\n";
         var pluginId = $"**Id:** {newPlugin.Id}\r\n";
         var pluginLink = $"**Link:** {newPlugin.Link}\r\n";
-        var plugAnnounce = $"**Announce:** {newPlugin.Announce}";
         var pluginDescription = $"**Notes:** \r\n```{newPlugin.Description}```\r\n";
         var pluginType = $"**Type:** {newPlugin.PluginType}\r\n";
         var pluginState = $"**State:** {newPlugin.State}\r\n";
-        var pluginPropsList = pluginDName + pluginVersion + pluginEaVersion + pluginId + plugAnnounce + pluginDescription + pluginLink + pluginType + pluginState;
+        var pluginPropsList = pluginDName + pluginVersion + pluginEaVersion + pluginId + pluginDescription + pluginLink + pluginType + pluginState;
         
         DiscordEmbedBuilder embed = null;
         switch (operation)
@@ -59,7 +58,6 @@ public abstract class FindPluginMessages : FindBaseMessages
                     new ModifiedProperty("Ea Version", oldPlugin.EaVersion, newPlugin.EaVersion, pluginEaVersion),
                     new ModifiedProperty("Id", oldPlugin.Id.ToString(), newPlugin.Id.ToString(), pluginId),
                     new ModifiedProperty("Link", oldPlugin.Link, newPlugin.Link, pluginLink),
-                    new ModifiedProperty("Announce", oldPlugin.Announce.ToString(), newPlugin.Announce.ToString(), plugAnnounce),
                     new ModifiedProperty("Notes", oldPlugin.Description, newPlugin.Description, pluginDescription),
                     new ModifiedProperty("Type", oldPlugin.PluginType.ToString(), newPlugin.PluginType.ToString(), pluginType),
                     new ModifiedProperty("State", oldPlugin.State.ToString(), newPlugin.State.ToString(), pluginState)
