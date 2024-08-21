@@ -1,58 +1,73 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-
 name: .NET CI/CD Pipeline for the main branch
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    push:
+        branches: [ "main" ]
+    pull_request:
+        branches: [ "main" ]
 
 jobs:
-  build:
+    build:
+        runs-on: Main
+        
+        steps:
+            - uses: actions/checkout@v3
 
-    runs-on: Main
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v3
+              with:
+                  dotnet-version: 8.0.x
 
-    steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 8.0.x
-    - name: Restore dependencies
-      env: 
-        version: 1
-      run: dotnet restore
-    - name: Build
-      env: 
-        version: 1
-      run: dotnet build --no-restore
-    - name: Test
-      env: 
-        version: 1
-      run: dotnet test --no-build --verbosity normal
+            - name: Restore dependencies
+              run: dotnet restore
 
-  deploy:
-    if: github.ref == 'refs/heads/main' # this prevents that the "deploy" job is executed during Pull Request checks
-    runs-on: Main
-    needs: build
+            - name: Build
+              run: dotnet build --no-restore
 
-    strategy:
-      matrix:
-        dotnet: ["8.0.x"]
+            - name: Test
+              run: dotnet test --no-build --verbosity normal
     
-    steps:
-    - name: Publish
-      env: 
-        version: 1
-      run: dotnet publish -c Release -o /LSPDFRHelperMain
+    deploy:
+        if: github.ref == 'refs/heads/main' # this prevents the "deploy" job from executing during Pull Request checks
+        runs-on: Main
+        needs: build
+        
+        steps:
+            - name: Publish
+              run: dotnet publish -c Release -o /home/github/LSPDFRHelperMain
 
-    - name: Store build info in file
-      run: |
-        BRANCH_NAME=${GITHUB_REF#refs/heads/}
-        echo "Current Branch: $BRANCH_NAME | Commit Hash: $GITHUB_SHA" > /LSPDFRHelperMain/build_info.txt
-      continue-on-error: true
+            - name: Store build info in file
+              run: |
+                  BRANCH_NAME=${GITHUB_REF#refs/heads/}
+                  echo "Current Branch: $BRANCH_NAME | Commit Hash: $GITHUB_SHA" > /home/github/LSPDFRHelperMain/build_info.txt
+              continue-on-error: true
 
-    - name: Deploy app
-      run: ping
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Log in to Docker Hub
+              uses: docker/login-action@v3
+              with:
+                  username: ${{ secrets.DOCKER_USERNAME }}
+                  password: ${{ secrets.DOCKER_PASSWORD }}
+
+            - name: Build Docker image
+              run: docker build -t superpyromaniac/lspdfrhelpermain:latest /home/github/LSPDFRHelperMain
+
+            - name: Push Docker image to Docker Hub
+              run: docker push superpyromaniac/lspdfrhelpermain:latest
+
+            - name: Deploy app
+              run: |
+                  # Pull the latest image
+                  docker pull superpyromaniac/lspdfrhelpermain:latest
+                  
+                  # Stop and remove the old container
+                  docker stop helpermain || true
+                  docker rm helpermain || true
+                  
+                  # Run the new container
+                  docker run -d --name helpermain superpyromaniac/lspdfrhelpermain:latest
+                  
+                  # Optionally, clean up old images
+                  docker image prune -f

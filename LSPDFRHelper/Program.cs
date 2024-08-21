@@ -24,8 +24,8 @@ public class Program
     public static bool IsStarted { get; set; }
     public static Cache Cache = new();
     public static Settings BotSettings = new();
-    
-    static async Task Main()
+
+    private static async Task Main()
     {
         //Startup API Server
         string[] prefixes = { "http://localhost:8055/", "http://www.pyrosfun.com:8055/" };
@@ -33,21 +33,21 @@ public class Program
         _ = apiServ.Start();
         
         //Start Bot
-        var builder = DiscordClientBuilder.CreateDefault(BotSettings.Env.BotToken, DiscordIntents.All);
-        builder.ConfigureLogging(x => x.AddConsole().SetMinimumLevel(LogLevel.Error));
-
-        builder.ConfigureEventHandlers(
-            e => e
-                .HandleGuildDownloadCompleted(Startup)
-                .HandleModalSubmitted(HandleModalSubmit)
-                .HandleComponentInteractionCreated(HandleInteraction)
-                .HandleMessageCreated(MessageSentEvent)
-                .HandleGuildMemberAdded(JoinEvent)
-                .HandleGuildMemberRemoved(LeaveEvent)
-                .HandleGuildCreated(GuildJoinEvent)
-                .HandleGuildDeleted(GuildLeaveEvent));
-            
-        Client = builder.Build();
+         var builder = DiscordClientBuilder.CreateDefault(BotSettings.Env.BotToken, DiscordIntents.All);
+         builder.ConfigureLogging(x => x.AddConsole().SetMinimumLevel(LogLevel.Error));
+        
+         builder.ConfigureEventHandlers(
+             e => e
+                 .HandleGuildDownloadCompleted(Startup)
+                 .HandleModalSubmitted(HandleModalSubmit)
+                 .HandleComponentInteractionCreated(HandleInteraction)
+                 .HandleMessageCreated(MessageSentEvent)
+                 .HandleGuildMemberAdded(JoinEvent)
+                 .HandleGuildMemberRemoved(LeaveEvent)
+                 .HandleGuildCreated(GuildJoinEvent)
+                 .HandleGuildDeleted(GuildLeaveEvent));
+             
+         Client = builder.Build();
         
         new ServiceCollection().AddLogging(x => x.AddConsole()).BuildServiceProvider();
 

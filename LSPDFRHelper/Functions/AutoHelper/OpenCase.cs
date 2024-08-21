@@ -22,7 +22,7 @@ public class OpenCase
             $"\r\n> - asiloader.log" +
             //$"\r\n> - ScriptHookVDotNet.log" +
             $"\r\n> - .xml and .meta files" +
-            //$"\r\n> - Screenshots of .png or .jpg - BETA" +
+            //$"\r\n> - Screenshots of .png or .jpg" +
             $"\r\n\r\n-# Do not abuse the request help button. Only use it if you have tried all the steps provided and have exhausted your own options." +
             $"\r\n\r\n__This bot is maintained by https://dsc.PyrosFun.com__", null));
         caseMsg.AddComponents(

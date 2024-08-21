@@ -3,7 +3,7 @@ using System.Xml.Linq;
 
 namespace LSPDFRHelper.Functions.Processors.XML;
 
-public class XmlValidator
+public class XMLValidator
 {
     public static async Task<string> Run(string path)
     {

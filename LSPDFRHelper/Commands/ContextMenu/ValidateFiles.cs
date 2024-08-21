@@ -165,7 +165,7 @@ public class ValidateFiles
 
         if ( attach.FileName.EndsWith(".xml") || attach.FileName.EndsWith(".meta") )
         {
-            var xmlData = await XmlValidator.Run(attach.Url);
+            var xmlData = await XMLValidator.Run(attach.Url);
             await ctx.RespondAsync(BasicEmbeds.Ts($"## __XML Validator__{BasicEmbeds.AddBlanks(35)}", null).AddField(attach.FileName, $">>> ```xml\r\n{xmlData}\r\n```"));
         }
     }

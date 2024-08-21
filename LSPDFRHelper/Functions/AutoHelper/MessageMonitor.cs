@@ -5,6 +5,7 @@ using LSPDFRHelper.CustomTypes.Enums;
 using LSPDFRHelper.Functions.Messages;
 using LSPDFRHelper.Functions.Processors.ASI;
 using LSPDFRHelper.Functions.Processors.ELS;
+using LSPDFRHelper.Functions.Processors.IMAGES;
 using LSPDFRHelper.Functions.Processors.RPH;
 using LSPDFRHelper.Functions.Processors.XML;
 
@@ -72,9 +73,11 @@ public class MessageMonitor
             if ( attach.FileName!.EndsWith(".xml") || attach.FileName.EndsWith(".meta") )
             {
                 var response = BasicEmbeds.Public($"## __AutoHelper XML Info__{BasicEmbeds.AddBlanks(35)}");
-                response.AddField(attach.FileName, $"```xml\r\n{await XmlValidator.Run(attach.Url)}\r\n```");
+                response.AddField(attach.FileName, $"```xml\r\n{await XMLValidator.Run(attach.Url)}\r\n```");
                 await ctx.Message.RespondAsync(response);
             }
+            
+            if (attach.FileName.EndsWith(".png") || attach.FileName.EndsWith(".jpg")) await IMGProcessor.ProcessImage(attach, ctx);
         }
     }
 }

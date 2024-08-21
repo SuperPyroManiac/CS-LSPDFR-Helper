@@ -7,7 +7,7 @@ public class CaseAutoComplete : IAutoCompleteProvider
 {
     public ValueTask<IReadOnlyDictionary<string, object>> AutoCompleteAsync(AutoCompleteContext ctx)
     {
-        Dictionary<string, object> cases = new Dictionary<string, object>();
+        var cases = new Dictionary<string, object>();
         foreach (var acase in Program.Cache.GetCases().Where(c => !c.Solved))
         {
             if (acase.ServerId != ctx.Guild!.Id) continue;
