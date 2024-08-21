@@ -1,6 +1,4 @@
-# Use an official .NET runtime as a parent image.
-FROM mcr.microsoft.com/dotnet/runtime:8.0 AS runtime
-
+FROM debian:stable-slim
 # Install required libraries
 RUN apt-get update && \
     apt-get install -y libc6 libleptonica-dev libtesseract-dev tesseract-ocr
