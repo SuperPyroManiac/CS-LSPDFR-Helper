@@ -224,10 +224,8 @@ public static class CompInteraction
                         "Plugin Version" => usercache.Plugin.Version,
                         "Plugin EAVersion" => usercache.Plugin.EaVersion,
                         "Plugin Id" => usercache.Plugin.Id.ToString(),
-                        "Plugin AuthorId" => usercache.Plugin.AuthorId.ToString(),
                         "Plugin Link" => usercache.Plugin.Link,
                         "Plugin Notes" => usercache.Plugin.Description,
-                        "Plugin Announce" => usercache.Plugin.Announce.ToString(),
                         _ => throw new ArgumentOutOfRangeException()
                     };
 

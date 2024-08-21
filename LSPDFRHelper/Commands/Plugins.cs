@@ -60,8 +60,6 @@ public class Plugins
             new("Id", "Plugin Id"),
             new("Link", "Plugin Link"),
             new("Notes", "Plugin Notes"),
-            new("Author Id", "Plugin AuthorId"),
-            new("Announce", "Plugin Announce")
         };
         
         var embed = BasicEmbeds.Info(
@@ -71,8 +69,6 @@ public class Plugins
             $"**Ea Version:** {plugin.EaVersion}\r\n" +
             $"**Id:** {plugin.Id}\r\n" +
             $"**Link:** {plugin.Link}\r\n" +
-            $"**Author Id:** {plugin.AuthorId}\r\n" +
-            $"**Announce:** {plugin.Announce}\r\n" +
             $"**Notes:**\r\n" +
             $"```{plugin.Description}```\r\n" +
             $"**Type:** {plugin.PluginType}\r\n" +
@@ -147,8 +143,6 @@ public class Plugins
             new("Id", "Plugin Id"),
             new("Link", "Plugin Link"),
             new("Notes", "Plugin Notes"),
-            new("Author Id", "Plugin AuthorId"),
-            new("Announce", "Plugin Announce")
         };
         
         var embed = BasicEmbeds.Info(
@@ -158,8 +152,6 @@ public class Plugins
             $"**Ea Version:** {plugin.EaVersion}\r\n" +
             $"**Id:** {plugin.Id}\r\n" +
             $"**Link:** {plugin.Link}\r\n" +
-            $"**Author Id:** {plugin.AuthorId}\r\n" +
-            $"**Announce:** {plugin.Announce}\r\n" +
             $"**Notes:**\r\n" +
             $"```{plugin.Description}```\r\n" +
             $"**Type:** {plugin.PluginType}\r\n" +
