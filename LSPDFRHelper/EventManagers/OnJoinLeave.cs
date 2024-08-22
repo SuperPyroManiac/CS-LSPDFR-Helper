@@ -59,8 +59,8 @@ public static class OnJoinLeave
         try
         {
             while ( !Program.IsStarted ) await Task.Delay(500); 
-            //var owner = await args.Guild.GetGuildOwnerAsync();
-            var owner = args.Guild.Owner;
+            var owner = await args.Guild.GetGuildOwnerAsync();
+            //var owner = args.Guild.Owner;
             await Logging.ReportPubLog(BasicEmbeds.Info($"__Added To Server__\r\n>>> **Name:** {args.Guild.Name}\r\n**ID:** {args.Guild.Id}\r\n**Members:** {args.Guild.Members.Count}\r\n**Owner:** {owner.Id} ({owner.Username})"));
             await Servers.AddMissing();
             await Servers.RemoveMissing();
@@ -84,8 +84,8 @@ public static class OnJoinLeave
             {
                 await CloseCase.Close(ac, true);
             }
-            //var owner = await args.Guild.GetGuildOwnerAsync();
-            var owner = args.Guild.Owner;
+            var owner = await args.Guild.GetGuildOwnerAsync();
+            //var owner = args.Guild.Owner;
             await Logging.ReportPubLog(BasicEmbeds.Info($"__Removed From Server__\r\n>>> **Name:** {args.Guild.Name}\r\n**ID:** {args.Guild.Id}\r\n**Members:** {args.Guild.Members.Count}\r\n**Owner:** {owner.Id} ({owner.Username})"));
             await Servers.AddMissing();
             await Servers.RemoveMissing();

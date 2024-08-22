@@ -35,6 +35,7 @@ public class Program
         //Start Bot
          var builder = DiscordClientBuilder.CreateDefault(BotSettings.Env.BotToken, DiscordIntents.All);
          builder.ConfigureLogging(x => x.AddConsole().SetMinimumLevel(LogLevel.Error));
+         new ServiceCollection().AddLogging(x => x.AddConsole()).BuildServiceProvider();
         
          builder.ConfigureEventHandlers(
              e => e
@@ -46,34 +47,27 @@ public class Program
                  .HandleGuildMemberRemoved(LeaveEvent)
                  .HandleGuildCreated(GuildJoinEvent)
                  .HandleGuildDeleted(GuildLeaveEvent));
-             
+         
+         builder.UseInteractivity(new InteractivityConfiguration());
+         var cmdConfig = new CommandsConfiguration();
+         cmdConfig.UseDefaultCommandErrorHandler = false;
+         builder.UseCommands(
+             extension =>
+             {
+             extension.AddCommands(typeof(Plugins), BotSettings.Env.MainServ);
+             extension.AddCommands(typeof(Errors), BotSettings.Env.MainServ);
+             extension.AddCommands(typeof(EditUser), BotSettings.Env.MainServ);
+             extension.AddCommands(typeof(ForceVerification), BotSettings.Env.MainServ);
+             extension.AddCommands(typeof(Setup));
+             extension.AddCommands(typeof(Cases));
+             extension.AddCommands(typeof(ToggleAh));
+             extension.AddCommands(typeof(CheckPlugin));
+             extension.AddCommands(typeof(ValidateFiles));
+             }, cmdConfig);
          Client = builder.Build();
         
         new ServiceCollection().AddLogging(x => x.AddConsole()).BuildServiceProvider();
 
-        var cc = new CommandsConfiguration();
-        cc.UseDefaultCommandErrorHandler = false;
-        var commandsExtension = Client.UseCommands(cc);
-        
-        //Special Commands
-        commandsExtension.AddCommands(typeof(Plugins), BotSettings.Env.MainServ);
-        commandsExtension.AddCommands(typeof(Errors), BotSettings.Env.MainServ);
-        commandsExtension.AddCommands(typeof(EditUser), BotSettings.Env.MainServ);
-        commandsExtension.AddCommands(typeof(ForceVerification), BotSettings.Env.MainServ);
-        
-        //Public Commands
-        commandsExtension.AddCommands(typeof(Setup));
-        commandsExtension.AddCommands(typeof(Cases));
-        commandsExtension.AddCommands(typeof(ToggleAh));
-        commandsExtension.AddCommands(typeof(CheckPlugin));
-        commandsExtension.AddCommands(typeof(ValidateFiles));
-
-        //WIP Commands
-        //commandsExtension.AddCommands(typeof(EditServer), BotSettings.Env.MainServ);
-        //commandsExtension.AddCommands(typeof(ForwardToAh), BotSettings.Env.MainServ);
-        
-        
-        Client.UseInteractivity(new InteractivityConfiguration());
         await Client.ConnectAsync(new DiscordActivity("with fire!", DiscordActivityType.Playing), DiscordUserStatus.DoNotDisturb);
 
         await Task.Delay(-1);
