@@ -1,5 +1,7 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Commands;
+using DSharpPlus.Commands.Processors.TextCommands;
+using DSharpPlus.Commands.Processors.TextCommands.Parsing;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
@@ -54,15 +56,7 @@ public class Program
          builder.UseCommands(
              extension =>
              {
-             extension.AddCommands(typeof(Plugins), BotSettings.Env.MainServ);
-             extension.AddCommands(typeof(Errors), BotSettings.Env.MainServ);
-             extension.AddCommands(typeof(EditUser), BotSettings.Env.MainServ);
-             extension.AddCommands(typeof(ForceVerification), BotSettings.Env.MainServ);
-             extension.AddCommands(typeof(Setup));
-             extension.AddCommands(typeof(Cases));
-             extension.AddCommands(typeof(ToggleAh));
-             extension.AddCommands(typeof(CheckPlugin));
-             extension.AddCommands(typeof(ValidateFiles));
+             extension.AddCommands(typeof(Program).Assembly);
              }, cmdConfig);
          Client = builder.Build();
         
