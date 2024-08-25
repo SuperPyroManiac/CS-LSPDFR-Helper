@@ -119,7 +119,6 @@ public static class RPHSpecialErrors
                     var plugin = Program.Cache.GetPlugin(capture.Value);
                     if (plugin == null) continue;
                     exErr.PluginList.Add(plugin);
-                    Console.WriteLine(plugin.Name);
                 }
 
         if ( exErr.PluginList.Count > 0 )
