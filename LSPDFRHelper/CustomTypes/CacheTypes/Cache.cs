@@ -6,7 +6,7 @@ namespace LSPDFRHelper.CustomTypes.CacheTypes;
 
 public class Cache
 {
-    internal Dictionary<ulong, Server> ServerCacheDict = new();
+    internal ConcurrentDictionary<ulong, Server> ServerCacheDict = new();
     private Dictionary<ulong, ProcessCache> _processCacheDict = new();
     private Dictionary<string, InteractionCache> _interactionCacheDict = new();
     private readonly ConcurrentDictionary<ulong, User> _userCacheDict = new();
