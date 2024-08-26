@@ -142,7 +142,7 @@ public class RphProcessor : SharedData
         var update = Log.Errors.Any(x => x.Level == Level.CRITICAL);
         foreach (var error in Log.Errors)
         {
-            if ( error.Solution.Length >= 1023 ) error.Solution = "ERROR: The solutions text was too big to display here! Please report this to SuperPyroManiac.";
+            if ( error.Solution.Length >= 935 ) error.Solution += "\r\nSolution Length too long to continue! Fix what is shown then try again!";
             if (embed.Fields.Count == 20)
             {
                 embed.AddField("___```Too Much``` Overflow:___",
