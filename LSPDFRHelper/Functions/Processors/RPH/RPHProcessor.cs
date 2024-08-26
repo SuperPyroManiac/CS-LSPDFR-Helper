@@ -142,7 +142,12 @@ public class RphProcessor : SharedData
         var update = Log.Errors.Any(x => x.Level == Level.CRITICAL);
         foreach (var error in Log.Errors)
         {
-            if ( error.Solution.Length >= 900 ) error.Solution += "\r\nSolution Length too long to continue! Fix what is shown then try again!";
+            if ( error.Solution.Length >= 935 )
+            {
+                var newErr = error.Solution[..935];
+                error.Solution = newErr += "\r\n**Solution Length too long to continue!**";
+            }
+
             if (embed.Fields.Count == 20)
             {
                 embed.AddField("___```Too Much``` Overflow:___",
