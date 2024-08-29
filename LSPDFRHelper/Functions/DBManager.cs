@@ -9,7 +9,7 @@ namespace LSPDFRHelper.Functions;
 
 public static class DbManager
 {
-    private static readonly string ConnStr = $"Host={Program.BotSettings.Env.DbServer};User ID={Program.BotSettings.Env.DbUser};Password={Program.BotSettings.Env.DbPass};Database={Program.BotSettings.Env.DbName};SearchPath={Program.BotSettings.Env.SchemaName}";
+    private static readonly string ConnStr = $"Host={Program.BotSettings.Env.DbServer};User ID={Program.BotSettings.Env.DbUser};Password={Program.BotSettings.Env.DbPass};Database={Program.BotSettings.Env.DbName};SearchPath={Program.BotSettings.Env.SchemaName};Include Error Detail=True";
         
     // Case Functions
     public static List<AutoCase> GetCases()
