@@ -10,9 +10,9 @@ public static class Timer
         timer.Elapsed += ShortTimer;
         timer.Start();
         
-        var longTimer = new System.Timers.Timer(TimeSpan.FromHours(5));
-        longTimer.Elapsed += LongTimer;
-        longTimer.Start();
+//        var longTimer = new System.Timers.Timer(TimeSpan.FromHours(5));
+//        longTimer.Elapsed += LongTimer;
+//        longTimer.Start();
     }
 
     private static async void ShortTimer(object _, ElapsedEventArgs e)
@@ -22,8 +22,8 @@ public static class Timer
         await Verifications.Plugins.UpdateQuick();
     }
     
-    private static async void LongTimer(object _, ElapsedEventArgs e)
-    {
-        await Verifications.Plugins.UpdateAll();
-    }
+//    private static async void LongTimer(object _, ElapsedEventArgs e)
+//    {
+//        await Verifications.Plugins.UpdateAll();
+//    }
 }
