@@ -71,7 +71,7 @@ public class Program
     {
         //Startup Tasks
         await Functions.Startup.Init();
-        Timer.Start();
+        //TODO: Timer.Start();
         
         //Allow Events
         IsStarted = true;
