@@ -39,16 +39,16 @@ public class Program
          builder.ConfigureLogging(x => x.AddConsole().SetMinimumLevel(LogLevel.Error));
          new ServiceCollection().AddLogging(x => x.AddConsole()).BuildServiceProvider();
         
-         builder.ConfigureEventHandlers(
-             e => e
-                 .HandleGuildDownloadCompleted(Startup)
-                 .HandleModalSubmitted(HandleModalSubmit)
-                 .HandleComponentInteractionCreated(HandleInteraction)
-                 .HandleMessageCreated(MessageSentEvent)
-                 .HandleGuildMemberAdded(JoinEvent)
-                 .HandleGuildMemberRemoved(LeaveEvent)
-                 .HandleGuildCreated(GuildJoinEvent)
-                 .HandleGuildDeleted(GuildLeaveEvent));
+         // builder.ConfigureEventHandlers(
+         //     e => e
+         //         .HandleGuildDownloadCompleted(Startup)
+         //         .HandleModalSubmitted(HandleModalSubmit)
+         //         .HandleComponentInteractionCreated(HandleInteraction)
+         //         .HandleMessageCreated(MessageSentEvent)
+         //         .HandleGuildMemberAdded(JoinEvent)
+         //         .HandleGuildMemberRemoved(LeaveEvent)
+         //         .HandleGuildCreated(GuildJoinEvent)
+         //         .HandleGuildDeleted(GuildLeaveEvent));
          
          builder.UseInteractivity(new InteractivityConfiguration());
          var cmdConfig = new CommandsConfiguration();
