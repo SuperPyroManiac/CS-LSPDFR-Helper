@@ -41,14 +41,14 @@ public class Program
 
          builder.ConfigureEventHandlers(
              e => e
-                 .HandleGuildDownloadCompleted(Startup));
-                 // .HandleModalSubmitted(HandleModalSubmit)
-                 // .HandleComponentInteractionCreated(HandleInteraction)
-                 // .HandleMessageCreated(MessageSentEvent)
-                 // .HandleGuildMemberAdded(JoinEvent)
-                 // .HandleGuildMemberRemoved(LeaveEvent)
-                 // .HandleGuildCreated(GuildJoinEvent)
-                 // .HandleGuildDeleted(GuildLeaveEvent));
+                 .HandleGuildDownloadCompleted(Startup)
+                 .HandleModalSubmitted(HandleModalSubmit)
+                 .HandleComponentInteractionCreated(HandleInteraction)
+                 .HandleMessageCreated(MessageSentEvent)
+                 .HandleGuildMemberAdded(JoinEvent)
+                 .HandleGuildMemberRemoved(LeaveEvent)
+                 .HandleGuildCreated(GuildJoinEvent)
+                 .HandleGuildDeleted(GuildLeaveEvent));
          
          builder.UseInteractivity(new InteractivityConfiguration());
          var cmdConfig = new CommandsConfiguration();
@@ -71,7 +71,7 @@ public class Program
     {
         //Startup Tasks
         await Functions.Startup.Init();
-        //TODO: Timer.Start();
+        Timer.Start();
         
         //Allow Events
         IsStarted = true;
