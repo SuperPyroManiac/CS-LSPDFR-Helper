@@ -334,7 +334,7 @@ public static class DbManager
         {
             Console.WriteLine(e);
             await Logging.ErrLog($"SQL Issue: {e}");
-            throw;
+            //TODO: throw;
         }
     }
         
