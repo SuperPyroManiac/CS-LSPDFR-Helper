@@ -30,9 +30,9 @@ public class Program
     private static async Task Main()
     {
         //Startup API Server
-        string[] prefixes = { "http://localhost:8055/", "http://www.pyrosfun.com:8055/" };
-        var apiServ = new RemoteApi(prefixes);
-        _ = apiServ.Start();
+        // string[] prefixes = { "http://localhost:8055/", "http://www.pyrosfun.com:8055/" };
+        // var apiServ = new RemoteApi(prefixes);
+        // _ = apiServ.Start();
         
         //Start Bot
          var builder = DiscordClientBuilder.CreateDefault(BotSettings.Env.BotToken, DiscordIntents.All);
@@ -41,14 +41,14 @@ public class Program
 
          builder.ConfigureEventHandlers(
              e => e
-                 .HandleGuildDownloadCompleted(Startup)
-                 .HandleModalSubmitted(HandleModalSubmit)
-                 .HandleComponentInteractionCreated(HandleInteraction)
-                 .HandleMessageCreated(MessageSentEvent)
-                 .HandleGuildMemberAdded(JoinEvent)
-                 .HandleGuildMemberRemoved(LeaveEvent)
-                 .HandleGuildCreated(GuildJoinEvent)
-                 .HandleGuildDeleted(GuildLeaveEvent));
+                 .HandleGuildDownloadCompleted(Startup));
+                 // .HandleModalSubmitted(HandleModalSubmit)
+                 // .HandleComponentInteractionCreated(HandleInteraction)
+                 // .HandleMessageCreated(MessageSentEvent)
+                 // .HandleGuildMemberAdded(JoinEvent)
+                 // .HandleGuildMemberRemoved(LeaveEvent)
+                 // .HandleGuildCreated(GuildJoinEvent)
+                 // .HandleGuildDeleted(GuildLeaveEvent));
          
          builder.UseInteractivity(new InteractivityConfiguration());
          var cmdConfig = new CommandsConfiguration();
@@ -67,15 +67,16 @@ public class Program
         await Task.Delay(-1);
     }
     
-    private static async Task Startup(DiscordClient sender, GuildDownloadCompletedEventArgs args)
+    private static Task Startup(DiscordClient sender, GuildDownloadCompletedEventArgs args)
     {
-        //Startup Tasks
-        await Functions.Startup.Init();
-        Timer.Start();
-        
-        //Allow Events
-        IsStarted = true;
-
-        Console.WriteLine("Successfully loaded all modules!");
+        return Task.CompletedTask;
+        // //Startup Tasks
+        // await Functions.Startup.Init();
+        // Timer.Start();
+        //
+        // //Allow Events
+        // IsStarted = true;
+        //
+        // Console.WriteLine("Successfully loaded all modules!");
     }
 }
