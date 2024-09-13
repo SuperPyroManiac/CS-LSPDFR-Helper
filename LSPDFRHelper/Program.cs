@@ -10,6 +10,7 @@ using LSPDFRHelper.Commands;
 using LSPDFRHelper.Commands.ContextMenu;
 using LSPDFRHelper.CustomTypes.CacheTypes;
 using LSPDFRHelper.Functions;
+using LSPDFRHelper.Functions.Messages;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using static LSPDFRHelper.EventManagers.ModalSubmit;
@@ -67,16 +68,17 @@ public class Program
         await Task.Delay(-1);
     }
     
-    private static Task Startup(DiscordClient sender, GuildDownloadCompletedEventArgs args)
+    private static async Task Startup(DiscordClient sender, GuildDownloadCompletedEventArgs args)
     {
-        return Task.CompletedTask;
-        // //Startup Tasks
+        var ch = await BotSettings.BotLogs();
+        await new DiscordMessageBuilder().AddEmbed(BasicEmbeds.Success("Bot Loaded! This should only appear once!!!")).SendAsync(ch);
+        //Startup Tasks
         // await Functions.Startup.Init();
         // Timer.Start();
         //
         // //Allow Events
         // IsStarted = true;
-        //
-        // Console.WriteLine("Successfully loaded all modules!");
+
+        Console.WriteLine("Successfully loaded all modules!");
     }
 }
