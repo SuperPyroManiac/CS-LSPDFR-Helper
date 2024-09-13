@@ -52,13 +52,13 @@ public class Program
                  // .HandleGuildDeleted(GuildLeaveEvent));
          
          builder.UseInteractivity(new InteractivityConfiguration());
-         var cmdConfig = new CommandsConfiguration();
-         cmdConfig.UseDefaultCommandErrorHandler = false;
-         builder.UseCommands(
-             extension =>
-             {
-             extension.AddCommands(typeof(Program).Assembly);
-             }, cmdConfig);
+         // var cmdConfig = new CommandsConfiguration();
+         // cmdConfig.UseDefaultCommandErrorHandler = false;
+         // builder.UseCommands(
+         //     extension =>
+         //     {
+         //     extension.AddCommands(typeof(Program).Assembly);
+         //     }, cmdConfig);
          Client = builder.Build();
         
         new ServiceCollection().AddLogging(x => x.AddConsole()).BuildServiceProvider();
