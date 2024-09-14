@@ -60,9 +60,7 @@ public class Program
          //     extension.AddCommands(typeof(Program).Assembly);
          //     }, cmdConfig);
          Client = builder.Build();
-        
-        new ServiceCollection().AddLogging(x => x.AddConsole()).BuildServiceProvider();
-
+         
         await Client.ConnectAsync(new DiscordActivity("with fire!", DiscordActivityType.Playing), DiscordUserStatus.DoNotDisturb);
 
         await Task.Delay(-1);
