@@ -1,15 +1,10 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Commands;
-using DSharpPlus.Commands.Processors.TextCommands;
-using DSharpPlus.Commands.Processors.TextCommands.Parsing;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
-using LSPDFRHelper.Commands;
-using LSPDFRHelper.Commands.ContextMenu;
 using LSPDFRHelper.CustomTypes.CacheTypes;
-using LSPDFRHelper.Functions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using static LSPDFRHelper.EventManagers.ModalSubmit;
@@ -30,9 +25,9 @@ public class Program
     private static async Task Main()
     {
         //Startup API Server
-        string[] prefixes = { "http://localhost:8055/", "http://www.pyrosfun.com:8055/" };
-        var apiServ = new RemoteApi(prefixes);
-        _ = apiServ.Start();
+        // string[] prefixes = { "http://localhost:8055/", "http://www.pyrosfun.com:8055/" };
+        // var apiServ = new RemoteApi(prefixes);
+        // _ = apiServ.Start();
         
         //Start Bot
          var builder = DiscordClientBuilder.CreateDefault(BotSettings.Env.BotToken, DiscordIntents.All);

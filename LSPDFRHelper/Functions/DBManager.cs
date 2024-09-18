@@ -2,7 +2,6 @@ using Dapper;
 using LSPDFRHelper.CustomTypes.Enums;
 using LSPDFRHelper.CustomTypes.MainTypes;
 using LSPDFRHelper.Functions.Messages;
-using MySqlConnector;
 using Npgsql;
 
 namespace LSPDFRHelper.Functions;
