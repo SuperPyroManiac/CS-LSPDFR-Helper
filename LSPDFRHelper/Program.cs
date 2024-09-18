@@ -1,16 +1,10 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Commands;
-using DSharpPlus.Commands.Processors.TextCommands;
-using DSharpPlus.Commands.Processors.TextCommands.Parsing;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
-using LSPDFRHelper.Commands;
-using LSPDFRHelper.Commands.ContextMenu;
 using LSPDFRHelper.CustomTypes.CacheTypes;
-using LSPDFRHelper.Functions;
-using LSPDFRHelper.Functions.Messages;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using static LSPDFRHelper.EventManagers.ModalSubmit;
@@ -42,25 +36,27 @@ public class Program
 
          builder.ConfigureEventHandlers(
              e => e
-                 .HandleGuildDownloadCompleted(Startup));
-                 // .HandleModalSubmitted(HandleModalSubmit)
-                 // .HandleComponentInteractionCreated(HandleInteraction)
-                 // .HandleMessageCreated(MessageSentEvent)
-                 // .HandleGuildMemberAdded(JoinEvent)
-                 // .HandleGuildMemberRemoved(LeaveEvent)
-                 // .HandleGuildCreated(GuildJoinEvent)
-                 // .HandleGuildDeleted(GuildLeaveEvent));
+                 .HandleGuildDownloadCompleted(Startup)
+                 .HandleModalSubmitted(HandleModalSubmit)
+                 .HandleComponentInteractionCreated(HandleInteraction)
+                 .HandleMessageCreated(MessageSentEvent)
+                 .HandleGuildMemberAdded(JoinEvent)
+                 .HandleGuildMemberRemoved(LeaveEvent)
+                 .HandleGuildCreated(GuildJoinEvent)
+                 .HandleGuildDeleted(GuildLeaveEvent));
          
          builder.UseInteractivity(new InteractivityConfiguration());
-         // var cmdConfig = new CommandsConfiguration();
-         // cmdConfig.UseDefaultCommandErrorHandler = false;
-         // builder.UseCommands(
-         //     extension =>
-         //     {
-         //     extension.AddCommands(typeof(Program).Assembly);
-         //     }, cmdConfig);
+         var cmdConfig = new CommandsConfiguration();
+         cmdConfig.UseDefaultCommandErrorHandler = false;
+         builder.UseCommands(
+             extension =>
+             {
+             extension.AddCommands(typeof(Program).Assembly);
+             }, cmdConfig);
          Client = builder.Build();
-         
+        
+        new ServiceCollection().AddLogging(x => x.AddConsole()).BuildServiceProvider();
+
         await Client.ConnectAsync(new DiscordActivity("with fire!", DiscordActivityType.Playing), DiscordUserStatus.DoNotDisturb);
 
         await Task.Delay(-1);
@@ -68,14 +64,12 @@ public class Program
     
     private static async Task Startup(DiscordClient sender, GuildDownloadCompletedEventArgs args)
     {
-        var ch = await BotSettings.BotLogs();
-        await new DiscordMessageBuilder().AddEmbed(BasicEmbeds.Success("Bot Loaded! This should only appear once!!!")).SendAsync(ch);
         //Startup Tasks
-        // await Functions.Startup.Init();
-        // Timer.Start();
-        //
-        // //Allow Events
-        // IsStarted = true;
+        await Functions.Startup.Init();
+        Timer.Start();
+        
+        //Allow Events
+        IsStarted = true;
 
         Console.WriteLine("Successfully loaded all modules!");
     }
