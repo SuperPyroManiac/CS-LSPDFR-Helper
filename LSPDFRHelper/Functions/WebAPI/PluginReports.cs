@@ -38,7 +38,7 @@ internal static class PluginReports
             }
         }
         catch (Exception ex) { Console.WriteLine($"Error: {ex.Message}"); }
-        finally { listener.Stop(); _running = false; }
+        finally { listener.Stop(); _running = false; await Run(); }
     }
 
     private static string DecryptMessage(string encryptedText)
