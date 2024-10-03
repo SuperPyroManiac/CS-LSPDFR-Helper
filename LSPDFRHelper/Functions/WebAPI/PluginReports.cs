@@ -26,9 +26,12 @@ internal static class PluginReports
                 var buffer = new byte[1024];
                 var bytesRead = await client.GetStream().ReadAsync(buffer);
                 var encryptedData = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-
                 var decryptedMessage = DecryptMessage(encryptedData);
-                if (decryptedMessage.Contains("PyroCommon")) await Logging.SendLog(BasicEmbeds.Warning(decryptedMessage));
+                if ( !decryptedMessage.EndsWith("PyroCommon") ) continue;
+                if ( !decryptedMessage.Contains('%') ) continue;
+                var plug = decryptedMessage.Split("%")[0];
+                var err = decryptedMessage.Split("%")[1].Length - 10;
+                await Logging.PyroCommonLog(BasicEmbeds.Warning($"__{plug} Auto Report__\r\n```{err}```"));
             }
         }
         catch (Exception ex) { Console.WriteLine($"Error: {ex.Message}"); }
