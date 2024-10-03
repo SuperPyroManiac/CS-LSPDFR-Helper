@@ -29,8 +29,10 @@ internal static class PluginReports
                 var decryptedMessage = DecryptMessage(encryptedData);
                 if ( !decryptedMessage.EndsWith("PyroCommon") ) continue;
                 if ( !decryptedMessage.Contains('%') ) continue;
-                var plug = decryptedMessage.Split("%")[0];
-                var err = decryptedMessage.Split("%")[1].Length - 10;
+                var delimiterIndex = decryptedMessage.IndexOf('%');
+                if (delimiterIndex == -1) continue;
+                var plug = decryptedMessage.Substring(0, delimiterIndex);
+                var err = decryptedMessage.Substring(delimiterIndex + 1);
                 await Logging.PyroCommonLog(BasicEmbeds.Warning($"__{plug} Auto Report__\r\n```{err}```"));
             }
         }
