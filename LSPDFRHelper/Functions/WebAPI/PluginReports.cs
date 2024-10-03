@@ -33,6 +33,7 @@ internal static class PluginReports
                 if (delimiterIndex == -1) continue;
                 var plug = decryptedMessage.Substring(0, delimiterIndex);
                 var err = decryptedMessage.Substring(delimiterIndex + 1);
+                err = err.Substring(0, err.Length - "PyroCommon".Length).Trim();
                 await Logging.PyroCommonLog(BasicEmbeds.Warning($"__{plug} Auto Report__\r\n```{err}```"));
             }
         }
