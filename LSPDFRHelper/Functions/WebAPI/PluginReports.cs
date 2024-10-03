@@ -3,6 +3,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
+using LSPDFRHelper.CustomTypes.LogTypes;
+using LSPDFRHelper.Functions.Messages;
 
 namespace LSPDFRHelper.Functions.WebAPI;
 
@@ -26,8 +28,7 @@ internal static class PluginReports
                 var encryptedData = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
                 var decryptedMessage = DecryptMessage(encryptedData);
-                if (decryptedMessage.Contains("PyroCommon")) // Optional check
-                    Console.WriteLine(decryptedMessage);
+                if (decryptedMessage.Contains("PyroCommon")) await Logging.SendLog(BasicEmbeds.Warning(decryptedMessage));
             }
         }
         catch (Exception ex) { Console.WriteLine($"Error: {ex.Message}"); }
