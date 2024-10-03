@@ -1,4 +1,4 @@
-using System.Globalization;
+/*using System.Globalization;
 using System.Net;
 using System.Text;
 using LSPDFRHelper.Functions.Processors.RPH;
@@ -108,4 +108,4 @@ public class RemoteApi
         var timeDifference = Math.Abs((currentTime - tokenTime).TotalMinutes);
         return timeDifference <= timeWindowInMinutes;
     }
-}
+}*/
