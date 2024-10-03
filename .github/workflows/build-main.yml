@@ -67,7 +67,7 @@ jobs:
                   docker rm helpermain || true
                   
                   # Run the new container
-                  docker run -d --name helpermain superpyromaniac/lspdfrhelpermain:latest
+                  docker run -d --name helpermain -p 8055:8055 superpyromaniac/lspdfrhelpermain:latest
                   
                   # Optionally, clean up old images
                   docker image prune -f

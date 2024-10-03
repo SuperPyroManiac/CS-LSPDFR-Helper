@@ -44,7 +44,7 @@ internal static class PluginReports
             var encryptedBytes = Convert.FromBase64String(parts[1]);
 
             using var aes = Aes.Create();
-            aes.Key = Encoding.UTF8.GetBytes(EncryptionKey);
+            aes.Key = Encoding.UTF8.GetBytes(EncryptionKey.PadRight(32)[..32]);
             aes.IV = iv;
 
             using var decrypt = aes.CreateDecryptor(aes.Key, aes.IV);
