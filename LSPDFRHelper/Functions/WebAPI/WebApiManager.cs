@@ -11,56 +11,75 @@ internal static class WebApiManager
     private const string EncryptionKey = "PyroCommon";
     private static bool _running;
 
-internal static async Task Run()
-{
-    Console.WriteLine("Starting web api server...");
-    while (true) // Infinite loop to ensure the server never stops
+    internal static async Task Run()
     {
-        var listener = new TcpListener(IPAddress.Any, 8055);
+        Console.WriteLine("Starting web api server...");
+        while (true)
+        {
+            var listener = new TcpListener(IPAddress.Any, 8055);
+            try
+            {
+                listener.Start();
+                _running = true;
+
+                while (_running)
+                {
+                    try
+                    {
+                        var client = await listener.AcceptTcpClientAsync();
+                        _ = Task.Run(async () => await HandleClient(client));
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error handling client: {ex.Message}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Server error: {ex.Message}");
+            }
+            finally
+            {
+                listener.Stop();
+                _running = false;
+                Console.WriteLine("Restarting server after failure...");
+                await Task.Delay(5000);
+            }
+        }
+    }
+
+    private static async Task HandleClient(TcpClient client)
+    {
         try
         {
-            listener.Start();
-            _running = true;
+            var stream = client.GetStream();
+            var buffer = new byte[1024];
+            var bytesRead = await stream.ReadAsync(buffer);
 
-            while (_running)
+            if (bytesRead == 0) return;
+
+            var request = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+
+            if (request.StartsWith("GET"))
             {
-                try
-                {
-                    using var client = await listener.AcceptTcpClientAsync();
-                    var stream = client.GetStream();
-                    var buffer = new byte[1024];
-                    var bytesRead = await stream.ReadAsync(buffer);
+                await HandleHttpRequest(request, stream);
+            }
+            else
+            {
+                var decryptedMessage = DecryptMessage(request);
 
-                    if (bytesRead == 0) continue;
+                if (!decryptedMessage.EndsWith("PyroCommon")) return;
+                if (!decryptedMessage.Contains('%')) return;
 
-                    var request = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                var delimiterIndex = decryptedMessage.IndexOf('%');
+                if (delimiterIndex == -1) return;
 
-                    if (request.StartsWith("GET"))
-                    {
-                        await HandleHttpRequest(request, stream);
-                    }
-                    else
-                    {
-                        var encryptedData = request;
-                        var decryptedMessage = DecryptMessage(encryptedData);
+                var plug = decryptedMessage.Substring(0, delimiterIndex);
+                var err = decryptedMessage.Substring(delimiterIndex + 1);
+                err = err.Substring(0, err.Length - "PyroCommon".Length).Trim();
 
-                        if (!decryptedMessage.EndsWith("PyroCommon")) continue;
-                        if (!decryptedMessage.Contains('%')) continue;
-
-                        var delimiterIndex = decryptedMessage.IndexOf('%');
-                        if (delimiterIndex == -1) continue;
-
-                        var plug = decryptedMessage.Substring(0, delimiterIndex);
-                        var err = decryptedMessage.Substring(delimiterIndex + 1);
-                        err = err.Substring(0, err.Length - "PyroCommon".Length).Trim();
-
-                        await Logging.PyroCommonLog(BasicEmbeds.Warning($"__{plug} Auto Report__\r\n```{err}```"));
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error handling client: {ex.Message}");
-                }
+                await Logging.PyroCommonLog(BasicEmbeds.Warning($"__{plug} Auto Report__\r\n```{err}```"));
             }
         }
         catch (Exception ex)
@@ -69,16 +88,9 @@ internal static async Task Run()
         }
         finally
         {
-            listener.Stop();
-            _running = false;
-            Console.WriteLine("Restarting server after failure...");
-
-            // Delay to avoid rapid restart in case of recurring errors
-            await Task.Delay(5000); // 5 seconds delay before restarting
+            client.Close();
         }
     }
-}
-
 
     private static async Task HandleHttpRequest(string request, NetworkStream stream)
     {
