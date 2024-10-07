@@ -70,7 +70,7 @@ internal static class PluginReports
         {
             var pluginName = request.Split('/')[2].Split(' ')[0];
             var version = "Not Found!";
-            if (Program.Cache.GetPlugin(pluginName) != null) version = Program.Cache.GetPlugin(pluginName).Version;
+            if (!string.IsNullOrEmpty(Program.Cache.GetPlugin(pluginName).ToString())) version = Program.Cache.GetPlugin(pluginName).Version;
             var response = $"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n{version}";
             var responseData = Encoding.UTF8.GetBytes(response);
             await stream.WriteAsync(responseData);
