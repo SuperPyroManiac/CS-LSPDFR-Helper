@@ -11,13 +11,17 @@ internal static class WebApiManager
     private const string EncryptionKey = "PyroCommon";
     private static bool _running;
 
-    internal static async Task Run()
+internal static async Task Run()
+{
+    Console.WriteLine("Starting web api server...");
+    while (true) // Infinite loop to ensure the server never stops
     {
         var listener = new TcpListener(IPAddress.Any, 8055);
         try
         {
             listener.Start();
             _running = true;
+
             while (_running)
             {
                 try
@@ -61,15 +65,20 @@ internal static class WebApiManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error: {ex.Message}");
+            Console.WriteLine($"Server error: {ex.Message}");
         }
         finally
         {
             listener.Stop();
             _running = false;
-            await Task.Delay(5000);
+            Console.WriteLine("Restarting server after failure...");
+
+            // Delay to avoid rapid restart in case of recurring errors
+            await Task.Delay(5000); // 5 seconds delay before restarting
         }
     }
+}
+
 
     private static async Task HandleHttpRequest(string request, NetworkStream stream)
     {
