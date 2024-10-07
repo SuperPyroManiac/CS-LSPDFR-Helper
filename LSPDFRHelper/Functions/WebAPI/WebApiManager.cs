@@ -67,7 +67,7 @@ internal static class WebApiManager
         {
             listener.Stop();
             _running = false;
-            await Run();
+            await Task.Delay(5000);
         }
     }
 
