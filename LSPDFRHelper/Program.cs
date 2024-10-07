@@ -5,7 +5,6 @@ using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using LSPDFRHelper.CustomTypes.CacheTypes;
-using LSPDFRHelper.Functions;
 using LSPDFRHelper.Functions.WebAPI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -27,7 +26,7 @@ public class Program
     private static async Task Main()
     {
         //Startup API Server
-        _ = PluginReports.Run();
+        _ = WebApiManager.Run();
         // string[] prefixes = { "http://localhost:8055/", "http://www.pyrosfun.com:8055/" };
         // var apiServ = new RemoteApi(prefixes);
         // _ = apiServ.Start();
