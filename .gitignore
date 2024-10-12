@@ -231,3 +231,5 @@ ULSSDB.db
 SERVERID.txt
 TSROLE.txt
 environment-config*.json
+
+.fake

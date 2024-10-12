@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using LSPDFRHelper.Functions.Messages;
@@ -8,78 +7,30 @@ namespace LSPDFRHelper.Functions.WebAPI;
 
 internal static class WebApiManager
 {
-    private const string EncryptionKey = "PyroCommon";
     private static bool _running;
 
     internal static async Task Run()
     {
         Console.WriteLine("Starting web api server...");
-        while (true)
-        {
-            var listener = new TcpListener(IPAddress.Any, 8055);
-            try
-            {
-                listener.Start();
-                _running = true;
-
-                while (_running)
-                {
-                    try
-                    {
-                        var client = await listener.AcceptTcpClientAsync();
-                        _ = Task.Run(async () => await HandleClient(client));
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error handling client: {ex.Message}");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Server error: {ex.Message}");
-            }
-            finally
-            {
-                listener.Stop();
-                _running = false;
-                Console.WriteLine("Restarting server after failure...");
-                await Task.Delay(5000);
-            }
-        }
-    }
-
-    private static async Task HandleClient(TcpClient client)
-    {
+        var listener = new HttpListener();
+        listener.Prefixes.Add("http://*:8055/");
+            
         try
         {
-            var stream = client.GetStream();
-            var buffer = new byte[1024];
-            var bytesRead = await stream.ReadAsync(buffer);
+            listener.Start();
+            _running = true;
 
-            if (bytesRead == 0) return;
-
-            var request = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-
-            if (request.StartsWith("GET"))
+            while (_running)
             {
-                await HandleHttpRequest(request, stream);
-            }
-            else
-            {
-                var decryptedMessage = DecryptMessage(request);
-
-                if (!decryptedMessage.EndsWith("PyroCommon")) return;
-                if (!decryptedMessage.Contains('%')) return;
-
-                var delimiterIndex = decryptedMessage.IndexOf('%');
-                if (delimiterIndex == -1) return;
-
-                var plug = decryptedMessage.Substring(0, delimiterIndex);
-                var err = decryptedMessage.Substring(delimiterIndex + 1);
-                err = err.Substring(0, err.Length - "PyroCommon".Length).Trim();
-
-                await Logging.PyroCommonLog(BasicEmbeds.Warning($"__{plug} Auto Report__\r\n```{err}```"));
+                try
+                {
+                    var context = await listener.GetContextAsync(); // Handle HTTP requests
+                    _ = Task.Run(async () => await HandleRequest(context));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error handling client: {ex.Message}");
+                }
             }
         }
         catch (Exception ex)
@@ -88,39 +39,38 @@ internal static class WebApiManager
         }
         finally
         {
-            client.Close();
+            listener.Stop();
+            _running = false;
+            Console.WriteLine("Restarting server after failure...");
+            await Task.Delay(5000);
         }
     }
 
-    private static async Task HandleHttpRequest(string request, NetworkStream stream)
+    private static async Task HandleRequest(HttpListenerContext context)
     {
         try
         {
-            if (request.Contains("/ver/"))
-            {
-                var pluginName = request.Split('/')[2].Split(' ')[0];
-                var version = "Not Found!";
-                var plugin = Program.Cache.GetPlugin(pluginName);
-                if (plugin != null) version = plugin.Version;
-
-                var response = $"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n{version}";
-                var responseData = Encoding.UTF8.GetBytes(response);
-                await stream.WriteAsync(responseData);
-            }
+            var request = context.Request;
+            var response = context.Response;
+            
+            if (request.HttpMethod == "GET" && request.RawUrl != null && request.RawUrl.Contains("/ver/")) await VersionAPI.GetVersion(context);
+            if ( request.HttpMethod == "POST" && request.RawUrl != null && request.RawUrl.Contains("/report") ) await ErrorReportAPI.SendError(context);
             else
             {
-                var response = "HTTP/1.1 404 Not Found\r\n\r\n";
-                var responseData = Encoding.UTF8.GetBytes(response);
-                await stream.WriteAsync(responseData);
+                response.StatusCode = 404;
+                var responseData = "Not Found"u8.ToArray();
+                await response.OutputStream.WriteAsync(responseData);
             }
+            response.Close();
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error handling HTTP request: {ex.Message}");
+            Console.WriteLine($"Server error: {ex.Message}");
         }
     }
 
-    private static string DecryptMessage(string encryptedText)
+
+    internal static string DecryptMessage(string encryptedText, string encryptionKey)
     {
         try
         {
@@ -129,7 +79,7 @@ internal static class WebApiManager
             var encryptedBytes = Convert.FromBase64String(parts[1]);
 
             using var aes = Aes.Create();
-            aes.Key = Encoding.UTF8.GetBytes(EncryptionKey.PadRight(32)[..32]);
+            aes.Key = Encoding.UTF8.GetBytes(encryptionKey.PadRight(32)[..32]);
             aes.IV = iv;
 
             using var decrypt = aes.CreateDecryptor(aes.Key, aes.IV);
