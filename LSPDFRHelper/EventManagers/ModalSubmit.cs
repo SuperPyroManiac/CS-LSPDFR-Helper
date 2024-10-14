@@ -241,13 +241,11 @@ public static class ModalSubmit
                             $"Thread: <#{ac.ChannelId}>\r\n" +
                             $"Reason:\r\n```{e.Values["issueDsc"]}```\r\n" +
                             $"Created: <t:{e.Interaction.Channel.CreationTimestamp.ToUnixTimeSeconds()}:R>"));
-                        tsMsg.AddComponents([
-                            new DiscordButtonComponent(DiscordButtonStyle.Secondary, CustomIds.JoinCase,
-                                "Join Case", false,
-                                new DiscordComponentEmoji("💢")),
-                            new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.IgnoreRequest,
-                                "Ignore", false,
-                                new DiscordComponentEmoji("🪠"))]);
+                        tsMsg.AddComponents(new DiscordButtonComponent(DiscordButtonStyle.Secondary, CustomIds.JoinCase,
+                            "Join Case", false,
+                            new DiscordComponentEmoji("💢")), new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.IgnoreRequest,
+                            "Ignore", false,
+                            new DiscordComponentEmoji("🪠")));
                         var tsMsgSent = await Program.Client.GetChannelAsync(Program.Cache.GetServer(e.Interaction.Guild!.Id).MonitorChId);
                         var rCh = await tsMsgSent.SendMessageAsync(tsMsg);
                         ac.TsRequested = true;

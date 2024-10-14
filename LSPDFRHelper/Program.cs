@@ -13,23 +13,22 @@ using static LSPDFRHelper.EventManagers.CompInteraction;
 using static LSPDFRHelper.EventManagers.MessageSent;
 using static LSPDFRHelper.EventManagers.OnJoinLeave;
 using Timer = LSPDFRHelper.Functions.Timer;
+using DSharpPlus.Commands.Processors.TextCommands;
+using DSharpPlus.Commands.Processors.TextCommands.Parsing;
 
 namespace LSPDFRHelper;
 
 public class Program
 {
-    public static DiscordClient Client { get; set; }
-    public static bool IsStarted { get; set; }
-    public static Cache Cache = new();
-    public static Settings BotSettings = new();
+    internal static DiscordClient Client { get; set; }
+    internal static bool IsStarted { get; set; }
+    internal static Cache Cache = new();
+    internal static Settings BotSettings = new();
 
     private static async Task Main()
     {
         //Startup API Server
         _ = WebApiManager.Run();
-        // string[] prefixes = { "http://localhost:8055/", "http://www.pyrosfun.com:8055/" };
-        // var apiServ = new RemoteApi(prefixes);
-        // _ = apiServ.Start();
         
         //Start Bot
          var builder = DiscordClientBuilder.CreateDefault(BotSettings.Env.BotToken, DiscordIntents.All);
@@ -48,13 +47,15 @@ public class Program
                  .HandleGuildDeleted(GuildLeaveEvent));
          
          builder.UseInteractivity(new InteractivityConfiguration());
-         var cmdConfig = new CommandsConfiguration();
-         cmdConfig.UseDefaultCommandErrorHandler = false;
-         builder.UseCommands(
-             extension =>
-             {
-             extension.AddCommands(typeof(Program).Assembly);
-             }, cmdConfig);
+
+        builder.UseCommands((IServiceProvider serviceProvider, CommandsExtension extension) =>
+        {
+            extension.AddCommands(typeof(Program).Assembly);
+        }, new CommandsConfiguration()
+        {
+            UseDefaultCommandErrorHandler = false
+        });
+
          Client = builder.Build();
         
         new ServiceCollection().AddLogging(x => x.AddConsole()).BuildServiceProvider();
