@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Security.Cryptography;
 using System.Text;
-using LSPDFRHelper.Functions.Messages;
 
 namespace LSPDFRHelper.Functions.WebAPI;
 

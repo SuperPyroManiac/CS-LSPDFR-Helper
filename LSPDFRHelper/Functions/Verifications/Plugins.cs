@@ -40,7 +40,7 @@ public static class Plugins
 
                 if ( upCnt < 11 )
                 {
-                    var ea = (!string.IsNullOrEmpty(plugin.EaVersion) && plugin.EaVersion != "0");
+                    var ea = !string.IsNullOrEmpty(plugin.EaVersion) && plugin.EaVersion != "0";
                     logMsg.Description +=
                         $"## __[{plugin.Name}]({plugin.Link})__\r\n" +
                         $"> **Previous Version:** `{plugin.Version}`\r\n" +

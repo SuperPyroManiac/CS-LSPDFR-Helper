@@ -26,7 +26,7 @@ public class RphProcessor : SharedData
     private void InitValues()
     {
         _current = string.Join(", ", Log.Current.Select(plugin => plugin?.DName).ToList());
-        _remove = string.Join("\r\n- ", ( from plug in Log.Current where (plug.State == State.BROKEN || plug.PluginType == PluginType.LIBRARY) select plug.DName ).ToList());
+        _remove = string.Join("\r\n- ", ( from plug in Log.Current where plug.State == State.BROKEN || plug.PluginType == PluginType.LIBRARY select plug.DName ).ToList());
         _missing = string.Join(", ", Log.Missing.Select(plugin => $"{plugin?.Name} ({plugin?.Version})").ToList());
         _missmatch = string.Join(", ", Log.NewVersion.Select(plugin => $"{plugin?.Name} ({plugin?.EaVersion})").ToList());
         _rph = string.Join(", ", ( from plug in Log.Current where plug.PluginType == PluginType.RPH select plug.DName ).ToList());

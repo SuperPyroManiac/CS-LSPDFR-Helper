@@ -14,7 +14,6 @@ public class PluginAutoComplete : IAutoCompleteProvider
             if ( plugins.Count < 25 && plug.Name.Contains(ctx.Options.First().Value.ToString(), StringComparison.CurrentCultureIgnoreCase) )
                 plugins.Add(new DiscordAutoCompleteChoice(plug.Name, plug.Name));
         }
-
-        return ValueTask.FromResult<IEnumerable<DiscordAutoCompleteChoice>>(plugins);
+        return ValueTask.FromResult((IEnumerable<DiscordAutoCompleteChoice>)plugins);
     }
 }

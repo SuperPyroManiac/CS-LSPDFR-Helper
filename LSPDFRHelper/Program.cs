@@ -2,7 +2,6 @@
 using DSharpPlus.Commands;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using LSPDFRHelper.CustomTypes.CacheTypes;
 using LSPDFRHelper.Functions.WebAPI;
@@ -13,8 +12,8 @@ using static LSPDFRHelper.EventManagers.CompInteraction;
 using static LSPDFRHelper.EventManagers.MessageSent;
 using static LSPDFRHelper.EventManagers.OnJoinLeave;
 using Timer = LSPDFRHelper.Functions.Timer;
-using DSharpPlus.Commands.Processors.TextCommands;
-using DSharpPlus.Commands.Processors.TextCommands.Parsing;
+using LSPDFRHelper.Commands.ContextMenu;
+using LSPDFRHelper.Commands;
 
 namespace LSPDFRHelper;
 
@@ -31,32 +30,39 @@ public class Program
         _ = WebApiManager.Run();
         
         //Start Bot
-         var builder = DiscordClientBuilder.CreateDefault(BotSettings.Env.BotToken, DiscordIntents.All);
-         builder.ConfigureLogging(x => x.AddConsole().SetMinimumLevel(LogLevel.Error));
-         new ServiceCollection().AddLogging(x => x.AddConsole()).BuildServiceProvider();
+        var builder = DiscordClientBuilder.CreateDefault(BotSettings.Env.BotToken, DiscordIntents.All);
+        builder.ConfigureLogging(x => x.AddConsole().SetMinimumLevel(LogLevel.Error));
+        new ServiceCollection().AddLogging(x => x.AddConsole()).BuildServiceProvider();
 
-         builder.ConfigureEventHandlers(
-             e => e
-                 .HandleGuildDownloadCompleted(Startup)
-                 .HandleModalSubmitted(HandleModalSubmit)
-                 .HandleComponentInteractionCreated(HandleInteraction)
-                 .HandleMessageCreated(MessageSentEvent)
-                 .HandleGuildMemberAdded(JoinEvent)
-                 .HandleGuildMemberRemoved(LeaveEvent)
-                 .HandleGuildCreated(GuildJoinEvent)
-                 .HandleGuildDeleted(GuildLeaveEvent));
-         
-         builder.UseInteractivity(new InteractivityConfiguration());
-
-        builder.UseCommands((IServiceProvider serviceProvider, CommandsExtension extension) =>
+        builder.ConfigureEventHandlers(
+            e => e
+                .HandleGuildDownloadCompleted(Startup)
+                .HandleModalSubmitted(HandleModalSubmit)
+                .HandleComponentInteractionCreated(HandleInteraction)
+                .HandleMessageCreated(MessageSentEvent)
+                .HandleGuildMemberAdded(JoinEvent)
+                .HandleGuildMemberRemoved(LeaveEvent)
+                .HandleGuildCreated(GuildJoinEvent)
+                .HandleGuildDeleted(GuildLeaveEvent));
+        builder.UseInteractivity();
+        builder.UseCommands((_, extension) =>
         {
-            extension.AddCommands(typeof(Program).Assembly);
+            extension.AddCommand(typeof(ValidateFiles));
+            extension.AddCommand(typeof(Cases));
+            extension.AddCommand(typeof(CheckPlugin));
+            extension.AddCommand(typeof(Setup));
+            extension.AddCommand(typeof(ToggleAh));
+
+            extension.AddCommand(typeof(EditUser), BotSettings.Env.MainServ);
+            extension.AddCommand(typeof(Errors), BotSettings.Env.MainServ);
+            extension.AddCommand(typeof(Plugins), BotSettings.Env.MainServ);
+            extension.AddCommand(typeof(ForceVerification), BotSettings.Env.MainServ);
         }, new CommandsConfiguration()
         {
             UseDefaultCommandErrorHandler = false
         });
 
-         Client = builder.Build();
+        Client = builder.Build();
         
         new ServiceCollection().AddLogging(x => x.AddConsole()).BuildServiceProvider();
 
