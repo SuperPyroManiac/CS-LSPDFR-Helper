@@ -47,16 +47,16 @@ public class Program
         builder.UseInteractivity();
         builder.UseCommands((_, extension) =>
         {
-            extension.AddCommand(typeof(ValidateFiles));
-            extension.AddCommand(typeof(Cases));
-            extension.AddCommand(typeof(CheckPlugin));
-            extension.AddCommand(typeof(Setup));
-            extension.AddCommand(typeof(ToggleAh));
+            extension.AddCommands(typeof(ValidateFiles));
+            extension.AddCommands(typeof(Cases));
+            extension.AddCommands(typeof(CheckPlugin));
+            extension.AddCommands(typeof(Setup));
+            extension.AddCommands(typeof(ToggleAh));
 
-            extension.AddCommand(typeof(EditUser), BotSettings.Env.MainServ);
-            extension.AddCommand(typeof(Errors), BotSettings.Env.MainServ);
-            extension.AddCommand(typeof(Plugins), BotSettings.Env.MainServ);
-            extension.AddCommand(typeof(ForceVerification), BotSettings.Env.MainServ);
+            extension.AddCommands(typeof(EditUser), BotSettings.Env.MainServ);
+            extension.AddCommands(typeof(Errors), BotSettings.Env.MainServ);
+            extension.AddCommands(typeof(Plugins), BotSettings.Env.MainServ);
+            extension.AddCommands(typeof(ForceVerification), BotSettings.Env.MainServ);
         }, new CommandsConfiguration()
         {
             UseDefaultCommandErrorHandler = false
