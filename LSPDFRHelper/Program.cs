@@ -48,10 +48,10 @@ public class Program
         builder.UseCommands((_, extension) =>
         {
             extension.AddCommands(typeof(ValidateFiles));
-            extension.AddCommands(typeof(Cases));
             extension.AddCommands(typeof(CheckPlugin));
             extension.AddCommands(typeof(Setup));
             extension.AddCommands(typeof(ToggleAh));
+            extension.AddCommands(typeof(Cases));
 
             extension.AddCommands(typeof(EditUser), BotSettings.Env.MainServ);
             extension.AddCommands(typeof(Errors), BotSettings.Env.MainServ);
