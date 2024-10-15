@@ -81,15 +81,11 @@ public class ValidateFiles
 
                         var webhookBuilder = new DiscordWebhookBuilder()
                             .AddEmbed(embed)
-                            .AddComponents(
-                                [
-                                    new DiscordSelectComponent(
-                                        customId: CustomIds.SelectAttachmentForAnalysis,
-                                        placeholder: "Select",
-                                        options: selectOptions
-                                    )
-                                ]
-                            );  
+                            .AddComponents(new DiscordSelectComponent(
+                                customId: CustomIds.SelectAttachmentForAnalysis,
+                                placeholder: "Select",
+                                options: selectOptions
+                            ));  
 
                         var sentMessage = await ctx.EditResponseAsync(webhookBuilder);
                         Program.Cache.SaveProcess(sentMessage.Id, new ProcessCache(targetMessage.Interaction, targetMessage));

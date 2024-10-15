@@ -79,7 +79,7 @@ public class AutoHelper
             if (origMsg == null) origMsg = await ch.SendMessageAsync("Starting...");
 
             var allCases = Program.Cache.GetCases().Where(ac => !ac.Solved).ToList().OrderBy(ac => ac.ExpireDate);
-            foreach (var ac in allCases.TakeWhile(ac => embed.Fields.Count < 16))
+            foreach (var ac in allCases.TakeWhile(_ => embed.Fields.Count < 16))
             {
                 if (embed.Fields.Count == 15)
                 {

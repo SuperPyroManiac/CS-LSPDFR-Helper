@@ -40,7 +40,7 @@ public static class Plugins
 
                 if ( upCnt < 11 )
                 {
-                    var ea = (!string.IsNullOrEmpty(plugin.EaVersion) && plugin.EaVersion != "0");
+                    var ea = !string.IsNullOrEmpty(plugin.EaVersion) && plugin.EaVersion != "0";
                     logMsg.Description +=
                         $"## __[{plugin.Name}]({plugin.Link})__\r\n" +
                         $"> **Previous Version:** `{plugin.Version}`\r\n" +
@@ -53,7 +53,7 @@ public static class Plugins
                 plugin.Version = onlineVersion;
                 DbManager.EditPlugin(plugin);
             }
-            catch (HttpRequestException e)
+            catch ( HttpRequestException )
             {
                 if ( skip > 2 )
                 {
@@ -63,7 +63,7 @@ public static class Plugins
                 skip++;
                 await Logging.ErrLog($"{plugin.Name} skipped. Likely hidden on LSPDFR!");
             }
-            catch (TaskCanceledException e)
+            catch ( TaskCanceledException )
             {
                 if ( skip > 2 )
                 {
@@ -98,7 +98,6 @@ public static class Plugins
             var missingMsg = BasicEmbeds.Info($"__Unknown Plugins__\r\n*These plugins have been found on the site but are not in the DB!*{BasicEmbeds.AddBlanks(45)}\r\n");
             var webPlugs = JsonConvert.DeserializeObject<List<LSPDFRPlugin>>(JObject.Parse(await new HttpClient().GetStringAsync("https://www.lcpdfr.com/applications/downloadsng/interface/api.php?do=getAllVersions&categoryId=45"))["results"]!.ToString());
             var upCnt = 0;
-            var misgCnt = 0;
             
             foreach ( var webPlug in webPlugs )
             {
@@ -127,29 +126,14 @@ public static class Plugins
                     DbManager.EditPlugin(plug);
                     upCnt++;
                 }
-                
-                // if (Program.Cache.GetPlugins().Any(x => x.Id.ToString() == webPlug.file_id)) continue;
-                // if ( _pCache.Any(x => x.file_id == webPlug.file_id) ) continue;
-                // missingMsg.Description +=
-                //     $"## __{webPlug.file_name}__\r\n" +
-                //     $"> **Version:** `{webPlug.file_version}`\r\n" +
-                //     $"> **File Id:** `{webPlug.file_id}`\r\n" +
-                //     $"> **Uploader:** `{webPlug.file_submitter}`\r\n";
-                // _pCache.Add(webPlug);
-                // misgCnt++;
             }
             
             if ( upCnt > 0 ) await Logging.SendLog(logMsg);
             // if ( misgCnt > 0 ) await Logging.SendLog(missingMsg);
         }
-        catch ( Exception e )
+        catch ( Exception )
         {
             // ignored
         }
     }
-
-    // public static async Task UpdateWatcher(MessageCreatedEventArgs ctx)
-    // {
-    //     
-    // }
 }

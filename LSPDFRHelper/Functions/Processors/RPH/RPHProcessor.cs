@@ -26,7 +26,7 @@ public class RphProcessor : SharedData
     private void InitValues()
     {
         _current = string.Join(", ", Log.Current.Select(plugin => plugin?.DName).ToList());
-        _remove = string.Join("\r\n- ", ( from plug in Log.Current where (plug.State == State.BROKEN || plug.PluginType == PluginType.LIBRARY) select plug.DName ).ToList());
+        _remove = string.Join("\r\n- ", ( from plug in Log.Current where plug.State == State.BROKEN || plug.PluginType == PluginType.LIBRARY select plug.DName ).ToList());
         _missing = string.Join(", ", Log.Missing.Select(plugin => $"{plugin?.Name} ({plugin?.Version})").ToList());
         _missmatch = string.Join(", ", Log.NewVersion.Select(plugin => $"{plugin?.Name} ({plugin?.EaVersion})").ToList());
         _rph = string.Join(", ", ( from plug in Log.Current where plug.PluginType == PluginType.RPH select plug.DName ).ToList());
@@ -88,7 +88,7 @@ public class RphProcessor : SharedData
             overflowBuilder.AddEmbed(embed);
             if (_outdated.Length != 0) overflowBuilder.AddEmbed(embed2);
             if (_remove.Length != 0) overflowBuilder.AddEmbed(embed3);
-            overflowBuilder.AddComponents([new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.RphSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))]);
+            overflowBuilder.AddComponents(new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.RphSendToUser, "Send To User", false, new DiscordComponentEmoji("📨")));
             
             DiscordMessage sentOverflowMessage;
             if (context != null) sentOverflowMessage = await context.EditResponseAsync(overflowBuilder);
@@ -107,13 +107,7 @@ public class RphProcessor : SharedData
             embed = AddCommonFields(embed);
             DiscordWebhookBuilder webhookBuilder = new();
             webhookBuilder.AddEmbed(embed);
-            webhookBuilder.AddComponents(
-                [
-                    new DiscordButtonComponent(DiscordButtonStyle.Primary, CustomIds.RphGetErrorInfo, "Error Info", false, new DiscordComponentEmoji("❗")),
-                    new DiscordButtonComponent(DiscordButtonStyle.Primary, CustomIds.RphGetPluginInfo, "Plugin Info", false, new DiscordComponentEmoji("❓")),
-                    new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.RphSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
-                ]
-            );
+            webhookBuilder.AddComponents(new DiscordButtonComponent(DiscordButtonStyle.Primary, CustomIds.RphGetErrorInfo, "Error Info", false, new DiscordComponentEmoji("❗")), new DiscordButtonComponent(DiscordButtonStyle.Primary, CustomIds.RphGetPluginInfo, "Plugin Info", false, new DiscordComponentEmoji("❓")), new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.RphSendToUser, "Send To User", false, new DiscordComponentEmoji("📨")));
 
             DiscordMessage sentMessage;
             if (context != null)
@@ -174,11 +168,7 @@ public class RphProcessor : SharedData
         responseBuilder.AddEmbed(embed);
         if (errorIds.Count > 0 && !update) 
             responseBuilder.AddComponents(new DiscordSelectComponent(customId: CustomIds.SelectIdForRemoval, placeholder: "Remove Error", options: errorIds));
-        responseBuilder.AddComponents(
-            [
-                new DiscordButtonComponent(DiscordButtonStyle.Secondary, CustomIds.RphGetQuickInfo, "Back to Quick Info", false, new DiscordComponentEmoji("⬅️")), 
-                new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.RphSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
-            ]);
+        responseBuilder.AddComponents(new DiscordButtonComponent(DiscordButtonStyle.Secondary, CustomIds.RphGetQuickInfo, "Back to Quick Info", false, new DiscordComponentEmoji("⬅️")), new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.RphSendToUser, "Send To User", false, new DiscordComponentEmoji("📨")));
 
         await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage, responseBuilder);
         var sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);
@@ -202,11 +192,7 @@ public class RphProcessor : SharedData
         var responseBuilder = new DiscordInteractionResponseBuilder();
         responseBuilder.AddEmbed(embed);
 
-        responseBuilder.AddComponents(
-            [
-                new DiscordButtonComponent(DiscordButtonStyle.Secondary, CustomIds.RphGetQuickInfo, "Back to Quick Info", false, new DiscordComponentEmoji("⬅️")),
-                new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.RphSendToUser, "Send To User", false, new DiscordComponentEmoji("📨"))
-            ]);
+        responseBuilder.AddComponents(new DiscordButtonComponent(DiscordButtonStyle.Secondary, CustomIds.RphGetQuickInfo, "Back to Quick Info", false, new DiscordComponentEmoji("⬅️")), new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.RphSendToUser, "Send To User", false, new DiscordComponentEmoji("📨")));
 
         await eventArgs.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage, responseBuilder);
         var sentMessage = await eventArgs.Interaction.GetFollowupMessageAsync(eventArgs.Message.Id);

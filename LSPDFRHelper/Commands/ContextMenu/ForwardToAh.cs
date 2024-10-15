@@ -1,6 +1,6 @@
-namespace LSPDFRHelper.Commands.ContextMenu;
+// namespace LSPDFRHelper.Commands.ContextMenu;
 
-public class ForwardToAh
-{
+// public class ForwardToAh
+// {
     
-}
+// }

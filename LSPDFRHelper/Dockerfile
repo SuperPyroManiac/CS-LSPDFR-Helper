@@ -14,5 +14,8 @@ WORKDIR /app
 # Copy your compiled DLL and other necessary files into the container
 COPY . .
 
+# Expose port 8055 to allow external connections
+EXPOSE 8055
+
 # Command to run your Discord bot
 CMD ["dotnet", "LSPDFRHelper.dll"]

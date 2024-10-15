@@ -73,7 +73,7 @@ public static class ModalSubmit
                         IconUrl = e.Interaction.User.AvatarUrl
                     };
                     bd.AddEmbed(embed);
-                    bd.AddComponents(cache.Msg.Components!);
+                    bd.AddComponents(cache.Msg.Components.Cast<DiscordActionRowComponent>());
                 
                     var msg = await cache.Msg.ModifyAsync(bd);
                     Program.Cache.SaveUserAction(e.Interaction.User.Id, CustomIds.SelectPluginValueToEdit, new InteractionCache(e.Interaction, plugin, msg));
@@ -130,7 +130,7 @@ public static class ModalSubmit
                         IconUrl = e.Interaction.User.AvatarUrl
                     };
                     bd.AddEmbed(embed);
-                    bd.AddComponents(cache.Msg.Components!);
+                    bd.AddComponents(cache.Msg.Components.Cast<DiscordActionRowComponent>());
                 
                     var msg = await cache.Msg.ModifyAsync(bd);
                     Program.Cache.SaveUserAction(e.Interaction.User.Id, CustomIds.SelectErrorValueToEdit, new InteractionCache(e.Interaction, err, msg));
@@ -184,7 +184,7 @@ public static class ModalSubmit
                         IconUrl = e.Interaction.User.AvatarUrl
                     };
                     bd.AddEmbed(embed);
-                    bd.AddComponents(cache.Msg.Components!);
+                    bd.AddComponents(cache.Msg.Components.Cast<DiscordActionRowComponent>());
                 
                     var msg = await cache.Msg.ModifyAsync(bd);
                     Program.Cache.SaveUserAction(e.Interaction.User.Id, CustomIds.SelectServerValueToEdit, new InteractionCache(e.Interaction, server, msg));
@@ -241,13 +241,11 @@ public static class ModalSubmit
                             $"Thread: <#{ac.ChannelId}>\r\n" +
                             $"Reason:\r\n```{e.Values["issueDsc"]}```\r\n" +
                             $"Created: <t:{e.Interaction.Channel.CreationTimestamp.ToUnixTimeSeconds()}:R>"));
-                        tsMsg.AddComponents([
-                            new DiscordButtonComponent(DiscordButtonStyle.Secondary, CustomIds.JoinCase,
-                                "Join Case", false,
-                                new DiscordComponentEmoji("💢")),
-                            new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.IgnoreRequest,
-                                "Ignore", false,
-                                new DiscordComponentEmoji("🪠"))]);
+                        tsMsg.AddComponents(new DiscordButtonComponent(DiscordButtonStyle.Secondary, CustomIds.JoinCase,
+                            "Join Case", false,
+                            new DiscordComponentEmoji("💢")), new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.IgnoreRequest,
+                            "Ignore", false,
+                            new DiscordComponentEmoji("🪠")));
                         var tsMsgSent = await Program.Client.GetChannelAsync(Program.Cache.GetServer(e.Interaction.Guild!.Id).MonitorChId);
                         var rCh = await tsMsgSent.SendMessageAsync(tsMsg);
                         ac.TsRequested = true;

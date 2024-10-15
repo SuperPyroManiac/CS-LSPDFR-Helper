@@ -148,11 +148,11 @@ public static class CompInteraction
                 if (eventArgs.Id.Equals(CustomIds.SelectIdForRemoval))
                 {
                     // Get the current SelectComponent from the Message that the user interacted with
-                    var selectComp = (DiscordSelectComponent) eventArgs.Message.Components!
+                    var selectComp = (DiscordSelectComponent) eventArgs.Message.ComponentActionRows?
                         .FirstOrDefault(compRow => compRow.Components.Any(comp => comp.CustomId == CustomIds.SelectIdForRemoval))
-                        ?.Components!.FirstOrDefault(comp => comp.CustomId == CustomIds.SelectIdForRemoval);
+                        ?.Components.FirstOrDefault(comp => comp.CustomId == CustomIds.SelectIdForRemoval);
                     // Get a list of all components (like buttons) except for the SelectComponent so we can rebuild the list of components later after modifying the SelectComponent
-                    var allComponentsExceptSelect = eventArgs.Message.Components
+                    var allComponentsExceptSelect = eventArgs.Message.ComponentActionRows?
                         .FirstOrDefault(compRow => compRow.Components.All(comp => comp.CustomId != CustomIds.SelectIdForRemoval))?.Components;
                     
                     var options = new List<DiscordSelectComponentOption>(selectComp!.Options);

@@ -23,11 +23,7 @@ public static class Servers
             var emb = BasicEmbeds.Info(dsc);
             emb.Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = "https://i.imgur.com/jxODw4N.png" };
             var msg = new DiscordMessageBuilder().AddEmbed(emb);
-            msg.AddComponents(
-            [
-                new DiscordButtonComponent(DiscordButtonStyle.Secondary, CustomIds.SelectSetupInfo, "Setup Info", false, new DiscordComponentEmoji("🛠️")),
-                new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.SelectCommandInfo, "Command Info", false, new DiscordComponentEmoji("📋"))
-            ]);
+            msg.AddComponents(new DiscordButtonComponent(DiscordButtonStyle.Secondary, CustomIds.SelectSetupInfo, "Setup Info", false, new DiscordComponentEmoji("🛠️")), new DiscordButtonComponent(DiscordButtonStyle.Danger, CustomIds.SelectCommandInfo, "Command Info", false, new DiscordComponentEmoji("📋")));
             
             var cnt = 0;
             

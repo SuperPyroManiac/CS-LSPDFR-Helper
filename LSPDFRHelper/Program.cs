@@ -2,9 +2,9 @@
 using DSharpPlus.Commands;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using LSPDFRHelper.CustomTypes.CacheTypes;
+using LSPDFRHelper.Functions.WebAPI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using static LSPDFRHelper.EventManagers.ModalSubmit;
@@ -12,48 +12,57 @@ using static LSPDFRHelper.EventManagers.CompInteraction;
 using static LSPDFRHelper.EventManagers.MessageSent;
 using static LSPDFRHelper.EventManagers.OnJoinLeave;
 using Timer = LSPDFRHelper.Functions.Timer;
+using LSPDFRHelper.Commands.ContextMenu;
+using LSPDFRHelper.Commands;
 
 namespace LSPDFRHelper;
 
 public class Program
 {
-    public static DiscordClient Client { get; set; }
-    public static bool IsStarted { get; set; }
-    public static Cache Cache = new();
-    public static Settings BotSettings = new();
+    internal static DiscordClient Client { get; set; }
+    internal static bool IsStarted { get; set; }
+    internal static Cache Cache = new();
+    internal static Settings BotSettings = new();
 
     private static async Task Main()
     {
         //Startup API Server
-        // string[] prefixes = { "http://localhost:8055/", "http://www.pyrosfun.com:8055/" };
-        // var apiServ = new RemoteApi(prefixes);
-        // _ = apiServ.Start();
+        _ = WebApiManager.Run();
         
         //Start Bot
-         var builder = DiscordClientBuilder.CreateDefault(BotSettings.Env.BotToken, DiscordIntents.All);
-         builder.ConfigureLogging(x => x.AddConsole().SetMinimumLevel(LogLevel.Error));
-         new ServiceCollection().AddLogging(x => x.AddConsole()).BuildServiceProvider();
+        var builder = DiscordClientBuilder.CreateDefault(BotSettings.Env.BotToken, DiscordIntents.All);
+        builder.ConfigureLogging(x => x.AddConsole().SetMinimumLevel(LogLevel.Error));
+        new ServiceCollection().AddLogging(x => x.AddConsole()).BuildServiceProvider();
 
-         builder.ConfigureEventHandlers(
-             e => e
-                 .HandleGuildDownloadCompleted(Startup)
-                 .HandleModalSubmitted(HandleModalSubmit)
-                 .HandleComponentInteractionCreated(HandleInteraction)
-                 .HandleMessageCreated(MessageSentEvent)
-                 .HandleGuildMemberAdded(JoinEvent)
-                 .HandleGuildMemberRemoved(LeaveEvent)
-                 .HandleGuildCreated(GuildJoinEvent)
-                 .HandleGuildDeleted(GuildLeaveEvent));
-         
-         builder.UseInteractivity(new InteractivityConfiguration());
-         var cmdConfig = new CommandsConfiguration();
-         cmdConfig.UseDefaultCommandErrorHandler = false;
-         builder.UseCommands(
-             extension =>
-             {
-             extension.AddCommands(typeof(Program).Assembly);
-             }, cmdConfig);
-         Client = builder.Build();
+        builder.ConfigureEventHandlers(
+            e => e
+                .HandleGuildDownloadCompleted(Startup)
+                .HandleModalSubmitted(HandleModalSubmit)
+                .HandleComponentInteractionCreated(HandleInteraction)
+                .HandleMessageCreated(MessageSentEvent)
+                .HandleGuildMemberAdded(JoinEvent)
+                .HandleGuildMemberRemoved(LeaveEvent)
+                .HandleGuildCreated(GuildJoinEvent)
+                .HandleGuildDeleted(GuildLeaveEvent));
+        builder.UseInteractivity();
+        builder.UseCommands((_, extension) =>
+        {
+            extension.AddCommands(typeof(ValidateFiles));
+            extension.AddCommands(typeof(CheckPlugin));
+            extension.AddCommands(typeof(Setup));
+            extension.AddCommands(typeof(ToggleAh));
+            extension.AddCommands(typeof(Cases));
+
+            extension.AddCommands(typeof(EditUser), BotSettings.Env.MainServ);
+            extension.AddCommands(typeof(Errors), BotSettings.Env.MainServ);
+            extension.AddCommands(typeof(Plugins), BotSettings.Env.MainServ);
+            extension.AddCommands(typeof(ForceVerification), BotSettings.Env.MainServ);
+        }, new CommandsConfiguration()
+        {
+            UseDefaultCommandErrorHandler = false
+        });
+
+        Client = builder.Build();
         
         new ServiceCollection().AddLogging(x => x.AddConsole()).BuildServiceProvider();
 

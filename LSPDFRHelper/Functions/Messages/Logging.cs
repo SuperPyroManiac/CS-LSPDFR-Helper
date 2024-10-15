@@ -42,4 +42,10 @@ public class Logging
         var pubBotLogCh = await Program.BotSettings.ServerLogs();
         await new DiscordMessageBuilder().AddEmbed(e).SendAsync(pubBotLogCh);
     }
+
+    public static async Task PyroCommonLog(DiscordEmbedBuilder e)
+    {
+        var ch = await Program.Client.GetChannelAsync(1291247289536352257);
+        await new DiscordMessageBuilder().AddEmbed(e).SendAsync(ch);
+    }
 }
