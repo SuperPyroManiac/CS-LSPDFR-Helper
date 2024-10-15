@@ -73,7 +73,7 @@ public static class ModalSubmit
                         IconUrl = e.Interaction.User.AvatarUrl
                     };
                     bd.AddEmbed(embed);
-                    bd.AddComponents(cache.Msg.Components!);
+                    bd.AddComponents(cache.Msg.Components.Cast<DiscordActionRowComponent>());
                 
                     var msg = await cache.Msg.ModifyAsync(bd);
                     Program.Cache.SaveUserAction(e.Interaction.User.Id, CustomIds.SelectPluginValueToEdit, new InteractionCache(e.Interaction, plugin, msg));
