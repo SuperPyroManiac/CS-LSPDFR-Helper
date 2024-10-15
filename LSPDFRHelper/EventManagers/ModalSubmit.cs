@@ -130,7 +130,7 @@ public static class ModalSubmit
                         IconUrl = e.Interaction.User.AvatarUrl
                     };
                     bd.AddEmbed(embed);
-                    bd.AddComponents(cache.Msg.Components!);
+                    bd.AddComponents(cache.Msg.Components.Cast<DiscordActionRowComponent>());
                 
                     var msg = await cache.Msg.ModifyAsync(bd);
                     Program.Cache.SaveUserAction(e.Interaction.User.Id, CustomIds.SelectErrorValueToEdit, new InteractionCache(e.Interaction, err, msg));
@@ -184,7 +184,7 @@ public static class ModalSubmit
                         IconUrl = e.Interaction.User.AvatarUrl
                     };
                     bd.AddEmbed(embed);
-                    bd.AddComponents(cache.Msg.Components!);
+                    bd.AddComponents(cache.Msg.Components.Cast<DiscordActionRowComponent>());
                 
                     var msg = await cache.Msg.ModifyAsync(bd);
                     Program.Cache.SaveUserAction(e.Interaction.User.Id, CustomIds.SelectServerValueToEdit, new InteractionCache(e.Interaction, server, msg));
