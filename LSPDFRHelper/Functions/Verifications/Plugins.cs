@@ -53,7 +53,7 @@ public static class Plugins
                 plugin.Version = onlineVersion;
                 DbManager.EditPlugin(plugin);
             }
-            catch (HttpRequestException e)
+            catch ( HttpRequestException )
             {
                 if ( skip > 2 )
                 {
@@ -63,7 +63,7 @@ public static class Plugins
                 skip++;
                 await Logging.ErrLog($"{plugin.Name} skipped. Likely hidden on LSPDFR!");
             }
-            catch (TaskCanceledException e)
+            catch ( TaskCanceledException )
             {
                 if ( skip > 2 )
                 {
@@ -142,7 +142,7 @@ public static class Plugins
             if ( upCnt > 0 ) await Logging.SendLog(logMsg);
             // if ( misgCnt > 0 ) await Logging.SendLog(missingMsg);
         }
-        catch ( Exception e )
+        catch ( Exception )
         {
             // ignored
         }
