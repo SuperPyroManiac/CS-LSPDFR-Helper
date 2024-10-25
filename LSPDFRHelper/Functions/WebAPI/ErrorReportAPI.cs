@@ -31,7 +31,7 @@ internal static class ErrorReportAPI
         var errorMessage = errorParts[1];
         var stackTrace = parts.Length > 1 ? parts[1] : string.Empty;
 
-        await Logging.PyroCommonLog(BasicEmbeds.Warning($"__{plug} Auto Report__\r\n{errorType}\r\n{errorMessage}\r\nStack Trace:\r\n{stackTrace}"));
+        await Logging.PyroCommonLog(BasicEmbeds.Warning($"__{plug} Auto Report__\r\n**{errorType}**\r\n__{errorMessage}__\r\nStack Trace:\r\n```{stackTrace}```"));
         response.StatusCode = 200;
     }
 }
