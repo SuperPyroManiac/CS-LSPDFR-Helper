@@ -22,22 +22,20 @@ public static class Users
             var cnt = 0;
             foreach (var user in serverUsers)
             {
-                if (dbUsers.All(x => x.Id != user.Id))
-                {
-                    if (user == null) continue;
-                    cnt++;
+                if ( dbUsers.Any(x => x.Id == user.Id) ) continue;
+                if (user == null) continue;
+                cnt++;
 
-                    var newUser = new User
-                    {
-                        Id = user.Id,
-                        Username = user.Username,
-                        BotEditor = false,
-                        BotAdmin = false,
-                        Blocked = false
-                    };
-                    await Task.Delay(100);
-                    DbManager.AddUser(newUser);
-                }
+                var newUser = new User
+                {
+                    Id = user.Id,
+                    Username = user.Username,
+                    BotEditor = false,
+                    BotAdmin = false,
+                    Blocked = false
+                };
+                await Task.Delay(100);
+                DbManager.AddUser(newUser);
             }
             return cnt;
         }
