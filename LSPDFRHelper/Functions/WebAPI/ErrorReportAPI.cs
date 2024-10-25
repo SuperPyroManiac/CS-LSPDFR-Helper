@@ -26,10 +26,12 @@ internal static class ErrorReportAPI
         err = err.Substring(0, err.Length - "PyroCommon".Length).Trim();
 
         var parts = err.Split([" at "], 2, StringSplitOptions.None);
-        var errorMessage = parts[0];
+        var errorParts = parts[0].Split([": "], 2, StringSplitOptions.None);
+        var errorType = errorParts[0];
+        var errorMessage = errorParts[1];
         var stackTrace = parts.Length > 1 ? parts[1] : string.Empty;
 
-        await Logging.PyroCommonLog(BasicEmbeds.Warning($"__{plug} Auto Report__\r\n: ```{errorMessage}```\r\nStack Trace:\r\n```{stackTrace}```"));
+        await Logging.PyroCommonLog(BasicEmbeds.Warning($"__{plug} Auto Report__\r\n{errorType}\r\n{errorMessage}\r\nStack Trace:\r\n{stackTrace}"));
         response.StatusCode = 200;
     }
 }
