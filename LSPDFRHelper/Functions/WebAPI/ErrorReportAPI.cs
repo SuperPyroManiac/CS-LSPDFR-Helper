@@ -25,7 +25,11 @@ internal static class ErrorReportAPI
         var err = decryptedMessage.Substring(delimiterIndex + 1);
         err = err.Substring(0, err.Length - "PyroCommon".Length).Trim();
 
-        await Logging.PyroCommonLog(BasicEmbeds.Warning($"__{plug} Auto Report__\r\n```{err}```"));
+        var parts = err.Split([" at "], 2, StringSplitOptions.None);
+        var errorMessage = parts[0];
+        var stackTrace = parts.Length > 1 ? parts[1] : string.Empty;
+
+        await Logging.PyroCommonLog(BasicEmbeds.Warning($"__{plug} Auto Report__\r\n: ```{errorMessage}```\r\nStack Trace:\r\n```{stackTrace}```"));
         response.StatusCode = 200;
     }
 }
