@@ -1,9 +1,9 @@
-# 🚓 LSPDFR Helper Discord Bot
-
 ## This is the retired C# version! This is replaced with a new bot written in TypeScript/JS
 You can find it here: https://github.com/SuperPyroManiac/LSPDFR-Helper
 
 A powerful Discord bot designed to analyze and interpret various log types from modded Grand Theft Auto V, specifically focusing on LSPDFR.
+
+# 🚓 LSPDFR Helper Discord Bot
 
 ## ✨ Features
 
